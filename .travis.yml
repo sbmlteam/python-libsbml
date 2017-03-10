@@ -1,0 +1,74 @@
+language: python
+python: 3.5
+sudo: required
+dist: trusty
+services: docker
+env:
+  global:
+  - PLAT=x86_64
+
+git:
+  depth: 1
+
+branches:
+  only:
+  - master
+
+matrix:
+  fast_finish: true
+  exclude:
+    - python: 3.5
+  include:
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=2.7
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.4
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.5
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.6
+    - os: osx
+      language: objective-c
+      env:
+        - MB_PYTHON_VERSION=2.7
+    - os: osx
+      language: objective-c
+      env:
+        - MB_PYTHON_VERSION=3.4
+    - os: osx
+      language: objective-c
+      env:
+        - MB_PYTHON_VERSION=3.5
+    - os: osx
+      language: objective-c
+      env:
+        - MB_PYTHON_VERSION=3.6
+
+before_install:
+  - (travis_retry git clone https://github.com/matthew-brett/multibuild.git && cd multibuild && git checkout e6ebbfa);
+  - TEST_DEPENDS="nose"
+  - source multibuild/common_utils.sh
+  - source multibuild/travis_steps.sh
+  - before_install
+  - pip install -U pip setuptools wheel tox
+
+install:
+  - build_wheel . $PLAT
+
+before_cache:
+  - set +e
+
+script:
+  - install_run $PLAT
+
+deploy:
+  provider: script
+  skip_cleanup: true
+  script: deploy/deploy.sh
+  on:
+    branch: master
+    tags: true

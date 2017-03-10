@@ -45,3 +45,15 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Tempfiles
+*~
+
+# Build
+build/*
+.idea
+__pycache__
+*.so
+.*egg_info
+python_libsbml.egg-info/
+dist/*
