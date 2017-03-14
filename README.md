@@ -1,7 +1,7 @@
 Standalone libSBML Python module
 ================================
 
-This is used to create a standalone module for Python.  The module consists of libSBML and libSBML extensions for accepted/released [SBML Level 3 packages](http://sbml.org/Documents/Specifications#SBML_Level_3_Packages).
+This is used to create a standalone module for Python.  The module consists of [libSBML](http://sbml.org/Software/libSBML) and libSBML extensions for accepted/released [SBML Level 3 packages](http://sbml.org/Documents/Specifications#SBML_Level_3_Packages).
 
 [![License](http://img.shields.io/:license-LGPL-blue.svg)](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html)  [![Latest stable release](https://img.shields.io/badge/Latest_stable_release-5.12.1-brightgreen.svg)](http://shields.io)
 
@@ -30,15 +30,15 @@ Benjamin J. Bornstein, Sarah M. Keating, Akira Jouraku, and Michael Hucka (2008)
 ☀ Background and introduction
 -----------------------------
 
-LibSBML is a free, open-source programming library to help you read, write, manipulate, translate, and validate [SBML](http://sbml.org) files and data streams. It's not an application itself, but rather a library you embed in your own applications. The library supports all Levels and Versions of SBML, up to Level&nbsp;3 Version&nbsp;1 Core.
+[libSBML](http://sbml.org/Software/libSBML) is a free, open-source programming library to help you read, write, manipulate, translate, and validate [SBML](http://sbml.org) files and data streams. It's not an application itself, but rather a library you embed in your own applications. The library supports all Levels and Versions of SBML, up to Level&nbsp;3 Version&nbsp;1 Core.
 
-This repository contains code to generate a standalone Python module wrapping libSBML with a Python API.  The API is the standard Python API implemented with the help of [SWIG](http://swig.org) and provided in the libSBML distribution.
+This repository contains code to generate a standalone Python module wrapping [libSBML](http://sbml.org/Software/libSBML) with a Python API.  The API is the standard Python API implemented with the help of [SWIG](http://swig.org) and provided in the libSBML distribution.
 
 
 ⁇ Getting Help
 ------------
 
-The libSBML library, and associated utilities such as this Python module, under active development by a distributed team.  If you have any questions, please feel free to post or email on the  ([https://groups.google.com/forum/#!forum/libsbml-development](https://groups.google.com/forum/#!forum/libsbml-development)) forum, or contact the [libSBML Team](mailto:libsbml-team@googlegroups.com) directly.
+The [libSBML](http://sbml.org/Software/libSBML) library, and associated utilities such as this Python module, under active development by a distributed team.  If you have any questions, please feel free to post or email on the  ([https://groups.google.com/forum/#!forum/libsbml-development](https://groups.google.com/forum/#!forum/libsbml-development)) forum, or contact the [libSBML Team](mailto:libsbml-team@googlegroups.com) directly.
 
 
 ☮ Copyright and license
