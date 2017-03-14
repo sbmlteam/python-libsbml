@@ -57,3 +57,9 @@ __pycache__
 .*egg_info
 python_libsbml.egg-info/
 dist/*
+
+# ======================
+# Local ignorable files
+# ======================
+
+README.html
