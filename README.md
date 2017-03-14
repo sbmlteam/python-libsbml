@@ -1,12 +1,12 @@
 Standalone libSBML Python module
 ================================
 
-This is used to create a standalone module for Python consisting of libSBML and libSBML extensions for accepted/released [SBML Level 3 packages](http://sbml.org/Documents/Specifications#SBML_Level_3_Packages).
+This is used to create a standalone module for Python.  The module consists of libSBML and libSBML extensions for accepted/released [SBML Level 3 packages](http://sbml.org/Documents/Specifications#SBML_Level_3_Packages).
 
 [![License](http://img.shields.io/:license-LGPL-blue.svg)](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html)  [![Latest stable release](https://img.shields.io/badge/Latest_stable_release-5.12.1-brightgreen.svg)](http://shields.io)
 
 ----
-*Main Authors*: [Sarah Keating](http://www.ebi.ac.uk/about/people/sarah-keating), [Michael Hucka](http://www.cds.caltech.edu/~mhucka), [Lucian P. Smith](http://www.washington.edu/home/peopledir/?method=name&term=smith), [Frank T. Bergmann](http://www.cos.uni-heidelberg.de/index.php/f.bergmann?l=_e), [Bruce Shapiro](http://www.bruce-shapiro.com), Thomas W. Evans, [Colin S. Gillespie](http://www.ncl.ac.uk/maths/about/staff/profile/colingillespie.html#background), [Darren J. Wilkinson](https://www.staff.ncl.ac.uk/d.j.wilkinson/), [Brett Olivier](http://www.bgoli.net), [Andrew Finney](https://www.linkedin.com/in/andrewmartinfinney).
+*Main Authors*: [Frank T. Bergmann](http://www.cos.uni-heidelberg.de/index.php/f.bergmann?l=_e), [Sarah Keating](http://www.ebi.ac.uk/about/people/sarah-keating), [Ben Bornstein](http://www.bbornstein.org), [Lucian P. Smith](http://www.washington.edu/home/peopledir/?method=name&term=smith), [Akiya Jouraku](https://www.researchgate.net/profile/Akiya_Jouraku), and [Michael Hucka](http://www.cds.caltech.edu/~mhucka).
 
 *Repository*:   [https://github.com/sbmlteam/python-libsbml](https://github.com/sbmlteam/python-libsbml)
 
@@ -23,8 +23,6 @@ Article citations are **critical** for us to be able to continue support for lib
 <dl>
 <dd>
 Benjamin J. Bornstein, Sarah M. Keating, Akira Jouraku, and Michael Hucka (2008) <a href="https://academic.oup.com/bioinformatics/article/24/6/880/194657/LibSBML-an-API-Library-for-SBML">LibSBML: An API Library for SBML.</a> <i>Bioinformatics</i>, 24(6):880–881, doi:10.1093/bioinformatics/btn051.
-
-Harold F. Gómez, Michael Hucka, Sarah M. Keating, German Nudelman, Dagmar Iber and Stuart C. Sealfon.  <a href="http://bioinformatics.oxfordjournals.org/content/32/12/1905">MOCCASIN: converting MATLAB ODE models to SBML</a>. <i>Bioinformatics</i> (2016), 32(12): 1905-1906.
 </dd>
 </dl>
 
