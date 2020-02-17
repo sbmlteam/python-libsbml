@@ -3,7 +3,7 @@ Standalone libSBML Python module
 
 This is used to create a standalone module for Python.  The module consists of [libSBML](http://sbml.org/Software/libSBML) and libSBML extensions for accepted/released [SBML Level 3 packages](http://sbml.org/Documents/Specifications#SBML_Level_3_Packages).
 
-[![License](http://img.shields.io/:license-LGPL-blue.svg)](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html)  [![Latest stable release](https://img.shields.io/badge/Latest_stable_release-5.12.1-brightgreen.svg)](http://shields.io)
+[![License](http://img.shields.io/:license-LGPL-blue.svg)](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html)  [![Latest stable release](https://img.shields.io/badge/Latest_stable_release-5.18.0-brightgreen.svg)](http://shields.io)
 
 ----
 *Main Authors*: [Frank T. Bergmann](http://www.cos.uni-heidelberg.de/index.php/f.bergmann?l=_e), [Sarah Keating](http://www.ebi.ac.uk/about/people/sarah-keating), [Ben Bornstein](http://www.bbornstein.org), [Lucian P. Smith](http://www.washington.edu/home/peopledir/?method=name&term=smith), [Akiya Jouraku](https://www.researchgate.net/profile/Akiya_Jouraku), and [Michael Hucka](http://www.cds.caltech.edu/~mhucka).
