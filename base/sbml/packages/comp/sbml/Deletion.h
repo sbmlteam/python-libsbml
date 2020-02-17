@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -102,8 +106,8 @@ class LIBSBML_EXTERN Deletion : public SBaseRef
 protected:
 
   /** @cond doxygenLibsbmlInternal */
-  std::string mId;
-  std::string mName;
+//  std::string mId;
+//  std::string mName;
   /** @endcond */
 
 public:
@@ -111,9 +115,11 @@ public:
   /**
    * Creates a new Deletion with the given level, version, and package version.
    *
-   * @param level the SBML Level
-   * @param version the Version within the SBML Level
-   * @param pkgVersion the version of the package
+   * @param level the SBML Level.
+   * @param version the Version within the SBML Level.
+   * @param pkgVersion the version of the package.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   Deletion(unsigned int level      = CompExtension::getDefaultLevel(),
            unsigned int version    = CompExtension::getDefaultVersion(),
@@ -122,18 +128,29 @@ public:
 
   /**
    * Creates a new Deletion with the given CompPkgNamespaces object.
+   *
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param compns the CompPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   Deletion(CompPkgNamespaces* compns);
 
 
   /**
    * Copy constructor.
+   *
+   * @param source the Deletion instance to copy.
    */
   Deletion(const Deletion& source);
 
 
   /**
    * Assignment operator.
+   *
+   * @param source the object whose values are used as the basis of the
+   * assignment.
    */
   Deletion& operator=(const Deletion& source);
 
@@ -141,35 +158,40 @@ public:
   /**
    * Creates and returns a deep copy of this Deletion object.
    * 
-   * @return a (deep) copy of this Deletion object
+   * @return a (deep) copy of this Deletion object.
    */
   virtual Deletion* clone () const;
 
 
   /**
    * Destructor.
-   */ 
+   */
   virtual ~Deletion ();
 
 
   /**
    * Sets the value of the "id" attribute of this Deletion.
    *
-   * This method fails if the @p id is not a valid syntax for an SId.
-   *
-   * @param id the identifier to use
-   *
-   * @copydetails doc_returns_success_code
-   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
+   * @copydetails doc_set_id
    */
-  virtual int setId (const std::string& id);
+  virtual int setId(const std::string& sid);
 
 
   /**
    * Returns the value of the "id" attribute of this Deletion.
-   * 
-   * @return the name of this Deletion.
+   *
+   * @note Because of the inconsistent behavior of this function with 
+   * respect to assignments and rules, it is now recommended to
+   * use the getIdAttribute() function instead.
+   *
+   * @copydetails doc_id_attribute
+   *
+   * @return the id of this Deletion.
+   *
+   * @see getIdAttribute()
+   * @see setIdAttribute(const std::string& sid)
+   * @see isSetIdAttribute()
+   * @see unsetIdAttribute()
    */
   virtual const std::string& getId () const;
 
@@ -178,10 +200,7 @@ public:
    * Predicate returning @c true or @c false depending on whether this
    * object's "id" attribute has been set.
    *
-   * @htmlinclude comment-set-methods.html
-   * 
-   * @return @c true if the "id" attribute of this object has been
-   * set, @c false otherwise.
+   * @copydetails doc_isset_id
    */
   virtual bool isSetId() const;
 
@@ -189,9 +208,7 @@ public:
   /**
    * Unsets the value of the "id" attribute of this Deletion.
    *
-   * @copydetails doc_returns_success_code
-   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   * @copydetails doc_unset_id
    */
   virtual int unsetId();
 
@@ -199,21 +216,15 @@ public:
   /**
    * Sets the value of the "name" attribute of this Deletion.
    *
-   * The string in @p name is copied.
-   *
-   * @param name the new name for the Deletion
-   *
-   * @copydetails doc_returns_success_code
-   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
+   * @copydetails doc_set_name
    */
   virtual int setName (const std::string& name);
 
 
   /**
-   * Returns the value of the "name" attribute of this Deletion.
-   * 
-   * @return the name of this Deletion.
+   * Returns the value of the "name" attribute of this Deletion object.
+   *
+   * @copydetails doc_get_name
    */
   virtual const std::string& getName () const;
 
@@ -222,10 +233,7 @@ public:
    * Predicate returning @c true or @c false depending on whether this
    * object's "name" attribute has been set.
    *
-   * @htmlinclude comment-set-methods.html
-   * 
-   * @return @c true if the "name" attribute of this object has been set, @c
-   * false otherwise.
+   * @copydetails doc_isset_name
    */
   virtual bool isSetName() const;
 
@@ -233,9 +241,7 @@ public:
   /**
    * Unsets the value of the "name" attribute of this Deletion.
    *
-   * @copydetails doc_returns_success_code
-   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   * @copydetails doc_unset_name
    */
   virtual int unsetName();
 
@@ -254,7 +260,7 @@ public:
    * @copydetails doc_what_are_typecodes
    *
    * @return the SBML type code for this object:
-   * @sbmlconstant{SBML_COMP_DELETION, SBMLCompTypeCode_t}
+   * @sbmlconstant{SBML_COMP_DELETION, SBMLCompTypeCode_t}.
    *
    * @copydetails doc_warning_typecodes_not_unique
    *
@@ -267,7 +273,7 @@ public:
   /**
    * Finds and stores the referenced object.  It finds its Submodel parent,
    * gets its instantiated Model object, calls
-   * 'getReferencedElementFrom' on that model, and stores the result.
+   * 'getReferencedElementFrom()' using that model, and stores the result.
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -305,7 +311,7 @@ protected:
   /**
    * Subclasses should override this method to read values from the given
    * XMLAttributes set into their specific fields.  Be sure to call your
-   * parents implementation of this method as well.
+   * parent's implementation of this method as well.
    */
   virtual void readAttributes (const XMLAttributes& attributes, 
                                const ExpectedAttributes& expectedAttributes);
@@ -315,7 +321,7 @@ protected:
   /** @cond doxygenLibsbmlInternal */
   /**
    * Subclasses should override this method to write their XML attributes
-   * to the XMLOutputStream.  Be sure to call your parents implementation
+   * to the XMLOutputStream.  Be sure to call your parent's implementation
    * of this method as well.  For example:
    *
    *   SBase::writeAttributes(stream);
@@ -340,14 +346,14 @@ BEGIN_C_DECLS
 
 /**
  * Creates a new Deletion_t structure using the given SBML @p level
- * and @p version values.
+ * and @p version, and the @p pkgVersion package version.
  *
  * @param level an unsigned int, the SBML Level to assign to this
- * Deletion_t
+ * Deletion_t.
  * @param version an unsigned int, the SBML Version to assign to this
- * Deletion_t
- * @param pkgVersion an unsigned int, the SBML 'Qual' package Version to assign to this
- * Deletion_t
+ * Deletion_t.
+ * @param pkgVersion an unsigned int, the SBML 'comp' package Version to assign to this
+ * Deletion_t.
  *
  * @return a pointer to the newly created Deletion_t structure.
  *
@@ -388,7 +394,7 @@ Deletion_clone(Deletion_t * d);
 /**
  * Takes an Deletion_t structure and returns its identifier.
  *
- * @param d the Deletion_t structure whose identifier is sought
+ * @param d the Deletion_t structure whose identifier is sought.
  * 
  * @return the identifier of the given Deletion_t, as a pointer to a string.
  *
@@ -414,13 +420,13 @@ Deletion_getName(Deletion_t * d);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether the given
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether the given
  * Deletion_t structure's identifier is set.
  *
- * @param d the Deletion_t structure to query
+ * @param d the Deletion_t structure to query.
  * 
- * @return @c non-zero (true) if the "id" attribute of the given
- * Deletion_t structure is set, zero (false) otherwise.
+ * @return @c 1 (true) if the "id" attribute of the given
+ * Deletion_t structure is set, @c 0 (false) otherwise.
  *
  * @memberof Deletion_t
  */
@@ -430,13 +436,13 @@ Deletion_isSetId(Deletion_t * d);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether the given
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether the given
  * Deletion_t structure's name is set.
  *
- * @param d the Deletion_t structure to query
+ * @param d the Deletion_t structure to query.
  * 
- * @return @c non-zero (true) if the "name" attribute of the given
- * Deletion_t structure is set, zero (false) otherwise.
+ * @return @c 1 (true) if the "name" attribute of the given
+ * Deletion_t structure is set, @c 0 (false) otherwise.
  *
  * @memberof Deletion_t
  */
@@ -448,7 +454,7 @@ Deletion_isSetName(Deletion_t * d);
 /**
  * Assigns the identifier of an Deletion_t structure.
  *
- * This makes a copy of the string passed in the param @p sid.
+ * This makes a copy of the string passed in the parameter @p sid.
  *
  * @param d the Deletion_t structure to set.
  * @param sid the string to use as the identifier.
@@ -457,7 +463,7 @@ Deletion_isSetName(Deletion_t * d);
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
  *
- * @note Using this function with an id of NULL is equivalent to
+ * @note Using this function with an @p sid of NULL is equivalent to
  * unsetting the "id" attribute.
  *
  * @memberof Deletion_t
@@ -470,7 +476,7 @@ Deletion_setId(Deletion_t * d, const char * sid);
 /**
  * Sets the name of the given Deletion_t to a copy of @p name.
  *
- * @param d the Deletion_t structure to set
+ * @param d the Deletion_t structure to set.
  * @param name the name to assign to the given Deletion_t's "name" attribute.
  *
  * @copydetails doc_returns_success_code
@@ -490,7 +496,7 @@ Deletion_setName(Deletion_t * d, const char * name);
 /**
  * Unsets the "id" attribute of the given Deletion_t structure.
  *
- * @param d the Deletion_t structure to unset
+ * @param d the Deletion_t structure to unset.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -506,7 +512,7 @@ Deletion_unsetId(Deletion_t * d);
 /**
  * Unsets the "name" attribute of the given Deletion_t structure.
  *
- * @param d the Deletion_t structure to unset
+ * @param d the Deletion_t structure to unset.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -520,58 +526,18 @@ Deletion_unsetName(Deletion_t * d);
 
 
 /**
-  * Predicate returning @c true or @c false depending on whether
+  * Predicate returning @c 1 (true) or @c 0 (false) depending on whether
   * all the required attributes for the given Deletion_t structure
   * have been set.
   *
-  * @note The required attributes for a Deletion_t structure are:
-  * @li useValuesfromTriggerTime ( L3 onwards )
+  * @note The required attributes for a Deletion_t structure are
+  * that it uses exactly one attribute to refer to its target.
   *
  * @memberof Deletion_t
  */
 LIBSBML_EXTERN
 int
 Deletion_hasRequiredAttributes(Deletion_t * d);
-
-
-/**
- * Return the Deletion_t indicated by the given @p sid.
- *
- * @param lo the ListOf_t structure to use
- *
- * @param sid a string, the identifier of the
- * Deletion_t is being sought.
- *
- * @return the Deletion_t for the given variable, or @c NULL if no such
- * Deletion_t exits.
- *
- * @memberof Deletion_t
- */
-LIBSBML_EXTERN
-Deletion_t *
-ListOfDeletions_getById(ListOf_t * lo, const char * sid);
-
-
-/**
- * Removes the Deletion_t structure with the given @p sid
- * from the given ListOf_t structure and returns a pointer to it.
- *
- * The caller owns the returned structure and is responsible for deleting it.
- *
- * @param lo the ListOf_t structure
- * @param sid the string of the "id" attribute of the Deletion_t sought
- *
- * @return the Deletion_t structure removed.  As mentioned above, the 
- * caller owns the returned structure. @c NULL is returned if no Deletion_t
- * structure with the "id" attribute exists in the given ListOf_t structure.
- *
- * @memberof Deletion_t
- */
-LIBSBML_EXTERN
-Deletion_t *
-ListOfDeletions_removeById(ListOf_t * lo, const char * sid);
-
-
 
 
 END_C_DECLS

@@ -4,14 +4,18 @@
  *
  * @file    FormulaUnitsData.h
  * @brief   Class for storing information relating to units of a formula
- * @author  SBML Team <sbml-team@caltech.edu>
+ * @author  SBML Team <sbml-team@googlegroups.com>
  *
  *
  * <!--------------------------------------------------------------------------
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -109,7 +113,7 @@ public:
   /**
    * Assignment operator for FormulaUnitsData.
    *
-   * @param rhs The object whose values are used as the basis of the
+   * @param rhs the object whose values are used as the basis of the
    * assignment.
    */
   FormulaUnitsData& operator=(const FormulaUnitsData& rhs);
@@ -225,6 +229,26 @@ public:
    * with undeclared units can be ignored, @c false otherwise.
    */
   bool getCanIgnoreUndeclaredUnits() const;
+
+
+  /**
+  * Get the value of the "containsInconsistency" flag for this
+  * FormulaUnitsData.
+  *
+  * @return @c true if the FormulaUnitsData includes a math expression
+  * for which units are inconsistent e.g., mole + second, @c false otherwise.
+  */
+  bool getContainsInconsistency();
+
+
+  /**
+  * Get the value of the "containsInconsistency" flag for this
+  * FormulaUnitsData.
+  *
+  * @return @c true if the FormulaUnitsData includes a math expression
+  * for which units are inconsistent e.g., mole + second, @c false otherwise.
+  */
+  bool getContainsInconsistency() const;
 
 
   /**
@@ -344,6 +368,17 @@ public:
 
 
   /**
+  * Sets the value of the "containsInconsistency" flag for this
+  * FormulaUnitsData.
+  *
+  * @param flag boolean value indicating whether the FormulaUnitsData
+  * includes includes a math expression
+  * for which units are inconsistent e.g., mole + second.
+  */
+  void setContainsInconsistency(bool flag);
+
+
+  /**
    * Set the unit definition for this FormulaUnitsData.
    * 
    * @param ud the UnitDefinition object constructed to represent
@@ -381,6 +416,7 @@ protected:
 
     bool mContainsUndeclaredUnits;
     bool mCanIgnoreUndeclaredUnits;
+    bool mContainsInconsistency;
 
     int mTypeOfElement;
 

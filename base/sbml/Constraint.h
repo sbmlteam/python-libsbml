@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -48,12 +52,21 @@
  * be used according to the guidelines described in the SBML specification
  * (e.g., Section 3.3 in the Level&nbsp;2 Version 4 specification).  
  *
- * Constraint has one required subelement, "math", containing a MathML
- * formula defining the condition of the constraint.  This formula must
- * return a boolean value of @c true when the model is a <em>valid</em>
+ * Constraint has one subelement, "math", containing a MathML
+ * formula defining the condition of the constraint.  This formula will
+ * return a Boolean value of @c true when the model is a <em>valid</em>
  * state.  The formula can be an arbitrary expression referencing the
  * variables and other entities in an SBML model.  The evaluation of "math"
  * and behavior of constraints are described in more detail below.
+ *
+ * In SBML Level&nbsp;2 and SBML Level&nbsp;3 Version&nbsp;1, the "math"
+ * subelement is required, and its formula must be a Boolean value.  In
+ * SBML Level&nbsp;3 Version&nbsp;2, these restrictions were relaxed:
+ * the "math" subelement is optional, and numeric values are allowed
+ * in Boolean contexts (a '0' is interpreted as @c false, and all other
+ * values are interpreted as @c true).  If a Constraint with no "math"
+ * is present in a Model, no restriction on the Model's behavior is
+ * implied or enforced.
  *
  * A Constraint structure also has an optional subelement called "message".
  * This can contain a message in XHTML format that may be displayed to the
@@ -144,10 +157,10 @@ public:
    * Creates a new Constraint using the given SBML @p level and @p version
    * values.
    *
-   * @param level an unsigned int, the SBML Level to assign to this Constraint
+   * @param level an unsigned int, the SBML Level to assign to this Constraint.
    *
    * @param version an unsigned int, the SBML Version to assign to this
-   * Constraint
+   * Constraint.
    *
    * @copydetails doc_throw_exception_lv
    *
@@ -188,7 +201,7 @@ public:
   /**
    * Assignment operator for Constraint.
    *
-   * @param rhs The object whose values are used as the basis of the
+   * @param rhs the object whose values are used as the basis of the
    * assignment.
    */
   Constraint& operator=(const Constraint& rhs);
@@ -230,15 +243,15 @@ public:
    * 
    * @return the message for this Constraint, as a string.
    */
-  std::string getMessageString () const;
+  virtual std::string getMessageString () const;
 
 
   /**
    * Get the mathematical expression of this Constraint
    * 
-   * @return the math for this Constraint, as an ASTNode.
+   * @return the math for this Constraint, as an ASTNode, or @c NULL if the math is not set.
    */
-  const ASTNode* getMath () const;
+  virtual const ASTNode* getMath () const;
 
 
   /**
@@ -279,7 +292,7 @@ public:
    * Sets the message of this Constraint.
    *
    * @param message an XML string that is to be used as the content of the
-   * "message" subelement of this object
+   * "message" subelement of this object.
    *
    * @param addXHTMLMarkup a boolean indicating whether to wrap the contents
    * of the @p message argument with XHTML paragraph (<code>&lt;p&gt;</code>)
@@ -290,7 +303,7 @@ public:
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
    * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
    */
-  int setMessage (const std::string& message, bool addXHTMLMarkup = false);
+  virtual int setMessage (const std::string& message, bool addXHTMLMarkup = false);
 
 
   /**
@@ -298,13 +311,13 @@ public:
    * AST given as @p math.
    *
    * @param math an ASTNode expression to be assigned as the "math"
-   * subelement of this Constraint
+   * subelement of this Constraint.
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
    * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
    */
-  int setMath (const ASTNode* math);
+  virtual int setMath (const ASTNode* math);
 
 
   /**
@@ -366,7 +379,7 @@ public:
   /** @cond doxygenLibsbmlInternal */
   /**
    * Subclasses should override this method to write out their contained
-   * SBML objects as XML elements.  Be sure to call your parents
+   * SBML objects as XML elements.  Be sure to call your parent's
    * implementation of this method as well.
    */
   virtual void writeElements (XMLOutputStream& stream) const;
@@ -379,12 +392,302 @@ public:
    * have been set.
    *
    * @note The required elements for a Constraint object are:
-   * @li 'math'
+   * @li 'math' (through SBML Level&nbsp;3 Version&nbsp;1 only; not 
+   *     required in Level&nbsp;3 Version&nbsp;2+.)
    *
    * @return a boolean value indicating whether all the required
    * elements for this object have been defined.
    */
   virtual bool hasRequiredElements() const;
+
+
+
+
+  #ifndef SWIG
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Constraint.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, bool& value)
+    const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Constraint.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Constraint.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           double& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Constraint.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           unsigned int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Constraint.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           std::string& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Constraint.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  //virtual int getAttribute(const std::string& attributeName,
+  //                         const char* value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Predicate returning @c true if this Constraint's attribute "attributeName"
+   * is set.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @return @c true if this Constraint's attribute "attributeName" has been
+   * set, otherwise @c false is returned.
+   */
+  virtual bool isSetAttribute(const std::string& attributeName) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Constraint.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, bool value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Constraint.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Constraint.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, double value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Constraint.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           unsigned int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Constraint.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           const std::string& value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Constraint.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  //virtual int setAttribute(const std::string& attributeName, const char*
+  //  value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Unsets the value of the "attributeName" attribute of this Constraint.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int unsetAttribute(const std::string& attributeName);
+
+  /** @endcond */
+
+
+
+
+  #endif /* !SWIG */
+
+  /** @cond doxygenLibsbmlInternal */
+  /*
+  * Function to set/get an identifier for unit checking
+  */
+  std::string getInternalId() const;
+  void setInternalId(std::string id);
+
+  /** @endcond */
 
 
 protected:
@@ -393,7 +696,7 @@ protected:
    * Subclasses should override this method to read (and store) XHTML,
    * MathML, etc. directly from the XMLInputStream.
    *
-   * @return true if the subclass read from the stream, false otherwise.
+   * @return @c true if the subclass read from the stream, @c false otherwise.
    */
   virtual bool readOtherXML (XMLInputStream& stream);
 
@@ -410,7 +713,7 @@ protected:
   /**
    * Subclasses should override this method to read values from the given
    * XMLAttributes set into their specific fields.  Be sure to call your
-   * parents implementation of this method as well.
+   * parent's implementation of this method as well.
    */
   virtual void readAttributes (const XMLAttributes& attributes,
                                const ExpectedAttributes& expectedAttributes);
@@ -422,7 +725,7 @@ protected:
 
   /**
    * Subclasses should override this method to write their XML attributes
-   * to the XMLOutputStream.  Be sure to call your parents implementation
+   * to the XMLOutputStream.  Be sure to call your parent's implementation
    * of this method as well.
    */
   virtual void writeAttributes (XMLOutputStream& stream) const;
@@ -430,6 +733,8 @@ protected:
 
   ASTNode* mMath;
   XMLNode* mMessage;
+  /* internal id used by unit checking */
+  std::string mInternalId;
 
   /* the validator classes need to be friends to access the 
    * protected constructor that takes no arguments
@@ -464,9 +769,9 @@ public:
    * The object is constructed such that it is valid for the given SBML
    * Level and Version combination.
    *
-   * @param level the SBML Level
+   * @param level the SBML Level.
    * 
-   * @param version the Version within the SBML Level
+   * @param version the Version within the SBML Level.
    *
    * @copydetails doc_throw_exception_lv
    *
@@ -531,6 +836,7 @@ public:
    * @param n the index number of the Constraint to get.
    * 
    * @return the nth Constraint in this ListOfConstraints.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -543,6 +849,7 @@ public:
    * @param n the index number of the Constraint to get.
    * 
    * @return the nth Constraint in this ListOfConstraints.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -555,7 +862,7 @@ public:
    *
    * The caller owns the returned item and is responsible for deleting it.
    *
-   * @param n the index of the item to remove
+   * @param n the index of the item to remove.
    *
    * @see size()
    */
@@ -608,20 +915,14 @@ BEGIN_C_DECLS
  * and @p version values.
  *
  * @param level an unsigned int, the SBML Level to assign to this
- * Constraint_t
+ * Constraint_t.
  *
  * @param version an unsigned int, the SBML Version to assign to this
- * Constraint_t
+ * Constraint_t.
  *
  * @return a pointer to the newly created Constraint_t structure.
  *
- * @note Once a Constraint_t has been added to an SBMLDocument_t, the @p
- * level and @p version for the document @em override those used to create
- * the Constraint_t.  Despite this, the ability to supply the values at
- * creation time is an important aid to creating valid SBML.  Knowledge of
- * the intended SBML Level and Version  determine whether it is valid to
- * assign a particular value to an attribute, or whether it is valid to add
- * a structure to an existing SBMLDocument_t.
+ * @copydetails doc_note_setting_lv
  *
  * @memberof Constraint_t
  */
@@ -635,17 +936,11 @@ Constraint_create (unsigned int level, unsigned int version);
  * SBMLNamespaces_t structure.
  *
  * @param sbmlns SBMLNamespaces_t, a pointer to an SBMLNamespaces_t structure
- * to assign to this Constraint_t
+ * to assign to this Constraint_t.
  *
  * @return a pointer to the newly created Constraint_t structure.
  *
- * @note Once a Constraint_t has been added to an SBMLDocument_t, the
- * @p sbmlns namespaces for the document @em override those used to create
- * the Constraint_t.  Despite this, the ability to supply the values at creation 
- * time is an important aid to creating valid SBML.  Knowledge of the intended 
- * SBML Level and Version determine whether it is valid to assign a particular 
- * value to an attribute, or whether it is valid to add a structure to an existing
- * SBMLDocument_t.
+ * @copydetails doc_note_setting_lv
  *
  * @memberof Constraint_t
  */
@@ -667,7 +962,7 @@ Constraint_free (Constraint_t *c);
 /**
  * Creates and returns a deep copy of the given Constraint_t structure.
  *
- * @param c the Constraint_t structure to copy
+ * @param c the Constraint_t structure to copy.
  * 
  * @return a (deep) copy of Constraint_t.
  *
@@ -682,7 +977,7 @@ Constraint_clone (const Constraint_t *c);
  * Returns a list of XMLNamespaces_t associated with this Constraint_t
  * structure.
  *
- * @param c the Constraint_t structure
+ * @param c the Constraint_t structure.
  * 
  * @return pointer to the XMLNamespaces_t structure associated with 
  * this structure
@@ -697,7 +992,7 @@ Constraint_getNamespaces(Constraint_t *c);
 /**
  * Get the message, if any, associated with this Constraint_t
  *
- * @param c the Constraint_t structure 
+ * @param c the Constraint_t structure.
  * 
  * @return the message for this Constraint_t, as an XMLNode_t.
  *
@@ -711,7 +1006,7 @@ Constraint_getMessage (const Constraint_t *c);
 /**
  * Get the message string, if any, associated with this Constraint_t
  *
- * @param c the Constraint_t structure 
+ * @param c the Constraint_t structure.
  * 
  * @return the message for this Constraint_t, as a string (char*).
  * @c NULL is returned if the message is not set.
@@ -728,7 +1023,7 @@ Constraint_getMessageString (const Constraint_t *c);
 /**
  * Get the mathematical expression of this Constraint_t
  *
- * @param c the Constraint_t structure 
+ * @param c the Constraint_t structure.
  * 
  * @return the math for this Constraint_t, as an ASTNode_t.
  *
@@ -740,13 +1035,13 @@ Constraint_getMath (const Constraint_t *c);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether a
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether a
  * message is defined for this Constraint_t.
  *
- * @param c the Constraint_t structure 
+ * @param c the Constraint_t structure.
  * 
- * @return a nonzero integer if the "message" subelement for this
- * Constraint_t is set, zero (0) otherwise.
+ * @return @c 1 (true) if the "message" subelement for this
+ * Constraint_t is set, @c 0 (false) otherwise.
  *
  * @memberof Constraint_t
  */
@@ -756,13 +1051,13 @@ Constraint_isSetMessage (const Constraint_t *c);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether a
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether a
  * mathematical formula is defined for this Constraint_t.
  *
- * @param c the Constraint_t structure 
+ * @param c the Constraint_t structure.
  * 
- * @return a nonzero integer if the "math" subelement for this Constraint_t
- * is set, zero (0) otherwise.
+ * @return @return @c 1 (true) if the "math" subelement for this Constraint_t
+ * is set, @c 0 (false) otherwise.
  *
  * @memberof Constraint_t
  */
@@ -774,7 +1069,7 @@ Constraint_isSetMath (const Constraint_t *c);
 /**
  * Sets the message of this Constraint_t.
  *
- * @param c the Constraint_t structure
+ * @param c the Constraint_t structure.
  *
  * @param xhtml an XML tree containing XHTML content.
  *
@@ -792,10 +1087,10 @@ Constraint_setMessage (Constraint_t *c, const XMLNode_t* xhtml);
 /**
  * Sets the mathematical expression of this Constraint_t.
  *
- * @param c the Constraint_t structure
+ * @param c the Constraint_t structure.
  *
  * @param math an ASTNode_t expression to be assigned as the "math"
- * subelement of this Constraint_t
+ * subelement of this Constraint_t.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -811,7 +1106,7 @@ Constraint_setMath (Constraint_t *c, const ASTNode_t *math);
 /**
  * Unsets the "message" subelement of this Constraint_t.
  *
- * @param c the Constraint_t structure
+ * @param c the Constraint_t structure.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}

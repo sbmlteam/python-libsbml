@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -57,8 +61,6 @@ LIBSBML_CPP_NAMESPACE_BEGIN
 
 FunctionDefinition::FunctionDefinition (unsigned int level, unsigned int version) :
    SBase ( level, version )
- , mId   ( "" )
- , mName ( "" )
  , mMath ( NULL  )
 {
   if (!hasValidLevelVersionNamespaceCombination())
@@ -68,8 +70,6 @@ FunctionDefinition::FunctionDefinition (unsigned int level, unsigned int version
 
 FunctionDefinition::FunctionDefinition (SBMLNamespaces * sbmlns) :
    SBase ( sbmlns )
- , mId   ( "" )
- , mName ( "" )
  , mMath ( NULL  )
 {
   if (!hasValidLevelVersionNamespaceCombination())
@@ -95,9 +95,7 @@ FunctionDefinition::~FunctionDefinition ()
  */
 FunctionDefinition::FunctionDefinition (const FunctionDefinition& orig) :
    SBase             ( orig         )
- , mId               ( orig.mId     )
- , mName             ( orig.mName   )
- , mMath             ( NULL         )
+ , mMath             ( NULL            )
 {
   
   if (orig.mMath != NULL) 
@@ -105,7 +103,6 @@ FunctionDefinition::FunctionDefinition (const FunctionDefinition& orig) :
     mMath = orig.mMath->deepCopy();
     mMath->setParentSBMLObject(this);
   }
-  
 }
 
 
@@ -117,8 +114,6 @@ FunctionDefinition& FunctionDefinition::operator=(const FunctionDefinition& rhs)
   if(&rhs!=this)
   {
     this->SBase::operator =(rhs);
-    mId = rhs.mId;
-    mName = rhs.mName;
 
     delete mMath;
     if (rhs.mMath != NULL) 
@@ -186,7 +181,7 @@ FunctionDefinition::getMath () const
 
 
 /*
- * @return true if the id of this SBML object is set, false
+ * @return @c true if the id of this SBML object is set, false
  * otherwise.
  */
 bool
@@ -197,7 +192,7 @@ FunctionDefinition::isSetId () const
 
 
 /*
- * @return true if the name of this SBML object is set, false
+ * @return @c true if the name of this SBML object is set, false
  * otherwise.
  */
 bool
@@ -209,7 +204,7 @@ FunctionDefinition::isSetName () const
 
 
 /*
- * @return true if the math of this FunctionDefinition is set, false
+ * @return @c true if the math of this FunctionDefinition is set, false
  * otherwise.
  */
 bool
@@ -219,7 +214,7 @@ FunctionDefinition::isSetMath () const
 }
 
 /*
- * Sets the id of this SBML object to a copy of sid.
+ * Sets the id of this SBML object to a copy of @p sid.
  */
 int
 FunctionDefinition::setId (const std::string& sid)
@@ -613,9 +608,13 @@ FunctionDefinition::hasRequiredElements() const
   bool allPresent = true;
 
   /* required attributes for functionDefinition: math */
+  /* l3v2 removed that requirement */
 
-  if (!isSetMath())
-    allPresent = false;
+  if ((getLevel() < 3 ) || (getLevel() == 3 && getVersion() == 1))
+  {
+    if (!isSetMath())
+      allPresent = false;
+  }
 
   return allPresent;
 }
@@ -629,13 +628,262 @@ FunctionDefinition::renameUnitSIdRefs(const std::string& oldid, const std::strin
   }
 }
 
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FunctionDefinition.
+ */
+int
+FunctionDefinition::getAttribute(const std::string& attributeName,
+                                 bool& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FunctionDefinition.
+ */
+int
+FunctionDefinition::getAttribute(const std::string& attributeName,
+                                 int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FunctionDefinition.
+ */
+int
+FunctionDefinition::getAttribute(const std::string& attributeName,
+                                 double& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FunctionDefinition.
+ */
+int
+FunctionDefinition::getAttribute(const std::string& attributeName,
+                                 unsigned int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FunctionDefinition.
+ */
+int
+FunctionDefinition::getAttribute(const std::string& attributeName,
+                                 std::string& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FunctionDefinition.
+ */
+//int
+//FunctionDefinition::getAttribute(const std::string& attributeName,
+//                                 const char* value) const
+//{
+//  int return_value = SBase::getAttribute(attributeName, value);
+//
+//  return return_value;
+//}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Predicate returning @c true if this FunctionDefinition's attribute
+ * "attributeName" is set.
+ */
+bool
+FunctionDefinition::isSetAttribute(const std::string& attributeName) const
+{
+  bool value = SBase::isSetAttribute(attributeName);
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FunctionDefinition.
+ */
+int
+FunctionDefinition::setAttribute(const std::string& attributeName, bool value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FunctionDefinition.
+ */
+int
+FunctionDefinition::setAttribute(const std::string& attributeName, int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FunctionDefinition.
+ */
+int
+FunctionDefinition::setAttribute(const std::string& attributeName,
+                                 double value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FunctionDefinition.
+ */
+int
+FunctionDefinition::setAttribute(const std::string& attributeName,
+                                 unsigned int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FunctionDefinition.
+ */
+int
+FunctionDefinition::setAttribute(const std::string& attributeName,
+                                 const std::string& value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FunctionDefinition.
+ */
+//int
+//FunctionDefinition::setAttribute(const std::string& attributeName,
+//                                 const char* value)
+//{
+//  int return_value = SBase::setAttribute(attributeName, value);
+//
+//  return return_value;
+//}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Unsets the value of the "attributeName" attribute of this
+ * FunctionDefinition.
+ */
+int
+FunctionDefinition::unsetAttribute(const std::string& attributeName)
+{
+  int value = SBase::unsetAttribute(attributeName);
+
+  return value;
+}
+
+/** @endcond */
+
+
 
 /** @cond doxygenLibsbmlInternal */
 /*
  * Subclasses should override this method to read (and store) XHTML,
  * MathML, etc. directly from the XMLInputStream.
  *
- * @return true if the subclass read from the stream, false otherwise.
+ * @return @c true if the subclass read from the stream, false otherwise.
  */
 bool
 FunctionDefinition::readOtherXML (XMLInputStream& stream)
@@ -724,7 +972,7 @@ FunctionDefinition::addExpectedAttributes(ExpectedAttributes& attributes)
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 FunctionDefinition::readAttributes (const XMLAttributes& attributes,
@@ -757,7 +1005,7 @@ FunctionDefinition::readAttributes (const XMLAttributes& attributes,
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 FunctionDefinition::readL2Attributes (const XMLAttributes& attributes)
@@ -797,7 +1045,7 @@ FunctionDefinition::readL2Attributes (const XMLAttributes& attributes)
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 FunctionDefinition::readL3Attributes (const XMLAttributes& attributes)
@@ -809,24 +1057,43 @@ FunctionDefinition::readL3Attributes (const XMLAttributes& attributes)
   // id: SId  { use="required" }  (L2v1 ->)
   //
   bool assigned;
-  assigned = attributes.readInto("id", mId, getErrorLog(), false, getLine(), getColumn());
-  if (!assigned)
+  // for l3v2 sbase will read this as generically optional
+  // we want to log errors relating to the specific object
+  if (version == 1)
   {
-    logError(AllowedAttributesOnFunc, level, version, 
-      "The required attribute 'id' is missing.");
+    assigned = attributes.readInto("id", mId, getErrorLog(), false, getLine(), getColumn());
+    if (!assigned)
+    {
+      logError(AllowedAttributesOnFunc, level, version, 
+        "The required attribute 'id' is missing.");
+    }
+    if (assigned && mId.size() == 0)
+    {
+      logEmptyString("id", level, version, "<functionDefinition>");
+    }
+    if (!SyntaxChecker::isValidInternalSId(mId)) 
+      logError(InvalidIdSyntax, level, version, "The id '" + mId + "' does not conform to the syntax.");
   }
-  if (assigned && mId.size() == 0)
+  else
   {
-    logEmptyString("id", level, version, "<functionDefinition>");
+    // need to check that id was present
+    // it has already been read and checked for syntax/emptyness
+    if (attributes.hasAttribute("id") == false)
+    {
+      logError(AllowedAttributesOnFunc, level, version, 
+        "The required attribute 'id' is missing.");
+    }
   }
-  if (!SyntaxChecker::isValidInternalSId(mId)) 
-    logError(InvalidIdSyntax, level, version, "The id '" + mId + "' does not conform to the syntax.");
 
   //
   // name: string  { use="optional" }  (L2v1 ->)
   //
-  attributes.readInto("name", mName, getErrorLog(), false, getLine(), getColumn());
-
+  // for l3v2 sbase will read this
+  if (version == 1)
+  {
+    attributes.readInto("name", mName, getErrorLog(), false, 
+                                       getLine(), getColumn());
+  }
 }
 /** @endcond */
 
@@ -834,7 +1101,7 @@ FunctionDefinition::readL3Attributes (const XMLAttributes& attributes)
 /** @cond doxygenLibsbmlInternal */
 /*
  * Subclasses should override this method to write their XML attributes
- * to the XMLOutputStream.  Be sure to call your parents implementation
+ * to the XMLOutputStream.  Be sure to call your parent's implementation
  * of this method as well.
  */
 void
@@ -861,15 +1128,19 @@ FunctionDefinition::writeAttributes (XMLOutputStream& stream) const
     SBO::writeTerm(stream, mSBOTerm);
   }
 
-  //
-  // id: SId  { use="required" }  (L2v1 ->)
-  //
-  stream.writeAttribute("id", mId);
+  // for L3V2 and above SBase will write this out
+  if (level < 3 || (level == 3 && version == 1))
+  {
+    //
+    // id: SId  { use="required" }  (L2v1 ->)
+    //
+    stream.writeAttribute("id", mId);
 
-  //
-  // name: string  { use="optional" }  (L2v1 ->)
-  //
-  stream.writeAttribute("name", mName);
+    //
+    // name: string  { use="optional" }  (L2v1 ->)
+    //
+    stream.writeAttribute("name", mName);
+  }
 
   //
   // (EXTENSION)
@@ -883,7 +1154,7 @@ FunctionDefinition::writeAttributes (XMLOutputStream& stream) const
 /** @cond doxygenLibsbmlInternal */
 /*
  * Subclasses should override this method to write out their contained
- * SBML objects as XML elements.  Be sure to call your parents
+ * SBML objects as XML elements.  Be sure to call your parent's
  * implementation of this method as well.
  */
 void

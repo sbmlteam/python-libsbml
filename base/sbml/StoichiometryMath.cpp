@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -159,7 +163,7 @@ StoichiometryMath::getMath () const
 
 
 /*
- * @return true if the math (or equivalently the formula) of this
+ * @return @c true if the math (or equivalently the formula) of this
  * StoichiometryMath is set, false otherwise.
  */
 bool
@@ -296,10 +300,31 @@ StoichiometryMath::replaceSIDWithFunction(const std::string& id, const ASTNode* 
 
 /** @cond doxygenLibsbmlInternal */
 /*
+ * Function to set/get an identifier for unit checking
+ */
+std::string 
+StoichiometryMath::getInternalId() const
+{ 
+  return mInternalId; 
+}
+
+
+void 
+StoichiometryMath::setInternalId(std::string id)
+{ 
+  mInternalId = id; 
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+/*
  * Subclasses should override this method to read (and store) XHTML,
  * MathML, etc. directly from the XMLInputStream.
  *
- * @return true if the subclass read from the stream, false otherwise.
+ * @return @c true if the subclass read from the stream, false otherwise.
  */
 bool
 StoichiometryMath::readOtherXML (XMLInputStream& stream)
@@ -313,7 +338,7 @@ StoichiometryMath::readOtherXML (XMLInputStream& stream)
     if (getLevel() == 1) 
     {
       logError(NotSchemaConformant, getLevel(), getVersion(),
-	       "SBML Level 1 does not support MathML.");
+         "SBML Level 1 does not support MathML.");
       delete mMath;
       return false;
     }
@@ -369,7 +394,7 @@ StoichiometryMath::addExpectedAttributes(ExpectedAttributes& attributes)
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 StoichiometryMath::readAttributes (const XMLAttributes& attributes,
@@ -384,7 +409,7 @@ StoichiometryMath::readAttributes (const XMLAttributes& attributes,
   {
   case 1:
     logError(NotSchemaConformant, level, version,
-	      "StoichiometryMath is not a valid component for this level/version.");
+        "StoichiometryMath is not a valid component for this level/version.");
     break;
   case 2:
     readL2Attributes(attributes);
@@ -392,7 +417,7 @@ StoichiometryMath::readAttributes (const XMLAttributes& attributes,
   case 3:
   default:
     logError(NotSchemaConformant, level, version,
-	      "StoichiometryMath is not a valid component for this level/version.");
+        "StoichiometryMath is not a valid component for this level/version.");
     break;
   }
 }
@@ -403,7 +428,7 @@ StoichiometryMath::readAttributes (const XMLAttributes& attributes,
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 StoichiometryMath::readL2Attributes (const XMLAttributes& attributes)
@@ -412,7 +437,7 @@ StoichiometryMath::readL2Attributes (const XMLAttributes& attributes)
   const unsigned int version = getVersion();
   if (version == 2) 
     mSBOTerm = SBO::readTerm(attributes, this->getErrorLog(), level, version,
-				getLine(), getColumn());
+        getLine(), getColumn());
 }
 /** @endcond */
 
@@ -420,7 +445,7 @@ StoichiometryMath::readL2Attributes (const XMLAttributes& attributes)
 /** @cond doxygenLibsbmlInternal */
 /*
  * Subclasses should override this method to write their XML attributes
- * to the XMLOutputStream.  Be sure to call your parents implementation
+ * to the XMLOutputStream.  Be sure to call your parent's implementation
  * of this method as well.
  */
 void
@@ -486,10 +511,10 @@ StoichiometryMath::getDerivedUnitDefinition()
       m->populateListFormulaUnitsData();
     }
     
-    if (m->getFormulaUnitsData(getInternalId(), getTypeCode()) != NULL)
+    FormulaUnitsData *fud = m->getFormulaUnitsData(getInternalId(), getTypeCode());
+    if (fud != NULL)
     {
-      return m->getFormulaUnitsData(getInternalId(), getTypeCode())
-                                             ->getUnitDefinition();
+      return fud->getUnitDefinition();
     }
     else
     {
@@ -556,10 +581,10 @@ StoichiometryMath::containsUndeclaredUnits()
       m->populateListFormulaUnitsData();
     }
     
-    if (m->getFormulaUnitsData(getInternalId(), getTypeCode()) != NULL)
+    FormulaUnitsData *fud = m->getFormulaUnitsData(getInternalId(), getTypeCode());
+    if (fud != NULL)
     {
-      return m->getFormulaUnitsData(getInternalId(), getTypeCode())
-      ->getContainsUndeclaredUnits();
+      return fud->getContainsUndeclaredUnits();
     }
     else
     {
@@ -586,7 +611,7 @@ StoichiometryMath::containsUndeclaredUnits() const
 /** @cond doxygenLibsbmlInternal */
 /*
  * Subclasses should override this method to write out their contained
- * SBML objects as XML elements.  Be sure to call your parents
+ * SBML objects as XML elements.  Be sure to call your parent's
  * implementation of this method as well.
  */
 void

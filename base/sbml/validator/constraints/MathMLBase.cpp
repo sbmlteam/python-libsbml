@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -50,6 +54,8 @@ MathMLBase::MathMLBase (unsigned int id, Validator& v) :
 {
   mNumericFunctionsChecked.clear();
   mFunctionsChecked.clear();
+  mEqnMatchingRun = false;
+  mEqnMatch = NULL;
 }
 
 
@@ -58,6 +64,10 @@ MathMLBase::MathMLBase (unsigned int id, Validator& v) :
  */
 MathMLBase::~MathMLBase ()
 {
+  if (mEqnMatch != NULL)
+  {
+    delete mEqnMatch;
+  }
 }
 
 
@@ -222,7 +232,17 @@ MathMLBase::checkChildren (const Model& m,
 
   for(n = 0; n < node.getNumChildren(); n++)
   {
-    checkMath(m, *node.getChild(n), sb);
+    // if we have a mangled node for some reason
+    // usually we have read an incorrect node 
+    // need to be sure there is a child
+    // NOTE: piecewise hits this issue because old behaviour
+    // meant it lost the piece and otherwise qualifiers
+    ASTNode * child = node.getChild(n);
+    
+    if (child != NULL)
+    {
+      checkMath(m, *child, sb);
+    }
   }
 }
 
@@ -296,7 +316,8 @@ MathMLBase::checkFunction (const Model& m,
       // as anything other than numbers and so for the logical arguments
       // check will fail if the function uses a logical operator
       // so we have to replace the bvars with the arguments being used
-      if (fdMath->isLogical())
+      // similarly with a piecewise function
+      if (fdMath->isLogical() || fdMath->isPiecewise())
       {
         for (i = 0, nodeCount = 0; i < noBvars; i++, nodeCount++)
         {
@@ -335,6 +356,16 @@ MathMLBase::logMathConflict (const ASTNode& node, const SBase& object)
   logFailure(object, getMessage(node, object));
 }
 
+ void MathMLBase::logPackageMathConflict(const ASTNode & node, const SBase & object, const string& error)
+ {
+   string errbegin = getMessage(node, object);
+   if (!errbegin.empty())
+   {
+     errbegin += "  ";
+   }
+   logFailure(object, errbegin + error);
+ }
+
 
 /*
  * Checks that the math will return a numeric result
@@ -348,7 +379,7 @@ MathMLBase::returnsNumeric(const Model & m, const ASTNode* node)
   unsigned int n, count;
   ASTNodeType_t type = node->getType();
   unsigned int numChildren = node->getNumChildren();
-  bool numeric;
+  bool numeric = false;
   bool temp;
 
 
@@ -379,10 +410,14 @@ MathMLBase::returnsNumeric(const Model & m, const ASTNode* node)
     {
       numeric = true;
     }
-    else
-    {
-      numeric = false;
-    }
+    // in l3v2 a boolean/numbers are interchangeable
+    //else if (m.getLevel() == 3 && m.getVersion() > 1)
+    //{
+    //  if (node->isBoolean())
+    //  {
+    //    numeric = true;
+    //  }
+    //}
   }
   else
   {
@@ -432,10 +467,15 @@ MathMLBase::returnsNumeric(const Model & m, const ASTNode* node)
       }
 
     }
-    else /* not a function that returns a number */
-    {
-      numeric = false;
-    }
+    // in l3v2 a boolean/numbers are interchangeable
+    //else if (m.getLevel() == 3 && m.getVersion() > 1)
+    //{
+    //  // should only get here is we are not an operator/function
+    //  if (node->isBoolean())
+    //  {
+    //    numeric = true;
+    //  }
+    //}
   }
   
   return numeric;
@@ -479,20 +519,32 @@ MathMLBase::checkNumericFunction (const Model& m, const ASTNode* node)
       return isNumeric;
     else
     {
-      unsigned int numChildren = node->getNumChildren();
-      unsigned int count = 0;
-      bool temp;
-      for (unsigned int n = 0; n < numChildren; n++)
+      // if the functionDefinition is a piecewise children are already checked
+      // checking children this way 
+      // will give a false negative
+      const FunctionDefinition *fd = m.getFunctionDefinition(name);
+      if (fd != NULL && fd->isSetMath() == true
+        && fd->isSetBody() == true && fd->getBody()->isPiecewise())
       {
-        temp = returnsNumeric(m, node->getChild(n));
-        if (temp)
-          count++;
+        return isNumeric;
       }
-      if (count != numChildren)
-        isNumeric = false;
       else
-        isNumeric = true;
-      return isNumeric;
+      {
+        unsigned int numChildren = node->getNumChildren();
+        unsigned int count = 0;
+        bool temp;
+        for (unsigned int n = 0; n < numChildren; n++)
+        {
+          temp = returnsNumeric(m, node->getChild(n));
+          if (temp)
+            count++;
+        }
+        if (count != numChildren)
+          isNumeric = false;
+        else
+          isNumeric = true;
+        return isNumeric;
+      }
     }
   }
   else
@@ -512,11 +564,14 @@ MathMLBase::checkNumericFunction (const Model& m, const ASTNode* node)
       //}
     
       isNumeric = returnsNumeric(m, fdMath);
-      delete fdMath;
       mNumericFunctionsChecked.insert(std::pair<const std::string, 
                                                 bool>(name, isNumeric));
 
-      if (isNumeric)
+      // returnsNumeric cdoes in fact check the relevant children of a piecewise 
+      // so we dont need to do this again - and indeed not every child of a piecewise
+      // should be numeric
+
+      if (isNumeric && !fdMath->isPiecewise())
       {
         // check the children
         unsigned int numChildren = node->getNumChildren();
@@ -533,8 +588,7 @@ MathMLBase::checkNumericFunction (const Model& m, const ASTNode* node)
         else
           isNumeric = true;
       }
-
-   
+      delete fdMath; 
       return isNumeric;
     }
     else
@@ -545,6 +599,43 @@ MathMLBase::checkNumericFunction (const Model& m, const ASTNode* node)
       return true;
     }
   }
+}
+
+unsigned int
+MathMLBase::getNumAlgebraicRules(const Model & m)
+{
+  unsigned int numAlgRules = 0;
+
+  for (unsigned int n = 0; n < m.getNumRules(); n++)
+  {
+    if (m.getRule(n)->isAlgebraic())
+    {
+      numAlgRules++;
+    }
+  }
+
+  return numAlgRules;
+}
+
+void
+MathMLBase::matchEquations(const Model& m)
+{
+  if (!mEqnMatchingRun)
+  {
+    mEqnMatch = new EquationMatching();
+
+    mEqnMatch->createGraph(m);
+
+    mEqnMatch->findMatching();
+
+    mEqnMatchingRun = true;
+  }
+}
+
+bool
+MathMLBase::matchExists(const std::string& var, const std::string& eqn)
+{
+  return mEqnMatch->match_dependency(var, eqn);
 }
 
 LIBSBML_CPP_NAMESPACE_END

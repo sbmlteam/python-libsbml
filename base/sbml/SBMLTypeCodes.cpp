@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -77,8 +81,13 @@ const char* SBML_TYPE_CODE_STRINGS[] =
 
 LIBSBML_EXTERN
 const char *
-SBMLTypeCode_toString (int tc, const char* pkgName)
+SBMLTypeCode_toString(int tc, const char* pkgName)
 {
+  //Treat SBML_LIST_OF specially:
+  if (tc == SBML_LIST_OF)
+  {
+    return SBML_TYPE_CODE_STRINGS[tc];
+  }
   if (!strcmp(pkgName, "core"))
   {
     int max = SBML_PRIORITY;

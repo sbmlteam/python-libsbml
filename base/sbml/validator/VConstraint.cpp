@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -110,6 +114,11 @@ VConstraint::logFailure (const SBase& object, const std::string& message)
       // we are dealing with the strict units validator
       mId = mId - offset;
     }
+    else if (offset == 1400000 && object.getLevel() == 3 && object.getVersion() == 2)
+    {
+      // we are using the l3v2extended math package but in l3v2 which means we want to report core
+      mId = mId - offset;
+    }
     else
     {
       // it is possible that the object does not have a direct plugin
@@ -133,7 +142,21 @@ VConstraint::logFailure (const SBase& object, const std::string& message)
     }
   }
 
-  SBMLError error = SBMLError( mId, object.getLevel(), object.getVersion(),
+  // if we are usinga  consistency validator we want the level and version
+  // of the target sbml - which we have conveniently saved in the validator
+  // but for now only with 98000 numbers
+  unsigned int level = object.getLevel();
+  unsigned int version = object.getVersion();
+  if ((98000 < mId) && (mId < 98999))
+  {
+    if (mValidator.getConsistencyLevel() != 0)
+    {
+      level = mValidator.getConsistencyLevel();
+      version = mValidator.getConsistencyVersion();
+    }
+  }
+
+  SBMLError error = SBMLError( mId, level, version,
 			       message, object.getLine(), object.getColumn(),
              LIBSBML_SEV_ERROR, LIBSBML_CAT_SBML, pkg, pkgVersion);
 

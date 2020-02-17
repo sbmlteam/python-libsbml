@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -357,7 +361,7 @@ ReactionGlyph::getListOfSpeciesReferenceGlyphs ()
 }
 
 /*
- * Returns the species reference glyph with the given index.  If the index
+ * Returns the species reference glyph with the given @p index.  If the index
  * is invalid, @c NULL is returned.
  */ 
 SpeciesReferenceGlyph*
@@ -371,7 +375,7 @@ ReactionGlyph::getSpeciesReferenceGlyph (unsigned int index)
 
 
 /*
- * Returns the species reference glyph with the given index.  If the index
+ * Returns the species reference glyph with the given @p index.  If the index
  * is invalid, @c NULL is returned.
  */ 
 const SpeciesReferenceGlyph*
@@ -387,10 +391,33 @@ ReactionGlyph::getSpeciesReferenceGlyph (unsigned int index) const
 /*
  * Adds a new species reference glyph to the list.
  */
-void
+int
 ReactionGlyph::addSpeciesReferenceGlyph (const SpeciesReferenceGlyph* glyph)
 {
-  this->mSpeciesReferenceGlyphs.append(glyph);
+  if (!glyph)
+  {
+    return LIBSBML_OPERATION_FAILED;
+  }    
+  else if (!(glyph->hasRequiredElements() && glyph->hasRequiredAttributes()))
+  {
+    return LIBSBML_INVALID_OBJECT;
+  }
+  else if (getLevel() != glyph->getLevel())
+  {
+    return LIBSBML_LEVEL_MISMATCH;
+  }
+  else if (getVersion() != glyph->getVersion())
+  {
+    return LIBSBML_VERSION_MISMATCH;
+  }
+  else if (getPackageVersion() != glyph->getPackageVersion())
+  {
+    return LIBSBML_PKG_VERSION_MISMATCH;
+  }
+  else
+  {
+    return mSpeciesReferenceGlyphs.append(glyph);
+  }
 }
 
 
@@ -501,7 +528,7 @@ ReactionGlyph::createCubicBezier ()
 }
 
 /*
- * Remove the species reference glyph with the given index.
+ * Remove the species reference glyph with the given @p index.
  * A pointer to the object is returned. If no object has been removed, NULL
  * is returned.
  */
@@ -747,7 +774,7 @@ void ReactionGlyph::readAttributes (const XMLAttributes& attributes,
 void
 ReactionGlyph::writeElements (XMLOutputStream& stream) const
 {
-  if(this->isSetCurve())
+  if(isSetCurve())
   {
     SBase::writeElements(stream);
     mCurve.write(stream);
@@ -755,12 +782,18 @@ ReactionGlyph::writeElements (XMLOutputStream& stream) const
     // BoundingBox is to be ignored if a curve element defined.
     //
   }
-  else
+  
+  if(this->getBoundingBoxExplicitlySet() || !isSetCurve())
   {
     //
     // SBase::writeElements(stream) is invoked in the function below.
     //
     GraphicalObject::writeElements(stream);
+  }
+  else if (!isSetCurve())
+  {
+    GraphicalObject::writeElements(stream);
+
   }
 
   if ( getNumSpeciesReferenceGlyphs() > 0 ) mSpeciesReferenceGlyphs.write(stream);
@@ -811,7 +844,7 @@ XMLNode ReactionGlyph::toXML() const
 
 
 /*
- * Ctor.
+ * Constructor.
  */
 ListOfSpeciesReferenceGlyphs::ListOfSpeciesReferenceGlyphs(unsigned int level, unsigned int version, unsigned int pkgVersion)
  : ListOf(level,version)
@@ -821,7 +854,7 @@ ListOfSpeciesReferenceGlyphs::ListOfSpeciesReferenceGlyphs(unsigned int level, u
 
 
 /*
- * Ctor.
+ * Constructor.
  */
 ListOfSpeciesReferenceGlyphs::ListOfSpeciesReferenceGlyphs(LayoutPkgNamespaces* layoutns)
  : ListOf(layoutns)

@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -34,7 +38,7 @@
  * @sbmlbrief{qual} Extension of SBMLDocument.
  *
  * The QualSBMLDocumentPlugin class inherits from the SBMLDocumentPlugin
- * class, and codifies the extentions to the SBMLDocument class defined in
+ * class, and codifies the extensions to the SBMLDocument class defined in
  * the SBML Level&nbsp;3 @ref qual (&ldquo;qual&rdquo;) package.
  *
  * The QualSBMLDocumentPlugin defines a
@@ -67,7 +71,18 @@ class LIBSBML_EXTERN QualSBMLDocumentPlugin : public SBMLDocumentPlugin
 public:
 
   /**
-   * Creates a new QualSBMLDocumentPlugin
+   * Creates a new QualSBMLDocumentPlugin object using the given parameters.
+   *
+   * @copydetails doc_what_are_xmlnamespaces
+   *
+   * @copydetails doc_what_are_sbmlnamespaces
+   *
+   * @param uri the URI of the SBML Level&nbsp;3 package implemented by
+   * this libSBML package extension.
+   *
+   * @param prefix the XML namespace prefix being used for the package.
+   *
+   * @param qualns the namespaces object for the package.
    */
   QualSBMLDocumentPlugin(const std::string& uri, const std::string& prefix, 
                                  QualPkgNamespaces* qualns);
@@ -76,7 +91,7 @@ public:
   /**
    * Copy constructor for QualSBMLDocumentPlugin.
    *
-   * @param orig; the QualSBMLDocumentPlugin instance to copy.
+   * @param orig the QualSBMLDocumentPlugin instance to copy.
    */
   QualSBMLDocumentPlugin(const QualSBMLDocumentPlugin& orig);
 
@@ -84,7 +99,7 @@ public:
   /**
    * Assignment operator for QualSBMLDocumentPlugin.
    *
-   * @param rhs; the object whose values are used as the basis
+   * @param rhs the object whose values are used as the basis
    * of the assignment
    */
   QualSBMLDocumentPlugin& operator=(const QualSBMLDocumentPlugin& rhs);
@@ -146,6 +161,255 @@ public:
    */
   virtual bool accept(SBMLVisitor& v) const;
   /** @endcond */
+
+
+  #ifndef SWIG
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this
+   * QualSBMLDocumentPlugin.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, bool& value)
+    const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this
+   * QualSBMLDocumentPlugin.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this
+   * QualSBMLDocumentPlugin.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           double& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this
+   * QualSBMLDocumentPlugin.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           unsigned int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this
+   * QualSBMLDocumentPlugin.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           std::string& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Predicate returning @c true if this QualSBMLDocumentPlugin's attribute
+   * "attributeName" is set.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @return @c true if this QualSBMLDocumentPlugin's attribute "attributeName"
+   * has been set, otherwise @c false is returned.
+   */
+  virtual bool isSetAttribute(const std::string& attributeName) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this
+   * QualSBMLDocumentPlugin.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, bool value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this
+   * QualSBMLDocumentPlugin.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this
+   * QualSBMLDocumentPlugin.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, double value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this
+   * QualSBMLDocumentPlugin.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           unsigned int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this
+   * QualSBMLDocumentPlugin.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           const std::string& value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Unsets the value of the "attributeName" attribute of this
+   * QualSBMLDocumentPlugin.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int unsetAttribute(const std::string& attributeName);
+
+  /** @endcond */
+
+
+
+
+  #endif /* !SWIG */
 
 
 protected:

@@ -2,6 +2,10 @@
 
 #include "local-downcast-namespaces-comp.cpp"
 #include "local-downcast-namespaces-fbc.cpp"
+#include "local-downcast-namespaces-groups.cpp"
+#include "local-downcast-namespaces-l3v2extendedmath.cpp"
 #include "local-downcast-namespaces-layout.cpp"
+#include "local-downcast-namespaces-multi.cpp"
 #include "local-downcast-namespaces-qual.cpp"
+#include "local-downcast-namespaces-render.cpp"
 

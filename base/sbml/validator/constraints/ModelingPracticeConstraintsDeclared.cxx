@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -40,6 +44,10 @@ addConstraint(new LocalParameterShadowsIdInModel(81121, *this));
 
 addConstraint(new VConstraintParameter80701(*this));
 
+addConstraint(new VConstraintLocalParameter80701(*this));
+
 addConstraint(new VConstraintParameter80702(*this));
+
+addConstraint(new VConstraintLocalParameter80702(*this));
 /** @endcond */
 

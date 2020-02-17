@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -52,8 +56,6 @@ LIBSBML_CPP_NAMESPACE_BEGIN
 
 Compartment::Compartment (unsigned int level, unsigned int version) :
    SBase             ( level, version )
- , mId               ( ""       )
- , mName             ( ""       )
  , mSpatialDimensions( 3        )
  , mSpatialDimensionsDouble( 3        )
  , mSize             ( 1.0      )
@@ -86,8 +88,6 @@ Compartment::Compartment (unsigned int level, unsigned int version) :
 
 Compartment::Compartment(SBMLNamespaces * sbmlns) :
    SBase             ( sbmlns   )
- , mId               ( ""       )
- , mName             ( ""       )
  , mSpatialDimensions( 3        )
  , mSpatialDimensionsDouble( 3        )
  , mSize             ( 1.0      )
@@ -148,8 +148,6 @@ Compartment::Compartment(const Compartment& orig) :
     mCompartmentType         = orig.mCompartmentType;
     mUnits                   = orig.mUnits;
     mOutside                 = orig.mOutside;
-    mId                      = orig.mId;
-    mName                    = orig.mName;
     mIsSetSpatialDimensions  = orig.mIsSetSpatialDimensions;
     mIsSetConstant           = orig.mIsSetConstant;
     mExplicitlySetSpatialDimensions = orig.mExplicitlySetSpatialDimensions;
@@ -174,8 +172,6 @@ Compartment& Compartment::operator=(const Compartment& rhs)
     mCompartmentType  = rhs.mCompartmentType;
     mUnits            = rhs.mUnits ;
     mOutside          = rhs.mOutside ;
-    mId               = rhs.mId;
-    mName             = rhs.mName;
     mIsSetSpatialDimensions = rhs.mIsSetSpatialDimensions;
     mIsSetConstant          = rhs.mIsSetConstant;
     mExplicitlySetSpatialDimensions = rhs.mExplicitlySetSpatialDimensions;
@@ -291,7 +287,14 @@ Compartment::getSpatialDimensions () const
     }
     else
     {
-      return static_cast<unsigned int>(mSpatialDimensionsDouble);
+      if (util_isNaN(mSpatialDimensionsDouble))
+      {
+        return 0;
+      }
+      else
+      {
+        return static_cast<unsigned int>(mSpatialDimensionsDouble);
+      }
     }
   }
 }
@@ -351,7 +354,7 @@ Compartment::getOutside () const
 
 
 /*
- * @return true if this Compartment is constant, false otherwise.
+ * @return @c true if this Compartment is constant, false otherwise.
  */
 bool
 Compartment::getConstant () const
@@ -361,7 +364,7 @@ Compartment::getConstant () const
 
 
 /*
- * @return true if the id of this SBML object is  set, false
+ * @return @c true if the id of this SBML object is  set, false
  * otherwise.
  */
 bool
@@ -372,7 +375,7 @@ Compartment::isSetId () const
 
 
 /*
- * @return true if the name of this SBML object is  set, false
+ * @return @c true if the name of this SBML object is  set, false
  * otherwise.
  */
 bool
@@ -384,7 +387,7 @@ Compartment::isSetName () const
 
 
 /*
- * @return true if the compartmentType of this Compartment is  set,
+ * @return @c true if the compartmentType of this Compartment is  set,
  * false otherwise. 
  */
 bool
@@ -395,7 +398,7 @@ Compartment::isSetCompartmentType () const
 
 
 /*
- * @return true if the size (volume in L1) of this Compartment is 
+ * @return @c true if the size (volume in L1) of this Compartment is 
  * set, false otherwise.
  */
 bool
@@ -406,7 +409,7 @@ Compartment::isSetSize () const
 
 
 /*
- * @return true if the volume (size in L2) of this Compartment is 
+ * @return @c true if the volume (size in L2) of this Compartment is 
  * set, false otherwise.
  *
  * In SBML L1, a Compartment volume has a default value (1.0) and therefore
@@ -421,7 +424,7 @@ Compartment::isSetVolume () const
 
 
 /*
- * @return true if the units of this Compartment is set, false
+ * @return @c true if the units of this Compartment is set, false
  * otherwise.
  */
 bool
@@ -432,7 +435,7 @@ Compartment::isSetUnits () const
 
 
 /*
- * @return true if the outside of this Compartment is set, false
+ * @return @c true if the outside of this Compartment is set, false
  * otherwise.
  */
 bool
@@ -443,7 +446,7 @@ Compartment::isSetOutside () const
 
 
 /*
- * @return true if the spatialDimenions of this Compartment is set, false
+ * @return @c true if the spatialDimenions of this Compartment is set, false
  * otherwise.
  */
 bool
@@ -454,7 +457,7 @@ Compartment::isSetSpatialDimensions () const
 
 
 /*
- * @return true if the constant of this Compartment is set, false
+ * @return @c true if the constant of this Compartment is set, false
  * otherwise.
  */
 bool
@@ -465,7 +468,7 @@ Compartment::isSetConstant () const
 
 
 /*
- * Sets the id of this SBML object to a copy of sid.
+ * Sets the id of this SBML object to a copy of @p sid.
  */
 int
 Compartment::setId (const std::string& sid)
@@ -521,7 +524,7 @@ Compartment::setName (const std::string& name)
 
 
 /*
- * Sets the compartmentType field of this Compartment to a copy of sid.
+ * Sets the compartmentType field of this Compartment to a copy of @p sid.
  */
 int
 Compartment::setCompartmentType (const std::string& sid)
@@ -636,7 +639,7 @@ Compartment::setVolume (double value)
 
 
 /*
- * Sets the units of this Compartment to a copy of sid.
+ * Sets the units of this Compartment to a copy of @p sid.
  */
 int
 Compartment::setUnits (const std::string& sid)
@@ -654,7 +657,7 @@ Compartment::setUnits (const std::string& sid)
 
 
 /*
- * Sets the outside of this Compartment to a copy of sid.
+ * Sets the outside of this Compartment to a copy of @p sid.
  */
 int
 Compartment::setOutside (const std::string& sid)
@@ -929,7 +932,7 @@ Compartment::getDerivedUnitDefinition()
   /* we should have a model by this point 
    * OR the object is not yet a child of a model
    */
-
+  
   if (m != NULL)
   {
     if (!m->isPopulatedListFormulaUnitsData())
@@ -937,10 +940,10 @@ Compartment::getDerivedUnitDefinition()
       m->populateListFormulaUnitsData();
     }
     
-    if (m->getFormulaUnitsData(getId(), getTypeCode()))
+    FormulaUnitsData *fud = m->getFormulaUnitsData(getId(), getTypeCode());
+    if (fud != NULL)
     {
-      return m->getFormulaUnitsData(getId(), getTypeCode())
-                                             ->getUnitDefinition();
+      return fud->getUnitDefinition();
     }
     else
     {
@@ -1007,6 +1010,448 @@ Compartment::hasRequiredAttributes() const
   return allPresent;
 }
 
+
+
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Compartment.
+ */
+int
+Compartment::getAttribute(const std::string& attributeName, bool& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "constant")
+  {
+    value = getConstant();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Compartment.
+ */
+int
+Compartment::getAttribute(const std::string& attributeName, int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Compartment.
+ */
+int
+Compartment::getAttribute(const std::string& attributeName,
+                          double& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "size")
+  {
+    value = getSize();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "volume")
+  {
+    value = getVolume();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "spatialDimensions")
+  {
+    value = getSpatialDimensionsAsDouble();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Compartment.
+ */
+int
+Compartment::getAttribute(const std::string& attributeName,
+                          unsigned int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "spatialDimensions")
+  {
+    value = getSpatialDimensions();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Compartment.
+ */
+int
+Compartment::getAttribute(const std::string& attributeName,
+                          std::string& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "units")
+  {
+    value = getUnits();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "outside")
+  {
+    value = getOutside();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "compartmentType")
+  {
+    value = getCompartmentType();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Compartment.
+ */
+//int
+//Compartment::getAttribute(const std::string& attributeName,
+//                          const char* value) const
+//{
+//  int return_value = SBase::getAttribute(attributeName, value);
+//
+//  if (return_value == LIBSBML_OPERATION_SUCCESS)
+//  {
+//    return return_value;
+//  }
+//
+//  if (attributeName == "units")
+//  {
+//    value = getUnits().c_str();
+//    return_value = LIBSBML_OPERATION_SUCCESS;
+//  }
+//  else if (attributeName == "outside")
+//  {
+//    value = getOutside().c_str();
+//    return_value = LIBSBML_OPERATION_SUCCESS;
+//  }
+//  else if (attributeName == "compartmentType")
+//  {
+//    value = getCompartmentType().c_str();
+//    return_value = LIBSBML_OPERATION_SUCCESS;
+//  }
+//
+//  return return_value;
+//}
+//
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Predicate returning @c true if this Compartment's attribute "attributeName"
+ * is set.
+ */
+bool
+Compartment::isSetAttribute(const std::string& attributeName) const
+{
+  bool value = SBase::isSetAttribute(attributeName);
+
+  if (attributeName == "size")
+  {
+    value = isSetSize();
+  }
+  else if (attributeName == "volume")
+  {
+    value = isSetVolume();
+  }
+  else if (attributeName == "units")
+  {
+    value = isSetUnits();
+  }
+  else if (attributeName == "spatialDimensions")
+  {
+    value = isSetSpatialDimensions();
+  }
+  else if (attributeName == "constant")
+  {
+    value = isSetConstant();
+  }
+  else if (attributeName == "outside")
+  {
+    value = isSetOutside();
+  }
+  else if (attributeName == "compartmentType")
+  {
+    value = isSetCompartmentType();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Compartment.
+ */
+int
+Compartment::setAttribute(const std::string& attributeName, bool value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  if (attributeName == "constant")
+  {
+    return_value = setConstant(value);
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Compartment.
+ */
+int
+Compartment::setAttribute(const std::string& attributeName, int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Compartment.
+ */
+int
+Compartment::setAttribute(const std::string& attributeName, double value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  if (attributeName == "size")
+  {
+    return_value = setSize(value);
+  }
+  else if (attributeName == "volume")
+  {
+    return_value = setVolume(value);
+  }
+  else if (attributeName == "spatialDimensions")
+  {
+    return_value = setSpatialDimensions(value);
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Compartment.
+ */
+int
+Compartment::setAttribute(const std::string& attributeName,
+                          unsigned int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  if (attributeName == "spatialDimensions")
+  {
+    return_value = setSpatialDimensions(value);
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Compartment.
+ */
+int
+Compartment::setAttribute(const std::string& attributeName,
+                          const std::string& value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  if (attributeName == "units")
+  {
+    return_value = setUnits(value);
+  }
+  else if (attributeName == "outside")
+  {
+    return_value = setOutside(value);
+  }
+  else if (attributeName == "compartmentType")
+  {
+    return_value = setCompartmentType(value);
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Compartment.
+ */
+//int
+//Compartment::setAttribute(const std::string& attributeName, const char* value)
+//{
+//  int return_value = SBase::setAttribute(attributeName, value);
+//
+//  if (attributeName == "units")
+//  {
+//    return_value = setUnits(value);
+//  }
+//  else if (attributeName == "outside")
+//  {
+//    return_value = setOutside(value);
+//  }
+//  else if (attributeName == "compartmentType")
+//  {
+//    return_value = setCompartmentType(value);
+//  }
+//
+//  return return_value;
+//}
+//
+///** @endcond */
+//
+//
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Unsets the value of the "attributeName" attribute of this Compartment.
+ */
+int
+Compartment::unsetAttribute(const std::string& attributeName)
+{
+  int value = SBase::unsetAttribute(attributeName);
+
+  if (attributeName == "size")
+  {
+    value = unsetSize();
+  }
+  else if (attributeName == "volume")
+  {
+    value = unsetVolume();
+  }
+  else if (attributeName == "units")
+  {
+    value = unsetUnits();
+  }
+  else if (attributeName == "spatialDimensions")
+  {
+    value = unsetSpatialDimensions();
+  }
+  else if (attributeName == "constant")
+  {
+    value = unsetConstant();
+  }
+  else if (attributeName == "outside")
+  {
+    value = unsetOutside();
+  }
+  else if (attributeName == "compartmentType")
+  {
+    value = unsetCompartmentType();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
 /** @cond doxygenLibsbmlInternal */
 /**
  * Subclasses should override this method to get the list of
@@ -1064,7 +1509,7 @@ Compartment::addExpectedAttributes(ExpectedAttributes& attributes)
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 Compartment::readAttributes (const XMLAttributes& attributes,
@@ -1095,7 +1540,7 @@ Compartment::readAttributes (const XMLAttributes& attributes,
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 Compartment::readL1Attributes (const XMLAttributes& attributes)
@@ -1144,7 +1589,7 @@ Compartment::readL1Attributes (const XMLAttributes& attributes)
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 Compartment::readL2Attributes (const XMLAttributes& attributes)
@@ -1231,7 +1676,7 @@ Compartment::readL2Attributes (const XMLAttributes& attributes)
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 Compartment::readL3Attributes (const XMLAttributes& attributes)
@@ -1242,23 +1687,41 @@ Compartment::readL3Attributes (const XMLAttributes& attributes)
   //
   //   id: SId     { use="required" }  (L2v1 ->)
   //
-  bool assigned = attributes.readInto("id", mId, getErrorLog(), false, getLine(), getColumn());
-  if (!assigned)
+  bool assigned;
+  // for l3v2 sbase will read this as generically optional
+  // we want to log errors relating to the specific object
+  if (version == 1)
   {
-    logError(AllowedAttributesOnCompartment, level, version, 
-      "The required attribute 'id' is missing.");
+    assigned = attributes.readInto("id", mId, getErrorLog(), false, getLine(), getColumn());
+    if (!assigned)
+    {
+      logError(AllowedAttributesOnCompartment, level, version, 
+        "The required attribute 'id' is missing.");
+    }
+    if (assigned && mId.size() == 0)
+    {
+      logEmptyString("id", level, version, "<compartment>");
+    }
+    if (!SyntaxChecker::isValidInternalSId(mId)) 
+      logError(InvalidIdSyntax, level, version, "The id '" + mId + "' does not conform to the syntax.");
+
   }
-  if (assigned && mId.size() == 0)
+  else
   {
-    logEmptyString("id", level, version, "<compartment>");
+    // need to check that id was present
+    // it has already been read and checked for syntax/emptyness
+    if (attributes.hasAttribute("id") == false)
+    {
+      logError(AllowedAttributesOnCompartment, level, version, 
+        "The required attribute 'id' is missing.");
+    }
   }
-  if (!SyntaxChecker::isValidInternalSId(mId)) 
-    logError(InvalidIdSyntax, level, version, "The id '" + mId + "' does not conform to the syntax.");
 
   string elplusid = "<compartment>";
   if (!mId.empty()) {
     elplusid += " with the id '" + mId + "'";
   }
+
   //
   // size    { use="optional" }              (L2v1 ->)
   //
@@ -1283,7 +1746,12 @@ Compartment::readL3Attributes (const XMLAttributes& attributes)
   //
   // name: string  { use="optional" }  (L2v1 ->)
   //
-  attributes.readInto("name", mName, getErrorLog(), false, getLine(), getColumn());
+  // for l3v2 sbase will read this
+  if (version == 1)
+  {
+    attributes.readInto("name", mName, getErrorLog(), false, 
+                                       getLine(), getColumn());
+  }
    
   //
   // spatialDimensions { use="optional"}  (L3v1 ->)
@@ -1315,7 +1783,7 @@ Compartment::readL3Attributes (const XMLAttributes& attributes)
 /** @cond doxygenLibsbmlInternal */
 /*
  * Subclasses should override this method to write their XML attributes
- * to the XMLOutputStream.  Be sure to call your parents implementation
+ * to the XMLOutputStream.  Be sure to call your parent's implementation
  * of this method as well.
  */
 void
@@ -1326,19 +1794,26 @@ Compartment::writeAttributes (XMLOutputStream& stream) const
   const unsigned int level   = getLevel  ();
   const unsigned int version = getVersion();
 
-  //
-  // name: SName   { use="required" }  (L1v1, L1v2)
-  //   id: SId     { use="required" }  (L2v1, L2v2)
-  //
-  const string id = (level == 1) ? "name" : "id";
-  stream.writeAttribute(id, mId);
-
-  if (level > 1)
+  // for L3V2 and above SBase will write this out
+  if (level < 3 || (level == 3 && version == 1))
   {
     //
-    // name: string  { use="optional" }  (L2v1->)
+    // name: SName   { use="required" }  (L1v1, L1v2)
+    //   id: SId     { use="required" }  (L2v1, L2v2)
     //
-    stream.writeAttribute("name", mName);
+    const string id = (level == 1) ? "name" : "id";
+    stream.writeAttribute(id, mId);
+  }
+  if (level > 1)
+  {
+    // for L3V2 and above SBase will write this out
+    if (level < 3 || (level == 3 && version == 1))
+    {
+      //
+      // name: string  { use="optional" }  (L2v1->)
+      //
+      stream.writeAttribute("name", mName);
+    }
 
     //
     // compartmentType: SId  { use="optional" }  (L2v2 -> L2v4)
@@ -1434,7 +1909,7 @@ Compartment::writeAttributes (XMLOutputStream& stream) const
 /** @cond doxygenLibsbmlInternal */
 /*
  * Subclasses should override this method to write out their contained
- * SBML objects as XML elements.  Be sure to call your parents
+ * SBML objects as XML elements.  Be sure to call your parent's
  * implementation of this method as well.
  */
 void

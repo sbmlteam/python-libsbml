@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -42,8 +46,8 @@
  * Unit conversion will only be performed on models that are fully unit
  * consistent, meaning that all objects have units associated with them and
  * there are no literal numbers with unspecified units.  In the case of an
- * SBML Level&nbsp;3 model involving math expressions, this means that the @c
- * timeUnits attribute on the Model object must be set, and if there are any
+ * SBML Level&nbsp;3 model involving math expressions, this means that the
+ * @c timeUnits attribute on the Model object must be set, and if there are any
  * reactions in the model, the @c extentUnits attribute on the Model object
  * must also be set.
  *
@@ -119,7 +123,7 @@ public:
   /**
    * Assignment operator for SBMLUnitsConverter.
    *
-   * @param rhs The object whose values are used as the basis of the
+   * @param rhs the object whose values are used as the basis of the
    * assignment.
    */
   SBMLUnitsConverter& operator=(const SBMLUnitsConverter& rhs);

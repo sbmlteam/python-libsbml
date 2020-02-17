@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -201,7 +205,7 @@ void Curve::initDefaults ()
 
 
 /*
- * Ctor.
+ * Constructor.
  */
 ListOfLineSegments::ListOfLineSegments(unsigned int level, unsigned int version, unsigned int pkgVersion)
  : ListOf(level,version)
@@ -211,7 +215,7 @@ ListOfLineSegments::ListOfLineSegments(unsigned int level, unsigned int version,
 
 
 /*
- * Ctor.
+ * Constructor.
  */
 ListOfLineSegments::ListOfLineSegments(LayoutPkgNamespaces* layoutns)
  : ListOf(layoutns)
@@ -247,13 +251,15 @@ ListOfLineSegments::remove (unsigned int n)
 }
 
 
-bool 
+/** @cond doxygenLibsbmlInternal */
+bool
 ListOfLineSegments::isValidTypeForList(SBase * item)
 {
   int tc = item->getTypeCode();
   return ((tc == SBML_LAYOUT_CUBICBEZIER )
     ||    (tc == SBML_LAYOUT_LINESEGMENT ) );
 }
+/** @endcond */
 
 
 /*
@@ -304,10 +310,34 @@ Curve::getCurveSegment (unsigned int index)
 /*
  * Adds a new CurveSegment to the end of the list.
  */ 
-void
+int
 Curve::addCurveSegment (const LineSegment* segment)
 {
-  this->mCurveSegments.append(segment);
+  if (segment == NULL)
+  {
+    return LIBSBML_OPERATION_FAILED;
+  }
+  else if (segment->hasRequiredAttributes() == false)
+  {
+    return LIBSBML_INVALID_OBJECT;
+  }
+  else if (getLevel() != segment->getLevel())
+  {
+    return LIBSBML_LEVEL_MISMATCH;
+  }
+  else if (getVersion() != segment->getVersion())
+  {
+    return LIBSBML_VERSION_MISMATCH;
+  }
+  else if (matchesRequiredSBMLNamespacesForAddition(static_cast<const
+    SBase*>(segment)) == false)
+  {
+    return LIBSBML_NAMESPACES_MISMATCH;
+  }
+  else
+  {
+    return mCurveSegments.append(segment);
+  }
 }
 
 

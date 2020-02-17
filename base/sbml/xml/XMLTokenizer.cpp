@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -96,7 +100,7 @@ XMLTokenizer::getVersion ()
 
 
 /*
- * @return true if this XMLTokenizer has at least one XMLToken ready to
+ * @return @c true if this XMLTokenizer has at least one XMLToken ready to
  * deliver, false otherwise.
  *
  * Note that hasNext() == false does not imply isEOF() == true.  The
@@ -111,7 +115,7 @@ XMLTokenizer::hasNext () const
 
 
 /*
- * @return true if the end of the XML file (document) has been reached
+ * @return @c true if the end of the XML file (document) has been reached
  * and there are no more tokens to consume, false otherwise.
  */
 bool
@@ -262,7 +266,7 @@ XMLTokenizer::characters (const XMLToken& data)
 }
 
 unsigned int
-XMLTokenizer::determineNumberChildren(bool & valid, const std::string& element)
+XMLTokenizer::determineNumberChildren(bool & valid, const std::string element)
 {
   valid = false;
   unsigned int numChildren = 0;

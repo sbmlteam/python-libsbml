@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  * 
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -147,11 +151,11 @@ UniqueModelWideIds::getMessage (const string& id, const SBase& object)
   }
 
 
-  ostringstream msg;
+  ostringstream oss_msg;
   const SBase&  previous = *(iter->second);
 
 
-  //msg << getPreamble();
+  //oss_msg << getPreamble();
 
   //
   // Example message: 
@@ -160,19 +164,19 @@ UniqueModelWideIds::getMessage (const string& id, const SBase& object)
   // <parameter> id 'cell' at line 10.
   //
 
-  msg << "  The <" << object.getElementName()
+  oss_msg << "  The <" << object.getElementName()
       << "> id '" << id << "' conflicts with the previously defined <"
       << previous.getElementName()
       << "> id '" << id << "'";
 
   if (previous.getLine() != 0)
   {
-    msg << " at line " << previous.getLine();
+    oss_msg << " at line " << previous.getLine();
   }
 
-  msg << '.';
+  oss_msg << '.';
 
-  return msg.str();
+  return oss_msg.str();
 }
 /*
  * Checks that all ids on the following Model objects are unique:

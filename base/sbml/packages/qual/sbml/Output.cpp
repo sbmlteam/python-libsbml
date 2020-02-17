@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -48,10 +52,10 @@ LIBSBML_CPP_NAMESPACE_BEGIN
  */
 Output::Output (unsigned int level, unsigned int version, unsigned int pkgVersion)
   : SBase(level, version)
-   ,mId ("")
+//   ,mId ("")
    ,mQualitativeSpecies ("")
    ,mTransitionEffect (OUTPUT_TRANSITION_EFFECT_UNKNOWN)
-   ,mName ("")
+//   ,mName ("")
    ,mOutputLevel (SBML_INT_MAX)
    ,mIsSetOutputLevel (false)
 {
@@ -65,10 +69,10 @@ Output::Output (unsigned int level, unsigned int version, unsigned int pkgVersio
  */
 Output::Output (QualPkgNamespaces* qualns)
   : SBase(qualns)
-   ,mId ("")
+//   ,mId ("")
    ,mQualitativeSpecies ("")
    ,mTransitionEffect (OUTPUT_TRANSITION_EFFECT_UNKNOWN)
-   ,mName ("")
+//   ,mName ("")
    ,mOutputLevel (SBML_INT_MAX)
    ,mIsSetOutputLevel (false)
 {
@@ -85,10 +89,10 @@ Output::Output (QualPkgNamespaces* qualns)
  */
 Output::Output (const Output& orig)
   : SBase ( orig )
-  , mId ( orig.mId )
+  //, mId ( orig.mId )
   , mQualitativeSpecies ( orig.mQualitativeSpecies )
   , mTransitionEffect ( orig.mTransitionEffect )
-  , mName ( orig.mName )
+  //, mName ( orig.mName )
   , mOutputLevel ( orig.mOutputLevel )
   , mIsSetOutputLevel ( orig.mIsSetOutputLevel )
 {
@@ -492,6 +496,316 @@ Output::enablePackageInternal(const std::string& pkgURI,
 /** @endcond */
 
 
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Output.
+ */
+int
+Output::getAttribute(const std::string& attributeName, bool& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Output.
+ */
+int
+Output::getAttribute(const std::string& attributeName, int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "outputLevel")
+  {
+    value = getOutputLevel();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Output.
+ */
+int
+Output::getAttribute(const std::string& attributeName, double& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Output.
+ */
+int
+Output::getAttribute(const std::string& attributeName,
+                     unsigned int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Output.
+ */
+int
+Output::getAttribute(const std::string& attributeName,
+                     std::string& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "id")
+  {
+    value = getId();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "qualitativeSpecies")
+  {
+    value = getQualitativeSpecies();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "transitionEffect")
+  {
+    value = OutputTransitionEffect_toString(getTransitionEffect());
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "name")
+  {
+    value = getName();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Predicate returning @c true if this Output's attribute "attributeName" is
+ * set.
+ */
+bool
+Output::isSetAttribute(const std::string& attributeName) const
+{
+  bool value = SBase::isSetAttribute(attributeName);
+
+  if (attributeName == "id")
+  {
+    value = isSetId();
+  }
+  else if (attributeName == "qualitativeSpecies")
+  {
+    value = isSetQualitativeSpecies();
+  }
+  else if (attributeName == "transitionEffect")
+  {
+    value = isSetTransitionEffect();
+  }
+  else if (attributeName == "name")
+  {
+    value = isSetName();
+  }
+  else if (attributeName == "outputLevel")
+  {
+    value = isSetOutputLevel();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Output.
+ */
+int
+Output::setAttribute(const std::string& attributeName, bool value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Output.
+ */
+int
+Output::setAttribute(const std::string& attributeName, int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  if (attributeName == "outputLevel")
+  {
+    return_value = setOutputLevel(value);
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Output.
+ */
+int
+Output::setAttribute(const std::string& attributeName, double value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Output.
+ */
+int
+Output::setAttribute(const std::string& attributeName, unsigned int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Output.
+ */
+int
+Output::setAttribute(const std::string& attributeName,
+                     const std::string& value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  if (attributeName == "id")
+  {
+    return_value = setId(value);
+  }
+  else if (attributeName == "qualitativeSpecies")
+  {
+    return_value = setQualitativeSpecies(value);
+  }
+  else if (attributeName == "transitionEffect")
+  {
+    return_value = setTransitionEffect(OutputTransitionEffect_fromString(value.c_str()));
+  }
+  else if (attributeName == "name")
+  {
+    return_value = setName(value);
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Unsets the value of the "attributeName" attribute of this Output.
+ */
+int
+Output::unsetAttribute(const std::string& attributeName)
+{
+  int value = SBase::unsetAttribute(attributeName);
+
+  if (attributeName == "id")
+  {
+    value = unsetId();
+  }
+  else if (attributeName == "qualitativeSpecies")
+  {
+    value = unsetQualitativeSpecies();
+  }
+  else if (attributeName == "transitionEffect")
+  {
+    value = unsetTransitionEffect();
+  }
+  else if (attributeName == "name")
+  {
+    value = unsetName();
+  }
+  else if (attributeName == "outputLevel")
+  {
+    value = unsetOutputLevel();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
 /** @cond doxygenLibsbmlInternal */
 /*
  * Get the list of expected attributes for this element.
@@ -540,7 +854,7 @@ Output::readAttributes (const XMLAttributes& attributes,
           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownPackageAttribute);
         getErrorLog()->logPackageError("qual", QualTransitionLOOutputAttributes,
-          getPackageVersion(), sbmlLevel, sbmlVersion, details);
+          getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
       } 
       else if (getErrorLog()->getError((unsigned int)n)->getErrorId() == UnknownCoreAttribute)
       {
@@ -548,7 +862,7 @@ Output::readAttributes (const XMLAttributes& attributes,
           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownCoreAttribute);
         getErrorLog()->logPackageError("qual", QualTransitionLOOutputAttributes,
-          getPackageVersion(), sbmlLevel, sbmlVersion, details);
+          getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
       } 
     }
   }
@@ -567,7 +881,7 @@ Output::readAttributes (const XMLAttributes& attributes,
                           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownPackageAttribute);
         getErrorLog()->logPackageError("qual", QualOutputAllowedAttributes,
-                       getPackageVersion(), sbmlLevel, sbmlVersion, details);
+                       getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
       }
       else if (getErrorLog()->getError((unsigned int)n)->getErrorId() == UnknownCoreAttribute)
       {
@@ -575,7 +889,7 @@ Output::readAttributes (const XMLAttributes& attributes,
                           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownCoreAttribute);
         getErrorLog()->logPackageError("qual", QualOutputAllowedCoreAttributes,
-                       getPackageVersion(), sbmlLevel, sbmlVersion, details);
+                       getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
       }
     }
   }
@@ -625,7 +939,7 @@ Output::readAttributes (const XMLAttributes& attributes,
   {
     std::string message = "Qual attribute 'qualitativeSpecies' is missing.";
     getErrorLog()->logPackageError("qual", QualOutputAllowedAttributes,
-                   getPackageVersion(), sbmlLevel, sbmlVersion, message);
+                   getPackageVersion(), sbmlLevel, sbmlVersion, message, getLine(), getColumn());
   }
 
   //
@@ -653,7 +967,7 @@ Output::readAttributes (const XMLAttributes& attributes,
           }
           msg += "is '" + effect + "', which is not a valid option.";
           getErrorLog()->logPackageError("qual", QualOutputTransEffectMustBeOutput,
-                         getPackageVersion(), sbmlLevel, sbmlVersion, msg);
+                         getPackageVersion(), sbmlLevel, sbmlVersion, msg, getLine(), getColumn());
        }
     }
   }
@@ -661,7 +975,7 @@ Output::readAttributes (const XMLAttributes& attributes,
   {
     std::string message = "Qual attribute 'transitionEffect' is missing.";
     getErrorLog()->logPackageError("qual", QualOutputAllowedAttributes,
-                   getPackageVersion(), sbmlLevel, sbmlVersion, message);
+                   getPackageVersion(), sbmlLevel, sbmlVersion, message, getLine(), getColumn());
   }
 
   //
@@ -694,7 +1008,7 @@ Output::readAttributes (const XMLAttributes& attributes,
       {
         getErrorLog()->remove(XMLAttributeTypeMismatch);
         getErrorLog()->logPackageError("qual", QualOutputLevelMustBeInteger,
-                     getPackageVersion(), sbmlLevel, sbmlVersion);
+                     getPackageVersion(), sbmlLevel, sbmlVersion, "", getLine(), getColumn());
       }
     }
   }
@@ -709,7 +1023,7 @@ Output::readAttributes (const XMLAttributes& attributes,
       }
       msg << "is '" << mOutputLevel << "', which is negative.";
       getErrorLog()->logPackageError("qual", QualOutputLevelMustBeNonNegative,
-                   getPackageVersion(), sbmlLevel, sbmlVersion, msg.str());
+                   getPackageVersion(), sbmlLevel, sbmlVersion, msg.str(), getLine(), getColumn());
     }
   }
 
@@ -782,7 +1096,7 @@ ListOfOutputs::clone () const
 
 /*
  * Get a Output from the ListOfOutputs by index.
-*/
+ */
 Output*
 ListOfOutputs::get(unsigned int n)
 {

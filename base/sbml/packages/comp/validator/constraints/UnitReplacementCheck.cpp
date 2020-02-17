@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -129,7 +133,6 @@ UnitReplacementCheck::~UnitReplacementCheck ()
 void
 UnitReplacementCheck::check_ (const Model& m, const Model&)
 {
-  unsigned int n, size;
   const CompSBasePlugin * plug;
   ReplacedFilter filter;
   ReplacedByFilter repByFilter;
@@ -137,12 +140,9 @@ UnitReplacementCheck::check_ (const Model& m, const Model&)
   /* get all elements that have replaced elements */
   List* allElements = const_cast<Model *>(&m)->getAllElements(&filter);
 
-  size = allElements->getSize();
-
-
-  for (n = 0; n < size; ++n) 
+  for (ListIterator iter = allElements->begin(); iter != allElements->end(); ++iter)
   {
-    SBase *sb = static_cast<SBase*>(allElements->get(n));
+    SBase* sb = static_cast<SBase*>(*iter);
     plug = static_cast<const CompSBasePlugin*>(sb->getPlugin("comp"));
 
     for (unsigned int i = 0; i < plug->getNumReplacedElements(); i++)
@@ -158,12 +158,9 @@ UnitReplacementCheck::check_ (const Model& m, const Model&)
   /* get all elements that have replaced elements */
   allElements = const_cast<Model *>(&m)->getAllElements(&repByFilter);
 
-  size = allElements->getSize();
-
-
-  for (n = 0; n < size; ++n) 
+  for (ListIterator iter = allElements->begin(); iter != allElements->end(); ++iter)
   {
-    SBase *sb = static_cast<SBase*>(allElements->get(n));
+    SBase* sb = static_cast<SBase*>(*iter);
     plug = static_cast<const CompSBasePlugin*>(sb->getPlugin("comp"));
 
     checkReferencedElement(*(const_cast<ReplacedBy*>
@@ -222,6 +219,16 @@ UnitReplacementCheck::checkReferencedElement(ReplacedBy& repBy)
     //  delete refElemUnits;
     //}
     return;
+  }
+
+  //need to remove scale so that the muliplier accurately reflects the unit
+  for (unsigned int i = 0; i < parentUnits->getNumUnits(); ++i)
+  {
+    Unit::removeScale(parentUnits->getUnit(i));
+  }
+  for (unsigned int i = 0; i < refElemUnits->getNumUnits(); ++i)
+  {
+    Unit::removeScale(refElemUnits->getUnit(i));
   }
 
   if (UnitDefinition::areIdentical(parentUnits, refElemUnits) == false)
@@ -290,7 +297,24 @@ UnitReplacementCheck::checkReferencedElement(ReplacedElement& repE,
   UnitDefinition *parentUnits = parent->getDerivedUnitDefinition();
   
   UnitDefinition *refElemUnits = refElem->getDerivedUnitDefinition();
-  bool delrefelem = false;
+
+  //need to remove scale so that the muliplier accurately reflects the unit
+  if (parentUnits != NULL)
+  {
+    for (unsigned int i = 0; i < parentUnits->getNumUnits(); ++i)
+    {
+      Unit::removeScale(parentUnits->getUnit(i));
+    }
+  }
+  if (refElemUnits != NULL)
+  {
+    for (unsigned int i = 0; i < refElemUnits->getNumUnits(); ++i)
+    {
+      Unit::removeScale(refElemUnits->getUnit(i));
+    }
+  }
+
+  bool delparelem = false;
 
   bool cfPresent = false;
   /* adjust the refElement units for conversion factor */
@@ -298,18 +322,30 @@ UnitReplacementCheck::checkReferencedElement(ReplacedElement& repE,
   {
     Parameter * p = const_cast<Model *>(&m)
                                    ->getParameter(repE.getConversionFactor());
-    UnitDefinition *ud = p->getDerivedUnitDefinition();
-    UnitDefinition *newRefElemUnits = UnitDefinition::combine(refElemUnits, ud);
-    refElemUnits = newRefElemUnits;
-    delrefelem = true;
+    if (p == NULL)
+    {
+      //The 'conversionFactor' attribute doesn't reference an actual parameter.  This is
+      // a different problem, caught elsewhere, and doesn't involve units.
+      return;
+    }
+    UnitDefinition ud(*(p->getDerivedUnitDefinition()));
+    for (unsigned long u = 0; u < ud.getNumUnits(); u++)
+    {
+      Unit* unit = ud.getUnit(u);
+      unit->setExponent(-unit->getExponent());
+    }
+
+    UnitDefinition *newParentUnits = UnitDefinition::combine(parentUnits, &ud);
+    parentUnits = newParentUnits;
+    delparelem = true;
     cfPresent = true;
   }
 
   if (parentUnits == NULL)
   {
-    if (delrefelem)
+    if (delparelem)
     {
-      delete refElemUnits;
+      delete parentUnits;
     }
     return;
   }
@@ -323,9 +359,9 @@ UnitReplacementCheck::checkReferencedElement(ReplacedElement& repE,
   if (parent->containsUndeclaredUnits() == true ||
     refElem->containsUndeclaredUnits() == true)
   {
-    if (delrefelem)
+    if (delparelem)
     {
-      delete refElemUnits;
+      delete parentUnits;
     }
     return;
   }
@@ -356,9 +392,9 @@ UnitReplacementCheck::checkReferencedElement(ReplacedElement& repE,
       }
     }
   }
-  if (delrefelem)
+  if (delparelem)
   {
-    delete refElemUnits;
+    delete parentUnits;
   }
 }
 
@@ -372,6 +408,10 @@ UnitReplacementCheck::logMismatchUnits (ReplacedBy& repBy,
   msg += SBMLTypeCode_toString(parent->getTypeCode(), 
                                parent->getPackageName().c_str());
   msg += " object with units ";
+  if (parent->isSetId())
+  {
+    msg += " and id '" + parent->getId() + "'";
+  }
   msg += UnitDefinition::printUnits(ud, true);
   msg += " is replaced by the ";
   msg += SBMLTypeCode_toString(refElem->getTypeCode(), 
@@ -381,6 +421,10 @@ UnitReplacementCheck::logMismatchUnits (ReplacedBy& repBy,
   ud = refElem->getDerivedUnitDefinition();
 
   msg += UnitDefinition::printUnits(ud, true);
+  if (refElem->isSetId())
+  {
+    msg += " and id '" + refElem->getId() + "'";
+  }
   msg += ".";
 
   logFailure(repBy);
@@ -398,11 +442,19 @@ UnitReplacementCheck::logMismatchUnits (ReplacedElement& repE,
                                parent->getPackageName().c_str());
   msg += " object with units ";
   msg += UnitDefinition::printUnits(parentud, true);
+  if (parent->isSetId())
+  {
+    msg += " and id '" + parent->getId() + "'";
+  }
   msg += " attempts to replace the ";
   msg += SBMLTypeCode_toString(refElem->getTypeCode(), 
                                refElem->getPackageName().c_str());
   msg += " object with units ";
   msg += UnitDefinition::printUnits(refElemud, true);
+  if (refElem->isSetId())
+  {
+    msg += " and id '" + refElem->getId() + "'";
+  }
   if (cfPresent == false)
   {
     msg += " with no appropriate conversionFactor declared.";

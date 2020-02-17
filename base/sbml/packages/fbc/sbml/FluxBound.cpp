@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  * 
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -44,6 +48,8 @@
 
 using namespace std;
 
+#ifdef __cplusplus
+
 LIBSBML_CPP_NAMESPACE_BEGIN
 #ifdef __cplusplus
 
@@ -52,8 +58,8 @@ LIBSBML_CPP_NAMESPACE_BEGIN
  */
 FluxBound::FluxBound (unsigned int level, unsigned int version, unsigned int pkgVersion) 
   : SBase (level,version)
-   ,mId("")
-   ,mName("")
+//   ,mId("")
+//   ,mName("")
    ,mReaction("")
    ,mOperation (FLUXBOUND_OPERATION_UNKNOWN)
    ,mOperationString("")
@@ -72,8 +78,8 @@ FluxBound::FluxBound (unsigned int level, unsigned int version, unsigned int pkg
  */
 FluxBound::FluxBound(FbcPkgNamespaces* fbcns)
  : SBase(fbcns)
-   ,mId("")
-   ,mName("")
+//   ,mId("")
+//   ,mName("")
    ,mReaction("")
    ,mOperation (FLUXBOUND_OPERATION_UNKNOWN)
    ,mOperationString("")
@@ -258,7 +264,7 @@ FluxBound::getReaction () const
 
 
 /*
- * @return true if the reaction of this SBML object has been set, false
+ * @return @c true if the reaction of this SBML object has been set, false
  * otherwise.
  */
 bool
@@ -346,7 +352,7 @@ FluxBound::getFluxBoundOperation () const
 
 
 /*
- * @return true if the operation of this SBML object has been set, false
+ * @return @c true if the operation of this SBML object has been set, false
  * otherwise.
  */
 bool
@@ -389,7 +395,7 @@ FluxBound::getValue () const
 
 
 /*
- * @return true if the value of this SBML object has been set, false
+ * @return @c true if the value of this SBML object has been set, false
  * otherwise.
  */
 bool
@@ -444,6 +450,314 @@ FluxBound::createObject (XMLInputStream&)
   return NULL;
 }
 /** @endcond */
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FluxBound.
+ */
+int
+FluxBound::getAttribute(const std::string& attributeName, bool& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FluxBound.
+ */
+int
+FluxBound::getAttribute(const std::string& attributeName, int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FluxBound.
+ */
+int
+FluxBound::getAttribute(const std::string& attributeName, double& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "value")
+  {
+    value = getValue();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FluxBound.
+ */
+int
+FluxBound::getAttribute(const std::string& attributeName,
+                        unsigned int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FluxBound.
+ */
+int
+FluxBound::getAttribute(const std::string& attributeName,
+                        std::string& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "id")
+  {
+    value = getId();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "name")
+  {
+    value = getName();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "reaction")
+  {
+    value = getReaction();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "operation")
+  {
+    value = const_cast<FluxBound*>(this)->getOperation();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Predicate returning @c true if this FluxBound's attribute "attributeName" is
+ * set.
+ */
+bool
+FluxBound::isSetAttribute(const std::string& attributeName) const
+{
+  bool value = SBase::isSetAttribute(attributeName);
+
+  if (attributeName == "id")
+  {
+    value = isSetId();
+  }
+  else if (attributeName == "name")
+  {
+    value = isSetName();
+  }
+  else if (attributeName == "reaction")
+  {
+    value = isSetReaction();
+  }
+  else if (attributeName == "operation")
+  {
+    value = isSetOperation();
+  }
+  else if (attributeName == "value")
+  {
+    value = isSetValue();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FluxBound.
+ */
+int
+FluxBound::setAttribute(const std::string& attributeName, bool value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FluxBound.
+ */
+int
+FluxBound::setAttribute(const std::string& attributeName, int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FluxBound.
+ */
+int
+FluxBound::setAttribute(const std::string& attributeName, double value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  if (attributeName == "value")
+  {
+    return_value = setValue(value);
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FluxBound.
+ */
+int
+FluxBound::setAttribute(const std::string& attributeName, unsigned int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FluxBound.
+ */
+int
+FluxBound::setAttribute(const std::string& attributeName,
+                        const std::string& value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  if (attributeName == "id")
+  {
+    return_value = setId(value);
+  }
+  else if (attributeName == "name")
+  {
+    return_value = setName(value);
+  }
+  else if (attributeName == "reaction")
+  {
+    return_value = setReaction(value);
+  }
+  else if (attributeName == "operation")
+  {
+    return_value = setOperation(value);
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Unsets the value of the "attributeName" attribute of this FluxBound.
+ */
+int
+FluxBound::unsetAttribute(const std::string& attributeName)
+{
+  int value = SBase::unsetAttribute(attributeName);
+
+  if (attributeName == "id")
+  {
+    value = unsetId();
+  }
+  else if (attributeName == "name")
+  {
+    value = unsetName();
+  }
+  else if (attributeName == "reaction")
+  {
+    value = unsetReaction();
+  }
+  else if (attributeName == "operation")
+  {
+    value = unsetOperation();
+  }
+  else if (attributeName == "value")
+  {
+    value = unsetValue();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
 
 /** @cond doxygenLibsbmlInternal */
 void
@@ -483,7 +797,7 @@ FluxBound::readAttributes (const XMLAttributes& attributes,
           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownPackageAttribute);
         getErrorLog()->logPackageError("fbc", FbcLOFluxBoundsAllowedAttributes,
-          getPackageVersion(), sbmlLevel, sbmlVersion, details);
+          getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
       } 
       else if (getErrorLog()->getError((unsigned int)n)->getErrorId() == UnknownCoreAttribute)
       {
@@ -491,7 +805,7 @@ FluxBound::readAttributes (const XMLAttributes& attributes,
           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownCoreAttribute);
         getErrorLog()->logPackageError("fbc", FbcLOFluxBoundsAllowedAttributes,
-          getPackageVersion(), sbmlLevel, sbmlVersion, details);
+          getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
       } 
     }
   }
@@ -510,7 +824,7 @@ FluxBound::readAttributes (const XMLAttributes& attributes,
           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownPackageAttribute);
         getErrorLog()->logPackageError("fbc", FbcFluxBoundRequiredAttributes,
-          getPackageVersion(), sbmlLevel, sbmlVersion, details);
+          getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
       } 
       else if (getErrorLog()->getError((unsigned int)n)->getErrorId() == UnknownCoreAttribute)
       {
@@ -518,7 +832,7 @@ FluxBound::readAttributes (const XMLAttributes& attributes,
           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownCoreAttribute);
         getErrorLog()->logPackageError("fbc", FbcFluxBoundAllowedL3Attributes,
-          getPackageVersion(), sbmlLevel, sbmlVersion, details);
+          getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
       } 
     }
   }
@@ -547,7 +861,7 @@ FluxBound::readAttributes (const XMLAttributes& attributes,
       // conform to the SBML type SId.
       //
       getErrorLog()->logPackageError("fbc", FbcSBMLSIdSyntax, 
-        getPackageVersion(), sbmlLevel, sbmlVersion);
+        getPackageVersion(), sbmlLevel, sbmlVersion, "", getLine(), getColumn());
     }
   }
 
@@ -558,7 +872,7 @@ FluxBound::readAttributes (const XMLAttributes& attributes,
   {
     std::string message = "Fbc attribute 'reaction' is missing.";
     getErrorLog()->logPackageError("fbc", FbcFluxBoundRequiredAttributes, 
-      getPackageVersion(), sbmlLevel, sbmlVersion, message);
+      getPackageVersion(), sbmlLevel, sbmlVersion, message, getLine(), getColumn());
   }
   else
   {
@@ -576,7 +890,7 @@ FluxBound::readAttributes (const XMLAttributes& attributes,
       // conform to the SBML type SId.
       //
       getErrorLog()->logPackageError("fbc", FbcFluxBoundRectionMustBeSIdRef, 
-        getPackageVersion(), sbmlLevel, sbmlVersion);
+        getPackageVersion(), sbmlLevel, sbmlVersion, "", getLine(), getColumn());
     }
   }
 
@@ -600,7 +914,7 @@ FluxBound::readAttributes (const XMLAttributes& attributes,
        if (FluxBoundOperation_isValidFluxBoundOperation(mOperation) == 0)
        {
           getErrorLog()->logPackageError("fbc", FbcFluxBoundOperationMustBeEnum, 
-            getPackageVersion(), sbmlLevel, sbmlVersion);
+            getPackageVersion(), sbmlLevel, sbmlVersion, "", getLine(), getColumn());
        }
     }
   }
@@ -608,7 +922,7 @@ FluxBound::readAttributes (const XMLAttributes& attributes,
   {
     std::string message = "Fbc attribute 'operation' is missing.";
     getErrorLog()->logPackageError("fbc", FbcFluxBoundRequiredAttributes, 
-      getPackageVersion(), sbmlLevel, sbmlVersion, message);
+      getPackageVersion(), sbmlLevel, sbmlVersion, message, getLine(), getColumn());
   }
 
   unsigned int numErrs = getErrorLog()->getNumErrors();
@@ -621,13 +935,13 @@ FluxBound::readAttributes (const XMLAttributes& attributes,
     {
       getErrorLog()->remove(XMLAttributeTypeMismatch);
       getErrorLog()->logPackageError("fbc", FbcFluxBoundValueMustBeDouble,
-        getPackageVersion(), sbmlLevel, sbmlVersion);
+        getPackageVersion(), sbmlLevel, sbmlVersion, "", getLine(), getColumn());
     }
     else
     {
       std::string message = "Fbc attribute 'value' is missing.";
       getErrorLog()->logPackageError("fbc", FbcFluxBoundRequiredAttributes, 
-        getPackageVersion(), sbmlLevel, sbmlVersion, message);
+        getPackageVersion(), sbmlLevel, sbmlVersion, message, getLine(), getColumn());
     }
   }
 }
@@ -730,21 +1044,8 @@ FluxBound::enablePackageInternal(const std::string& pkgURI,
 /** @endcond */
 
 
-/** @cond doxygenLibsbmlInternal */
-/* default for components that have no required elements */
-bool
-FluxBound::hasRequiredElements() const
-{
-  bool allPresent = true;
-
-    
-  return allPresent;
-}
-/** @endcond */
-
-
 /*
- * Ctor.
+ * Constructor.
  */
 ListOfFluxBounds::ListOfFluxBounds(FbcPkgNamespaces* fbcns)
  : ListOf(fbcns)
@@ -757,7 +1058,7 @@ ListOfFluxBounds::ListOfFluxBounds(FbcPkgNamespaces* fbcns)
 
 
 /*
- * Ctor.
+ * Constructor.
  */
 ListOfFluxBounds::ListOfFluxBounds(unsigned int level, unsigned int version, unsigned int pkgVersion)
  : ListOf(level,version)
@@ -1185,4 +1486,7 @@ FluxBoundOperation_isValidFluxBoundOperationString(const char* s)
 }
 /** @endcond */
 LIBSBML_CPP_NAMESPACE_END
+
+#endif /* __cplusplus */
+
 

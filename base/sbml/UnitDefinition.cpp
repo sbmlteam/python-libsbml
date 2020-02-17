@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -59,8 +63,6 @@ LIBSBML_CPP_NAMESPACE_BEGIN
 
 UnitDefinition::UnitDefinition (unsigned int level, unsigned int version) :
    SBase  ( level, version )
- , mId    ( ""       )
- , mName  ( ""       )
  , mUnits (level, version)
 {
   if (!hasValidLevelVersionNamespaceCombination())
@@ -72,8 +74,6 @@ UnitDefinition::UnitDefinition (unsigned int level, unsigned int version) :
 
 UnitDefinition::UnitDefinition (SBMLNamespaces * sbmlns) :
    SBase  ( sbmlns )
- , mId    ( ""       )
- , mName  ( ""       )
  , mUnits (sbmlns)
 {
   if (!hasValidLevelVersionNamespaceCombination())
@@ -99,8 +99,6 @@ UnitDefinition::~UnitDefinition ()
  */
 UnitDefinition::UnitDefinition(const UnitDefinition& orig) :
     SBase     ( orig )
-  , mId       ( orig.mId )
-  , mName     ( orig.mName )
   , mUnits    ( orig.mUnits )
 {
   connectToChild();
@@ -115,8 +113,6 @@ UnitDefinition& UnitDefinition::operator=(const UnitDefinition& rhs)
   if(&rhs!=this)
   {
     this->SBase::operator =(rhs);
-    mId = rhs.mId;
-    mName = rhs.mName;
     mUnits = rhs.mUnits;
   }
 
@@ -205,7 +201,7 @@ UnitDefinition::getName () const
 
 
 /*
- * @return true if the id of this SBML object is set, false
+ * @return @c true if the id of this SBML object is set, false
  * otherwise.
  */
 bool
@@ -216,7 +212,7 @@ UnitDefinition::isSetId () const
 
 
 /*
- * @return true if the name of this SBML object is set, false
+ * @return @c true if the name of this SBML object is set, false
  * otherwise.
  */
 bool
@@ -228,13 +224,13 @@ UnitDefinition::isSetName () const
 
 
 /*
- * Sets the id of this SBML object to a copy of sid.
+ * Sets the id of this SBML object to a copy of @p sid.
  */
 int
 UnitDefinition::setId (const std::string& sid)
 {
   /* since the setId function has been used as an
-   * alias for setName we cant require it to only
+   * alias for setName we can't require it to only
    * be used on a L2 model
    */
 /*  if (getLevel() == 1)
@@ -314,22 +310,35 @@ UnitDefinition::unsetName ()
 
 
 /*
- * @return true if this UnitDefinition is a variant of the built-in type
- * area. i.e. square metres with only abritrary variations in scale,
+ * @return @c true if this UnitDefinition is a variant of the built-in type
+ * area. i.e. square metres with only arbitrary variations in scale,
  * or multiplier values, false otherwise.
  */
 bool
-UnitDefinition::isVariantOfArea () const
+UnitDefinition::isVariantOfArea (bool relaxed) const
 {
   bool result = false;
 
   UnitDefinition *ud = static_cast<UnitDefinition*>(this->clone());
   UnitDefinition::simplify(ud);
 
-  if (ud->getNumUnits() == 1)
+  if (!relaxed) 
   {
-    const Unit* u = ud->getUnit(0);
-    result        = u->isMetre() && u->getExponent() == 2;
+    // should be metre^2
+    if (ud->getNumUnits() == 1)
+    {
+      const Unit* u = ud->getUnit(0);
+      result        = u->isMetre() && u->getExponent() == 2;
+    }
+  }
+  else
+  {
+    // should be metre
+    if (ud->getNumUnits() == 1)
+    {
+      const Unit* u = ud->getUnit(0);
+      result        = u->isMetre();
+    }
   }
 
   delete ud;
@@ -338,22 +347,35 @@ UnitDefinition::isVariantOfArea () const
 
 
 /*
- * @return true if this UnitDefinition is a variant of the built-in type
- * length. i.e. metres with only abritrary variations in scale,
+ * @return @c true if this UnitDefinition is a variant of the built-in type
+ * length. i.e. metres with only arbitrary variations in scale,
  * or multiplier values, false otherwise.
  */
 bool
-UnitDefinition::isVariantOfLength () const
+UnitDefinition::isVariantOfLength (bool relaxed) const
 {
   bool result = false;
 
   UnitDefinition *ud = static_cast<UnitDefinition*>(this->clone());
   UnitDefinition::simplify(ud);
 
-  if (ud->getNumUnits() == 1)
+  if (!relaxed)
   {
-    const Unit* u = ud->getUnit(0);
-    result        = u->isMetre() && u->getExponent() == 1;
+    //should be metre^1
+    if (ud->getNumUnits() == 1)
+    {
+      const Unit* u = ud->getUnit(0);
+      result        = u->isMetre() && u->getExponent() == 1;
+    }
+  }
+  else
+  {
+    //should be metre
+    if (ud->getNumUnits() == 1)
+    {
+      const Unit* u = ud->getUnit(0);
+      result        = u->isMetre();
+    }
   }
 
   delete ud;
@@ -362,12 +384,12 @@ UnitDefinition::isVariantOfLength () const
 
 
 /*
- * @return true if this UnitDefinition is a variant of the built-in type
- * substance. i.e. moles or items with only abritrary variations in
+ * @return @c true if this UnitDefinition is a variant of the built-in type
+ * substance. i.e. moles or items with only arbitrary variations in
  * scale or multiplier values, false otherwise.
  */
 bool
-UnitDefinition::isVariantOfSubstance () const
+UnitDefinition::isVariantOfSubstance (bool relaxed) const
 {
   bool result = false;
 
@@ -377,26 +399,47 @@ UnitDefinition::isVariantOfSubstance () const
   UnitDefinition *ud = static_cast<UnitDefinition*>(this->clone());
   UnitDefinition::simplify(ud);
 
-  if (ud->getNumUnits() == 1)
+  if (!relaxed)
   {
-    const Unit* u = ud->getUnit(0);
-    if (level == 2 && version > 1)
+    // should be L1/L2V1: mole^1/item^1
+    //                L2: mole/item/gram/kilogram ^1
+    //                L3: mole/item/gram/kilogram/avogardo ^1
+    if (ud->getNumUnits() == 1)
     {
-      result = ((  u->isMole() || u->isItem() 
-                || u->isGram() || u->isKilogram())
-                && u->getExponent() == 1);
+      const Unit* u = ud->getUnit(0);
+      if (level == 2 && version > 1)
+      {
+        result = ((  u->isMole() || u->isItem() 
+                  || u->isGram() || u->isKilogram())
+                  && u->getExponent() == 1);
+      }
+      else if (level > 2)
+      {
+        result = ((  u->isMole() || u->isItem() 
+                  || u->isGram() || u->isKilogram()
+                  || u->isAvogadro())
+                  && u->getExponent() == 1);
+      }
+      else
+      {
+        result        = (u->isMole() || u->isItem()) 
+                      && u->getExponent() == 1;
+      }
     }
-    else if (level > 2)
+  }
+  else
+  {
+    // should be any combination of mole/item/gram/kilogram/avogardo ^1
+    unsigned int i = 0;
+    result = true;
+    while (result && i < ud->getNumUnits())
     {
+      const Unit* u = ud->getUnit(i);
       result = ((  u->isMole() || u->isItem() 
                 || u->isGram() || u->isKilogram()
-                || u->isAvogadro())
-                && u->getExponent() == 1);
-    }
-    else
-    {
-      result        = (u->isMole() || u->isItem()) 
-                    && u->getExponent() == 1;
+                || u->isAvogadro()));
+      
+      i++;
     }
   }
 
@@ -406,22 +449,35 @@ UnitDefinition::isVariantOfSubstance () const
 
 
 /*
- * @return true if this UnitDefinition is a variant of the built-in type
- * time. i.e. seconds with only abritrary variations in scale,
+ * @return @c true if this UnitDefinition is a variant of the built-in type
+ * time. i.e. seconds with only arbitrary variations in scale,
  * or multiplier values, false otherwise.
  */
 bool
-UnitDefinition::isVariantOfTime () const
+UnitDefinition::isVariantOfTime (bool relaxed) const
 {
   bool result = false;
 
   UnitDefinition *ud = static_cast<UnitDefinition*>(this->clone());
   UnitDefinition::simplify(ud);
 
-  if (ud->getNumUnits() == 1)
+  if (!relaxed)
   {
-    const Unit* u = ud->getUnit(0);
-    result        = u->isSecond() && u->getExponent() == 1;
+    // unit should simplify to second with exponent 1
+    if (ud->getNumUnits() == 1)
+    {
+      const Unit* u = ud->getUnit(0);
+      result        = u->isSecond() && u->getExponent() == 1;
+    }
+  }
+  else
+  {
+    // from l3v1r2 unit should simplify to second with any exponent
+    if (ud->getNumUnits() == 1)
+    {
+      const Unit* u = ud->getUnit(0);
+      result        = u->isSecond();
+    }
   }
 
   delete ud;
@@ -430,23 +486,40 @@ UnitDefinition::isVariantOfTime () const
 
 
 /*
- * @return true if this UnitDefinition is a variant of the built-in type
- * volume. i.e. litre or cubic metre with only abritrary variations in
+ * @return @c true if this UnitDefinition is a variant of the built-in type
+ * volume. i.e. litre or cubic metre with only arbitrary variations in
  * scale or multiplier values, false otherwise.
  */
 bool
-UnitDefinition::isVariantOfVolume () const
+UnitDefinition::isVariantOfVolume (bool relaxed) const
 {
   bool result = false;
 
   UnitDefinition *ud = static_cast<UnitDefinition*>(this->clone());
   UnitDefinition::simplify(ud);
 
-  if (ud->getNumUnits() == 1)
+  if (!relaxed)
   {
-    const Unit* u = ud->getUnit(0);
-    result        = (u->isLitre() && u->getExponent() == 1) ||
-                    (u->isMetre() && u->getExponent() == 3);
+    // should be litre^1 or metre^3
+    if (ud->getNumUnits() == 1)
+    {
+      const Unit* u = ud->getUnit(0);
+      result        = (u->isLitre() && u->getExponent() == 1) ||
+                      (u->isMetre() && u->getExponent() == 3);
+    }
+  }
+  else
+  {
+    // should be any combination of litre/metre
+    unsigned int i = 0;
+    result = true;
+    while (result && i < ud->getNumUnits())
+    {
+      const Unit* u = ud->getUnit(i);
+      result = (  u->isLitre() || u->isMetre());
+      
+      i++;
+    }
   }
 
   delete ud;
@@ -455,54 +528,94 @@ UnitDefinition::isVariantOfVolume () const
 
 
 /*
- * @return true if this UnitDefinition is a variant of dimensionless.
- * i.e. dimensionless with only abritrary variations in scale,
+ * @return @c true if this UnitDefinition is a variant of dimensionless.
+ * i.e. dimensionless with only arbitrary variations in scale,
  * or multiplier values, false otherwise.
  */
 bool
-UnitDefinition::isVariantOfDimensionless () const
+UnitDefinition::isVariantOfDimensionless (bool relaxed) const
 {
   bool result = false;
 
-
-  if (getNumUnits() == 1)
+  // careful here if we have no units simplify will add dimensionless
+  if (getNumUnits() == 0)
   {
-    const Unit* u = getUnit(0);
-    result        = u->isDimensionless();
+    return result;
   }
 
+  UnitDefinition *ud = static_cast<UnitDefinition*>(this->clone());
+  UnitDefinition::simplify(ud);
+
+  if (!relaxed)
+  {
+    if (ud->getNumUnits() == 1)
+    {
+      const Unit* u = ud->getUnit(0);
+      result        = u->isDimensionless();
+    }
+  }
+  else
+  {
+    if (ud->getNumUnits() == 1)
+    {
+      const Unit* u = ud->getUnit(0);
+      result        = u->isDimensionless();
+    }
+  }
+
+  delete ud;
   return result;
 }
 
 
 /*
- * @return true if this UnitDefinition is a variant of mass. ie gram or
- * kilogram with only abritrary variations in scale or multiplier
+ * @return @c true if this UnitDefinition is a variant of mass. ie gram or
+ * kilogram with only arbitrary variations in scale or multiplier
  * values, false otherwise.
  */
 bool
-UnitDefinition::isVariantOfMass () const
+UnitDefinition::isVariantOfMass (bool relaxed) const
 {
   bool result = false;
 
+  UnitDefinition *ud = static_cast<UnitDefinition*>(this->clone());
+  UnitDefinition::simplify(ud);
 
-  if (getNumUnits() == 1)
+  if (!relaxed)
   {
-    const Unit* u = getUnit(0);
-    result        = ((u->isGram() || u->isKilogram())
-                && u->getExponent() == 1);
+    // should be gram/kilogram ^ 1
+    if (ud->getNumUnits() == 1)
+    {
+      const Unit* u = ud->getUnit(0);
+      result        = ((u->isGram() || u->isKilogram())
+                  && u->getExponent() == 1);
+    }
+  }
+  else
+  {
+    // should be any combination of kilogram/gram
+    unsigned int i = 0;
+    result = true;
+    while (result && i < ud->getNumUnits())
+    {
+      const Unit* u = ud->getUnit(i);
+      result = (  u->isGram() || u->isKilogram());
+      
+      i++;
+    }
   }
 
+  delete ud;
   return result;
 }
 
 
 /*
- * @return true if this UnitDefinition is a variant of the built-in type
+ * @return @c true if this UnitDefinition is a variant of the built-in type
  * substance per time, false otherwise.
  */
 bool
-UnitDefinition::isVariantOfSubstancePerTime () const
+UnitDefinition::isVariantOfSubstancePerTime (bool relaxed) const
 {
   bool result = false;
 
@@ -517,8 +630,8 @@ UnitDefinition::isVariantOfSubstancePerTime () const
 
   UnitDefinition::simplify(ud);
 
-  result = ud->isVariantOfSubstance();
-
+  result = ud->isVariantOfSubstance(relaxed);
+  
   delete ud;
   delete u;
   return result;
@@ -536,11 +649,30 @@ UnitDefinition::addUnit (const Unit* u)
   {
     return returnValue;
   }
+  else if (u == NULL)
+  {
+    return LIBSBML_OPERATION_FAILED;
+  }
+  else if (u->hasRequiredAttributes() == false)
+  {
+    return LIBSBML_INVALID_OBJECT;
+  }
+  else if (getLevel() != u->getLevel())
+  {
+    return LIBSBML_LEVEL_MISMATCH;
+  }
+  else if (getVersion() != u->getVersion())
+  {
+    return LIBSBML_VERSION_MISMATCH;
+  }
+  else if (matchesRequiredSBMLNamespacesForAddition(static_cast<const
+    SBase*>(u)) == false)
+  {
+    return LIBSBML_NAMESPACES_MISMATCH;
+  }
   else
   {
-    mUnits.append(u);
-
-    return LIBSBML_OPERATION_SUCCESS;
+    return mUnits.append(u);
   }
 }
 
@@ -670,6 +802,16 @@ UnitDefinition::enablePackageInternal(const std::string& pkgURI,
 
   mUnits.enablePackageInternal(pkgURI,pkgPrefix,flag);
 }
+
+
+void
+UnitDefinition::updateSBMLNamespace(const std::string& pkg, unsigned int level,
+  unsigned int version)
+{
+  SBase::updateSBMLNamespace(pkg, level, version);
+
+  mUnits.updateSBMLNamespace(pkg, level, version);
+}
 /** @endcond */
 
 
@@ -737,36 +879,48 @@ UnitDefinition::simplify(UnitDefinition * ud)
   unsigned int n, i;
   ListOfUnits *  units = ud->getListOfUnits();
   Unit * unit;
-  UnitKindList kindsList;
   const char * unitKind;
   int cancelFlag = 0;
+  bool dimensionlessPresent = false;
 
+  
   for (n = 0; n < ud->getNumUnits(); n++)
   {
-    kindsList.append(UnitKind_toString(ud->getUnit(n)->getKind()));
+    Unit* unit = ud->getUnit(n);
+    if (unit->getKind() == UNIT_KIND_DIMENSIONLESS)
+    {
+      dimensionlessPresent = true;
+    }
   }
   
   double dimMultfactor = 1.0;
+  double dimMultfactorSaved = 1.0;
+
   
   /* if only one unit cannot be simplified any further */
   if (units->size() > 1)
   {
-    if (kindsList.contains("dimensionless"))
+    if (dimensionlessPresent)
     {
       /* if contains a dimensionless unit and any others then 
         dimensionless is unecessary 
         unless it has a multiplier attached
         */
-      for (n = 0; n < units->size(); n++)
+      unsigned int origNumUnits = units->size();
+      for (n = origNumUnits; n > 0; n--)
       {
-        unit = (Unit *) units->get(n);
+        unit = (Unit *) units->get(n-1);
+        Unit::removeScale(unit);
+
         if (!strcmp(UnitKind_toString(unit->getKind()), "dimensionless"))
         {
           dimMultfactor = pow(unit->getMultiplier(), unit->getExponent());
           if (util_isEqual(dimMultfactor, 1.0) == false)
+          {
             cancelFlag = 1;
-          delete units->remove(n);
-          kindsList.removeUnitKind("dimensionless");
+            dimMultfactorSaved = dimMultfactorSaved * dimMultfactor;
+          }
+          delete units->remove(n-1);
         }
       }
     }
@@ -774,23 +928,21 @@ UnitDefinition::simplify(UnitDefinition * ud)
     /* if it contains two units with same kind these must be combined */
     for (n = 0; n < units->size(); n++)
     {
-      unit = (Unit *) units->get(n);
+      unit = (Unit *)units->get(n);
       unitKind = UnitKind_toString(unit->getKind());
 
-      /* check that there is only one occurence */
-      kindsList.removeUnitKind(unitKind);
-      while (kindsList.contains(unitKind)) 
+      /* find other occurences and merge */
+      for (i = n+1; i < units->size();)
       {
-        /* find next occurence and merge */
-        for (i = n + 1; i < units->size(); i++)
+        if (!strcmp(UnitKind_toString(((Unit *)units->get(i))->getKind()),
+          unitKind))
         {
-          if (!strcmp(UnitKind_toString(((Unit *) units->get(i))->getKind()), 
-                                                                   unitKind))
-          {
-            Unit::merge(unit, (Unit *) units->get(i));
-            delete units->remove(i);
-            kindsList.removeUnitKind(unitKind);
-          }
+          Unit::merge(unit, (Unit *)units->get(i));
+          delete units->remove(i);
+        }
+        else
+        {
+          i++;
         }
       }
     }
@@ -798,7 +950,7 @@ UnitDefinition::simplify(UnitDefinition * ud)
 
   /* may have cancelled units - in which case exponent will be 0 */
   // might need to propagate a multiplier though
-  double newMultiplier = dimMultfactor;
+  double newMultiplier = dimMultfactorSaved;
   unsigned int numUnits = units->size();
   for (n = numUnits; n > 0; n--)
   {
@@ -823,7 +975,7 @@ UnitDefinition::simplify(UnitDefinition * ud)
   /* if all units have been cancelled need to add dimensionless */
   /* or indeed if one or more have been cancelled need to
    * propagate any remaining multiplier */
-  if (cancelFlag == 1)
+  if (cancelFlag == 1 || (dimensionlessPresent && units->size() == 0))
   {
     if (units->size() == 0)
     {
@@ -876,7 +1028,7 @@ UnitDefinition::reorder(UnitDefinition *ud)
   for (n = 0; n < numUnits; n++)
   {
     unit = (Unit *)(units->get(n));
-    int value = unit->getKind();
+    int value = (int)(unit->getKind());
     indexArray[n] = value;
     initialIndexArray[n] = value;
   }
@@ -916,7 +1068,7 @@ UnitDefinition::reorder(UnitDefinition *ud)
  * Returns a UnitDefinition object which is the argument UnitDefinition
  * converted to the SI units.
  *
- * @param ud the UnitDefinition object to convert to SI
+ * @param ud the UnitDefinition object to convert to SI.
  *
  * @return a UnitDefinition object converted to SI units.
  */
@@ -1000,8 +1152,8 @@ extractMultiplier(UnitDefinition * ud)
  * Predicate returning @c true if 
  * UnitDefinition objects are identical (all units are identical).
  *
- * @param ud1 the first UnitDefinition object to compare
- * @param ud2 the second UnitDefinition object to compare
+ * @param ud1 the first UnitDefinition object to compare.
+ * @param ud2 the second UnitDefinition object to compare.
  *
  * @return @c true if all the units of ud1 are identical
  * to the units of ud2, @c false otherwise.
@@ -1107,8 +1259,8 @@ UnitDefinition::areIdentical(const UnitDefinition * ud1,
  * Predicate returning @c true if 
  * UnitDefinition objects are equivalent (all units are equivalent).
  *
- * @param ud1 the first UnitDefinition object to compare
- * @param ud2 the second UnitDefinition object to compare
+ * @param ud1 the first UnitDefinition object to compare.
+ * @param ud2 the second UnitDefinition object to compare.
  *
  * @return @c true if all the units of ud1 are equivalent
  * to the units of ud2, @c false otherwise.
@@ -1279,8 +1431,8 @@ UnitDefinition::areIdenticalSIUnits(const UnitDefinition * ud1,
  * which expresses the units of the two objects multiplied.
  *
  * @param ud1 the first UnitDefinition object into which the second is
- * combined
- * @param ud2 the second UnitDefinition object
+ * combined.
+ * @param ud2 the second UnitDefinition object.
  */
 UnitDefinition *
 UnitDefinition::combine(UnitDefinition *ud1, UnitDefinition *ud2)
@@ -1380,9 +1532,9 @@ UnitDefinition::divide(UnitDefinition *ud1, UnitDefinition *ud2)
  * @endcode
  * returns the string 'metre (exponent = 1) second (exponent = -2)'
  *
- * @param ud the UnitDefinition object
+ * @param ud the UnitDefinition object.
  *
- * @return a string expressing the units
+ * @return a string expressing the units.
  */
 std::string
 UnitDefinition::printUnits(const UnitDefinition * ud, bool compact)
@@ -1398,7 +1550,7 @@ UnitDefinition::printUnits(const UnitDefinition * ud, bool compact)
     {
       for (unsigned int p = 0; p < ud->getNumUnits(); p++)
       {
-	      UnitKind_t kind = ud->getUnit(p)->getKind();
+        UnitKind_t kind = ud->getUnit(p)->getKind();
         double exp = 0;
         if (ud->getUnit(p)->isUnitChecking())
         {
@@ -1406,7 +1558,7 @@ UnitDefinition::printUnits(const UnitDefinition * ud, bool compact)
         }
         else
         {
-	        exp = ud->getUnit(p)->getExponentAsDouble();
+          exp = ud->getUnit(p)->getExponentAsDouble();
         }
         int scale = ud->getUnit(p)->getScale();
         double mult = ud->getUnit(p)->getMultiplier();
@@ -1416,18 +1568,18 @@ UnitDefinition::printUnits(const UnitDefinition * ud, bool compact)
           UnitKind_toString(kind), exp, mult, scale);
         unitDef += unit;
 
-	      if (p + 1 < ud->getNumUnits())
-	      {
-	        unitDef += ", ";
-	      }	  
+        if (p + 1 < ud->getNumUnits())
+        {
+          unitDef += ", ";
+        }	  
       }
     }
     else
     {
       for (unsigned int p = 0; p < ud->getNumUnits(); p++)
       {
-	      UnitKind_t kind = ud->getUnit(p)->getKind();
-	      double exp = ud->getUnit(p)->getExponentAsDouble();
+        UnitKind_t kind = ud->getUnit(p)->getKind();
+        double exp = ud->getUnit(p)->getExponentAsDouble();
         int scale = ud->getUnit(p)->getScale();
         double mult = ud->getUnit(p)->getMultiplier();
         mult = mult * pow(10.0, scale);
@@ -1437,15 +1589,361 @@ UnitDefinition::printUnits(const UnitDefinition * ud, bool compact)
           UnitKind_toString(kind), exp);
         unitDef += unit;
 
-	      if (p + 1 < ud->getNumUnits())
-	      {
-	        unitDef += ", ";
-	      }	  
+        if (p + 1 < ud->getNumUnits())
+        {
+          unitDef += ", ";
+        }	  
       }
     }
   }
   return unitDef;
 }
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this UnitDefinition.
+ */
+int
+UnitDefinition::getAttribute(const std::string& attributeName,
+                             bool& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this UnitDefinition.
+ */
+int
+UnitDefinition::getAttribute(const std::string& attributeName,
+                             int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this UnitDefinition.
+ */
+int
+UnitDefinition::getAttribute(const std::string& attributeName,
+                             double& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this UnitDefinition.
+ */
+int
+UnitDefinition::getAttribute(const std::string& attributeName,
+                             unsigned int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this UnitDefinition.
+ */
+int
+UnitDefinition::getAttribute(const std::string& attributeName,
+                             std::string& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this UnitDefinition.
+ */
+//int
+//UnitDefinition::getAttribute(const std::string& attributeName,
+//                             const char* value) const
+//{
+//  int return_value = SBase::getAttribute(attributeName, value);
+//
+//  return return_value;
+//}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Predicate returning @c true if this UnitDefinition's attribute
+ * "attributeName" is set.
+ */
+bool
+UnitDefinition::isSetAttribute(const std::string& attributeName) const
+{
+  bool value = SBase::isSetAttribute(attributeName);
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this UnitDefinition.
+ */
+int
+UnitDefinition::setAttribute(const std::string& attributeName, bool value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this UnitDefinition.
+ */
+int
+UnitDefinition::setAttribute(const std::string& attributeName, int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this UnitDefinition.
+ */
+int
+UnitDefinition::setAttribute(const std::string& attributeName, double value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this UnitDefinition.
+ */
+int
+UnitDefinition::setAttribute(const std::string& attributeName,
+                             unsigned int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this UnitDefinition.
+ */
+int
+UnitDefinition::setAttribute(const std::string& attributeName,
+                             const std::string& value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this UnitDefinition.
+ */
+//int
+//UnitDefinition::setAttribute(const std::string& attributeName,
+//                             const char* value)
+//{
+//  int return_value = SBase::setAttribute(attributeName, value);
+//
+//  return return_value;
+//}
+//
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Unsets the value of the "attributeName" attribute of this UnitDefinition.
+ */
+int
+UnitDefinition::unsetAttribute(const std::string& attributeName)
+{
+  int value = SBase::unsetAttribute(attributeName);
+
+  return value;
+}
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+/*
+ * Creates and returns an new "elementName" object in this UnitDefinition.
+ */
+SBase*
+UnitDefinition::createChildObject(const std::string& elementName)
+{
+  SBase* obj = NULL;
+
+  if (elementName == "unit")
+  {
+    return createUnit();
+  }
+
+  return obj;
+}
+/** @endcond */
+
+/** @cond doxygenLibsbmlInternal */
+/*
+ * Adds an new "elementName" object in this UnitDefinition.
+ */
+int
+UnitDefinition::addChildObject(const std::string& elementName, const SBase* element)
+{
+  if (elementName == "unit" && element->getTypeCode() == SBML_UNIT)
+  {
+    return addUnit((const Unit*)(element));
+  }
+
+  return LIBSBML_OPERATION_FAILED;
+}
+/** @endcond */
+
+
+/** @cond doxygenLibsbmlInternal */
+/*
+ * Adds an new "elementName" object in this UnitDefinition.
+ */
+SBase*
+UnitDefinition::removeChildObject(const std::string& elementName, const std::string& id)
+{
+ 
+  if (elementName == "unit")
+  {
+ //   return removeUnit(id);
+  }
+
+  return NULL;
+}
+
+/** @endcond */
+
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Returns the number of "elementName" in this UnitDefinition.
+ */
+unsigned int
+UnitDefinition::getNumObjects(const std::string& elementName)
+{
+  unsigned int n = 0;
+
+  if (elementName == "unit")
+  {
+    return getNumUnits();
+  }
+
+  return n;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Returns the nth object of "objectName" in this UnitDefinition.
+ */
+SBase*
+UnitDefinition::getObject(const std::string& elementName, unsigned int index)
+{
+  SBase* obj = NULL;
+
+  if (elementName == "unit")
+  {
+    return getUnit(index);
+  }
+
+  return obj;
+}
+
+/** @endcond */
+
+
 
 /* @cond doxygenLibsbmlInternal */
 /*
@@ -1465,14 +1963,15 @@ UnitDefinition::createObject (XMLInputStream& stream)
       if (getLevel() < 3)
       {
         logError(NotSchemaConformant, getLevel(), getVersion(),
-	       "Only one <listOfUnits> elements is permitted in a "
-	       "given <unitDefinition>.");
+         "Only one <listOfUnits> elements is permitted in a "
+         "given <unitDefinition>.");
       }
       else
       {
         logError(OneListOfUnitsPerUnitDef, getLevel(), getVersion());
       }
     }
+    mUnits.setExplicitlyListed();
     object = &mUnits;
   }
   
@@ -1507,7 +2006,7 @@ UnitDefinition::addExpectedAttributes(ExpectedAttributes& attributes)
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 UnitDefinition::readAttributes (const XMLAttributes& attributes,
@@ -1538,7 +2037,7 @@ UnitDefinition::readAttributes (const XMLAttributes& attributes,
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 UnitDefinition::readL1Attributes (const XMLAttributes& attributes)
@@ -1566,7 +2065,7 @@ UnitDefinition::readL1Attributes (const XMLAttributes& attributes)
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 UnitDefinition::readL2Attributes (const XMLAttributes& attributes)
@@ -1598,7 +2097,7 @@ UnitDefinition::readL2Attributes (const XMLAttributes& attributes)
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 UnitDefinition::readL3Attributes (const XMLAttributes& attributes)
@@ -1610,23 +2109,43 @@ UnitDefinition::readL3Attributes (const XMLAttributes& attributes)
   //   id: SId     { use="required" }  (L2v1, L2v2)
   //
   bool assigned;
-  assigned = attributes.readInto("id", mId, getErrorLog(), false, getLine(), getColumn());
-  if (!assigned)
+  // for l3v2 sbase will read this as generically optional
+  // we want to log errors relating to the specific object
+  if (version == 1)
   {
-    logError(AllowedAttributesOnUnitDefinition, level, version, 
-             "The required attribute 'id' is missing.");
+    assigned = attributes.readInto("id", mId, getErrorLog(), false, getLine(), getColumn());
+    if (!assigned)
+    {
+      logError(AllowedAttributesOnUnitDefinition, level, version, 
+               "The required attribute 'id' is missing.");
+    }
+    if (assigned && mId.size() == 0)
+    {
+      logEmptyString("id", level, version, "<unitDefinition>");
+    }
+    if (!SyntaxChecker::isValidInternalSId(mId)) 
+      logError(InvalidIdSyntax, level, version, "The id '" + mId + "' does not conform to the syntax.");
   }
-  if (assigned && mId.size() == 0)
+  else
   {
-    logEmptyString("id", level, version, "<unitDefinition>");
+    // need to check that id was present
+    // it has already been read and checked for syntax/emptyness
+    if (attributes.hasAttribute("id") == false)
+    {
+      logError(AllowedAttributesOnUnitDefinition, level, version, 
+        "The required attribute 'id' is missing.");
+    }
   }
-  if (!SyntaxChecker::isValidInternalSId(mId)) 
-    logError(InvalidIdSyntax, level, version, "The id '" + mId + "' does not conform to the syntax.");
 
   //
   // name: string  { use="optional" }  (L2v1->)
   //
-  attributes.readInto("name", mName, getErrorLog(), false, getLine(), getColumn());
+  // for l3v2 sbase will read this
+  if (version == 1)
+  {
+    attributes.readInto("name", mName, getErrorLog(), false, 
+                                       getLine(), getColumn());
+  }
 }
 /** @endcond */
 
@@ -1634,7 +2153,7 @@ UnitDefinition::readL3Attributes (const XMLAttributes& attributes)
 /** @cond doxygenLibsbmlInternal */
 /*
  * Subclasses should override this method to write their XML attributes
- * to the XMLOutputStream.  Be sure to call your parents implementation
+ * to the XMLOutputStream.  Be sure to call your parent's implementation
  * of this method as well.
  */
 void
@@ -1643,18 +2162,30 @@ UnitDefinition::writeAttributes (XMLOutputStream& stream) const
   SBase::writeAttributes(stream);
 
   const unsigned int level = getLevel();
+  unsigned int version = getVersion();
 
-  //
-  // name: SName   { use="required" }  (L1v1, L1v2)
-  //   id: SId     { use="required" }  (L2v1, L2v2)
-  //
-  const string id = (level == 1) ? "name" : "id";
-  stream.writeAttribute(id, mId);
-
-  //
-  // name: string  { use="optional" }  (L2v1->)
-  //
-  if (level > 1) stream.writeAttribute("name", mName);
+  // for L3V2 and above SBase will write this out
+  if (level < 3 || (level == 3 && version == 1))
+  {
+    //
+    // name: SName   { use="required" }  (L1v1, L1v2)
+    //   id: SId     { use="required" }  (L2v1, L2v2)
+    //
+    const string id = (level == 1) ? "name" : "id";
+    stream.writeAttribute(id, mId);
+  }
+  
+  if (level > 1)
+  {
+    // for L3V2 and above SBase will write this out
+    if (level < 3 || (level == 3 && version == 1))
+    {
+      //
+      // name: string  { use="optional" }  (L2v1->)
+      //
+      stream.writeAttribute("name", mName);
+    }
+  }
 
   //
   // sboTerm: SBOTerm { use="optional" }  (L2v3->)
@@ -1672,14 +2203,28 @@ UnitDefinition::writeAttributes (XMLOutputStream& stream) const
 /** @cond doxygenLibsbmlInternal */
 /*
  * Subclasses should override this method to write out their contained
- * SBML objects as XML elements.  Be sure to call your parents
+ * SBML objects as XML elements.  Be sure to call your parent's
  * implementation of this method as well.
  */
 void
 UnitDefinition::writeElements (XMLOutputStream& stream) const
 {
   SBase::writeElements(stream);
-  if ( getNumUnits() > 0 ) mUnits.write(stream);
+
+  if (getLevel() == 3 && getVersion() > 1)
+  {
+    if (mUnits.hasOptionalElements() == true ||
+        mUnits.hasOptionalAttributes() == true ||
+        mUnits.isExplicitlyListed())
+    {
+      mUnits.write(stream);
+    }
+  }
+  else
+  {
+    // use original code
+    if ( getNumUnits() > 0 ) mUnits.write(stream);
+  }
 
   //
   // (EXTENSION)

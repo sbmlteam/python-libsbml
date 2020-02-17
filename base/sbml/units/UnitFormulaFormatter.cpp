@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -49,6 +53,7 @@ UnitFormulaFormatter::UnitFormulaFormatter(const Model *m)
  : model(m)
 {
   mContainsUndeclaredUnits = false;
+  mContainsInconsistentUnits = false;
   mCanIgnoreUndeclaredUnits = 2;
   depthRecursiveCall = 0;
 }
@@ -240,22 +245,38 @@ UnitFormulaFormatter::getUnitDefinition(const ASTNode * node,
 
     case AST_UNKNOWN:
     default:
-    
-      if (node->isQualifier() == true)
+      bool found = false;
+      if (node->getNumPlugins() == 0)
       {
-        /* code so that old and new ast classes will do the right thing */
-        ud = getUnitDefinition(node->getChild(0), inKL, reactNo);
+        ((ASTNode*)(node))->loadASTPlugins(NULL);
       }
-      else
+      for (unsigned int p = 0; p < node->getNumPlugins(); p++)
       {
-        try
+        const ASTBasePlugin* baseplugin = node->getPlugin(p);
+        if (baseplugin->defines(node->getType()))
         {
-          ud = new UnitDefinition(model->getSBMLNamespaces());
+          found = true;
+          ud = baseplugin->getUnitDefinitionFromPackage(this, node, inKL, reactNo);
         }
-        catch ( ... )
+      }
+      if (!found)
+      {
+        if (node->isQualifier() == true)
         {
-          ud = new UnitDefinition(SBMLDocument::getDefaultLevel(),
-            SBMLDocument::getDefaultVersion());
+          /* code so that old and new ast classes will do the right thing */
+          ud = getUnitDefinition(node->getChild(0), inKL, reactNo);
+        }
+        else
+        {
+          try
+          {
+            ud = new UnitDefinition(model->getSBMLNamespaces());
+          }
+          catch (...)
+          {
+            ud = new UnitDefinition(SBMLDocument::getDefaultLevel(),
+              SBMLDocument::getDefaultVersion());
+          }
         }
       }
       break;
@@ -290,6 +311,8 @@ UnitFormulaFormatter::getUnitDefinition(const ASTNode * node,
         UnitDefinition*>(node,static_cast<UnitDefinition*>(ud->clone())));
       undeclaredUnitsMap.insert(std::pair<const ASTNode*, 
                                     bool>(node,mContainsUndeclaredUnits));
+      inconsistentUnitsMap.insert(std::pair<const ASTNode*, bool>
+        (node, mContainsInconsistentUnits));
       canIgnoreUndeclaredUnitsMap.insert(std::pair<const ASTNode*, 
                            unsigned int>(node,mCanIgnoreUndeclaredUnits));
     }
@@ -308,13 +331,20 @@ UnitFormulaFormatter::getUnitDefinition(const ASTNode * node,
     }
     unitDefinitionMap.clear();
     undeclaredUnitsMap.clear();
+    inconsistentUnitsMap.clear();
     canIgnoreUndeclaredUnitsMap.clear();
   }
 
   /* if something is returned with an empty unitDefinition
    * it means not all units could be determined
+   * 
+   * NO !! it might mean the answer could not be determined
+   * i.e. mole + second does not contain undeclared units
+   * but the answer is indeterminate
+   * 
+   * so only mark as undeclared if we have not marked inconsistency
    */
-  if (ud->getNumUnits() == 0)
+  if (!mContainsInconsistentUnits && ud->getNumUnits() == 0)
   {
     mContainsUndeclaredUnits = true;
     mCanIgnoreUndeclaredUnits = 0;
@@ -547,6 +577,7 @@ UnitFormulaFormatter::getUnitDefinitionFromPower(const ASTNode * node,
   ASTNode * exponentNode = node->getRightChild();
 
   // is the exponent dimensionless or a number because if not it is a problem
+  bool inconsistent = false;
   UnitDefinition* exponentUD = getUnitDefinition(exponentNode, inKL, reactNo);
   UnitDefinition::simplify(exponentUD);
 
@@ -568,12 +599,25 @@ UnitFormulaFormatter::getUnitDefinitionFromPower(const ASTNode * node,
     mContainsUndeclaredUnits = varHasUndeclared;
     mCanIgnoreUndeclaredUnits = varCanIgnoreUndeclared;
   }
+  else if (exponentUD != NULL && exponentUD->getNumUnits() > 0)
+  {
+    inconsistent = true;
+  }
   else
   {
     mContainsUndeclaredUnits = true;
   }
   
   delete exponentUD;
+  if (inconsistent)
+  {
+    for (unsigned int n = variableUD->getNumUnits(); n > 0; --n)
+    {
+      Unit * unit = variableUD->removeUnit(n-1);
+      delete unit;
+    }
+    mContainsInconsistentUnits = true;
+  }
 
   return variableUD;
 
@@ -663,6 +707,8 @@ UnitFormulaFormatter::getUnitDefinitionFromRoot(const ASTNode * node,
     child = node->getLeftChild();
   }
 
+  bool inconsistent = false;
+
   for (i = 0; i < tempUD->getNumUnits(); i++)
   {
     unit = tempUD->getUnit(i);
@@ -690,37 +736,51 @@ UnitFormulaFormatter::getUnitDefinitionFromRoot(const ASTNode * node,
       {
 
         tempUD2 = getUnitDefinition(child, inKL, reactNo);
-        UnitDefinition::simplify(tempUD2);
-
-        if (tempUD2->isVariantOfDimensionless())
+        if (tempUD2 && tempUD2->getNumUnits() > 0)
         {
-          SBMLTransforms::mapComponentValues(model);
-          double value = SBMLTransforms::evaluateASTNode(child);
-          SBMLTransforms::clearComponentValues();
-          if (!util_isNaN(value))
+          UnitDefinition::simplify(tempUD2);
+
+          if (tempUD2->isVariantOfDimensionless())
           {
-            double doubleExponent = 
-                                double(unit->getExponent())/value;
-            //if (floor(doubleExponent) != doubleExponent)
+            SBMLTransforms::mapComponentValues(model);
+            double value = SBMLTransforms::evaluateASTNode(child);
+            SBMLTransforms::clearComponentValues();
+            if (!util_isNaN(value))
+            {
+              double doubleExponent =
+                double(unit->getExponent()) / value;
+              //if (floor(doubleExponent) != doubleExponent)
               unit->setExponentUnitChecking(doubleExponent);
-//              mContainsUndeclaredUnits = true;
-//            unit->setExponentUnitChecking((int)(unit->getExponent()/value));
+              //              mContainsUndeclaredUnits = true;
+              //            unit->setExponentUnitChecking((int)(unit->getExponent()/value));
+            }
+            else
+            {
+              inconsistent = true;
+            }
           }
           else
           {
-            mContainsUndeclaredUnits = true;
+            /* here the child is an expression with units
+            * flag the expression as not checked
+            */
+            inconsistent = true;
           }
         }
         else
         {
-          /* here the child is an expression with units
-          * flag the expression as not checked
-          */
           mContainsUndeclaredUnits = true;
         }
       }
     }
-    ud->addUnit(unit);
+    if (!inconsistent)
+    {
+      ud->addUnit(unit);
+    }
+    else
+    {
+      mContainsInconsistentUnits = true;
+    }
   }
 
   delete tempUD;
@@ -757,7 +817,7 @@ UnitFormulaFormatter::getUnitDefinitionFromDelay(const ASTNode * node,
   */
 UnitDefinition * 
 UnitFormulaFormatter::getUnitDefinitionFromDimensionlessReturnFunction(
-                                const ASTNode *, bool , int )
+                                const ASTNode *node, bool inKL, int reactNo )
 { 
   UnitDefinition * ud;
   Unit *unit;
@@ -775,6 +835,50 @@ UnitFormulaFormatter::getUnitDefinitionFromDimensionlessReturnFunction(
   unit = ud->createUnit();
   unit->setKind(UNIT_KIND_DIMENSIONLESS);
   unit->initDefaults();
+
+  /* save any existing value of undeclaredUnits/canIgnoreUndeclaredUnits */
+  unsigned int originalIgnore = mCanIgnoreUndeclaredUnits;
+  bool originalUndeclaredValue = mContainsUndeclaredUnits;
+  //unsigned int currentIgnore = mCanIgnoreUndeclaredUnits;
+  //bool currentUndeclared = mContainsUndeclaredUnits;
+
+  // check for undeclared units in child expressions
+  UnitDefinition * tempUd;
+  unsigned int noUndeclared = 0;
+  for (unsigned int i = 0; i < node->getNumChildren(); i++)
+  {
+    tempUd = getUnitDefinition(node->getChild(i), inKL, reactNo);
+    if (getContainsUndeclaredUnits() == true)
+    {
+      // if we have used logbase we dont want to 
+      // record that the unit is not declared
+      if (node->getType() == AST_FUNCTION_LOG && i == 0)
+      {
+        // do nothing
+      }
+      else
+      {
+        noUndeclared++;
+      }
+    }
+    delete tempUd;
+  }
+  
+  if (noUndeclared == 0)
+  {
+    mCanIgnoreUndeclaredUnits = originalIgnore;
+    mContainsUndeclaredUnits = originalUndeclaredValue;
+  }
+  else if (noUndeclared == node->getNumChildren())
+  {
+    mCanIgnoreUndeclaredUnits = originalIgnore;
+    mContainsUndeclaredUnits = true;
+  }
+  else
+  {
+    mCanIgnoreUndeclaredUnits = false;
+    mContainsUndeclaredUnits = true;
+  }
 
   return ud;
 }
@@ -795,6 +899,7 @@ UnitFormulaFormatter::getUnitDefinitionFromArgUnitsReturnFunction
   UnitDefinition * tempUd;
   unsigned int i = 0;
   unsigned int n = 0;
+  bool conflictingUnits = false;
  
   /* save any existing value of undeclaredUnits/canIgnoreUndeclaredUnits */
   unsigned int originalIgnore = mCanIgnoreUndeclaredUnits;
@@ -833,6 +938,13 @@ UnitFormulaFormatter::getUnitDefinitionFromArgUnitsReturnFunction
     {
       resetFlags();
       tempUd = getUnitDefinition(node->getChild(n), inKL, reactNo);
+      if (tempUd->getNumUnits() > 0)
+      {
+        if (!UnitDefinition::areEquivalent(ud, tempUd))
+        {
+          conflictingUnits = true;
+        }
+      }
       if (getContainsUndeclaredUnits())
       {
         currentUndeclared = true;
@@ -852,6 +964,19 @@ UnitFormulaFormatter::getUnitDefinitionFromArgUnitsReturnFunction
   if (originalIgnore == 2)
   {
     mCanIgnoreUndeclaredUnits = currentIgnore;
+  }
+
+  // we know we have something like mole + second
+  // we dont want to report either mole or second as the 'correct' answer
+  if (conflictingUnits)
+  {
+    mContainsInconsistentUnits = true;
+    for (unsigned int j = ud->getNumUnits(); j > 0; --j)
+    {
+      Unit * unit = ud->removeUnit(j - 1);
+      delete unit;
+    }
+    
   }
   
 
@@ -904,6 +1029,8 @@ UnitFormulaFormatter::getUnitDefinitionFromOther(const ASTNode * node,
         unit = ud->createUnit();
         unit->setKind(UnitKind_forName(units.c_str()));
         unit->initDefaults();
+        mContainsUndeclaredUnits = false;
+        mCanIgnoreUndeclaredUnits = 0;
       }
       else
       {
@@ -914,6 +1041,8 @@ UnitFormulaFormatter::getUnitDefinitionFromOther(const ASTNode * node,
           {
             ud->addUnit(tempUd->getUnit(n));
           }
+          mContainsUndeclaredUnits = false;
+          mCanIgnoreUndeclaredUnits = 0;
         }
 
       }
@@ -957,30 +1086,30 @@ UnitFormulaFormatter::getUnitDefinitionFromOther(const ASTNode * node,
   {
     if (node->getType() == AST_NAME_TIME)
     {
-      tempUd = model->getUnitDefinition("time");
+      ud = getTimeUnitDefinition();
 
-      try
-      {
-        ud = new UnitDefinition(model->getSBMLNamespaces());
-      }
-      catch ( ... )
-      {
-        ud = new UnitDefinition(SBMLDocument::getDefaultLevel(),
-          SBMLDocument::getDefaultVersion());
-      }
-      if (tempUd == NULL) 
-      {
-        unit = ud->createUnit();
-        unit->setKind(UnitKind_forName("second"));
-        unit->initDefaults();
-      }
-      else
-      {
-        for (n = 0; n < tempUd->getNumUnits(); n++)
-        {
-          ud->addUnit(tempUd->getUnit(n));
-        }
-      }
+      //try
+      //{
+      //  ud = new UnitDefinition(model->getSBMLNamespaces());
+      //}
+      //catch ( ... )
+      //{
+      //  ud = new UnitDefinition(SBMLDocument::getDefaultLevel(),
+      //    SBMLDocument::getDefaultVersion());
+      //}
+      //if (tempUd == NULL) 
+      //{
+      //  unit = ud->createUnit();
+      //  unit->setKind(UnitKind_forName("second"));
+      //  unit->initDefaults();
+      //}
+      //else
+      //{
+      //  for (n = 0; n < tempUd->getNumUnits(); n++)
+      //  {
+      //    ud->addUnit(tempUd->getUnit(n));
+      //  }
+      //}
     }
     /* must be the name of a compartment, species or parameter */
     else
@@ -1899,7 +2028,7 @@ UnitFormulaFormatter::getUnitDefinitionFromEventTime(const Event * event)
     return NULL;
   }
   UnitDefinition * ud = NULL;
-  const UnitDefinition * tempUd;
+  UnitDefinition * tempUd = NULL;
   Unit * unit;
   unsigned int n, p;
 
@@ -1915,7 +2044,7 @@ UnitFormulaFormatter::getUnitDefinitionFromEventTime(const Event * event)
     */
     if (event->getLevel() < 3)
     {
-      tempUd = model->getUnitDefinition("time");
+      tempUd = (UnitDefinition*)(model->getUnitDefinition("time"));
 
       try
       {
@@ -2023,9 +2152,9 @@ UnitFormulaFormatter::getUnitDefinitionFromEventTime(const Event * event)
 }
 
 /**
-* Returns the unitDefinition constructed
-* from the extent units of this Model.
-*/
+ * Returns the unitDefinition constructed
+ * from the extent units of this Model.
+ */
 UnitDefinition * 
 UnitFormulaFormatter::getExtentUnitDefinition()
 {
@@ -2298,6 +2427,74 @@ UnitFormulaFormatter::getSpeciesExtentUnitDefinition(const Species * species)
   return ud;
 }
 
+  /* @cond doxygenLibsbmlInternal */
+
+UnitDefinition * 
+UnitFormulaFormatter::getTimeUnitDefinition()
+{
+  UnitDefinition * ud = NULL;
+
+  std::string timeUnits = model->getTimeUnits();
+  if (model->getLevel() < 3)
+  {
+    if (model->getUnitDefinition("time") != NULL)
+      timeUnits = "time";
+    else
+      timeUnits = "second";
+  }
+
+  char * charTime = safe_strdup(timeUnits.c_str());
+  try
+  {
+    ud = new UnitDefinition(model->getSBMLNamespaces());
+  }
+  catch ( ... )
+  {
+    ud = new UnitDefinition(SBMLDocument::getDefaultLevel(),
+      SBMLDocument::getDefaultVersion());
+  }
+
+  if (UnitKind_isValidUnitKindString(charTime,
+                                      model->getLevel(), 
+                                      model->getVersion()))
+  {
+    Unit* u = ud->createUnit();
+    u->setKind(UnitKind_forName(charTime));
+    u->initDefaults();
+  }
+  else if (model->getUnitDefinition(timeUnits) != NULL)
+  {
+    for (unsigned int n1 = 0; 
+      n1 < model->getUnitDefinition(timeUnits)->getNumUnits(); n1++)
+    {
+      // need to prevent level/version mismatches
+      // ud will have default level and veersion
+      const Unit* uFromModel = 
+                  model->getUnitDefinition(timeUnits)->getUnit(n1);
+      if (uFromModel  != NULL)
+      {
+        Unit* u = ud->createUnit();
+        u->setKind(uFromModel->getKind());
+        u->setExponent(uFromModel->getExponent());
+        u->setScale(uFromModel->getScale());
+        u->setMultiplier(uFromModel->getMultiplier());
+      }
+    }
+  }
+  else
+  {
+    mContainsUndeclaredUnits = true;
+    mCanIgnoreUndeclaredUnits = 0;
+  }
+
+  safe_free(charTime);
+  return ud;
+
+}
+
+  /** @endcond */
+
+
 /** 
   * returns canIgnoreUndeclaredUnits value
   */
@@ -2321,13 +2518,23 @@ UnitFormulaFormatter::getContainsUndeclaredUnits()
   return mContainsUndeclaredUnits;
 }
 
-/** 
+/**
+* returns undeclaredUnits value
+*/
+bool
+UnitFormulaFormatter::getContainsInconsistentUnits()
+{
+  return mContainsInconsistentUnits;
+}
+
+/**
   * resets the undeclaredUnits and canIgnoreUndeclaredUnits flags
   * since these will different for each math formula
   */
 void 
 UnitFormulaFormatter::resetFlags()
 {
+  mContainsInconsistentUnits = false;
   mContainsUndeclaredUnits = false;
   mCanIgnoreUndeclaredUnits = 2;
 }
@@ -2337,6 +2544,7 @@ UnitFormulaFormatter::inferUnitDefinition(UnitDefinition* expectedUD,
     const ASTNode * LHS, std::string id, bool inKL, int reactNo)
 {
   UnitDefinition * resultUD = NULL;
+  if (expectedUD == NULL) return NULL;
 
   ASTNode * math = LHS->deepCopy();
   UnitDefinition * tempUD = expectedUD->clone();
@@ -2369,7 +2577,7 @@ UnitFormulaFormatter::inferUnitDefinition(UnitDefinition* expectedUD,
       child2 = math->getChild(1)->deepCopy();
     }
 
-    if (child1->containsVariable(id) == true)
+    if (child1 != NULL && child1->containsVariable(id) == true)
     {
       if (child1->getType() == AST_NAME && child1->getName() == id)
       {
@@ -2393,7 +2601,7 @@ UnitFormulaFormatter::inferUnitDefinition(UnitDefinition* expectedUD,
         continue;
       }
     }
-    else if (child2->containsVariable(id) == true)
+    else if (child2 != NULL && child2->containsVariable(id) == true)
     {
       if (child2->getType() == AST_NAME && child2->getName() == id)
       {
@@ -2427,8 +2635,10 @@ UnitFormulaFormatter::inferUnitDefinition(UnitDefinition* expectedUD,
 
   delete math;
   delete tempUD;
-  if (child1 != NULL) delete child1;
-  if (child2 != NULL) delete child2;
+  if (child1 != NULL) 
+    delete child1;
+  if (child2 != NULL) 
+    delete child2;
 
   return resultUD;
 }

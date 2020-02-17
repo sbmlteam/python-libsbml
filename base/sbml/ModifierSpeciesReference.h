@@ -8,7 +8,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -88,10 +92,10 @@ public:
    * @p version values.
    *
    * @param level an unsigned int, the SBML Level to assign to this
-   * ModifierSpeciesReference
+   * ModifierSpeciesReference.
    *
    * @param version an unsigned int, the SBML Version to assign to this
-   * ModifierSpeciesReference
+   * ModifierSpeciesReference.
    *
    * @copydetails doc_throw_exception_lv
    *
@@ -176,6 +180,298 @@ public:
    * otherwise.
    */
   virtual bool hasRequiredAttributes() const ;
+
+
+
+
+  #ifndef SWIG
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this
+   * ModifierSpeciesReference.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, bool& value)
+    const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this
+   * ModifierSpeciesReference.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this
+   * ModifierSpeciesReference.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           double& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this
+   * ModifierSpeciesReference.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           unsigned int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this
+   * ModifierSpeciesReference.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           std::string& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this
+   * ModifierSpeciesReference.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  //virtual int getAttribute(const std::string& attributeName,
+  //                         const char* value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Predicate returning @c true if this ModifierSpeciesReference's attribute
+   * "attributeName" is set.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @return @c true if this ModifierSpeciesReference's attribute
+   * "attributeName" has been set, otherwise @c false is returned.
+   */
+  virtual bool isSetAttribute(const std::string& attributeName) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this
+   * ModifierSpeciesReference.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, bool value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this
+   * ModifierSpeciesReference.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this
+   * ModifierSpeciesReference.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, double value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this
+   * ModifierSpeciesReference.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           unsigned int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this
+   * ModifierSpeciesReference.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           const std::string& value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this
+   * ModifierSpeciesReference.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  //virtual int setAttribute(const std::string& attributeName, const char*
+  //  value);
+
+  /** @endcond */
+
+
+
+
+  /**
+   * Unsets the value of the "attributeName" attribute of this
+   * ModifierSpeciesReference.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int unsetAttribute(const std::string& attributeName);
+
+  /** @endcond */
+
+
+
+
+  #endif /* !SWIG */
 
 
 protected:
@@ -327,13 +623,13 @@ ModifierSpeciesReference_getSpecies(const ModifierSpeciesReference_t * msr);
 
 
 /**
- * Predicate returning @c 1 if the given ModifierSpeciesReference_t structure's "id"
+ * Predicate returning @c 1 (true) if the given ModifierSpeciesReference_t structure's "id"
  * is set.
  *
  * @param msr the ModifierSpeciesReference_t structure.
  *
- * @return @c 1 if the "id" of this ModifierSpeciesReference_t structure is
- * set, @c 0 otherwise.
+ * @return @c 1 (true) if the "id" of this ModifierSpeciesReference_t structure is
+ * set, @c 0 (false) otherwise.
  *
  * @memberof ModifierSpeciesReference_t
  */
@@ -343,13 +639,13 @@ ModifierSpeciesReference_isSetId(const ModifierSpeciesReference_t * msr);
 
 
 /**
- * Predicate returning @c 1 if the given ModifierSpeciesReference_t structure's "name"
+ * Predicate returning @c 1 (true) if the given ModifierSpeciesReference_t structure's "name"
  * is set.
  *
  * @param msr the ModifierSpeciesReference_t structure.
  *
- * @return @c 1 if the "name" of this ModifierSpeciesReference_t structure is
- * set, @c 0 otherwise.
+ * @return @c 1 (true) if the "name" of this ModifierSpeciesReference_t structure is
+ * set, @c 0 (false) otherwise.
  *
  * @memberof ModifierSpeciesReference_t
  */
@@ -359,13 +655,13 @@ ModifierSpeciesReference_isSetName(const ModifierSpeciesReference_t * msr);
 
 
 /**
- * Predicate returning @c 1 if the given ModifierSpeciesReference_t structure's "species"
+ * Predicate returning @c 1 (true) if the given ModifierSpeciesReference_t structure's "species"
  * is set.
  *
  * @param msr the ModifierSpeciesReference_t structure.
  *
- * @return @c 1 if the "species" of this ModifierSpeciesReference_t structure is
- * set, @c 0 otherwise.
+ * @return @c 1 (true) if the "species" of this ModifierSpeciesReference_t structure is
+ * set, @c 0 (false) otherwise.
  *
  * @memberof ModifierSpeciesReference_t
  */
@@ -377,8 +673,8 @@ ModifierSpeciesReference_isSetSpecies(const ModifierSpeciesReference_t * msr);
 /**
  * Sets the "id" attribute of the given ModifierSpeciesReference_t structure.
  *
- * This function copies the string given in @p string.  If the string is
- * a null pointer, this function performs ModifierSpeciesReference_unsetId() instead.
+ * This function copies the string given in @p id.  If the string is
+ * a null pointer, this function is equivalent to calling ModifierSpeciesReference_unsetId().
  *
  * @param msr the ModifierSpeciesReference_t structure.
  *
@@ -390,8 +686,8 @@ ModifierSpeciesReference_isSetSpecies(const ModifierSpeciesReference_t * msr);
  * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
  *
- * @note Using this function with a null pointer for @p name is equivalent to
- * unsetting the value of the "name" attribute.
+ * @note Using this function with a null pointer for @p id is equivalent to
+ * unsetting the value of the "id" attribute.
  * 
  * @memberof ModifierSpeciesReference_t
  */
@@ -403,8 +699,8 @@ ModifierSpeciesReference_setId(ModifierSpeciesReference_t * msr, const char * id
 /**
  * Sets the "name" attribute of the given ModifierSpeciesReference_t structure.
  *
- * This function copies the string given in @p string.  If the string is
- * a null pointer, this function performs ModifierSpeciesReference_unsetName() instead.
+ * This function copies the string given in @p name.  If the string is
+ * a null pointer, this function is equivalent to calling ModifierSpeciesReference_unsetName().
  *
  * @param msr the ModifierSpeciesReference_t structure.
  *
@@ -429,8 +725,8 @@ ModifierSpeciesReference_setName(ModifierSpeciesReference_t * msr, const char * 
 /**
  * Sets the "species" attribute of the given ModifierSpeciesReference_t structure.
  *
- * This function copies the string given in @p string.  If the string is
- * a null pointer, this function performs ModifierSpeciesReference_unsetSpecies() instead.
+ * This function copies the string given in @p species.  If the string is
+ * a null pointer, this function is equivalent to calling ModifierSpeciesReference_unsetSpecies().
  *
  * @param msr the ModifierSpeciesReference_t structure.
  *
@@ -442,8 +738,8 @@ ModifierSpeciesReference_setName(ModifierSpeciesReference_t * msr, const char * 
  * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
  *
- * @note Using this function with a null pointer for @p name is equivalent to
- * unsetting the value of the "name" attribute.
+ * @note Using this function with a null pointer for @p species is equivalent to
+ * unsetting the value of the "species" attribute.
  * 
  * @memberof ModifierSpeciesReference_t
  */
@@ -507,13 +803,13 @@ ModifierSpeciesReference_unsetSpecies(ModifierSpeciesReference_t * msr);
 
 
 /**
- * Predicate returning @c 1 or *c 0 depending on whether all the required
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether all the required
  * attributes of the given ModifierSpeciesReference_t structure have been set.
  *
  * @param msr the ModifierSpeciesReference_t structure to check.
  *
- * @return @c 1 if all the required attributes for this
- * structure have been defined, @c 0 otherwise.
+ * @return @c 1 (true) if all the required attributes for this
+ * structure have been defined, @c 0 (false) otherwise.
  *
  * @memberof ModifierSpeciesReference_t
  */

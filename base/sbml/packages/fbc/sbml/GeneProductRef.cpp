@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -31,7 +35,7 @@
  * ------------------------------------------------------------------------ -->
  */
 
-
+#include <sbml/packages/fbc/extension/FbcModelPlugin.h>
 #include <sbml/packages/fbc/sbml/GeneProductRef.h>
 #include <sbml/packages/fbc/validator/FbcSBMLError.h>
 #include <sbml/util/ElementFilter.h>
@@ -39,6 +43,8 @@
 
 using namespace std;
 
+
+#ifdef __cplusplus
 
 LIBSBML_CPP_NAMESPACE_BEGIN
 
@@ -48,9 +54,9 @@ LIBSBML_CPP_NAMESPACE_BEGIN
  */
 GeneProductRef::GeneProductRef (unsigned int level, unsigned int version, unsigned int pkgVersion)
   : FbcAssociation(level, version)
-  , mId ("")
+//  , mId ("")
   , mGeneProduct ("")
-  , mName ("")
+//  , mName ("")
 {
   // set an SBMLNamespaces derived object of this package
   setSBMLNamespacesAndOwn(new FbcPkgNamespaces(level, version, pkgVersion));
@@ -62,9 +68,9 @@ GeneProductRef::GeneProductRef (unsigned int level, unsigned int version, unsign
  */
 GeneProductRef::GeneProductRef (FbcPkgNamespaces* fbcns)
   : FbcAssociation(fbcns)
-  , mId ("")
+//  , mId ("")
   , mGeneProduct ("")
-  , mName ("")
+//  , mName ("")
 {
   // set the element namespace of this object
   setElementNamespace(fbcns->getURI());
@@ -142,9 +148,27 @@ GeneProductRef::getGeneProduct() const
 
 
 std::string 
-GeneProductRef::toInfix() const
+GeneProductRef::toInfix(bool usingId) const
 {
-  return mGeneProduct;
+  const SBMLDocument* doc = getSBMLDocument();
+  if (doc == NULL) return mGeneProduct;
+
+  const Model* model = doc->getModel();
+  if (model == NULL) return mGeneProduct;
+
+  const FbcModelPlugin* plug = dynamic_cast<const FbcModelPlugin*>(model->getPlugin("fbc"));
+  if (plug == NULL) return mGeneProduct;
+  const GeneProduct* product = plug->getGeneProduct(mGeneProduct);
+  if (product == NULL) return mGeneProduct;
+
+  if (usingId)
+  {
+    return product->getId();
+  }
+  else
+  {
+    return product->getLabel();
+  }
 }
 
 
@@ -351,7 +375,7 @@ GeneProductRef::writeElements (XMLOutputStream& stream) const
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -366,7 +390,7 @@ GeneProductRef::accept (SBMLVisitor& v) const
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -381,7 +405,7 @@ GeneProductRef::setSBMLDocument (SBMLDocument* d)
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -397,7 +421,278 @@ GeneProductRef::enablePackageInternal(const std::string& pkgURI,
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this GeneProductRef.
+ */
+int
+GeneProductRef::getAttribute(const std::string& attributeName,
+                             bool& value) const
+{
+  int return_value = FbcAssociation::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this GeneProductRef.
+ */
+int
+GeneProductRef::getAttribute(const std::string& attributeName,
+                             int& value) const
+{
+  int return_value = FbcAssociation::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this GeneProductRef.
+ */
+int
+GeneProductRef::getAttribute(const std::string& attributeName,
+                             double& value) const
+{
+  int return_value = FbcAssociation::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this GeneProductRef.
+ */
+int
+GeneProductRef::getAttribute(const std::string& attributeName,
+                             unsigned int& value) const
+{
+  int return_value = FbcAssociation::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this GeneProductRef.
+ */
+int
+GeneProductRef::getAttribute(const std::string& attributeName,
+                             std::string& value) const
+{
+  int return_value = FbcAssociation::getAttribute(attributeName, value);
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "id")
+  {
+    value = getId();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "name")
+  {
+    value = getName();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "geneProduct")
+  {
+    value = getGeneProduct();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Predicate returning @c true if this GeneProductRef's attribute
+ * "attributeName" is set.
+ */
+bool
+GeneProductRef::isSetAttribute(const std::string& attributeName) const
+{
+  bool value = FbcAssociation::isSetAttribute(attributeName);
+
+  if (attributeName == "id")
+  {
+    value = isSetId();
+  }
+  else if (attributeName == "name")
+  {
+    value = isSetName();
+  }
+  else if (attributeName == "geneProduct")
+  {
+    value = isSetGeneProduct();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this GeneProductRef.
+ */
+int
+GeneProductRef::setAttribute(const std::string& attributeName, bool value)
+{
+  int return_value = FbcAssociation::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this GeneProductRef.
+ */
+int
+GeneProductRef::setAttribute(const std::string& attributeName, int value)
+{
+  int return_value = FbcAssociation::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this GeneProductRef.
+ */
+int
+GeneProductRef::setAttribute(const std::string& attributeName, double value)
+{
+  int return_value = FbcAssociation::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this GeneProductRef.
+ */
+int
+GeneProductRef::setAttribute(const std::string& attributeName,
+                             unsigned int value)
+{
+  int return_value = FbcAssociation::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this GeneProductRef.
+ */
+int
+GeneProductRef::setAttribute(const std::string& attributeName,
+                             const std::string& value)
+{
+  int return_value = FbcAssociation::setAttribute(attributeName, value);
+
+  if (attributeName == "id")
+  {
+    return_value = setId(value);
+  }
+  else if (attributeName == "name")
+  {
+    return_value = setName(value);
+  }
+  else if (attributeName == "geneProduct")
+  {
+    return_value = setGeneProduct(value);
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Unsets the value of the "attributeName" attribute of this GeneProductRef.
+ */
+int
+GeneProductRef::unsetAttribute(const std::string& attributeName)
+{
+  int value = FbcAssociation::unsetAttribute(attributeName);
+
+  if (attributeName == "id")
+  {
+    value = unsetId();
+  }
+  else if (attributeName == "name")
+  {
+    value = unsetName();
+  }
+  else if (attributeName == "geneProduct")
+  {
+    value = unsetGeneProduct();
+  }
+
+  return value;
+}
+
+/** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -417,7 +712,7 @@ GeneProductRef::createObject(XMLInputStream& stream)
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -436,7 +731,7 @@ GeneProductRef::addExpectedAttributes(ExpectedAttributes& attributes)
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -546,7 +841,7 @@ GeneProductRef::readAttributes (const XMLAttributes& attributes,
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -571,7 +866,7 @@ GeneProductRef::writeAttributes (XMLOutputStream& stream) const
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
 LIBSBML_EXTERN
@@ -723,5 +1018,8 @@ GeneProductRef_hasRequiredAttributes(const GeneProductRef_t * gpr)
 
 
 LIBSBML_CPP_NAMESPACE_END
+
+#endif /* __cplusplus */
+
 
 

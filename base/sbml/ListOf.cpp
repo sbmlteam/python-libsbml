@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -52,6 +56,7 @@ LIBSBML_CPP_NAMESPACE_BEGIN
  */
 ListOf::ListOf (unsigned int level, unsigned int version)
 : SBase(level,version)
+, mExplicitlyListed (false)
 {
     if (!hasValidLevelVersionNamespaceCombination())
     throw SBMLConstructorException();
@@ -63,6 +68,7 @@ ListOf::ListOf (unsigned int level, unsigned int version)
  */
 ListOf::ListOf (SBMLNamespaces* sbmlns)
 : SBase(sbmlns)
+, mExplicitlyListed (false)
 {
     if (!hasValidLevelVersionNamespaceCombination())
     throw SBMLConstructorException();
@@ -103,6 +109,7 @@ ListOf::ListOf (const ListOf& orig) : SBase(orig), mItems()
 {
   mItems.resize( orig.size() );
   transform( orig.mItems.begin(), orig.mItems.end(), mItems.begin(), Clone() );
+  mExplicitlyListed = orig.mExplicitlyListed;
   connectToChild();
 }
 
@@ -447,6 +454,20 @@ ListOf::enablePackageInternal(const std::string& pkgURI, const std::string& pkgP
     ++it;
   }
 }
+
+void
+ListOf::updateSBMLNamespace(const std::string& pkg, unsigned int level,
+  unsigned int version)
+{
+  SBase::updateSBMLNamespace(pkg, level, version);
+  
+  ListItemIter it = mItems.begin();
+  while (it != mItems.end())
+  {
+    (*it)->updateSBMLNamespace(pkg, level, version);
+    ++it;
+  }
+}
 /** @endcond */
 
 
@@ -547,7 +568,7 @@ struct Write : public unary_function<SBase*, void>
 /** @cond doxygenLibsbmlInternal */
 /*
  * Subclasses should override this method to write out their contained
- * SBML objects as XML elements.  Be sure to call your parents
+ * SBML objects as XML elements.  Be sure to call your parent's
  * implementation of this method as well.
  */
 void
@@ -580,7 +601,7 @@ ListOf::addExpectedAttributes(ExpectedAttributes& attributes)
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 ListOf::readAttributes (const XMLAttributes& attributes,
@@ -628,6 +649,44 @@ ListOf::isValidTypeForList(SBase * item)
 }
 /** @endcond */
 
+/** @cond doxygenLibsbmlInternal */
+
+  
+bool 
+ListOf::hasOptionalElements() const
+{
+  bool hasElements = SBase::hasOptionalElements();
+
+  if (size() > 0)  hasElements = true;
+
+  return hasElements;
+}
+
+
+/** @endcond */
+  
+
+/** @cond doxygenLibsbmlInternal */
+
+
+bool 
+ListOf::isExplicitlyListed() const
+{
+  return mExplicitlyListed;
+}
+
+  /** @endcond */
+
+/** @cond doxygenLibsbmlInternal */
+
+void 
+ListOf::setExplicitlyListed(bool value)
+{
+  mExplicitlyListed = value;
+}
+
+
+/** @endcond */
 
 
 #endif /* __cplusplus */

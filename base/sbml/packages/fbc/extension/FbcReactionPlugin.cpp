@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -147,8 +151,10 @@ FbcReactionPlugin::createObject (XMLInputStream& stream)
       if (mGeneProductAssociation != NULL)
       {
         getErrorLog()->logPackageError("fbc", FbcReactionOnlyOneGeneProdAss, 
-          getPackageVersion(), getLevel(), getVersion());
+          getPackageVersion(), getLevel(), getVersion(), "", getLine(), getColumn());
       }
+
+      delete mGeneProductAssociation;
       
       mGeneProductAssociation = new GeneProductAssociation(fbcns);
 
@@ -171,7 +177,10 @@ FbcReactionPlugin::createObject (XMLInputStream& stream)
 void
 FbcReactionPlugin::writeElements (XMLOutputStream& stream) const
 {
-  if (isSetGeneProductAssociation() == true && getLevel() == 3 && getPackageVersion() == 2) 
+  // dont want to write <fbc:geneProductAssociation/> 
+  // so check it actual has something in
+  if (isSetGeneProductAssociation() == true && getLevel() == 3 
+    && getPackageVersion() == 2 && getGeneProductAssociation()->getAssociation() != NULL) 
   { 
     mGeneProductAssociation->write(stream);
   } 
@@ -179,22 +188,7 @@ FbcReactionPlugin::writeElements (XMLOutputStream& stream) const
 /** @endcond */
 
 
-/*
- * Checks if this plugin object has all the required elements.
- */
-bool
-FbcReactionPlugin::hasRequiredElements () const
-{
-  bool allPresent = true; 
-
-  // TO DO 
-
-  return allPresent; 
-}
-
-
-  /** @cond doxygenLibsbmlInternal */
-
+/** @cond doxygenLibsbmlInternal */
 /*
  * Get the list of expected attributes for this element.
  */
@@ -208,7 +202,7 @@ FbcReactionPlugin::addExpectedAttributes(ExpectedAttributes& attributes)
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -317,7 +311,7 @@ FbcReactionPlugin::readAttributes (const XMLAttributes& attributes,
   }
 
 }
-/** @endcond doxygenLibsbmlInternal */
+/** @endcond */
 
 /** @cond doxygenLibsbmlInternal */
 void
@@ -333,7 +327,7 @@ FbcReactionPlugin::renameSIdRefs(const std::string& oldid, const std::string& ne
     if (mUpperFluxBound==oldid) mUpperFluxBound=newid;
   }
 }
-/** @endcond doxygenLibsbmlInternal */
+/** @endcond */
 
 
 /** @cond doxygenLibsbmlInternal */
@@ -354,7 +348,7 @@ FbcReactionPlugin::writeAttributes (XMLOutputStream& stream) const
     stream.writeAttribute("upperFluxBound", getPrefix(), mUpperFluxBound);
 
 }
-/** @endcond doxygenLibsbmlInternal */
+/** @endcond */
 
 
 //---------------------------------------------------------------
@@ -435,6 +429,8 @@ FbcReactionPlugin::setGeneProductAssociation(const GeneProductAssociation* geneP
   {
     delete mGeneProductAssociation;
     mGeneProductAssociation = static_cast<GeneProductAssociation*>(geneProductAssociation->clone());
+    if (mGeneProductAssociation != NULL) mGeneProductAssociation->connectToParent(this->getParentSBMLObject());
+
     return LIBSBML_OPERATION_SUCCESS;
   }
 }
@@ -632,8 +628,332 @@ FbcReactionPlugin::enablePackageInternal(const std::string& pkgURI,
 }
 /** @endcond */
 
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FbcReactionPlugin.
+ */
+int
+FbcReactionPlugin::getAttribute(const std::string& attributeName,
+                                bool& value) const
+{
+  int return_value = SBasePlugin::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
 
 /** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FbcReactionPlugin.
+ */
+int
+FbcReactionPlugin::getAttribute(const std::string& attributeName,
+                                int& value) const
+{
+  int return_value = SBasePlugin::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FbcReactionPlugin.
+ */
+int
+FbcReactionPlugin::getAttribute(const std::string& attributeName,
+                                double& value) const
+{
+  int return_value = SBasePlugin::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FbcReactionPlugin.
+ */
+int
+FbcReactionPlugin::getAttribute(const std::string& attributeName,
+                                unsigned int& value) const
+{
+  int return_value = SBasePlugin::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FbcReactionPlugin.
+ */
+int
+FbcReactionPlugin::getAttribute(const std::string& attributeName,
+                                std::string& value) const
+{
+  int return_value = SBasePlugin::getAttribute(attributeName, value);
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "lowerFluxBound")
+  {
+    value = getLowerFluxBound();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "upperFluxBound")
+  {
+    value = getUpperFluxBound();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Predicate returning @c true if this FbcReactionPlugin's attribute
+ * "attributeName" is set.
+ */
+bool
+FbcReactionPlugin::isSetAttribute(const std::string& attributeName) const
+{
+  bool value = SBasePlugin::isSetAttribute(attributeName);
+
+  if (attributeName == "lowerFluxBound")
+  {
+    value = isSetLowerFluxBound();
+  }
+  else if (attributeName == "upperFluxBound")
+  {
+    value = isSetUpperFluxBound();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FbcReactionPlugin.
+ */
+int
+FbcReactionPlugin::setAttribute(const std::string& attributeName, bool value)
+{
+  int return_value = SBasePlugin::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FbcReactionPlugin.
+ */
+int
+FbcReactionPlugin::setAttribute(const std::string& attributeName, int value)
+{
+  int return_value = SBasePlugin::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FbcReactionPlugin.
+ */
+int
+FbcReactionPlugin::setAttribute(const std::string& attributeName,
+                                double value)
+{
+  int return_value = SBasePlugin::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FbcReactionPlugin.
+ */
+int
+FbcReactionPlugin::setAttribute(const std::string& attributeName,
+                                unsigned int value)
+{
+  int return_value = SBasePlugin::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FbcReactionPlugin.
+ */
+int
+FbcReactionPlugin::setAttribute(const std::string& attributeName,
+                                const std::string& value)
+{
+  int return_value = SBasePlugin::setAttribute(attributeName, value);
+
+  if (attributeName == "lowerFluxBound")
+  {
+    return_value = setLowerFluxBound(value);
+  }
+  else if (attributeName == "upperFluxBound")
+  {
+    return_value = setUpperFluxBound(value);
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Unsets the value of the "attributeName" attribute of this FbcReactionPlugin.
+ */
+int
+FbcReactionPlugin::unsetAttribute(const std::string& attributeName)
+{
+  int value = SBasePlugin::unsetAttribute(attributeName);
+
+  if (attributeName == "lowerFluxBound")
+  {
+    value = unsetLowerFluxBound();
+  }
+  else if (attributeName == "upperFluxBound")
+  {
+    value = unsetUpperFluxBound();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Creates and returns an new "elementName" object in this FbcReactionPlugin.
+ */
+SBase*
+FbcReactionPlugin::createChildObject(const std::string& elementName)
+{
+  SBase* obj = NULL;
+
+  if (elementName == "geneProductAssociation")
+  {
+    return createGeneProductAssociation();
+  }
+
+  return obj;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Returns the number of "elementName" in this FbcReactionPlugin.
+ */
+unsigned int
+FbcReactionPlugin::getNumObjects(const std::string& elementName)
+{
+  unsigned int n = 0;
+
+  if (elementName == "geneProductAssociation")
+  {
+    if (isSetGeneProductAssociation())
+    {
+      return 1;
+    }
+  }
+
+  return n;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Returns the nth object of "objectName" in this FbcReactionPlugin.
+ */
+SBase*
+FbcReactionPlugin::getObject(const std::string& elementName,
+                             unsigned int index)
+{
+  SBase* obj = NULL;
+
+  if (elementName == "geneProductAssociation")
+  {
+    return getGeneProductAssociation();
+  }
+
+  return obj;
+}
+
+/** @endcond */
+
+/** @cond doxygenLibsbmlInternal */
+
 /*
  * Accept the SBMLVisitor.
  */
@@ -664,9 +984,128 @@ FbcReactionPlugin::accept(SBMLVisitor& v) const
 
 
 
-LIBSBML_CPP_NAMESPACE_END
 
 
 #endif /* __cplusplus */
 
+
+LIBSBML_EXTERN
+char *
+FbcReactionPlugin_getUpperFluxBound(SBasePlugin_t * fbc)
+{
+  if (fbc == NULL) return NULL;
+
+  return static_cast<FbcReactionPlugin*>(fbc)->getUpperFluxBound().empty() 
+    ? safe_strdup("")
+    : safe_strdup(static_cast<FbcReactionPlugin*>(fbc)->getUpperFluxBound().c_str());
+}
+
+
+LIBSBML_EXTERN
+int
+FbcReactionPlugin_isSetUpperFluxBound(SBasePlugin_t * fbc)
+{
+  return (fbc != NULL) 
+    ? static_cast<int>
+             (static_cast<FbcReactionPlugin*>(fbc)->isSetUpperFluxBound()) 
+    : 0;
+}
+
+
+LIBSBML_EXTERN
+int
+FbcReactionPlugin_setUpperFluxBound(SBasePlugin_t * fbc, const char * chemform)
+{
+  return (fbc != NULL) 
+    ? static_cast<FbcReactionPlugin*>(fbc)->setUpperFluxBound(chemform)
+    : LIBSBML_INVALID_OBJECT;
+}
+
+
+LIBSBML_EXTERN
+int
+FbcReactionPlugin_unsetUpperFluxBound(SBasePlugin_t * fbc)
+{
+  return (fbc != NULL) 
+    ? static_cast<FbcReactionPlugin*>(fbc)->unsetUpperFluxBound()
+    : LIBSBML_INVALID_OBJECT;
+}
+
+
+LIBSBML_EXTERN
+char *
+FbcReactionPlugin_getLowerFluxBound(SBasePlugin_t * fbc)
+{
+  if (fbc == NULL) return NULL;
+
+  return static_cast<FbcReactionPlugin*>(fbc)->getLowerFluxBound().empty() 
+    ? safe_strdup("")
+    : safe_strdup(static_cast<FbcReactionPlugin*>(fbc)->getLowerFluxBound().c_str());
+}
+
+
+LIBSBML_EXTERN
+int
+FbcReactionPlugin_isSetLowerFluxBound(SBasePlugin_t * fbc)
+{
+  return (fbc != NULL) 
+    ? static_cast<int>
+             (static_cast<FbcReactionPlugin*>(fbc)->isSetLowerFluxBound()) 
+    : 0;
+}
+
+
+LIBSBML_EXTERN
+int
+FbcReactionPlugin_setLowerFluxBound(SBasePlugin_t * fbc, const char * chemform)
+{
+  return (fbc != NULL) 
+    ? static_cast<FbcReactionPlugin*>(fbc)->setLowerFluxBound(chemform)
+    : LIBSBML_INVALID_OBJECT;
+}
+
+
+LIBSBML_EXTERN
+int
+FbcReactionPlugin_unsetLowerFluxBound(SBasePlugin_t * fbc)
+{
+  return (fbc != NULL) 
+    ? static_cast<FbcReactionPlugin*>(fbc)->unsetLowerFluxBound()
+    : LIBSBML_INVALID_OBJECT;
+}
+
+
+LIBSBML_EXTERN
+int
+FbcReactionPlugin_isSetGeneProductAssociation(SBasePlugin_t * fbc)
+{
+  return (fbc != NULL) 
+    ? static_cast<int>
+             (static_cast<FbcReactionPlugin*>(fbc)->isSetGeneProductAssociation()) 
+    : 0;
+}
+
+
+LIBSBML_EXTERN
+GeneProductAssociation_t*
+FbcReactionPlugin_getGeneProductAssociation(SBasePlugin_t * fbc)
+{
+  return  (fbc != NULL) ? static_cast<FbcReactionPlugin*>(fbc)->getGeneProductAssociation() : NULL;
+
+}
+
+LIBSBML_EXTERN
+int
+FbcReactionPlugin_setGeneProductAssociation(SBasePlugin_t * fbc, 
+                                            GeneProductAssociation_t* gpa)
+{
+  return (fbc != NULL) 
+    ? static_cast<FbcReactionPlugin*>(fbc)->setGeneProductAssociation(gpa)
+    : LIBSBML_INVALID_OBJECT;
+}
+
+
+
+
+LIBSBML_CPP_NAMESPACE_END
 

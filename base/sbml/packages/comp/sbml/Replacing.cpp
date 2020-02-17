@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -110,7 +114,7 @@ Replacing::getSubmodelRef () const
 
 
 /*
- * @return true if the submodelRef of this SBML object has been set, false
+ * @return @c true if the submodelRef of this SBML object has been set, false
  * otherwise.
  */
 bool
@@ -257,13 +261,13 @@ Replacing::readAttributes (const XMLAttributes& attributes,
     {
       std::string message = "Comp attribute 'submodelRef' is missing.";
       getErrorLog()->logPackageError("comp", CompReplacedElementAllowedAttributes, 
-        getPackageVersion(), sbmlLevel, sbmlVersion, message);
+        getPackageVersion(), sbmlLevel, sbmlVersion, message, getLine(), getColumn());
     }
     else
     {
       std::string message = "Comp attribute 'submodelRef' is missing.";
       getErrorLog()->logPackageError("comp", CompReplacedByAllowedAttributes, 
-        getPackageVersion(), sbmlLevel, sbmlVersion, message);
+        getPackageVersion(), sbmlLevel, sbmlVersion, message, getLine(), getColumn());
     }
   }
   else
@@ -274,7 +278,12 @@ Replacing::readAttributes (const XMLAttributes& attributes,
      }
   }
   //We call the base class version here because of the error checking for having set exactly one of the mutually-exclusive attributes, and one of them (deletion) only exists for Replacings, not SBaseRef.
-  SBaseRef::readAttributes(attributes,expectedAttributes);
+  CompSBMLErrorCode_t error = CompReplacedElementAllowedAttributes;
+  if (getTypeCode() == SBML_COMP_REPLACEDBY)
+  {
+    error = CompReplacedByAllowedAttributes;
+  }
+  SBaseRef::readAttributes(attributes,expectedAttributes, false, false, error);
 }
 /** @endcond */
 
@@ -397,8 +406,12 @@ Replacing::updateIDs(SBase* oldnames, SBase* newnames)
     switch(oldnames->getTypeCode()) {
     case SBML_UNIT_DEFINITION:
       replacedmod->renameUnitSIdRefs(oldid, newid);
-      for (unsigned int e=0; e<allElements->getSize(); e++) {
-        SBase* element = static_cast<SBase*>(allElements->get(e));
+      //for (unsigned int e=0; e<allElements->getSize(); e++) {
+      //  SBase* element = static_cast<SBase*>(allElements->get(e));
+      // Using ListIterator is faster
+      for (ListIterator iter = allElements->begin(); iter != allElements->end(); ++iter)
+      {
+        SBase* element = static_cast<SBase*>(*iter);
         element->renameUnitSIdRefs(oldid, newid);
       }
       break;
@@ -415,8 +428,12 @@ Replacing::updateIDs(SBase* oldnames, SBase* newnames)
       //LS DEBUG And here is where we would need some sort of way to check if the id wasn't an SId for some objects.
     default:
       replacedmod->renameSIdRefs(oldnames->getId(), newnames->getId());
-      for (unsigned int e=0; e<allElements->getSize(); e++) {
-        SBase* element = static_cast<SBase*>(allElements->get(e));
+      //for (unsigned int e=0; e<allElements->getSize(); e++) {
+      //  SBase* element = static_cast<SBase*>(allElements->get(e));
+      // Using ListIterator is faster
+      for (ListIterator iter = allElements->begin(); iter != allElements->end(); ++iter)
+      {
+        SBase* element = static_cast<SBase*>(*iter);
         element->renameSIdRefs(oldid, newid);
       }
     }
@@ -425,8 +442,12 @@ Replacing::updateIDs(SBase* oldnames, SBase* newnames)
   string newmetaid = newnames->getMetaId();
   if (oldnames->isSetMetaId()) {
     replacedmod->renameMetaIdRefs(oldmetaid, newmetaid);
-    for (unsigned int e=0; e<allElements->getSize(); e++) {
-      SBase* element = static_cast<SBase*>(allElements->get(e));
+    //for (unsigned int e=0; e<allElements->getSize(); e++) {
+    //  SBase* element = static_cast<SBase*>(allElements->get(e));
+    // Using ListIterator is faster
+    for (ListIterator iter = allElements->begin(); iter != allElements->end(); ++iter)
+    {
+      SBase* element = static_cast<SBase*>(*iter);
       element->renameMetaIdRefs(oldmetaid, newmetaid);
     }
   }
@@ -485,8 +506,12 @@ int Replacing::performConversions(SBase* replacement, ASTNode** conversionFactor
   divide.addChild(replacementAST.deepCopy());
   divide.addChild((*conversionFactor)->deepCopy());
   List* allElements = replacedmod->getAllElements();
-  for (unsigned int e=0; e<allElements->getSize(); e++) {
-    SBase* element = static_cast<SBase*>(allElements->get(e));
+  //for (unsigned int e=0; e<allElements->getSize(); e++) {
+  //  SBase* element = static_cast<SBase*>(allElements->get(e));
+  // Using ListIterator is faster
+  for (ListIterator iter = allElements->begin(); iter != allElements->end(); ++iter)
+  {
+    SBase* element = static_cast<SBase*>(*iter);
     element->replaceSIDWithFunction(id, &divide);
     element->multiplyAssignmentsToSIdByFunction(id, *conversionFactor);
   }

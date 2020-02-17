@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -45,16 +49,16 @@ LIBSBML_CPP_NAMESPACE_BEGIN
 
 Deletion::Deletion (unsigned int level, unsigned int version, unsigned int pkgVersion) 
   : SBaseRef (level,version, pkgVersion)
-  ,mId("")
-  ,mName("")
+//  ,mId("")
+//  ,mName("")
 {
 }
 
 
 Deletion::Deletion(CompPkgNamespaces* compns)
   : SBaseRef(compns, true)
-  ,mId("")
-  ,mName("")
+//  ,mId("")
+//  ,mName("")
 {
   loadPlugins(compns);
 }
@@ -199,7 +203,7 @@ Deletion::readAttributes (const XMLAttributes& attributes,
           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownPackageAttribute);
         getErrorLog()->logPackageError("comp", CompLODeletionAllowedAttributes,
-          getPackageVersion(), sbmlLevel, sbmlVersion, details);
+          getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
       } 
       else if (getErrorLog()->getError((unsigned int)n)->getErrorId() == UnknownCoreAttribute)
       {
@@ -207,38 +211,11 @@ Deletion::readAttributes (const XMLAttributes& attributes,
           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownCoreAttribute);
         getErrorLog()->logPackageError("comp", CompLODeletionAllowedAttributes,
-          getPackageVersion(), sbmlLevel, sbmlVersion, details);
+          getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
       } 
     }
   }
-  SBaseRef::readAttributes(attributes,expectedAttributes);
-
-  //const unsigned int sbmlLevel   = getLevel  ();
-  //const unsigned int sbmlVersion = getVersion();
-
-  XMLTriple tripleId("id", mURI, getPrefix());
-  if (attributes.readInto(tripleId, mId, getErrorLog(), 
-                          false, getLine(), getColumn()))
-  {
-    if (mId.size() == 0)
-    {
-      logEmptyString("id", "<Deletion>");
-    }
-    else 
-    {
-      if (!SyntaxChecker::isValidSBMLSId(mId)) 
-      {
-        logInvalidId("comp:id", mId);
-      }
-    }
-  }
-
-  XMLTriple tripleName("name", mURI, getPrefix());
-  if (attributes.readInto(tripleName, mName, getErrorLog(), false, getLine(), getColumn())) {
-    if (mName.empty()) {
-      logInvalidId("comp:name", mName);
-    }
-  }
+  SBaseRef::readAttributes(attributes,expectedAttributes, true, false, CompDeletionAllowedAttributes);
 }
 /** @endcond */
 
@@ -443,26 +420,6 @@ Deletion_hasRequiredAttributes(Deletion_t * d)
 }
 
 
-LIBSBML_EXTERN
-Deletion_t *
-ListOfDeletions_getById(ListOf_t * lo, const char * sid)
-{
-  if (lo == NULL)
-    return NULL;
-
-  return (sid != NULL) ? static_cast <ListOfDeletions *>(lo)->get(sid) : NULL;
-}
-
-
-LIBSBML_EXTERN
-Deletion_t *
-ListOfDeletions_removeById(ListOf_t * lo, const char * sid)
-{
-  if (lo == NULL)
-    return NULL;
-
-  return (sid != NULL) ? static_cast <ListOfDeletions *>(lo)->remove(sid) : NULL;
-}
 /** @endcond */
 
 LIBSBML_CPP_NAMESPACE_END

@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -499,19 +503,65 @@ GeneralGlyph::getSubGlyph (unsigned int index) const
 /*
  * Adds a new reference glyph to the list.
  */
-void
+int
 GeneralGlyph::addReferenceGlyph (const ReferenceGlyph* glyph)
 {
-  this->mReferenceGlyphs.append(glyph);
+  if (!glyph)
+  {
+    return LIBSBML_OPERATION_FAILED;
+  }    
+  else if (!glyph->hasRequiredElements())
+  {
+    return LIBSBML_INVALID_OBJECT;
+  }
+  else if (getLevel() != glyph->getLevel())
+  {
+    return LIBSBML_LEVEL_MISMATCH;
+  }
+  else if (getVersion() != glyph->getVersion())
+  {
+    return LIBSBML_VERSION_MISMATCH;
+  }
+  else if (getPackageVersion() != glyph->getPackageVersion())
+  {
+    return LIBSBML_PKG_VERSION_MISMATCH;
+  }
+  else
+  {
+    return mReferenceGlyphs.append(glyph);
+  }
 }
 
 /*
  * Adds a new subglyph to the list.
  */
-void
-  GeneralGlyph::addSubGlyph (const GraphicalObject* glyph)
+int
+GeneralGlyph::addSubGlyph (const GraphicalObject* glyph)
 {
-  this->mSubGlyphs.append(glyph);
+  if (!glyph)
+  {
+    return LIBSBML_OPERATION_FAILED;
+  }    
+  else if (!glyph->hasRequiredElements())
+  {
+    return LIBSBML_INVALID_OBJECT;
+  }
+  else if (getLevel() != glyph->getLevel())
+  {
+    return LIBSBML_LEVEL_MISMATCH;
+  }
+  else if (getVersion() != glyph->getVersion())
+  {
+    return LIBSBML_VERSION_MISMATCH;
+  }
+  else if (getPackageVersion() != glyph->getPackageVersion())
+  {
+    return LIBSBML_PKG_VERSION_MISMATCH;
+  }
+  else
+  {
+    return mSubGlyphs.append(glyph);
+  }
 }
 
 
@@ -997,7 +1047,7 @@ XMLNode GeneralGlyph::toXML() const
 
 
 /*
- * Ctor.
+ * Constructor.
  */
 ListOfReferenceGlyphs::ListOfReferenceGlyphs(unsigned int level, unsigned int version, unsigned int pkgVersion)
  : ListOf(level,version)
@@ -1007,7 +1057,7 @@ ListOfReferenceGlyphs::ListOfReferenceGlyphs(unsigned int level, unsigned int ve
 
 
 /*
- * Ctor.
+ * Constructor.
  */
 ListOfReferenceGlyphs::ListOfReferenceGlyphs(LayoutPkgNamespaces* layoutns)
  : ListOf(layoutns)

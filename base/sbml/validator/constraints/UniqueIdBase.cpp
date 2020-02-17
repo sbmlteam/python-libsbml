@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -84,6 +88,21 @@ UniqueIdBase::doCheckId (const string& id, const SBase& object)
 
 
 /*
+ * Checks that the id associated with the given object is unique.  If it
+ * is not, logIdConflict is called.
+ */
+void
+UniqueIdBase::doCheckId (const SBase& object)
+{
+  if (object.isSetIdAttribute())
+  {
+    doCheckId(object.getIdAttribute(), object);
+  }
+}
+
+
+
+/*
  * @return the error message to use when logging constraint violations.
  * This method is called by logFailure.
  *
@@ -105,11 +124,11 @@ UniqueIdBase::getMessage (const string& id, const SBase& object)
   }
 
 
-  ostringstream msg;
+  ostringstream oss_msg;
   const SBase&  previous = *(iter->second);
 
 
-  //msg << getPreamble();
+  //oss_msg << getPreamble();
 
   //
   // Example message: 
@@ -118,19 +137,19 @@ UniqueIdBase::getMessage (const string& id, const SBase& object)
   // <parameter> id 'cell' at line 10.
   //
 
-  msg << "  The <" << object.getElementName() << "> " << getFieldname()
+  oss_msg << "  The <" << object.getElementName() << "> " << getFieldname()
       << " '" << id << "' conflicts with the previously defined <"
       << previous.getElementName() << "> " << getFieldname()
       << " '" << id << "'";
 
   if (previous.getLine() != 0)
   {
-    msg << " at line " << previous.getLine();
+    oss_msg << " at line " << previous.getLine();
   }
 
-  msg << '.';
+  oss_msg << '.';
 
-  return msg.str();
+  return oss_msg.str();
 }
 
 LIBSBML_CPP_NAMESPACE_END

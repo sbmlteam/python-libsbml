@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -87,14 +91,26 @@ public:
   virtual ListOfSpeciesReferenceGlyphs* clone () const;
 
   /**
-   * Ctor.
+   * Constructor.
+   *
+   * @param level the SBML Level.
+   * @param version the Version within the SBML Level.
+   * @param pkgVersion the version of the package.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
    ListOfSpeciesReferenceGlyphs(unsigned int level      = LayoutExtension::getDefaultLevel(), 
                                 unsigned int version    = LayoutExtension::getDefaultVersion(), 
                                 unsigned int pkgVersion = LayoutExtension::getDefaultPackageVersion());
 
   /**
-   * Ctor.
+   * Constructor.
+   *
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param layoutns the LayoutPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
    ListOfSpeciesReferenceGlyphs(LayoutPkgNamespaces* layoutns);
 
@@ -118,7 +134,7 @@ public:
    * Returns the XML element name of
    * this SBML object.
    *
-   * @return the string of the name of this element
+   * @return the string of the name of this element.
    */
   virtual const std::string& getElementName () const;
 
@@ -129,6 +145,7 @@ public:
    * @param n the index number of the SpeciesReferenceGlyph to get.
    * 
    * @return the nth SpeciesReferenceGlyph in this ListOfSpeciesReferenceGlyphs.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -141,6 +158,7 @@ public:
    * @param n the index number of the SpeciesReferenceGlyph to get.
    * 
    * @return the nth SpeciesReferenceGlyph in this ListOfSpeciesReferenceGlyphs.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -186,7 +204,7 @@ public:
    *
    * The caller owns the returned item and is responsible for deleting it.
    *
-   * @param n the index of the item to remove
+   * @param n the index of the item to remove.
    *
    * @see size()
    */
@@ -197,10 +215,10 @@ public:
    * Removes item in this ListOfSpeciesReferenceGlyphs items with the given identifier.
    *
    * The caller owns the returned item and is responsible for deleting it.
-   * If none of the items in this list have the identifier @p sid, then @c
-   * NULL is returned.
+   * If none of the items in this list have the identifier @p sid, then
+   * @c NULL is returned.
    *
-   * @param sid the identifier of the item to remove
+   * @param sid the identifier of the item to remove.
    *
    * @return the item removed.  As mentioned above, the caller owns the
    * returned item.
@@ -220,7 +238,7 @@ protected:
    * Create and return an SBML object of this class, if present.
    *
    * @return the SBML object corresponding to next XMLToken in the
-   * XMLInputStream or NULL if the token was not recognized.
+   * XMLInputStream or @c NULL if the token was not recognized.
    */
   virtual SBase* createObject (XMLInputStream& stream);
   /** @endcond */
@@ -245,8 +263,13 @@ public:
    * Creates a new ReactionGlyph.  The list of species reference glyph is
    * empty and the id of the associated reaction is set to the empty
    * string.
-   */ 
-   
+   *
+   * @param level the SBML Level.
+   * @param version the Version within the SBML Level.
+   * @param pkgVersion the version of the package.
+   *
+   * @copydetails doc_note_setting_lv_pkg
+   */
   ReactionGlyph (unsigned int level      = LayoutExtension::getDefaultLevel(),
                  unsigned int version    = LayoutExtension::getDefaultVersion(),
                  unsigned int pkgVersion = LayoutExtension::getDefaultPackageVersion());
@@ -254,6 +277,12 @@ public:
 
   /**
    * Creates a new ReactionGlyph with the given LayoutPkgNamespaces object.
+   *
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param layoutns the LayoutPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   ReactionGlyph (LayoutPkgNamespaces* layoutns);
 
@@ -263,8 +292,7 @@ public:
    *
    * (FOR BACKWARD COMPATIBILITY)
    *
-   */ 
-   
+   */
   ReactionGlyph (LayoutPkgNamespaces* layoutns, const std::string& id);
 
   /**
@@ -273,8 +301,7 @@ public:
    *
    * (FOR BACKWARD COMPATIBILITY)
    *
-   */ 
-   
+   */
   ReactionGlyph (LayoutPkgNamespaces* layoutns, const std::string& id, const std::string& reactionId);
        
 
@@ -288,89 +315,87 @@ public:
 
   /**
    * Copy constructor.
+   *
+   * @param source the instance to copy.
    */
    ReactionGlyph(const ReactionGlyph& source);
 
   /**
    * Assignment operator.
+   *
+   * @param source the object whose values are used as the basis of the
+   * assignment.
    */
   virtual  ReactionGlyph& operator=(const ReactionGlyph& source);
 
   /**
    * Destructor.
-   */ 
-   
+   */
   virtual ~ReactionGlyph(); 
        
 
   /**
    * Returns the id of the associated reaction.
-   */  
-   
+   */
   const std::string& getReactionId () const;
        
   /**
    * Sets the id of the associated reaction.
-   */ 
-   
+   */
   int setReactionId (const std::string& id);
 
   /**
-   * Returns true if the id of the associated reaction is not the empty
+   * Returns @c true if the id of the associated reaction is not the empty
    * string.
-   */ 
-  
+   */
   bool isSetReactionId () const;
        
   /**
    * Returns the ListOf object that hold the species reference glyphs.
-   */  
-   
+   */
   const ListOfSpeciesReferenceGlyphs* getListOfSpeciesReferenceGlyphs () const;
 
   /**
    * Returns the ListOf object that hold the species reference glyphs.
-   */  
-   
+   */
   ListOfSpeciesReferenceGlyphs* getListOfSpeciesReferenceGlyphs ();
        
   /**
-   * Returns the species reference glyph with the given index.
+   * Returns the species reference glyph with the given @p index.
    * If the index is invalid, @c NULL is returned.
-   */ 
-   
+   */
   const SpeciesReferenceGlyph* getSpeciesReferenceGlyph (unsigned int index) const;
 
   /**
-   * Returns the species reference glyph with the given index.
+   * Returns the species reference glyph with the given @p index.
    * If the index is invalid, @c NULL is returned.
-   */ 
-   
+   */
   SpeciesReferenceGlyph* getSpeciesReferenceGlyph (unsigned int index) ;
 
   /**
    * Adds a new species reference glyph to the list.
    */
-   
-  void addSpeciesReferenceGlyph (const SpeciesReferenceGlyph* glyph);
+  int addSpeciesReferenceGlyph (const SpeciesReferenceGlyph* glyph);
        
   /**
    * Returns the number of species reference glyph objects.
-   */ 
-   
+   */
   unsigned int getNumSpeciesReferenceGlyphs () const;
        
   /**
    * Calls initDefaults from GraphicalObject.
-   */ 
-   
+   */
   void initDefaults (); 
 
   /**
    * Returns a List of all child SBase objects, including those nested to an
    * arbitrary depth
    *
-   * @return a List* of pointers to all children objects.
+   * @param filter a pointer to an ElementFilter, which causes the function 
+   * to return only elements that match a particular set of constraints.  
+   * If NULL (the default), the function will return all child objects.
+   *
+   * @return a List of pointers to all children objects.
    */
   virtual List* getAllElements(ElementFilter* filter=NULL);
 
@@ -383,24 +408,22 @@ public:
 
   /**
    * Returns the curve object for the reaction glyph
-   */ 
+   */
   const Curve* getCurve () const;
 
   /**
    * Returns the curve object for the reaction glyph
-   */ 
+   */
   Curve* getCurve () ;
 
   /**
    * Sets the curve object for the reaction glyph.
-   */ 
-  
+   */
   void setCurve (const Curve* curve);
        
   /**
-   * Returns true if the curve consists of one or more segments.
-   */ 
-  
+   * Returns @c true if the curve consists of one or more segments.
+   */
   bool isSetCurve () const;
 
 
@@ -410,7 +433,6 @@ public:
    * list of species reference objects and returns a reference to the newly
    * created object.
    */
-  
   SpeciesReferenceGlyph* createSpeciesReferenceGlyph ();
         
   /**
@@ -418,7 +440,6 @@ public:
    * curve segment objects of the curve and returns a reference to the
    * newly created object.
    */
-  
   LineSegment* createLineSegment();
     
   /**
@@ -429,11 +450,10 @@ public:
    CubicBezier* createCubicBezier();
 
   /**
-   * Remove the species reference glyph with the given index.
+   * Remove the species reference glyph with the given @p index.
    * A pointer to the object is returned. If no object has been removed, NULL
    * is returned.
    */
-  
   SpeciesReferenceGlyph*
   removeSpeciesReferenceGlyph(unsigned int index);
 
@@ -442,7 +462,6 @@ public:
    * A pointer to the object is returned. If no object has been removed, NULL
    * is returned.
    */
-  
   SpeciesReferenceGlyph*
   removeSpeciesReferenceGlyph(const std::string& id);
 
@@ -452,7 +471,6 @@ public:
    * id, @if cpp numeric_limits<unsigned int>::max() @else the
    * value of the maximum long integer@endif@~ is returned as an indicator.
    */
-  
   unsigned int
   getIndexForSpeciesReferenceGlyph(const std::string& id) const;
 
@@ -460,7 +478,7 @@ public:
   /** @cond doxygenLibsbmlInternal */
   /**
    * Subclasses should override this method to write out their contained
-   * SBML objects as XML elements.  Be sure to call your parents
+   * SBML objects as XML elements.  Be sure to call your parent's
    * implementation of this method as well.  For example:
    *
    *   SBase::writeElements(stream);
@@ -476,7 +494,7 @@ public:
    * Returns the XML element name of
    * this SBML object.
    *
-   * @return the string of the name of this element
+   * @return the string of the name of this element.
    */
   virtual const std::string& getElementName () const ;
 
@@ -495,7 +513,7 @@ public:
    * @copydetails doc_what_are_typecodes
    *
    * @return the SBML type code for this object:
-   * @sbmlconstant{SBML_LAYOUT_REACTIONGLYPH, SBMLLayoutTypeCode_t}
+   * @sbmlconstant{SBML_LAYOUT_REACTIONGLYPH, SBMLLayoutTypeCode_t}.
    *
    * @copydetails doc_warning_typecodes_not_unique
    *
@@ -527,7 +545,7 @@ public:
   /**
    * Sets the parent SBMLDocument of this SBML object.
    *
-   * @param d the SBMLDocument object to use
+   * @param d the SBMLDocument object to use.
    */
   virtual void setSBMLDocument (SBMLDocument* d);
   /** @endcond */
@@ -569,7 +587,7 @@ protected:
    * Create and return an SBML object of this class, if present.
    *
    * @return the SBML object corresponding to next XMLToken in the
-   * XMLInputStream or NULL if the token was not recognized.
+   * XMLInputStream or @c NULL if the token was not recognized.
    */
   virtual SBase*
   createObject (XMLInputStream& stream);
@@ -591,7 +609,7 @@ protected:
   /**
    * Subclasses should override this method to read values from the given
    * XMLAttributes set into their specific fields.  Be sure to call your
-   * parents implementation of this method as well.
+   * parent's implementation of this method as well.
    */
   virtual void readAttributes (const XMLAttributes& attributes, 
                                const ExpectedAttributes& expectedAttributes);
@@ -601,7 +619,7 @@ protected:
   /** @cond doxygenLibsbmlInternal */
   /**
    * Subclasses should override this method to write their XML attributes
-   * to the XMLOutputStream.  Be sure to call your parents implementation
+   * to the XMLOutputStream.  Be sure to call your parent's implementation
    * of this method as well.  For example:
    *
    *   SBase::writeAttributes(stream);
@@ -639,7 +657,7 @@ ReactionGlyph_create (void);
 /**
  * Creates a new ReactionGlyph_t structure from a template.
  *
- * @param temp The ReactionGlyph_t structure to copy.
+ * @param temp the ReactionGlyph_t structure to copy.
  *
  * @memberof ReactionGlyph_t
  */
@@ -650,7 +668,7 @@ ReactionGlyph_createFrom (const ReactionGlyph_t *temp);
 /**
  * Frees the memory taken up by the attributes.
  *
- * @param rg The ReactionGlyph_t structure.
+ * @param rg the ReactionGlyph_t structure.
  *
  * @memberof ReactionGlyph_t
  */
@@ -662,7 +680,7 @@ ReactionGlyph_clear (ReactionGlyph_t *rg);
 /**
  * Creates a new ReactionGlyph_t with the given @p sid
  *
- * @param sid The string to use as the ID of the ReactionGlyph_t
+ * @param sid the string to use as the ID of the ReactionGlyph_t.
  *
  * @memberof ReactionGlyph_t
  */
@@ -673,8 +691,8 @@ ReactionGlyph_createWith (const char *sid);
 /**
  * Creates a new ReactionGlyph_t referencing the given reaction.
  *
- * @param sid The string to use as the ID of the ReactionGlyph_t
- * @param reactionId The string to use as the reaction ID.
+ * @param sid the string to use as the ID of the ReactionGlyph_t.
+ * @param reactionId the string to use as the reaction ID.
  *
  * @memberof ReactionGlyph_t
  */
@@ -685,7 +703,7 @@ ReactionGlyph_createWithReactionId (const char *sid, const char *reactionId);
 /**
  * Frees the memory taken by the given reaction glyph.
  *
- * @param rg The ReactionGlyph_t structure.
+ * @param rg the ReactionGlyph_t structure.
  *
  * @memberof ReactionGlyph_t
  */
@@ -696,8 +714,8 @@ ReactionGlyph_free (ReactionGlyph_t *rg);
 /**
  * Sets the reference reaction for the reaction glyph.
  *
- * @param rg The ReactionGlyph_t structure.
- * @param id The string to use as the reaction ID.
+ * @param rg the ReactionGlyph_t structure.
+ * @param id the string to use as the reaction ID.
  *
  * @memberof ReactionGlyph_t
  */
@@ -708,7 +726,7 @@ ReactionGlyph_setReactionId (ReactionGlyph_t *rg,const char *id);
 /**
  * Gets the reference reactions id for the given reaction glyph.
  *
- * @param rg The ReactionGlyph_t structure.
+ * @param rg the ReactionGlyph_t structure.
  *
  * @memberof ReactionGlyph_t
  */
@@ -717,10 +735,10 @@ const char *
 ReactionGlyph_getReactionId (const ReactionGlyph_t *rg);
 
 /**
- * Returns 0 if the reference reaction has not been set for this glyph and
- * 1 otherwise.
+ * Returns @c 0 (false) if the reference reaction has not been set for this glyph and
+ * @c 1 (true) otherwise.
  *
- * @param rg The ReactionGlyph_t structure.
+ * @param rg the ReactionGlyph_t structure.
  *
  * @memberof ReactionGlyph_t
  */
@@ -732,8 +750,8 @@ ReactionGlyph_isSetReactionId (const ReactionGlyph_t *rg);
  * Add a SpeciesReferenceGlyph_t structure to the list of
  * SpeciesReferenceGlyph_t's.
  *
- * @param rg The ReactionGlyph_t structure.
- * @param srg The SpeciesReferenceGlyph_t structure to add.
+ * @param rg the ReactionGlyph_t structure.
+ * @param srg the SpeciesReferenceGlyph_t structure to add.
  *
  * @memberof ReactionGlyph_t
  */
@@ -745,7 +763,7 @@ ReactionGlyph_addSpeciesReferenceGlyph (ReactionGlyph_t         *rg,
 /**
  * Returns the number of SpeciesReferenceGlyphs for the ReactionGlyph_t.
  *
- * @param rg The ReactionGlyph_t structure.
+ * @param rg the ReactionGlyph_t structure.
  *
  * @memberof ReactionGlyph_t
  */
@@ -754,10 +772,10 @@ unsigned int
 ReactionGlyph_getNumSpeciesReferenceGlyphs (const ReactionGlyph_t *rg);
 
 /**
- * Returns the pointer to the SpeciesReferenceGlyph_t's for the given index.
+ * Returns the pointer to the SpeciesReferenceGlyph_t for the given @p index.
  *
- * @param rg The ReactionGlyph_t structure.
- * @param index The index of the SpeciesReferenceGlyph_t to return.
+ * @param rg the ReactionGlyph_t structure.
+ * @param index the index of the SpeciesReferenceGlyph_t to return.
  *
  * @memberof ReactionGlyph_t
  */
@@ -770,35 +788,21 @@ ReactionGlyph_getSpeciesReferenceGlyph (ReactionGlyph_t *rg,
 /**
  * Returns the list structure that holds all species reference glyphs.
  *
- * @param rg The ReactionGlyph_t structure.
+ * @param rg the ReactionGlyph_t structure.
  *
  * @memberof ReactionGlyph_t
- */ 
+ */
 LIBSBML_EXTERN
 ListOf_t *
 ReactionGlyph_getListOfSpeciesReferenceGlyphs (ReactionGlyph_t *rg);
 
 /**
- * Removes the species reference glyph with the given index.  If the index
- * is invalid, nothing is removed.
- *
- * @param rg The ReactionGlyph_t structure.
- * @param index The index of the SpeciesReferenceGlyph_t to remove.
- *
- * @memberof ReactionGlyph_t
- */ 
-LIBSBML_EXTERN
-SpeciesReferenceGlyph_t *
-ReactionGlyph_removeSpeciesReferenceGlyph (ReactionGlyph_t *rg,
-                                           unsigned int index);
-
-/**
  * Calls initDefaults from GraphicalObject.
  *
- * @param rg The ReactionGlyph_t structure.
+ * @param rg the ReactionGlyph_t structure.
  *
  * @memberof ReactionGlyph_t
- */ 
+ */
 LIBSBML_EXTERN
 void
 ReactionGlyph_initDefaults (ReactionGlyph_t *rg);
@@ -806,8 +810,8 @@ ReactionGlyph_initDefaults (ReactionGlyph_t *rg);
 /**
  * Sets the curve for the reaction glyph.
  *
- * @param rg The ReactionGlyph_t structure.
- * @param c The Curve_t to set for the SpeciesReferenceGlyph_t
+ * @param rg the ReactionGlyph_t structure.
+ * @param c the Curve_t to set for the SpeciesReferenceGlyph_t.
  *
  * @memberof ReactionGlyph_t
  */
@@ -818,7 +822,7 @@ ReactionGlyph_setCurve (ReactionGlyph_t *rg, Curve_t *c);
 /**
  * Gets the Curve_t for the given reaction glyph.
  *
- * @param rg The ReactionGlyph_t structure.
+ * @param rg the ReactionGlyph_t structure.
  *
  * @memberof ReactionGlyph_t
  */
@@ -827,9 +831,9 @@ Curve_t *
 ReactionGlyph_getCurve (ReactionGlyph_t *rg);
 
 /**
- * Returns true if the Curve_t has one or more LineSegment.
+ * Returns @c 1 (true) if the Curve_t has one or more LineSegment.
  *
- * @param rg The ReactionGlyph_t structure.
+ * @param rg the ReactionGlyph_t structure.
  *
  * @memberof ReactionGlyph_t
  */
@@ -842,7 +846,7 @@ ReactionGlyph_isSetCurve (ReactionGlyph_t *rg);
  * list of species reference glyphs and returns a pointer to the newly
  * created structure.
  *
- * @param rg The ReactionGlyph_t structure.
+ * @param rg the ReactionGlyph_t structure.
  *
  * @memberof ReactionGlyph_t
  */
@@ -855,7 +859,7 @@ ReactionGlyph_createSpeciesReferenceGlyph (ReactionGlyph_t *rg);
  * list of species reference glyphs and returns a pointer to the newly
  * created structure.
  *
- * @param rg The ReactionGlyph_t structure.
+ * @param rg the ReactionGlyph_t structure.
  *
  * @memberof ReactionGlyph_t
  */
@@ -868,7 +872,7 @@ ReactionGlyph_createSpeciesReferenceGlyph (ReactionGlyph_t *rg);
  * curve segments and returns a pointer to the newly created
  * structure.
  *
- * @param rg The ReactionGlyph_t structure.
+ * @param rg the ReactionGlyph_t structure.
  *
  * @memberof ReactionGlyph_t
  */
@@ -881,7 +885,7 @@ ReactionGlyph_createLineSegment (ReactionGlyph_t *rg);
  * curve segments and returns a pointer to the newly created
  * structure.
  *
- * @param rg The ReactionGlyph_t structure.
+ * @param rg the ReactionGlyph_t structure.
  *
  * @memberof ReactionGlyph_t
  */
@@ -890,12 +894,12 @@ CubicBezier_t *
 ReactionGlyph_createCubicBezier (ReactionGlyph_t *rg);
 
 /**
- * Remove the species reference glyph with the given index.
+ * Remove the species reference glyph with the given @p index.
  * A pointer to the structure is returned. If no structure has been removed, NULL
  * is returned.
  *
- * @param rg The ReactionGlyph_t structure.
- * @param index The index of the SpeciesReferenceGlyph_t to remove.
+ * @param rg the ReactionGlyph_t structure.
+ * @param index the index of the SpeciesReferenceGlyph_t to remove.
  *
  * @memberof ReactionGlyph_t
  */
@@ -908,8 +912,8 @@ ReactionGlyph_removeSpeciesReferenceGlyph(ReactionGlyph_t* rg,unsigned int index
  * A pointer to the structure is returned. If no structure has been removed, NULL
  * is returned.
  *
- * @param rg The ReactionGlyph_t structure.
- * @param id The id of the SpeciesReferenceGlyph_t to remove.
+ * @param rg the ReactionGlyph_t structure.
+ * @param id the id of the SpeciesReferenceGlyph_t to remove.
  *
  * @memberof ReactionGlyph_t
  */
@@ -922,8 +926,8 @@ ReactionGlyph_removeSpeciesReferenceGlyphWithId(ReactionGlyph_t* rg,const char* 
  * If the reaction glyph does not contain a species reference glyph with this
  * id, UINT_MAX from limits.h is returned.
  *
- * @param rg The ReactionGlyph_t structure.
- * @param id The idof the SpeciesReferenceGlyph_t to find.
+ * @param rg the ReactionGlyph_t structure.
+ * @param id the idof the SpeciesReferenceGlyph_t to find.
  *
  * @memberof ReactionGlyph_t
  */
@@ -934,7 +938,7 @@ ReactionGlyph_getIndexForSpeciesReferenceGlyph(ReactionGlyph_t* rg,const char* i
 /**
  * @return a (deep) copy of this ReactionGlyph_t.
  *
- * @param rg The ReactionGlyph_t structure.
+ * @param rg the ReactionGlyph_t structure.
  *
  * @memberof ReactionGlyph_t
  */

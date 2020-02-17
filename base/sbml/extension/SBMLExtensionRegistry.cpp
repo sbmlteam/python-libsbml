@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -69,9 +73,6 @@ SBMLExtensionRegistry::deleteRegistry()
 }
 
 /** @cond doxygenLibsbmlInternal */
-/*
- *
- */
 SBMLExtensionRegistry& 
 SBMLExtensionRegistry::getInstance()
 {
@@ -198,6 +199,15 @@ SBMLExtensionRegistry::addExtension (const SBMLExtension* sbmlExt)
 #endif
     mSBasePluginMap.insert( SBasePluginPair(sbPluginCreator->getTargetExtensionPoint(), sbPluginCreator));
   }    
+
+  // Register ASTPlugins
+  if (sbmlExtClone->isSetASTBasePlugin())
+  {
+    ASTBasePlugin* astPlugin = sbmlExtClone->getASTBasePlugin();
+    astPlugin->setSBMLExtension(sbmlExtClone);
+
+    mASTPluginsVector.push_back(astPlugin);
+  }
 
   return LIBSBML_OPERATION_SUCCESS;
 }
@@ -574,6 +584,24 @@ SBMLExtensionRegistry::enablePackages(const std::vector<std::string>& packages)
 }
 /** @endcond */
 
+std::vector<ASTBasePlugin*>
+SBMLExtensionRegistry::getASTPlugins()
+{
+  return mASTPluginsVector;
+}
+
+unsigned int 
+SBMLExtensionRegistry::getNumASTPlugins()
+{
+  return mASTPluginsVector.size();
+}
+
+const ASTBasePlugin * 
+SBMLExtensionRegistry::getASTPlugin(unsigned int i)
+{
+  return mASTPluginsVector.at(i);
+}
+
 
 
 #endif /* __cplusplus */
@@ -614,12 +642,14 @@ SBMLExtensionRegistry_getSBasePluginCreators(const SBaseExtensionPoint_t* extPoi
     SBMLExtensionRegistry::getInstance().getSBasePluginCreators(*extPoint);
 
   *length = (int)list.size();
-  SBasePluginCreatorBase_t** result = (SBasePluginCreatorBase_t**)malloc(sizeof(SBasePluginCreatorBase_t*)*((unsigned long)*length));
+  SBasePluginCreatorBase_t** result = 
+    (SBasePluginCreatorBase_t**)safe_malloc(sizeof(SBasePluginCreatorBase_t*)*((unsigned long)(*length)));
   
   std::list<const SBasePluginCreatorBase*>::iterator it;
   int count = 0;
   for (it = list.begin(); it != list.end(); it++)
   {
+    result[count] = (SBasePluginCreatorBase_t*)safe_malloc(sizeof(SBasePluginCreatorBase_t*));
     result[count++] = (*it)->clone();
   }
   
@@ -636,12 +666,14 @@ SBMLExtensionRegistry_getSBasePluginCreatorsByURI(const char* uri, int* length)
      SBMLExtensionRegistry::getInstance().getSBasePluginCreators(sUri);
  
    *length = (int)list.size();
-   SBasePluginCreatorBase_t** result = (SBasePluginCreatorBase_t**)malloc(sizeof(SBasePluginCreatorBase_t*)*((unsigned long)*length));
+   SBasePluginCreatorBase_t** result = 
+     (SBasePluginCreatorBase_t**)safe_malloc(sizeof(SBasePluginCreatorBase_t*)*((unsigned long)(*length)));
    
    std::list<const SBasePluginCreatorBase*>::iterator it;
    int count = 0;
    for (it = list.begin(); it != list.end(); it++)
    {
+     result[count] = (SBasePluginCreatorBase_t*)safe_malloc(sizeof(SBasePluginCreatorBase_t*));
      result[count++] = (*it)->clone();
    }
   
@@ -709,7 +741,7 @@ SBMLExtensionRegistry_getNumRegisteredPackages()
 /** 
  * Returns the registered package name at the given index
  * 
- * @param index zero based index of the package name to return
+ * @param index zero based index of the package name to return.
  * 
  * @return the package name with the given index or NULL
  */

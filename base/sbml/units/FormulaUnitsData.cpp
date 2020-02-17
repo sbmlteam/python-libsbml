@@ -4,14 +4,18 @@
  *
  * @file    FormulaUnitsData.cpp
  * @brief   Class for storing information relating to units of a formula
- * @author  SBML Team <sbml-team@caltech.edu>
+ * @author  SBML Team <sbml-team@googlegroups.com>
  *
  *
  * <!--------------------------------------------------------------------------
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -49,6 +53,7 @@ FormulaUnitsData::FormulaUnitsData()
   mUnitReferenceId = "";
   mContainsUndeclaredUnits = false;
   mCanIgnoreUndeclaredUnits = true;
+  mContainsInconsistency = false;
   mTypeOfElement = SBML_UNKNOWN;
   mUnitDefinition = 
     new UnitDefinition(SBMLDocument::getDefaultLevel(), 
@@ -71,6 +76,7 @@ FormulaUnitsData::FormulaUnitsData(const FormulaUnitsData& orig)
   : mUnitReferenceId ( orig.mUnitReferenceId )
   , mContainsUndeclaredUnits ( orig.mContainsUndeclaredUnits )
   , mCanIgnoreUndeclaredUnits ( orig.mCanIgnoreUndeclaredUnits )
+  , mContainsInconsistency ( orig.mContainsInconsistency)
   , mTypeOfElement ( orig.mTypeOfElement )
   , mUnitDefinition ( NULL )
   , mPerTimeUnitDefinition ( NULL )
@@ -120,6 +126,7 @@ FormulaUnitsData& FormulaUnitsData::operator=(const FormulaUnitsData& rhs)
     mContainsUndeclaredUnits = 
                             rhs.mContainsUndeclaredUnits;
     mCanIgnoreUndeclaredUnits = rhs.mCanIgnoreUndeclaredUnits;
+    mContainsInconsistency = rhs.mContainsInconsistency;
     mTypeOfElement = rhs.mTypeOfElement;
 
     delete mUnitDefinition;
@@ -272,13 +279,29 @@ FormulaUnitsData::getCanIgnoreUndeclaredUnits()
 }
 
 /**
-  * @return @c true if the parameters/numbers 
-  * with undeclared units can be ignored, @c false otherwise.
   */
 bool 
-FormulaUnitsData::getCanIgnoreUndeclaredUnits() const 
+FormulaUnitsData::getContainsInconsistency() const 
 { 
-  return mCanIgnoreUndeclaredUnits; 
+  return mContainsInconsistency; 
+}
+
+/**
+*/
+bool
+FormulaUnitsData::getContainsInconsistency()
+{
+  return mContainsInconsistency;
+}
+
+/**
+* @return @c true if the parameters/numbers
+* with undeclared units can be ignored, @c false otherwise.
+*/
+bool
+FormulaUnitsData::getCanIgnoreUndeclaredUnits() const
+{
+  return mCanIgnoreUndeclaredUnits;
 }
 
 /**
@@ -446,6 +469,13 @@ void
 FormulaUnitsData::setCanIgnoreUndeclaredUnits(bool flag)
 { 
   mCanIgnoreUndeclaredUnits = flag; 
+}
+
+
+void
+FormulaUnitsData::setContainsInconsistency(bool flag)
+{
+  mContainsInconsistency = flag;
 }
 
 /**

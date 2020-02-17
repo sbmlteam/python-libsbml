@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -214,7 +218,7 @@ LayoutExtension::getURI(unsigned int sbmlLevel, unsigned int sbmlVersion, unsign
 {
   if (sbmlLevel == 3)
   {
-    if (sbmlVersion == 1)
+    if (sbmlVersion == 1 || sbmlVersion == 2)
     {
       if (pkgVersion == 1)
       {
@@ -440,11 +444,11 @@ LayoutExtension::init()
 
 
 /*
-* Removes the L2 Namespace from a document. 
-*
-* This method should be overridden by all extensions that want to serialize
-* to an L2 annotation.
-*/
+ * Removes the L2 Namespace from a document. 
+ *
+ * This method should be overridden by all extensions that want to serialize
+ * to an L2 annotation.
+ */
 void LayoutExtension::removeL2Namespaces(XMLNamespaces* xmlns)  const
 {
     for (int n = 0; n < xmlns->getNumNamespaces(); n++)
@@ -470,11 +474,11 @@ void LayoutExtension::addL2Namespaces(XMLNamespaces* xmlns)  const
 
 
 /*
-* Adds the L2 Namespace to the document and enables the extension.
-*
-* If the extension supports serialization to SBML L2 Annotations, this 
-* method should be overrridden, so it will be activated.
-*/
+ * Adds the L2 Namespace to the document and enables the extension.
+ *
+ * If the extension supports serialization to SBML L2 Annotations, this 
+ * method should be overrridden, so it will be activated.
+ */
 void LayoutExtension::enableL2NamespaceForDocument(SBMLDocument* doc)  const
 {
   if (doc->getLevel() == 2)

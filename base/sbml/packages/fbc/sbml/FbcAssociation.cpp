@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -46,6 +50,8 @@
 
 using namespace std;
 
+
+#ifdef __cplusplus
 
 LIBSBML_CPP_NAMESPACE_BEGIN
 
@@ -160,6 +166,7 @@ FbcAssociation::getElementName () const
 }
 
 
+/** @cond doxygenLibsbmlInternal */
 /*
  * Sets the element name for this object
  */
@@ -168,6 +175,7 @@ FbcAssociation::setElementName(const std::string& name)
 {
   mElementName = name;
 }
+/** @endcond */
 
 
 /*
@@ -205,7 +213,7 @@ FbcAssociation::writeElements (XMLOutputStream& stream) const
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -220,12 +228,14 @@ FbcAssociation::accept (SBMLVisitor& v) const
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
-FbcAssociation* toAssociation(const ASTNode* node, FbcModelPlugin* plugin);
+FbcAssociation* toAssociation(const ASTNode* node, FbcModelPlugin* plugin, bool usingId, bool addMissingGP);
 
-void addChildren(FbcAssociation* association, const ASTNode* node, const ASTNode *current, FbcModelPlugin* plugin)
+void addChildren(FbcAssociation* association, const ASTNode* node, 
+                 const ASTNode *current, FbcModelPlugin* plugin, 
+                 bool usingId, bool addMissingGP)
 {
 
   if (node->getType() == AST_TIMES || node->getType() == AST_PLUS)
@@ -235,11 +245,11 @@ void addChildren(FbcAssociation* association, const ASTNode* node, const ASTNode
       ASTNode* astChild = node->getChild(i);
       if (astChild->getType() == current->getType())
       {
-        addChildren(association, astChild, node, plugin);
+        addChildren(association, astChild, node, plugin, usingId, addMissingGP);
         continue;
       }
 
-      FbcAssociation* child = toAssociation(astChild, plugin);
+      FbcAssociation* child = toAssociation(astChild, plugin, usingId, addMissingGP);
       if (child == NULL)
         continue;
 
@@ -258,7 +268,7 @@ void addChildren(FbcAssociation* association, const ASTNode* node, const ASTNode
     }
   }
   else{
-    FbcAssociation* child = toAssociation(node, plugin);
+    FbcAssociation* child = toAssociation(node, plugin, usingId, addMissingGP);
     if (child == NULL)
       return;
 
@@ -277,11 +287,11 @@ void addChildren(FbcAssociation* association, const ASTNode* node, const ASTNode
     delete child;
 
   }
-
-
 }
 
-FbcAssociation* toAssociation(const ASTNode* node, FbcModelPlugin* plugin)
+
+FbcAssociation* toAssociation(const ASTNode* node, FbcModelPlugin* plugin, 
+                               bool usingId, bool addMissingGP)
 {
   if (node == NULL)
     return NULL;
@@ -289,37 +299,72 @@ FbcAssociation* toAssociation(const ASTNode* node, FbcModelPlugin* plugin)
   if (node->getType() == AST_NAME)
   {
     std::string name = node->getName();
-    replaceAllSubStrings(name, "__DOT__", ".");
-    replaceAllSubStrings(name, "__ONE__", "1");
-    replaceAllSubStrings(name, "__TWO__", "2");
-    replaceAllSubStrings(name, "__THREE__", "3");
-    replaceAllSubStrings(name, "__FOUR__", "4");
-    replaceAllSubStrings(name, "__FIVE__", "5");
-    replaceAllSubStrings(name, "__SIX__", "6");
-    replaceAllSubStrings(name, "__SEVEN__", "7");
-    replaceAllSubStrings(name, "__EIGHT__", "8");
-    replaceAllSubStrings(name, "__NINE__", "9");
-    replaceAllSubStrings(name, "__ZERO__", "0");
+    if (!usingId)
+    {
+      replaceAllSubStrings(name, "__MINUS__", "-");
+      replaceAllSubStrings(name, "__COLON__", ":");
+      replaceAllSubStrings(name, "__DOT__", ".");
+      replaceAllSubStrings(name, "__ONE__", "1");
+      replaceAllSubStrings(name, "__TWO__", "2");
+      replaceAllSubStrings(name, "__THREE__", "3");
+      replaceAllSubStrings(name, "__FOUR__", "4");
+      replaceAllSubStrings(name, "__FIVE__", "5");
+      replaceAllSubStrings(name, "__SIX__", "6");
+      replaceAllSubStrings(name, "__SEVEN__", "7");
+      replaceAllSubStrings(name, "__EIGHT__", "8");
+      replaceAllSubStrings(name, "__NINE__", "9");
+      replaceAllSubStrings(name, "__ZERO__", "0");
+    }
 
-    GeneProduct* prod = plugin->getGeneProductByLabel(name);
+    GeneProduct* prod = NULL;
+    if (usingId)
+    {
+      prod = plugin->getGeneProduct(name);
+    }
+    else
+    {
+      prod = plugin->getGeneProductByLabel(node->getName());
+      if (prod == NULL)
+        prod = plugin->getGeneProductByLabel(name);
+    }
     string id;
     if (prod == NULL)
     {
-      prod = plugin->createGeneProduct();
-      string base("gp_");
-      base += node->getName();
-      id = base;
-      int count = 0;
-      while (plugin->getGeneProduct(id))
+      if (usingId)
       {
-        stringstream str;  str << base << "_" << ++count;
-        id = str.str();
+        id = name;
       }
-      prod->setId(id);
-      prod->setLabel(name);
+      else
+      {
+        string base("gp_");
+        base += node->getName();
+        id = base;
+        int count = 0;
+        while (plugin->getGeneProduct(id))
+        {
+          stringstream str;  str << base << "_" << ++count;
+          id = str.str();
+        }
+      }
+      if (addMissingGP)
+      {
+        prod = plugin->createGeneProduct();
+        if (usingId)
+        {
+          prod->setId(name);
+          prod->setLabel(name);
+        }
+        else
+        {
+          prod->setId(id);
+          prod->setLabel(name);
+        }
+      }
     }
     else
+    {
       id = prod->getId();
+    }
 
     GeneProductRef* a = new GeneProductRef();
     a->setGeneProduct(id);
@@ -328,13 +373,13 @@ FbcAssociation* toAssociation(const ASTNode* node, FbcModelPlugin* plugin)
   else if (node->getType() == AST_PLUS)
   {
     FbcOr* a = new FbcOr();
-    addChildren(a, node, node, plugin);
+    addChildren(a, node, node, plugin, usingId, addMissingGP);
     return a;
   }
   else if (node->getType() == AST_TIMES)
   {
     FbcAnd* a = new FbcAnd();
-    addChildren(a, node, node, plugin);
+    addChildren(a, node, node, plugin, usingId, addMissingGP);
     return a;
   }
   return NULL;
@@ -344,31 +389,37 @@ FbcAssociation* toAssociation(const ASTNode* node, FbcModelPlugin* plugin)
 
 
 FbcAssociation* 
-FbcAssociation::parseFbcInfixAssociation(const std::string& association, FbcModelPlugin* plugin)
+FbcAssociation::parseFbcInfixAssociation(const std::string& association, FbcModelPlugin* plugin,
+                                          bool usingId, bool addMissingGP)
 {
   std::string tweaked(association);
   replaceAllSubStrings(tweaked, " and ", " * ");
   replaceAllSubStrings(tweaked, " AND ", " * ");
   replaceAllSubStrings(tweaked, " or ", " + ");
   replaceAllSubStrings(tweaked, " OR ", " + ");
-  replaceAllSubStrings(tweaked, ".", "__DOT__");
-  replaceAllSubStrings(tweaked, "1", "__ONE__");
-  replaceAllSubStrings(tweaked, "2", "__TWO__");
-  replaceAllSubStrings(tweaked, "3", "__THREE__");
-  replaceAllSubStrings(tweaked, "4", "__FOUR__");
-  replaceAllSubStrings(tweaked, "5", "__FIVE__");
-  replaceAllSubStrings(tweaked, "6", "__SIX__");
-  replaceAllSubStrings(tweaked, "7", "__SEVEN__");
-  replaceAllSubStrings(tweaked, "8", "__EIGHT__");
-  replaceAllSubStrings(tweaked, "9", "__NINE__");
-  replaceAllSubStrings(tweaked, "0", "__ZERO__");
+  if (!usingId)
+  {
+    replaceAllSubStrings(tweaked, "-", "__MINUS__");
+    replaceAllSubStrings(tweaked, ":", "__COLON__");
+    replaceAllSubStrings(tweaked, ".", "__DOT__");
+    replaceAllSubStrings(tweaked, "1", "__ONE__");
+    replaceAllSubStrings(tweaked, "2", "__TWO__");
+    replaceAllSubStrings(tweaked, "3", "__THREE__");
+    replaceAllSubStrings(tweaked, "4", "__FOUR__");
+    replaceAllSubStrings(tweaked, "5", "__FIVE__");
+    replaceAllSubStrings(tweaked, "6", "__SIX__");
+    replaceAllSubStrings(tweaked, "7", "__SEVEN__");
+    replaceAllSubStrings(tweaked, "8", "__EIGHT__");
+    replaceAllSubStrings(tweaked, "9", "__NINE__");
+    replaceAllSubStrings(tweaked, "0", "__ZERO__");
+  }
 
   ASTNode* node = SBML_parseFormula(tweaked.c_str());
 
   if (node == NULL)
     return NULL;
 
-  FbcAssociation* result = toAssociation(node, plugin);
+  FbcAssociation* result = toAssociation(node, plugin, usingId, addMissingGP);
 
   delete node;
 
@@ -377,12 +428,14 @@ FbcAssociation::parseFbcInfixAssociation(const std::string& association, FbcMode
 
 }
 
-std::string 
-FbcAssociation::toInfix() const
+std::string
+FbcAssociation::toInfix(bool usingId) const
 {
   return "";
 }
-  /** @cond doxygenLibsbmlInternal */
+
+
+/** @cond doxygenLibsbmlInternal */
 
 /*
  * Sets the parent SBMLDocument.
@@ -394,7 +447,7 @@ FbcAssociation::setSBMLDocument (SBMLDocument* d)
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -410,7 +463,218 @@ FbcAssociation::enablePackageInternal(const std::string& pkgURI,
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Association.
+ */
+int
+FbcAssociation::getAttribute(const std::string& attributeName, bool& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Association.
+ */
+int
+FbcAssociation::getAttribute(const std::string& attributeName, int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Association.
+ */
+int
+FbcAssociation::getAttribute(const std::string& attributeName,
+                          double& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Association.
+ */
+int
+FbcAssociation::getAttribute(const std::string& attributeName,
+                          unsigned int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Association.
+ */
+int
+FbcAssociation::getAttribute(const std::string& attributeName,
+                          std::string& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Predicate returning @c true if this Association's attribute "attributeName"
+ * is set.
+ */
+bool
+FbcAssociation::isSetAttribute(const std::string& attributeName) const
+{
+  bool value = SBase::isSetAttribute(attributeName);
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Association.
+ */
+int
+FbcAssociation::setAttribute(const std::string& attributeName, bool value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Association.
+ */
+int
+FbcAssociation::setAttribute(const std::string& attributeName, int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Association.
+ */
+int
+FbcAssociation::setAttribute(const std::string& attributeName, double value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Association.
+ */
+int
+FbcAssociation::setAttribute(const std::string& attributeName,
+                          unsigned int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Association.
+ */
+int
+FbcAssociation::setAttribute(const std::string& attributeName,
+                          const std::string& value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Unsets the value of the "attributeName" attribute of this Association.
+ */
+int
+FbcAssociation::unsetAttribute(const std::string& attributeName)
+{
+  int value = SBase::unsetAttribute(attributeName);
+
+  return value;
+}
+
+/** @endcond */
+
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -426,7 +690,7 @@ FbcAssociation::addExpectedAttributes(ExpectedAttributes& attributes)
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -448,8 +712,10 @@ FbcAssociation::readAttributes (const XMLAttributes& attributes,
    * happened immediately prior to this read
   */
 
-  if (getErrorLog() != NULL &&
-      static_cast<ListOfFbcAssociations*>(getParentSBMLObject())->size() < 2)
+  ListOfFbcAssociations* listOf = dynamic_cast<ListOfFbcAssociations*>(getParentSBMLObject());
+  unsigned int listOfSize = listOf != NULL ? listOf->size() : 0;
+
+  if (getErrorLog() != NULL && listOfSize < 2)
   {
     numErrs = getErrorLog()->getNumErrors();
     for (int n = (int)numErrs-1; n >= 0; n--)
@@ -513,7 +779,7 @@ FbcAssociation::readAttributes (const XMLAttributes& attributes,
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -529,7 +795,7 @@ FbcAssociation::writeAttributes (XMLOutputStream& stream) const
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
 /*
@@ -566,7 +832,7 @@ ListOfFbcAssociations::clone () const
 
 /*
  * Get a FbcAssociation from the ListOfFbcAssociations by index.
-*/
+ */
 FbcAssociation*
 ListOfFbcAssociations::get(unsigned int n)
 {
@@ -609,14 +875,11 @@ ListOfFbcAssociations::get(const std::string& sid) const
 
 
 /*
- * Adds a copy the given "FbcAssociation" to this ListOfFbcAssociations.
+ * Adds a copy the given FbcAssociation to this ListOfFbcAssociations.
  *
- * @param fa; the FbcAssociation object to add
+ * @param fa the FbcAssociation object to add.
  *
- * @return integer value indicating success/failure of the
- * function.  @if clike The value is drawn from the
- * enumeration #OperationReturnValues_t. @endif The possible values
- * returned by this function are:
+ * @copydetails doc_returns_success_code
  * @li LIBSBML_OPERATION_SUCCESS
  * @li LIBSBML_INVALID_ATTRIBUTE_VALUE
  */
@@ -645,8 +908,7 @@ ListOfFbcAssociations::addFbcAssociation(const FbcAssociation* fa)
   }
   else
   {
-  append(fa);
-    return LIBSBML_OPERATION_SUCCESS;
+    return append(fa);
   }
 }
 
@@ -665,7 +927,7 @@ ListOfFbcAssociations::getNumFbcAssociations() const
 
 /*
  * Creates a new FbcAnd object, adds it to this ListOfFbcAssociations
- * and and returns the FbcAnd object created. 
+ * and returns the FbcAnd object created. 
  *
  * @return a new FbcAnd object instance
  *
@@ -702,7 +964,7 @@ ListOfFbcAssociations::createAnd()
 
 /*
  * Creates a new FbcOr object, adds it to this ListOfFbcAssociations
- * or and returns the FbcOr object created. 
+ * and returns the FbcOr object created. 
  *
  * @return a new FbcOr object instance
  *
@@ -739,7 +1001,7 @@ ListOfFbcAssociations::createOr()
 
 /*
  * Creates a new GeneProductRef object, adds it to this ListOfFbcAssociations
- * geneProductRef and returns the GeneProductRef object created. 
+ * and returns the GeneProductRef object created. 
  *
  * @return a new GeneProductRef object instance
  *
@@ -882,7 +1144,7 @@ ListOfFbcAssociations::createObject(XMLInputStream& stream)
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -910,7 +1172,7 @@ ListOfFbcAssociations::writeXMLNS(XMLOutputStream& stream) const
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 bool
 ListOfFbcAssociations::isValidTypeForList(SBase * item)
@@ -919,6 +1181,8 @@ ListOfFbcAssociations::isValidTypeForList(SBase * item)
     return code == getItemTypeCode() || code == SBML_FBC_AND || code == SBML_FBC_OR || code == SBML_FBC_GENEPRODUCTREF ;
 }
 
+
+#endif /* __cplusplus */
 
 LIBSBML_EXTERN
 FbcAssociation_t *
@@ -961,9 +1225,6 @@ FbcAssociation_hasRequiredAttributes(const FbcAssociation_t * fa)
 }
 
 
-/*
- *
- */
 LIBSBML_EXTERN
 FbcAssociation_t *
 ListOfFbcAssociations_getById(ListOf_t * lo, const char * sid)
@@ -975,9 +1236,6 @@ ListOfFbcAssociations_getById(ListOf_t * lo, const char * sid)
 }
 
 
-/*
- *
- */
 LIBSBML_EXTERN
 FbcAssociation_t *
 ListOfFbcAssociations_removeById(ListOf_t * lo, const char * sid)
@@ -989,8 +1247,27 @@ ListOfFbcAssociations_removeById(ListOf_t * lo, const char * sid)
 }
 
 
+LIBSBML_EXTERN
+char *
+FbcAssociation_toInfix(const FbcAssociation_t * fa)
+{
+  return (fa != NULL) ? safe_strdup(fa->toInfix().c_str()) : NULL;
+}
+
+
+FbcAssociation_t*
+FbcAssociation_parseFbcInfixAssociation(const char * infix, SBasePlugin_t* plugin)
+{
+  if (infix == NULL || plugin == NULL)
+  {
+    return NULL;
+  }
+
+  return FbcAssociation::parseFbcInfixAssociation(infix, static_cast<FbcModelPlugin*>(plugin));
+}
 
 
 LIBSBML_CPP_NAMESPACE_END
+
 
 

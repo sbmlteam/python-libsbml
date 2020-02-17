@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  * 
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -495,7 +499,7 @@ START_CONSTRAINT (FbcReactionLwrBoundNotInfStrict, Reaction, r)
   msg = "<Reaction> '";
   msg += r.getId() ;
 
-  if (util_isInf(m.getParameter(low)->getValue()))
+  if (util_isInf(m.getParameter(low)->getValue()) == 1)
   {
     msg += "' and lowerBound with id '";
     msg += low;
@@ -686,6 +690,13 @@ END_CONSTRAINT
   // 20803 - caught at read
   // 20804 - caught at read
   // 20805 - caught at read
+
+START_CONSTRAINT(FbcGeneProdAssocContainsOneElement, GeneProductAssociation, gpa)
+{
+  inv(gpa.isSetAssociation());
+
+}
+END_CONSTRAINT
   // 20806 - caught at read
 
   // 20901 - caught at read

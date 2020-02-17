@@ -8,7 +8,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -28,8 +32,8 @@
  * @sbmlbrief{comp} Extension of SBase.
  *
  * The CompSBasePlugin class inherits from the SBasePlugin class, and
- * codifies the extentions to the SBase class defined in the @ref comp
- * (&ldquo;comp&rdquo;) package.  This extention allows the modeler to define
+ * codifies the extensions to the SBase class defined in the @ref comp
+ * (&ldquo;comp&rdquo;) package.  This extension allows the modeler to define
  * one or more submodel elements which the parent SBase object replaces,
  * and/or a single submodel element which replaces the parent SBase object.
 
@@ -83,13 +87,26 @@ protected:
 public:
 
   /**
-   * Constructor.
+   * Creates a new CompSBasePlugin object using the given parameters.
+   *
+   * @copydetails doc_what_are_xmlnamespaces
+   *
+   * @copydetails doc_what_are_sbmlnamespaces
+   *
+   * @param uri the URI of the SBML Level&nbsp;3 package implemented by
+   * this libSBML package extension.
+   *
+   * @param prefix the XML namespace prefix being used for the package.
+   *
+   * @param compns the namespaces object for the package.
    */
   CompSBasePlugin (const std::string &uri, const std::string &prefix, CompPkgNamespaces *compns);
 
 
   /**
    * Copy constructor. Creates a copy of this CompSBasePlugin object.
+   *
+   * @param orig the instance to copy.
    */
   CompSBasePlugin(const CompSBasePlugin& orig);
 
@@ -102,6 +119,9 @@ public:
 
   /**
    * Assignment operator for CompSBasePlugin.
+   *
+   * @param orig the object whose values are used as the basis of the
+   * assignment.
    */
   CompSBasePlugin& operator=(const CompSBasePlugin& orig);
 
@@ -109,7 +129,7 @@ public:
   /**
    * Creates and returns a deep copy of this CompSBasePlugin object.
    * 
-   * @return a (deep) copy of this CompSBasePlugin object
+   * @return a (deep) copy of this CompSBasePlugin object.
    */
   virtual CompSBasePlugin* clone () const;
 
@@ -138,7 +158,7 @@ public:
    * Returns the first child element found that has the given @p id in the
    * model-wide SId namespace, or @c NULL if no such object is found.
    *
-   * @param id string representing the id of objects to find
+   * @param id string representing the id of the object to find.
    *
    * @return a pointer to the SBase element with the given @p id.
    */
@@ -150,7 +170,7 @@ public:
    * itself if it has the given @p metaid, or @c NULL if no such object is
    * found.
    *
-   * @param metaid string representing the metaid of objects to find
+   * @param metaid string representing the metaid of the object to find.
    *
    * @return a pointer to the SBase element with the given @p metaid.
    */
@@ -160,6 +180,10 @@ public:
   /**
    * Returns a List of all child SBase objects, including those nested to an
    * arbitrary depth.
+   *
+   * @param filter a pointer to an ElementFilter, which causes the function 
+   * to return only elements that match a particular set of constraints.  
+   * If NULL (the default), the function will return all child objects.
    *
    * @return a List of pointers to all children objects.
    */
@@ -210,8 +234,16 @@ public:
    * Returns the ListOf object that holds all replacedElements.
    *
    * @return the ListOf object that holds all replacedElements.
-   */ 
+   */
   const ListOfReplacedElements* getListOfReplacedElements () const;
+
+
+  /**
+  * Returns the ListOf object that holds all replacedElements.
+  *
+  * @return the ListOf object that holds all replacedElements.
+  */
+  ListOfReplacedElements* getListOfReplacedElements ();
 
 
   /**
@@ -221,7 +253,7 @@ public:
    *
    * @return the nth ReplacedElement in the ListOfReplacedElements.  If the
    * index is invalid, @c NULL is returned.
-   */ 
+   */
   ReplacedElement* getReplacedElement (unsigned int n);
 
 
@@ -232,7 +264,7 @@ public:
    *
    * @return the nth ReplacedElement in the ListOfReplacedElements.  If the
    * index is invalid, @c NULL is returned.
-   */ 
+   */
   const ReplacedElement* getReplacedElement (unsigned int n) const;
 
 
@@ -273,7 +305,7 @@ public:
    * ReplacedElement objects list and returns a pointer to the newly
    * created object.
    *
-   * @return a newly created ReplacedElement object
+   * @return a newly created ReplacedElement object.
    */
   ReplacedElement* createReplacedElement ();
 
@@ -284,7 +316,7 @@ public:
    * A pointer to the ReplacedElement that was removed is returned.
    * If no ReplacedElement has been removed, @c NULL is returned.
    *
-   * @param index the index of the ReplacedElement object to remove
+   * @param index the index of the ReplacedElement object to remove.
    *
    * @return the ReplacedElement object removed.  As mentioned above, 
    * the caller owns the returned object. @c NULL is returned if 
@@ -296,7 +328,7 @@ public:
   /**
    * Get the child ReplacedBy of this SBase.
    * 
-   * @return the const ReplacedBy child of this SBase
+   * @return the const ReplacedBy child of this SBase.
    */
   const ReplacedBy* getReplacedBy () const;
 
@@ -342,8 +374,8 @@ public:
    * Creates a new, empty ReplacedBy, adds it to this CompSBasePlugin and 
    * returns the created ReplacedBy.
    *
-   * @return the newly created ReplacedBy object instance
-   */   
+   * @return the newly created ReplacedBy object instance.
+   */
   ReplacedBy* createReplacedBy ();
 
 
@@ -377,7 +409,7 @@ public:
    * Subclasses which contain one or more SBase derived elements must
    * override this function.
    *
-   * @param d the SBMLDocument object to use
+   * @param d the SBMLDocument object to use.
    *
    * @see connectToParent
    * @see enablePackageInternal
@@ -407,7 +439,7 @@ public:
    * addXXX, createXXX, and connectToChild functions of the
    * parent element).
    *
-   * @param parent the SBML object to use
+   * @param parent the SBML object to use.
    */
   void connectToParent (SBase* parent);
   /** @endcond */
@@ -441,7 +473,242 @@ private:
 
 };
 
+
+
 LIBSBML_CPP_NAMESPACE_END
 
-#endif  /* __cplusplus */
-#endif  /* CompSBasePlugin_h */
+
+
+
+#endif /* __cplusplus */
+
+
+
+
+#ifndef SWIG
+
+
+
+
+LIBSBML_CPP_NAMESPACE_BEGIN
+
+
+
+
+BEGIN_C_DECLS
+
+
+/**
+ * Returns a ListOf_t * containing ReplacedElement_t objects from this
+ * CompSBasePlugin_t.
+ *
+ * @param csbp the CompSBasePlugin_t structure whose ListOfReplacedElements is
+ * sought.
+ *
+ * @return the ListOfReplacedElements from this CompSBasePlugin_t as a ListOf_t
+ * *.
+ *
+ * @copydetails doc_returned_unowned_pointer
+ *
+ * @see CompSBasePlugin_addReplacedElement()
+ * @see CompSBasePlugin_createReplacedElement()
+ * @see CompSBasePlugin_getReplacedElementById()
+ * @see CompSBasePlugin_getReplacedElement()
+ * @see CompSBasePlugin_getNumReplacedElements()
+ * @see CompSBasePlugin_removeReplacedElementById()
+ * @see CompSBasePlugin_removeReplacedElement()
+ *
+ * @memberof CompSBasePlugin_t
+ */
+LIBSBML_EXTERN
+ListOf_t*
+CompSBasePlugin_getListOfReplacedElements(CompSBasePlugin_t* csbp);
+
+
+/**
+ * Get a ReplacedElement_t from the CompSBasePlugin_t.
+ *
+ * @param csbp the CompSBasePlugin_t structure to search.
+ *
+ * @param n an unsigned int representing the index of the ReplacedElement_t to
+ * retrieve.
+ *
+ * @return the nth ReplacedElement_t in the ListOfReplacedElements within this
+ * CompSBasePlugin or @c NULL if no such object exists.
+ *
+ * @copydetails doc_returned_unowned_pointer
+ *
+ * @memberof CompSBasePlugin_t
+ */
+LIBSBML_EXTERN
+ReplacedElement_t*
+CompSBasePlugin_getReplacedElement(CompSBasePlugin_t* csbp, unsigned int n);
+
+
+/**
+ * Adds a copy of the given ReplacedElement_t to this CompSBasePlugin_t.
+ *
+ * @param csbp the CompSBasePlugin_t structure to which the ReplacedElement_t
+ * should be added.
+ *
+ * @param re the ReplacedElement_t object to add.
+ *
+ * @copydetails doc_returns_success_code
+ * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_LEVEL_MISMATCH, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_VERSION_MISMATCH, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_PKG_VERSION_MISMATCH, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_DUPLICATE_OBJECT_ID, OperationReturnValues_t}
+ *
+ * @memberof CompSBasePlugin_t
+ */
+LIBSBML_EXTERN
+int
+CompSBasePlugin_addReplacedElement(CompSBasePlugin_t* csbp,
+                                   const ReplacedElement_t* re);
+
+
+/**
+ * Get the number of ReplacedElement_t objects in this CompSBasePlugin_t.
+ *
+ * @param csbp the CompSBasePlugin_t structure to query.
+ *
+ * @return the number of ReplacedElement_t objects in this CompSBasePlugin_t.
+ *
+ * @memberof CompSBasePlugin_t
+ */
+LIBSBML_EXTERN
+unsigned int
+CompSBasePlugin_getNumReplacedElements(CompSBasePlugin_t* csbp);
+
+
+/**
+ * Creates a new ReplacedElement_t object, adds it to this CompSBasePlugin_t
+ * object and returns the ReplacedElement_t object created.
+ *
+ * @param csbp the CompSBasePlugin_t structure to which the ReplacedElement_t
+ * should be added.
+ *
+ * @return a new ReplacedElement_t object instance.
+ *
+ * @copydetails doc_returned_unowned_pointer
+ *
+ * @memberof CompSBasePlugin_t
+ */
+LIBSBML_EXTERN
+ReplacedElement_t*
+CompSBasePlugin_createReplacedElement(CompSBasePlugin_t* csbp);
+
+
+/**
+ * Removes the nth ReplacedElement_t from this CompSBasePlugin_t and returns a
+ * pointer to it.
+ *
+ * @param csbp the CompSBasePlugin_t structure to search.
+ *
+ * @param n an unsigned int representing the index of the ReplacedElement_t to
+ * remove.
+ *
+ * @return a pointer to the nth ReplacedElement_t in this CompSBasePlugin_t.
+ *
+ * @copydetails doc_warning_returns_owned_pointer
+ *
+ * @memberof CompSBasePlugin_t
+ */
+LIBSBML_EXTERN
+ReplacedElement_t*
+CompSBasePlugin_removeReplacedElement(CompSBasePlugin_t* csbp,
+                                      unsigned int n);
+
+
+/**
+ * Returns the value of the "replacedBy" element of this CompSBasePlugin_t.
+ *
+ * @param csbp the CompSBasePlugin_t structure whose replacedBy is sought.
+ *
+ * @return the value of the "replacedBy" element of this CompSBasePlugin_t as a
+ * ReplacedBy.
+ *
+ * @memberof CompSBasePlugin_t
+ */
+LIBSBML_EXTERN
+const ReplacedBy_t*
+CompSBasePlugin_getReplacedBy(const CompSBasePlugin_t * csbp);
+
+
+/**
+ * Predicate returning @c 1 (true) if this CompSBasePlugin_t's "replacedBy"
+ * element is set.
+ *
+ * @param csbp the CompSBasePlugin_t structure.
+ *
+ * @return @c 1 (true) if this CompSBasePlugin_t's "replacedBy" element has
+ * been set, otherwise @c 0 (false) is returned.
+ *
+ * @memberof CompSBasePlugin_t
+ */
+LIBSBML_EXTERN
+int
+CompSBasePlugin_isSetReplacedBy(const CompSBasePlugin_t * csbp);
+
+
+/**
+ * Sets the value of the "replacedBy" element of this CompSBasePlugin_t.
+ *
+ * @param csbp the CompSBasePlugin_t structure.
+ *
+ * @param replacedBy ReplacedBy_t value of the "replacedBy" element to be set.
+ *
+ * @copydetails doc_returns_success_code
+ * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
+ *
+ * @memberof CompSBasePlugin_t
+ */
+LIBSBML_EXTERN
+int
+CompSBasePlugin_setReplacedBy(CompSBasePlugin_t * csbp,
+                              const ReplacedBy_t* replacedBy);
+
+
+/**
+ * Creates a new ReplacedBy_t object, adds it to this CompSBasePlugin_t object
+ * and returns the ReplacedBy_t object created.
+ *
+ * @param csbp the CompSBasePlugin_t structure to which the ReplacedBy_t should
+ * be added.
+ *
+ * @return a new ReplacedBy_t object instance.
+ *
+ * @memberof CompSBasePlugin_t
+ */
+LIBSBML_EXTERN
+ReplacedBy_t*
+CompSBasePlugin_createReplacedBy(CompSBasePlugin_t* csbp);
+
+
+/**
+ * Unsets the value of the "replacedBy" element of this CompSBasePlugin_t.
+ *
+ * @param csbp the CompSBasePlugin_t structure.
+ *
+ * @copydetails doc_returns_success_code
+ * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
+ *
+ * @memberof CompSBasePlugin_t
+ */
+LIBSBML_EXTERN
+int
+CompSBasePlugin_unsetReplacedBy(CompSBasePlugin_t * csbp);
+
+END_C_DECLS
+
+LIBSBML_CPP_NAMESPACE_END
+
+#endif /* !SWIG */
+#endif /* !CompSBasePlugin_H__ */

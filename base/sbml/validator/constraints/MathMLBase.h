@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -45,6 +49,8 @@
 #include <sbml/validator/VConstraint.h>
 #include <sbml/util/memory.h>
 #include <sbml/util/IdList.h>
+
+#include "OverDeterminedCheck.h"
 
 LIBSBML_CPP_NAMESPACE_BEGIN
 
@@ -148,6 +154,12 @@ protected:
   void logMathConflict (const ASTNode& node, const SBase& object);
 
   /**
+  * Logs a message that the math (and its corresponding object) have
+  * failed to satisfy this constraint.
+  */
+  void logPackageMathConflict (const ASTNode& node, const SBase& object, const std::string& error);
+
+  /**
    * Checks that the math will return a numeric result
    * forces recursion thru the AST tree
    * 
@@ -174,6 +186,12 @@ protected:
   */
   bool isNumericFunction(const Model & m, const ASTNode* node);
 
+  unsigned int getNumAlgebraicRules(const Model & m);
+
+  void matchEquations(const Model & m);
+
+  bool matchExists(const std::string& var, const std::string& eqn);
+
  /* occasionally a mathML constraint will need to know which reaction
    * the kineticLaw it is testing comes from
    * or whether the math from an event is a trigger or a delay
@@ -189,6 +207,9 @@ protected:
   NumericFDMap mNumericFunctionsChecked;
 
   IdList mFunctionsChecked;
+
+  EquationMatching * mEqnMatch;
+  bool mEqnMatchingRun;
 
 };
 

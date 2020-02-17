@@ -8,7 +8,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -213,20 +217,11 @@ Rule::getVariable () const
 }
 
 
-/** @cond doxygenLibsbmlInternal */
-/**
- * @return the string of variable attribute of this object.
- * 
- * @note this function is an alias for getVariable()
- * 
- * @see getVariable()
- */
 const std::string& 
 Rule::getId() const
 {
   return getVariable();
 }
-/** @endcond */
 
 
 /*
@@ -240,7 +235,7 @@ Rule::getUnits () const
 
 
 /*
- * @return true if the formula (or equivalently the math) for this Rule is
+ * @return @c true if the formula (or equivalently the math) for this Rule is
  * set, false otherwise.
  */
 bool
@@ -251,7 +246,7 @@ Rule::isSetFormula () const
 
 
 /*
- * @return true if the math (or equivalently the formula) for this Rule is
+ * @return @c true if the math (or equivalently the formula) for this Rule is
  * set, false otherwise.
  */
 bool
@@ -277,7 +272,7 @@ Rule::isSetMath () const
 
 
 /*
- * @return true if the variable of this Rule is set, false
+ * @return @c true if the variable of this Rule is set, false
  * otherwise.
  */
 bool
@@ -288,7 +283,7 @@ Rule::isSetVariable () const
 
 
 /*
- * @return true if the units for this Rule is set, false otherwise
+ * @return @c true if the units for this Rule is set, false otherwise
  * (L1 ParameterRules only).
  */
 bool
@@ -368,7 +363,7 @@ Rule::setMath (const ASTNode* math)
 
 
 /*
- * Sets the variable of this Rule to a copy of sid.
+ * Sets the variable of this Rule to a copy of @p sid.
  */
 int
 Rule::setVariable (const std::string& sid)
@@ -511,10 +506,10 @@ Rule::getDerivedUnitDefinition()
     
     if (isAlgebraic())
     {
-      if (m->getFormulaUnitsData(getInternalId(), getTypeCode()) != NULL)
+      FormulaUnitsData *fud = m->getFormulaUnitsData(getInternalId(), getTypeCode());
+      if (fud != NULL)
       {
-        return m->getFormulaUnitsData(getInternalId(), getTypeCode())
-                                               ->getUnitDefinition();
+        return fud->getUnitDefinition();
       }
       else
       {
@@ -523,10 +518,10 @@ Rule::getDerivedUnitDefinition()
     }
     else
     {
-      if (m->getFormulaUnitsData(getVariable(), getTypeCode()) != NULL)
+      FormulaUnitsData *fud = m->getFormulaUnitsData(getVariable(), getTypeCode());
+      if (fud != NULL)
       {
-        return m->getFormulaUnitsData(getVariable(), getTypeCode())
-                                              ->getUnitDefinition();
+        return fud->getUnitDefinition();
       }
       else
       {
@@ -597,10 +592,10 @@ Rule::containsUndeclaredUnits()
     
     if (isAlgebraic())
     {
-      if (m->getFormulaUnitsData(getInternalId(), getTypeCode()) != NULL)
+      FormulaUnitsData *fud = m->getFormulaUnitsData(getInternalId(), getTypeCode());
+      if (fud != NULL)
       {
-        return m->getFormulaUnitsData(getInternalId(), getTypeCode())
-          ->getContainsUndeclaredUnits();
+        return fud->getContainsUndeclaredUnits();
       }
       else
       {
@@ -609,10 +604,10 @@ Rule::containsUndeclaredUnits()
     }
     else
     {
-      if (m->getFormulaUnitsData(getVariable(), getTypeCode()) != NULL)
+      FormulaUnitsData *fud = m->getFormulaUnitsData(getVariable(), getTypeCode());
+      if (fud != NULL)
       {
-        return m->getFormulaUnitsData(getVariable(), getTypeCode())
-          ->getContainsUndeclaredUnits();
+        return fud->getContainsUndeclaredUnits();
       }
       else
       {
@@ -651,7 +646,7 @@ Rule::getType () const
 
 
 /*
- * @return true if this Rule is an AlgebraicRule, false otherwise.
+ * @return @c true if this Rule is an AlgebraicRule, false otherwise.
  */
 bool
 Rule::isAlgebraic () const
@@ -661,7 +656,7 @@ Rule::isAlgebraic () const
 
 
 /*
- * @return true if this Rule is an AssignmentRule, false otherwise.
+ * @return @c true if this Rule is an AssignmentRule, false otherwise.
  */
 bool
 Rule::isAssignment () const
@@ -671,7 +666,7 @@ Rule::isAssignment () const
 
 
 /*
- * @return true if this Rule is a CompartmentVolumeRule, false otherwise.
+ * @return @c true if this Rule is a CompartmentVolumeRule, false otherwise.
  */
 bool
 Rule::isCompartmentVolume () const
@@ -689,7 +684,7 @@ Rule::isCompartmentVolume () const
 
 
 /*
- * @return true if this Rule is a ParameterRule, false otherwise.
+ * @return @c true if this Rule is a ParameterRule, false otherwise.
  */
 bool
 Rule::isParameter () const
@@ -707,7 +702,7 @@ Rule::isParameter () const
 
 
 /*
- * @return true if this Rule is a RateRule (L2) or has type="rate" (L1),
+ * @return @c true if this Rule is a RateRule (L2) or has type="rate" (L1),
  * false otherwise.
  */
 bool
@@ -718,7 +713,7 @@ Rule::isRate () const
 
 
 /*
- * @return true if this Rule is an AssignmentRule (L2) has type="scalar"
+ * @return @c true if this Rule is an AssignmentRule (L2) has type="scalar"
  * (L1), false otherwise.
  */
 bool
@@ -729,7 +724,7 @@ Rule::isScalar () const
 
 
 /*
- * @return true if this Rule is a SpeciesConcentrationRule, false
+ * @return @c true if this Rule is a SpeciesConcentrationRule, false
  * otherwise.
  */
 bool
@@ -828,9 +823,13 @@ Rule::hasRequiredElements() const
   bool allPresent = true;
 
   /* required attributes for rule: math */
+  /* l3v2 removed that requirement */
 
-  if (!isSetMath())
-    allPresent = false;
+  if ((getLevel() < 3 ) || (getLevel() == 3 && getVersion() == 1))
+  {
+    if (!isSetMath())
+      allPresent = false;
+  }
 
   return allPresent;
 }
@@ -929,9 +928,248 @@ Rule::hasRequiredAttributes() const
 
 
 /** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Rule.
+ */
+int
+Rule::getAttribute(const std::string& attributeName, bool& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Rule.
+ */
+int
+Rule::getAttribute(const std::string& attributeName, int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Rule.
+ */
+int
+Rule::getAttribute(const std::string& attributeName, double& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Rule.
+ */
+int
+Rule::getAttribute(const std::string& attributeName,
+                   unsigned int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Rule.
+ */
+int
+Rule::getAttribute(const std::string& attributeName, std::string& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Rule.
+ */
+//int
+//Rule::getAttribute(const std::string& attributeName, const char* value) const
+//{
+//  int return_value = SBase::getAttribute(attributeName, value);
+//
+//  return return_value;
+//}
+//
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Predicate returning @c true if this Rule's attribute "attributeName" is set.
+ */
+bool
+Rule::isSetAttribute(const std::string& attributeName) const
+{
+  bool value = SBase::isSetAttribute(attributeName);
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Rule.
+ */
+int
+Rule::setAttribute(const std::string& attributeName, bool value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Rule.
+ */
+int
+Rule::setAttribute(const std::string& attributeName, int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Rule.
+ */
+int
+Rule::setAttribute(const std::string& attributeName, double value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Rule.
+ */
+int
+Rule::setAttribute(const std::string& attributeName, unsigned int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Rule.
+ */
+int
+Rule::setAttribute(const std::string& attributeName, const std::string& value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Rule.
+ */
+//int
+//Rule::setAttribute(const std::string& attributeName, const char* value)
+//{
+//  int return_value = SBase::setAttribute(attributeName, value);
+//
+//  return return_value;
+//}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Unsets the value of the "attributeName" attribute of this Rule.
+ */
+int
+Rule::unsetAttribute(const std::string& attributeName)
+{
+  int value = SBase::unsetAttribute(attributeName);
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
 /*
  * Subclasses should override this method to write out their contained
- * SBML objects as XML elements.  Be sure to call your parents
+ * SBML objects as XML elements.  Be sure to call your parent's
  * implementation of this method as well.
  */
 void
@@ -953,7 +1191,7 @@ Rule::writeElements (XMLOutputStream& stream) const
  * Subclasses should override this method to read (and store) XHTML,
  * MathML, etc. directly from the XMLInputStream.
  *
- * @return true if the subclass read from the stream, false otherwise.
+ * @return @c true if the subclass read from the stream, false otherwise.
  */
 bool
 Rule::readOtherXML (XMLInputStream& stream)
@@ -1070,7 +1308,7 @@ Rule::addExpectedAttributes(ExpectedAttributes& attributes)
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 Rule::readAttributes (const XMLAttributes& attributes,
@@ -1102,7 +1340,7 @@ Rule::readAttributes (const XMLAttributes& attributes,
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 Rule::readL1Attributes (const XMLAttributes& attributes)
@@ -1179,7 +1417,7 @@ Rule::readL1Attributes (const XMLAttributes& attributes)
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 Rule::readL2Attributes (const XMLAttributes& attributes)
@@ -1215,7 +1453,7 @@ Rule::readL2Attributes (const XMLAttributes& attributes)
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 Rule::readL3Attributes (const XMLAttributes& attributes)
@@ -1253,7 +1491,7 @@ Rule::readL3Attributes (const XMLAttributes& attributes)
 /** @cond doxygenLibsbmlInternal */
 /*
  * Subclasses should override this method to write their XML attributes
- * to the XMLOutputStream.  Be sure to call your parents implementation
+ * to the XMLOutputStream.  Be sure to call your parent's implementation
  * of this method as well.
  */
 void

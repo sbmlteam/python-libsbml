@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -94,14 +98,26 @@ class LIBSBML_EXTERN ListOfLineSegments : public ListOf
 
 
   /**
-   * Ctor.
+   * Constructor.
+   *
+   * @param level the SBML Level.
+   * @param version the Version within the SBML Level.
+   * @param pkgVersion the version of the package.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
    ListOfLineSegments(unsigned int level      = LayoutExtension::getDefaultLevel(), 
                       unsigned int version    = LayoutExtension::getDefaultVersion(), 
                       unsigned int pkgVersion = LayoutExtension::getDefaultPackageVersion());
 
   /**
-   * Ctor.
+   * Constructor.
+   *
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param layoutns the LayoutPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
    ListOfLineSegments(LayoutPkgNamespaces* layoutns);
 
@@ -125,7 +141,7 @@ class LIBSBML_EXTERN ListOfLineSegments : public ListOf
    * Returns the XML element name of
    * this SBML object.
    *
-   * @return the string of the name of this element
+   * @return the string of the name of this element.
    */
   virtual const std::string& getElementName () const;
 
@@ -136,6 +152,7 @@ class LIBSBML_EXTERN ListOfLineSegments : public ListOf
    * @param n the index number of the LineSegment to get.
    * 
    * @return the nth LineSegment in this ListOfLineSegments.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -148,6 +165,7 @@ class LIBSBML_EXTERN ListOfLineSegments : public ListOf
    * @param n the index number of the LineSegment to get.
    * 
    * @return the nth LineSegment in this ListOfLineSegments.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -160,7 +178,7 @@ class LIBSBML_EXTERN ListOfLineSegments : public ListOf
    *
    * The caller owns the returned item and is responsible for deleting it.
    *
-   * @param n the index of the item to remove
+   * @param n the index of the item to remove.
    *
    * @see size()
    */
@@ -171,7 +189,7 @@ class LIBSBML_EXTERN ListOfLineSegments : public ListOf
     * Creates an XMLNode object from this.
     */
     XMLNode toXML() const;
-    
+
 protected:
 
   /** @cond doxygenLibsbmlInternal */
@@ -179,15 +197,17 @@ protected:
    * Create and return an SBML object of this class, if present.
    *
    * @return the SBML object corresponding to next XMLToken in the
-   * XMLInputStream or NULL if the token was not recognized.
+   * XMLInputStream or @c NULL if the token was not recognized.
    */
   virtual SBase* createObject (XMLInputStream& stream);
   /** @endcond */
-  
-  
+
+
+  /** @cond doxygenLibsbmlInternal */
   virtual bool isValidTypeForList(SBase * item);
+  /** @endcond */
 };
-  
+
 class LIBSBML_EXTERN Curve : public SBase
 {
 protected:
@@ -200,8 +220,13 @@ public:
 
   /**
    * Creates a curve with an empty list of segments.
-   */ 
-  
+   *
+   * @param level the SBML Level.
+   * @param version the Version within the SBML Level.
+   * @param pkgVersion the version of the package.
+   *
+   * @copydetails doc_note_setting_lv_pkg
+   */
   Curve (unsigned int level      = LayoutExtension::getDefaultLevel(),
          unsigned int version    = LayoutExtension::getDefaultVersion(),
          unsigned int pkgVersion = LayoutExtension::getDefaultPackageVersion());
@@ -209,6 +234,12 @@ public:
 
   /**
    * Creates a new Curve with the given LayoutPkgNamespaces object.
+   *
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param layoutns the LayoutPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   Curve (LayoutPkgNamespaces* layoutns);
 
@@ -221,23 +252,27 @@ public:
 
   /**
    * Copy constructor.
+   *
+   * @param source the instance to copy.
    */
    Curve(const Curve& source);
 
   /**
    * Assignment operator.
+   *
+   * @param source the object whose values are used as the basis of the
+   * assignment.
    */
    Curve& operator=(const Curve& source);
 
   /**
    * Destructor.
-   */ 
+   */
   virtual ~Curve ();
 
   /**
    * Does nothing since no defaults are defined for Curve.
-   */ 
-  
+   */
   void initDefaults ();
 
 
@@ -245,67 +280,97 @@ public:
    * Returns a List of all child SBase objects, including those nested to an
    * arbitrary depth
    *
-   * @return a List* of pointers to all children objects.
+   * @param filter a pointer to an ElementFilter, which causes the function 
+   * to return only elements that match a particular set of constraints.  
+   * If NULL (the default), the function will return all child objects.
+   *
+   * @return a List of pointers to all children objects.
    */
   virtual List* getAllElements(ElementFilter* filter=NULL);
 
   /**
    * Returns a reference to the ListOf object that holds all the curve
    * segments.
+   *
+   * @return the ListOfLineSegments of this Curve defined as the child 
+   * listOfCurveSegments.  Will never return NULL; the listOfCurveSegments 
+   * is always created, even if empty.
    */
-  
   const ListOfLineSegments* getListOfCurveSegments () const;
        
   /**
    * Returns a refernce to the ListOf object That holds all the curve
    * segments.
+   *
+   * @return the ListOfLineSegments of this Curve defined as the child 
+   * listOfCurveSegments.  Will never return NULL; the listOfCurveSegments 
+   * is always created, even if empty.
    */
-  
   ListOfLineSegments* getListOfCurveSegments ();
 
   /**
    * Returns a pointer to the curve segment with the given index.
    * If the index is invalid, @c NULL is returned.
-   */  
+   *
+   * @param index the index value of the curve segment to return.
+   *
+   * @return the LineSegment representing the child "curveSegment"
+   * with the appropriate @p index, or @c NULL if no such LineSegment
+   * exists.
+   */
   const LineSegment* getCurveSegment (unsigned int index) const;
 
   /**
    * Returns a pointer to the curve segment with the given index.
    * If the index is invalid, @c NULL is returned.
-   */  
+   *
+   * @param index the index value of the curve segment to return.
+   *
+   * @return the LineSegment representing the child "curveSegment"
+   * with the appropriate @p index, or @c NULL if no such LineSegment
+   * exists.
+   */
   LineSegment* getCurveSegment (unsigned int index);
 
   /**
-   * Adds a new CurveSegment to the end of the list.
-   */ 
-  
-  void addCurveSegment (const LineSegment* segment);
+   * Adds a copy of the given LineSegment to the end of the 
+   * ListOfLineSegments.
+   *
+   * @param segment the LineSegment to add as a new child 
+   * "curveSegment" of the listOfCurveSegments.
+   */
+  int addCurveSegment (const LineSegment* segment);
   
   /**
    * Returns the number of curve segments.
-   */ 
-  
+   *
+   * @return the number of "curveSegment" children of this Curve.
+   */
   unsigned int getNumCurveSegments () const;
 
 
   /**
    * Creates a new LineSegment and adds it to the end of the list.  A
    * reference to the new LineSegment object is returned.
+   *
+   * @return the LineSegment created as a new child "curveSegment"
+   * of this Curve.
    */
-  
   LineSegment* createLineSegment ();
 
   /**
    * Creates a new CubicBezier and adds it to the end of the list.  A
    * reference to the new CubicBezier object is returned.
+   *
+   * @return the CubicBezier created as a new child "curveSegment" of 
+   * this Curve.
    */
-  
   CubicBezier* createCubicBezier ();
 
   /** @cond doxygenLibsbmlInternal */
   /**
    * Subclasses should override this method to write out their contained
-   * SBML objects as XML elements.  Be sure to call your parents
+   * SBML objects as XML elements.  Be sure to call your parent's
    * implementation of this method as well.  For example:
    *
    *   SBase::writeElements(stream);
@@ -321,7 +386,7 @@ public:
    * Returns the XML element name of
    * this SBML object.
    *
-   * @return the string of the name of this element
+   * @return the string of the name of this element.
    */
   virtual const std::string& getElementName () const ;
 
@@ -340,7 +405,7 @@ public:
    * @copydetails doc_what_are_typecodes
    *
    * @return the SBML type code for this object:
-   * @sbmlconstant{SBML_LAYOUT_CURVE, SBMLLayoutTypeCode_t}
+   * @sbmlconstant{SBML_LAYOUT_CURVE, SBMLLayoutTypeCode_t}.
    *
    * @copydetails doc_warning_typecodes_not_unique
    *
@@ -371,7 +436,7 @@ public:
   /**
    * Sets the parent SBMLDocument of this SBML object.
    *
-   * @param d the SBMLDocument object to use
+   * @param d the SBMLDocument object to use.
    */
   virtual void setSBMLDocument (SBMLDocument* d);
   /** @endcond */
@@ -413,7 +478,7 @@ protected:
    * Create and return an SBML object of this class, if present.
    *
    * @return the SBML object corresponding to next XMLToken in the
-   * XMLInputStream or NULL if the token was not recognized.
+   * XMLInputStream or @c NULL if the token was not recognized.
    */
   virtual SBase*
   createObject (XMLInputStream& stream);
@@ -435,7 +500,7 @@ protected:
   /**
    * Subclasses should override this method to read values from the given
    * XMLAttributes set into their specific fields.  Be sure to call your
-   * parents implementation of this method as well.
+   * parent's implementation of this method as well.
    */
   virtual void readAttributes (const XMLAttributes& attributes, 
                                const ExpectedAttributes& expectedAttributes);
@@ -445,7 +510,7 @@ protected:
   /** @cond doxygenLibsbmlInternal */
   /**
    * Subclasses should override this method to write their XML attributes
-   * to the XMLOutputStream.  Be sure to call your parents implementation
+   * to the XMLOutputStream.  Be sure to call your parent's implementation
    * of this method as well.  For example:
    *
    *   SBase::writeAttributes(stream);
@@ -482,7 +547,7 @@ Curve_create ();
 /**
  * Creates a new Curve_t structure from a template.
  *
- * @param temp The Curve_t structure to copy.
+ * @param temp the Curve_t structure to copy.
  *
  * @memberof Curve_t
  */
@@ -493,7 +558,7 @@ Curve_createFrom (const Curve_t *temp);
 /**
  * Frees the memory taken by the Curve_t.
  *
- * @param c The Curve_t structure.
+ * @param c the Curve_t structure.
  *
  * @memberof Curve_t
  */
@@ -505,8 +570,8 @@ Curve_free (Curve_t *c);
 /**
  * Adds a LineSegment_t to a Curve_t.
  *
- * @param c The Curve_t structure.
- * @param ls The LineSegment_t structure to add.
+ * @param c the Curve_t structure.
+ * @param ls the LineSegment_t structure to add.
  *
  * @memberof Curve_t
  */
@@ -517,7 +582,7 @@ Curve_addCurveSegment (Curve_t *c, LineSegment_t *ls);
 /**
  * Returns the number of line segments.
  *
- * @param c The Curve_t structure.
+ * @param c the Curve_t structure.
  *
  * @memberof Curve_t
  */
@@ -528,8 +593,8 @@ Curve_getNumCurveSegments (const Curve_t *c);
 /**
  * Returns the line segment with the given index.
  *
- * @param c The Curve_t structure.
- * @param index The index of the curve segment to return.
+ * @param c the Curve_t structure.
+ * @param index the index of the curve segment to return.
  *
  * @memberof Curve_t
  */
@@ -540,10 +605,10 @@ Curve_getCurveSegment (const Curve_t *c, unsigned int index);
 /**
  * Returns the ListOf_t structure that holds all the curve segments.
  *
- * @param c The Curve_t structure.
+ * @param c the Curve_t structure.
  *
  * @memberof Curve_t
- */ 
+ */
 LIBSBML_EXTERN
 ListOf_t *
 Curve_getListOfCurveSegments (Curve_t *c);
@@ -552,11 +617,11 @@ Curve_getListOfCurveSegments (Curve_t *c);
  * Removes the curve segment with the given index.  If the index is
  * invalid, nothing is done.
  *
- * @param c The Curve_t structure.
- * @param index The index of the curve segment to remove.
+ * @param c the Curve_t structure.
+ * @param index the index of the curve segment to remove.
  *
  * @memberof Curve_t
- */ 
+ */
 LIBSBML_EXTERN
 LineSegment_t *
 Curve_removeCurveSegment (Curve_t *c, unsigned int index);
@@ -564,10 +629,10 @@ Curve_removeCurveSegment (Curve_t *c, unsigned int index);
 /**
  * Does nothing since no defaults are defined for Curve_t.
  *
- * @param c The Curve_t structure.
+ * @param c the Curve_t structure.
  *
  * @memberof Curve_t
- */ 
+ */
 LIBSBML_EXTERN
 void
 Curve_initDefaults (Curve_t *c);
@@ -576,7 +641,7 @@ Curve_initDefaults (Curve_t *c);
  * Creates a new LineSegment_t and adds it to the end of the list.  A pointer
  * to the new LineSegment_t structure is returned.
  *
- * @param c The Curve_t structure.
+ * @param c the Curve_t structure.
  *
  * @memberof Curve_t
  */
@@ -588,7 +653,7 @@ Curve_createLineSegment (Curve_t *c);
  * Creates a new CubicBezier_t and adds it to the end of the list.  A pointer
  * to the new CubicBezier_t structure is returned.
  *
- * @param c The Curve_t structure.
+ * @param c the Curve_t structure.
  *
  * @memberof Curve_t
  */
@@ -599,7 +664,7 @@ Curve_createCubicBezier (Curve_t *c);
 /**
  * @return a (deep) copy of this Curve_t.
  *
- * @param c The Curve_t structure.
+ * @param c the Curve_t structure.
  *
  * @memberof Curve_t
  */

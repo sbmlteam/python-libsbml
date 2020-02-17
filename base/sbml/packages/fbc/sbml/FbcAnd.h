@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -82,7 +86,7 @@ protected:
 
   /** @cond doxygenLibsbmlInternal */
   ListOfFbcAssociations   mAssociations;
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
 public:
@@ -91,13 +95,15 @@ public:
    * Creates a new FbcAnd with the given SBML Level, Version, and
    * &ldquo;fbc&rdquo;package version.
    *
-   * @param level an unsigned int, the SBML Level to assign to this FbcAnd
+   * @param level an unsigned int, the SBML Level to assign to this FbcAnd.
    *
    * @param version an unsigned int, the SBML Version to assign to this
-   * FbcAnd
+   * FbcAnd.
    *
    * @param pkgVersion an unsigned int, the SBML Fbc Version to assign to
-   * this FbcAnd
+   * this FbcAnd.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   FbcAnd(unsigned int level      = FbcExtension::getDefaultLevel(),
          unsigned int version    = FbcExtension::getDefaultVersion(),
@@ -107,7 +113,11 @@ public:
   /**
    * Creates a new FbcAnd with the given FbcPkgNamespaces object.
    *
-   * @param fbcns the FbcPkgNamespaces object
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param fbcns the FbcPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   FbcAnd(FbcPkgNamespaces* fbcns);
 
@@ -115,7 +125,7 @@ public:
    /**
    * Copy constructor for FbcAnd.
    *
-   * @param orig; the FbcAnd instance to copy.
+   * @param orig the FbcAnd instance to copy.
    */
   FbcAnd(const FbcAnd& orig);
 
@@ -123,8 +133,8 @@ public:
    /**
    * Assignment operator for FbcAnd.
    *
-   * @param rhs; the object whose values are used as the basis
-   * of the assignment
+   * @param rhs the object whose values are used as the basis
+   * of the assignment.
    */
   FbcAnd& operator=(const FbcAnd& rhs);
 
@@ -144,17 +154,17 @@ public:
 
 
    /**
-   * Returns the  "ListOfFbcAssociations" in this FbcAnd object.
+   * Returns the ListOfFbcAssociations in this FbcAnd object.
    *
-   * @return the "ListOfFbcAssociations" attribute of this FbcAnd.
+   * @return the ListOfFbcAssociations child of this FbcAnd.
    */
   const ListOfFbcAssociations* getListOfAssociations() const;
 
 
   /**
-   * Returns the  "ListOfFbcAssociations" in this FbcAnd object.
+   * Returns the ListOfFbcAssociations in this FbcAnd object.
    *
-   * @return the "ListOfFbcAssociations" attribute of this FbcAnd.
+   * @return the ListOfFbcAssociations child of this FbcAnd.
    */
   ListOfFbcAssociations* getListOfAssociations();
 
@@ -162,10 +172,11 @@ public:
   /**
    * Get the nth object from the ListOfFbcAssociations.
    *
-   * @param n the index number of the Association to get.
+   * @param n the index number of the FbcAssociation to get.
    *
-   * @return the nth Association in the ListOfFbcAssociations within this
+   * @return the nth FbcAssociation in the ListOfFbcAssociations within this
    * FbcAnd.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see getNumAssociations()
    */
@@ -175,10 +186,11 @@ public:
   /**
    * Get the nth object from the ListOfFbcAssociations.
    *
-   * @param n the index number of the Association to get.
+   * @param n the index number of the FbcAssociation to get.
    *
-   * @return the nth Association in the ListOfFbcAssociations within this
+   * @return the nth FbcAssociation in the ListOfFbcAssociations within this
    * FbcAnd.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see getNumAssociations()
    */
@@ -186,15 +198,15 @@ public:
 
 
   /**
-   * Get a Association from the ListOfFbcAssociations
+   * Get an FbcAssociation from the ListOfFbcAssociations
    * based on its identifier.
    *
    * @param sid a string representing the identifier
-   * of the Association to get.
+   * of the FbcAssociation to get.
    *
-   * @return the Association in the ListOfFbcAssociations
-   * with the given id or NULL if no such
-   * Association exists.
+   * @return the FbcAssociation in the ListOfFbcAssociations
+   * with the given id or @c NULL if no such
+   * FbcAssociation exists.
    *
    * @see getAssociation(unsigned int n)
    *
@@ -204,15 +216,15 @@ public:
 
 
   /**
-   * Get a Association from the ListOfFbcAssociations
+   * Get an FbcAssociation from the ListOfFbcAssociations
    * based on its identifier.
    *
    * @param sid a string representing the identifier
-   * of the Association to get.
+   * of the FbcAssociation to get.
    *
-   * @return the Association in the ListOfFbcAssociations
-   * with the given id or NULL if no such
-   * Association exists.
+   * @return the FbcAssociation in the ListOfFbcAssociations
+   * with the given id or @c NULL if no such
+   * FbcAssociation exists.
    *
    * @see getAssociation(unsigned int n)
    *
@@ -222,16 +234,18 @@ public:
 
 
   /**
-   * Adds a copy the given "FbcAssociation" to this FbcAnd.
+   * Adds a copy the given FbcAssociation to this FbcAnd.
    *
-   * @param fa; the FbcAssociation object to add
+   * @param fa the FbcAssociation object to add.
    *
-   * @return integer value indicating success/failure of the
-   * function.  @if clike The value is drawn from the
-   * enumeration #OperationReturnValues_t. @endif The possible values
-   * returned by this function are:
+   * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_LEVEL_MISMATCH, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_VERSION_MISMATCH, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_PKG_VERSION_MISMATCH, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_NAMESPACES_MISMATCH, OperationReturnValues_t}
    */
   int addAssociation(const FbcAssociation* fa);
 
@@ -239,7 +253,7 @@ public:
   /**
    * Get the number of FbcAssociation objects in this FbcAnd.
    *
-   * @return the number of FbcAssociation objects in this FbcAnd
+   * @return the number of FbcAssociation objects in this FbcAnd.
    */
   unsigned int getNumAssociations() const;
 
@@ -249,14 +263,14 @@ public:
   *
   * @return the association as infix string.
   */
-  virtual std::string toInfix() const;
+  virtual std::string toInfix(bool usingId=false) const;
 
 
   /**
-   * Creates a new FbcAnd object, adds it to this FbcAnds
+   * Creates a new FbcAnd object, adds it to this FbcAnd's
    * ListOfFbcAssociations and returns the FbcAnd object created. 
    *
-   * @return a new FbcAnd object instance
+   * @return a new FbcAnd object instance.
    *
    * @see addAssociation(const FbcAssociation* fa)
    */
@@ -264,10 +278,10 @@ public:
 
 
   /**
-   * Creates a new FbcOr object, adds it to this FbcAnds
+   * Creates a new FbcOr object, adds it to this FbcAnd's
    * ListOfFbcAssociations and returns the FbcOr object created. 
    *
-   * @return a new FbcOr object instance
+   * @return a new FbcOr object instance.
    *
    * @see addAssociation(const FbcAssociation* fa)
    */
@@ -275,10 +289,10 @@ public:
 
 
   /**
-   * Creates a new GeneProductRef object, adds it to this FbcAnds
+   * Creates a new GeneProductRef object, adds it to this FbcAnd's
    * ListOfFbcAssociations and returns the GeneProductRef object created. 
    *
-   * @return a new GeneProductRef object instance
+   * @return a new GeneProductRef object instance.
    *
    * @see addAssociation(const FbcAssociation* fa)
    */
@@ -286,12 +300,12 @@ public:
 
 
   /**
-   * Removes the nth Association from the ListOfFbcAssociations within this FbcAnd.
-   * and returns a pointer to it.
+   * Removes the nth FbcAssociation from the ListOfFbcAssociations within this 
+   * FbcAnd and returns a pointer to it.
    *
    * The caller owns the returned item and is responsible for deleting it.
    *
-   * @param n the index of the Association to remove.
+   * @param n the index of the FbcAssociation to remove.
    *
    * @see getNumAssociations()
    */
@@ -299,16 +313,16 @@ public:
 
 
   /**
-   * Removes the Association with the given identifier from the ListOfFbcAssociations within this FbcAnd
-   * and returns a pointer to it.
+   * Removes the FbcAssociation with the given identifier from the 
+   * ListOfFbcAssociations within this FbcAnd and returns a pointer to it.
    *
    * The caller owns the returned item and is responsible for deleting it.
    * If none of the items in this list have the identifier @p sid, then
    * @c NULL is returned.
    *
-   * @param sid the identifier of the Association to remove.
+   * @param sid the identifier of the FbcAssociation to remove.
    *
-   * @return the Association removed. As mentioned above, the caller owns the
+   * @return the FbcAssociation removed. As mentioned above, the caller owns the
    * returned item.
    */
   FbcAssociation* removeAssociation(const std::string& sid);
@@ -318,7 +332,7 @@ public:
    * Returns a List of all child SBase objects, including those nested to an
    * arbitrary depth.
    *
-   * @return a List* of pointers to all child objects.
+   * @return a List of pointers to all child objects.
    */
    virtual List* getAllElements(ElementFilter * filter = NULL);
 
@@ -351,9 +365,8 @@ public:
 
   /**
    * Predicate returning @c true if all the required attributes
-   * for this FbcAnd object have been set.
-   *
-   * @note The required attributes for a FbcAnd object are:
+   * for this FbcAnd object have been set.  Will always return
+   * @c true, since FbcOr has no required attributes.
    *
    * @return a boolean value indicating whether all the required
    * attributes for this object have been defined.
@@ -365,7 +378,8 @@ public:
    * Predicate returning @c true if all the required elements
    * for this FbcAnd object have been set.
    *
-   * @note The required elements for a FbcAnd object are:
+   * @note An FbcAnd object must have at least two FbcAssociation
+   * children.
    *
    * @return a boolean value indicating whether all the required
    * elements for this object have been defined.
@@ -377,13 +391,13 @@ public:
 
   /**
    * Subclasses should override this method to write out their contained
-   * SBML objects as XML elements.  Be sure to call your parents
+   * SBML objects as XML elements.  Be sure to call your parent's
    * implementation of this method as well.
    */
   virtual void writeElements (XMLOutputStream& stream) const;
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -394,7 +408,7 @@ public:
   virtual bool accept (SBMLVisitor& v) const;
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -405,7 +419,7 @@ public:
   virtual void setSBMLDocument (SBMLDocument* d);
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -416,7 +430,7 @@ public:
   virtual void connectToChild ();
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -428,8 +442,293 @@ public:
                const std::string& pkgPrefix, bool flag);
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
+
+
+  #ifndef SWIG
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this FbcAnd.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, bool& value)
+    const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this FbcAnd.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this FbcAnd.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           double& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this FbcAnd.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           unsigned int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this FbcAnd.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           std::string& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Predicate returning @c true if this FbcAnd's attribute "attributeName" is
+   * set.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @return @c true if this FbcAnd's attribute "attributeName" has been set,
+   * otherwise @c false is returned.
+   */
+  virtual bool isSetAttribute(const std::string& attributeName) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this FbcAnd.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, bool value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this FbcAnd.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this FbcAnd.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, double value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this FbcAnd.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           unsigned int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this FbcAnd.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           const std::string& value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Unsets the value of the "attributeName" attribute of this FbcAnd.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int unsetAttribute(const std::string& attributeName);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Creates and returns an new "elementName" object in this FbcAnd.
+   *
+   * @param elementName, the name of the element to create.
+   *
+   * @return pointer to the element created.
+   */
+  virtual SBase* createChildObject(const std::string& elementName);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Returns the number of "elementName" in this FbcAnd.
+   *
+   * @param elementName, the name of the element to get number of.
+   *
+   * @return unsigned int number of elements.
+   */
+  virtual unsigned int getNumObjects(const std::string& elementName);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Returns the nth object of "objectName" in this FbcAnd.
+   *
+   * @param elementName, the name of the element to get number of.
+   *
+   * @param index, unsigned int the index of the object to retrieve.
+   *
+   * @return pointer to the object.
+   */
+  virtual SBase* getObject(const std::string& elementName, unsigned int index);
+
+  /** @endcond */
+
+
+
+
+  #endif /* !SWIG */
 
 protected:
 
@@ -441,7 +740,7 @@ protected:
   virtual SBase* createObject(XMLInputStream& stream);
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -452,7 +751,7 @@ protected:
   virtual void addExpectedAttributes(ExpectedAttributes& attributes);
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -464,7 +763,7 @@ protected:
                                const ExpectedAttributes& expectedAttributes);
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -475,7 +774,7 @@ protected:
   virtual void writeAttributes (XMLOutputStream& stream) const;
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
 
@@ -492,20 +791,21 @@ LIBSBML_CPP_NAMESPACE_END
 LIBSBML_CPP_NAMESPACE_BEGIN
 BEGIN_C_DECLS
 
+
 /**
- * Creates a new FbcAnd_t structure using the given SBML @p level and
- * @p version values.
+ * Creates a new FbcAnd_t using the given SBML Level, Version and
+ * &ldquo;fbc&rdquo; package version.
  *
- * @param level an unsigned int, the SBML level to assign to this
- * FbcAnd_t structure.
+ * @param level an unsigned int, the SBML Level to assign to this FbcAnd_t.
  *
- * @param version an unsigned int, the SBML version to assign to this
- * FbcAnd_t structure.
+ * @param version an unsigned int, the SBML Version to assign to this FbcAnd_t.
  *
- * @returns the newly-created FbcAnd_t structure, or a null pointer if
- * an error occurred during construction.
+ * @param pkgVersion an unsigned int, the SBML Fbc Version to assign to this
+ * FbcAnd_t.
  *
- * @copydetails doc_note_setting_lv
+ * @copydetails doc_note_setting_lv_pkg
+ *
+ * @copydetails doc_warning_returns_owned_pointer
  *
  * @memberof FbcAnd_t
  */
@@ -516,92 +816,232 @@ FbcAnd_create(unsigned int level, unsigned int version,
 
 
 /**
- * Frees the given FbcAnd_t structure.
- * 
- * @param fa the FbcAnd_t structure to be freed.
+ * Frees this FbcAnd_t object.
+ *
+ * @param fa the FbcAnd_t structure.
  *
  * @memberof FbcAnd_t
  */
 LIBSBML_EXTERN
 void
-FbcAnd_free(FbcAnd_t * fa);
+FbcAnd_free(FbcAnd_t* fa);
 
 
 /**
- * Creates a deep copy of the given FbcAnd_t structure.
- * 
- * @param fa the FbcAnd_t structure to be copied.
+ * Creates and returns a deep copy of this FbcAnd_t object.
  *
- * @returns a (deep) copy of the given FbcAnd_t structure, or a null
+ * @param fa the FbcAnd_t structure.
+ *
+ * @return a (deep) copy of this FbcAnd_t object.
  * pointer if a failure occurred.
  *
  * @memberof FbcAnd_t
  */
 LIBSBML_EXTERN
-FbcAnd_t *
-FbcAnd_clone(FbcAnd_t * fa);
+FbcAnd_t*
+FbcAnd_clone(const FbcAnd_t* fa);
 
 
+/**
+ * Adds a copy of the given FbcAssociation_t to this FbcAnd_t.
+ *
+ * @param fa the FbcAnd_t structure to which the FbcAssociation_t should be added.
+ *
+ * @param a the FbcAssociation_t object to add.
+ *
+ * @copydetails doc_returns_success_code
+ * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_LEVEL_MISMATCH, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_VERSION_MISMATCH, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_PKG_VERSION_MISMATCH, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_DUPLICATE_OBJECT_ID, OperationReturnValues_t}
+ *
+ * @memberof FbcAnd_t
+ */
 LIBSBML_EXTERN
 int
-FbcAnd_addAssociation(FbcAnd_t * fa, FbcAssociation_t * association);
+FbcAnd_addAssociation(FbcAnd_t* fa, const FbcAssociation_t* a);
 
 
+/**
+ * Creates a new FbcAnd_t object, adds it to this FbcAnd_t object and returns
+ * the FbcAnd_t object created.
+ *
+ * @param fa the FbcAnd_t structure to which the FbcAnd_t should be added.
+ *
+ * @return a new FbcAnd_t object instance.
+ *
+ * @copydetails doc_returned_unowned_pointer
+ *
+ * @memberof FbcAnd_t
+ */
 LIBSBML_EXTERN
-FbcAnd_t *
-FbcAnd_createAnd(FbcAnd_t * fa);
+FbcAnd_t*
+FbcAnd_createAnd(FbcAnd_t* fa);
 
 
+/**
+ * Creates a new FbcOr_t object, adds it to this FbcAnd_t object and returns
+ * the FbcOr_t object created.
+ *
+ * @param fa the FbcAnd_t structure to which the FbcOr_t should be added.
+ *
+ * @return a new FbcOr_t object instance.
+ *
+ * @copydetails doc_returned_unowned_pointer
+ *
+ * @memberof FbcAnd_t
+ */
 LIBSBML_EXTERN
-FbcOr_t *
-FbcAnd_createOr(FbcAnd_t * fa);
+FbcOr_t*
+FbcAnd_createOr(FbcAnd_t* fa);
 
 
+/**
+ * Creates a new GeneProductRef_t object, adds it to this FbcAnd_t object and
+ * returns the GeneProductRef_t object created.
+ *
+ * @param fa the FbcAnd_t structure to which the GeneProductRef_t should be
+ * added.
+ *
+ * @return a new GeneProductRef_t object instance.
+ *
+ * @copydetails doc_returned_unowned_pointer
+ *
+ * @memberof FbcAnd_t
+ */
 LIBSBML_EXTERN
-GeneProductRef_t *
-FbcAnd_createGeneProductRef(FbcAnd_t * fa);
+GeneProductRef_t*
+FbcAnd_createGeneProductRef(FbcAnd_t* fa);
 
 
+/**
+ * Returns a ListOf_t * containing FbcAssociation_t objects from this FbcAnd_t.
+ *
+ * @param fa the FbcAnd_t structure whose ListOfAssociations is sought.
+ *
+ * @return the ListOfAssociations from this FbcAnd_t as a ListOf_t *.
+ *
+ * @copydetails doc_returned_unowned_pointer
+ *
+ * @see FbcAnd_addAssociation()
+ * @see FbcAnd_getAssociationById()
+ * @see FbcAnd_getAssociation()
+ * @see FbcAnd_getNumAssociations()
+ * @see FbcAnd_removeAssociationById()
+ * @see FbcAnd_removeAssociation()
+ *
+ * @memberof FbcAnd_t
+ */
 LIBSBML_EXTERN
-ListOf_t *
-FbcAnd_getListOfFbcAssociations(FbcAnd_t * fa) ;
+ListOf_t*
+FbcAnd_getListOfFbcAssociations(FbcAnd_t* fa);
 
 
+/**
+ * Get an FbcAssociation_t from the FbcAnd_t.
+ *
+ * @param fa the FbcAnd_t structure to search.
+ *
+ * @param n an unsigned int representing the index of the FbcAssociation_t to
+ * retrieve.
+ *
+ * @return the nth FbcAssociation_t in the ListOfAssociations within this FbcAnd.
+ * If the index @p n is invalid, @c NULL is returned.
+ *
+ * @copydetails doc_returned_unowned_pointer
+ *
+ * @memberof FbcAnd_t
+ */
 LIBSBML_EXTERN
-FbcAssociation_t *
-FbcAnd_getAssociation(FbcAnd_t * fa, unsigned int n);
+FbcAssociation_t*
+FbcAnd_getAssociation(FbcAnd_t* fa, unsigned int n);
 
 
+/**
+ * Get an FbcAssociation_t from the FbcAnd_t.
+ *
+ * @param fa the FbcAnd_t structure to search.
+ *
+ * @param sid the identifier of the FbcAssociation_t to
+ * retrieve.
+ *
+ * @return the FbcAssociation_t with the given @p sid in the ListOfAssociations within this FbcAnd.
+ *
+ * @copydetails doc_returned_unowned_pointer
+ *
+ * @memberof FbcAnd_t
+ */
 LIBSBML_EXTERN
 FbcAssociation_t *
 FbcAnd_getAssociationById(FbcAnd_t * fa, const char * sid);
 
 
+/**
+ * Get the number of FbcAssociation_t objects in this FbcAnd_t.
+ *
+ * @param fa the FbcAnd_t structure to query.
+ *
+ * @return the number of FbcAssociation_t objects in this FbcAnd_t.
+ *
+ * @memberof FbcAnd_t
+ */
 LIBSBML_EXTERN
 unsigned int
-FbcAnd_getNumAssociations(FbcAnd_t * fa);
+FbcAnd_getNumAssociations(FbcAnd_t* fa);
 
 
+/**
+ * Removes the nth FbcAssociation_t from this FbcAnd_t and returns a pointer to
+ * it.
+ *
+ * @param fa the FbcAnd_t structure to search.
+ *
+ * @param n an unsigned int representing the index of the FbcAssociation_t to
+ * remove.
+ *
+ * @return a pointer to the nth FbcAssociation_t in this FbcAnd_t.
+ *
+ * @copydetails doc_warning_returns_owned_pointer
+ *
+ * @memberof FbcAnd_t
+ */
 LIBSBML_EXTERN
-FbcAssociation_t *
-FbcAnd_removeAssociation(FbcAnd_t * fa, unsigned int n);
+FbcAssociation_t*
+FbcAnd_removeAssociation(FbcAnd_t* fa, unsigned int n);
 
 
+/**
+ * Removes the FbcAssociation_t with the given identifier from this FbcAnd_t and returns a pointer to
+ * it.
+ *
+ * @param fa the FbcAnd_t structure to search.
+ *
+ * @param sid the identifier of the FbcAssociation_t to
+ * remove.
+ *
+ * @return a pointer to the nth FbcAssociation_t in this FbcAnd_t.
+ *
+ * @copydetails doc_warning_returns_owned_pointer
+ *
+ */
 LIBSBML_EXTERN
 FbcAssociation_t *
 FbcAnd_removeAssociationById(FbcAnd_t * fa, const char * sid);
 
 
 /**
- * Predicate returning @c 1 or *c 0 depending on whether all the required
- * attributes of the given FbcAnd_t structure have been set.
+ * Predicate returning @c 1 (true) if all the required attributes for this
+ * FbcAnd_t object have been set.
  *
- * @param fa the FbcAnd_t structure to check.
+ * @param fa the FbcAnd_t structure.
  *
- * @return @c 1 if all the required attributes for this
- * structure have been defined, @c 0 otherwise.
+ * @return @c 1 (true) to indicate that all the required attributes of this
+ * FbcAnd_t have been set, otherwise @c 0 (false) is returned.
  *
- * @member of FbcAnd_t
+ * @memberof FbcAnd_t
  */
 LIBSBML_EXTERN
 int
@@ -609,15 +1049,18 @@ FbcAnd_hasRequiredAttributes(const FbcAnd_t * fa);
 
 
 /**
- * Predicate returning @c 1 or *c 0 depending on whether all the required
- * sub-elements of the given FbcAnd_t structure have been set.
+ * Predicate returning @c 1 (true) if all the required elements for this
+ * FbcAnd_t object have been set.
  *
- * @param fa the FbcAnd_t structure to check.
+ * @param fa the FbcAnd_t structure.
  *
- * @return @c 1 if all the required sub-elements for this
- * structure have been defined, @c 0 otherwise.
+ * @return @c 1 (true) to indicate that all the required elements of this
+ * FbcAnd_t have been set, otherwise @c 0 (false) is returned.
  *
- * @member of FbcAnd_t
+ *
+ * @note The required elements for the FbcAnd_t object are:
+ *
+ * @memberof FbcAnd_t
  */
 LIBSBML_EXTERN
 int

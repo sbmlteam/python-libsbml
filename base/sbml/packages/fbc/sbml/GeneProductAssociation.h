@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -103,8 +107,8 @@ class LIBSBML_EXTERN GeneProductAssociation : public SBase
 protected:
 
   /** @cond doxygenLibsbmlInternal */
-  std::string   mId;
-  std::string   mName;
+//  std::string   mId;
+//  std::string   mName;
   FbcAssociation*      mAssociation;
   /** @endcond */
 
@@ -116,13 +120,15 @@ public:
    * &ldquo;fbc&rdquo; package version.
    *
    * @param level an unsigned int, the SBML Level to assign to this
-   * GeneProductAssociation
+   * GeneProductAssociation.
    *
    * @param version an unsigned int, the SBML Version to assign to this
-   * GeneProductAssociation
+   * GeneProductAssociation.
    *
    * @param pkgVersion an unsigned int, the SBML &ldquo;fbc&rdquo; Version to
-   * assign to this GeneProductAssociation object
+   * assign to this GeneProductAssociation object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   GeneProductAssociation(unsigned int level      = FbcExtension::getDefaultLevel(),
                          unsigned int version    = FbcExtension::getDefaultVersion(),
@@ -133,7 +139,11 @@ public:
    * Creates a new GeneProductAssociation with the given FbcPkgNamespaces
    * object.
    *
-   * @param fbcns the FbcPkgNamespaces object
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param fbcns the FbcPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   GeneProductAssociation(FbcPkgNamespaces* fbcns);
 
@@ -141,7 +151,7 @@ public:
    /**
    * Copy constructor for GeneProductAssociation.
    *
-   * @param orig; the GeneProductAssociation instance to copy.
+   * @param orig the GeneProductAssociation instance to copy.
    */
   GeneProductAssociation(const GeneProductAssociation& orig);
 
@@ -149,7 +159,7 @@ public:
    /**
    * Assignment operator for GeneProductAssociation.
    *
-   * @param rhs; the object whose values are used as the basis
+   * @param rhs the object whose values are used as the basis
    * of the assignment.
    */
   GeneProductAssociation& operator=(const GeneProductAssociation& rhs);
@@ -169,20 +179,29 @@ public:
   virtual ~GeneProductAssociation();
 
 
-   /**
+  /**
    * Returns the value of the "id" attribute of this GeneProductAssociation.
    *
-   * @return the value of the "id" attribute of this GeneProductAssociation
-   * as a string.
+   * @note Because of the inconsistent behavior of this function with 
+   * respect to assignments and rules, it is now recommended to
+   * use the getIdAttribute() function instead.
+   *
+   * @copydetails doc_id_attribute
+   *
+   * @return the id of this GeneProductAssociation.
+   *
+   * @see getIdAttribute()
+   * @see setIdAttribute(const std::string& sid)
+   * @see isSetIdAttribute()
+   * @see unsetIdAttribute()
    */
   virtual const std::string& getId() const;
 
 
   /**
-   * Returns the value of the "name" attribute of this GeneProductAssociation.
+   * Returns the value of the "name" attribute of this GeneProductAssociation object.
    *
-   * @return the value of the "name" attribute of this GeneProductAssociation
-   * as a string.
+   * @copydetails doc_get_name
    */
   virtual const std::string& getName() const;
 
@@ -206,7 +225,7 @@ public:
   /**
    * Creates a new "association" and sets it for this GeneProductAssociation.
    *
-   * @return the 
+   * @return the FbcAnd created.
    */
   virtual FbcAnd* createAnd();
 
@@ -227,8 +246,7 @@ public:
    * Predicate returning @c true if this GeneProductAssociation's "id"
    * attribute is set.
    *
-   * @return @c true if this GeneProductAssociation's "id" attribute has been set,
-   * otherwise @c false is returned.
+   * @copydetails doc_isset_id
    */
   virtual bool isSetId() const;
 
@@ -237,8 +255,7 @@ public:
    * Predicate returning @c true if this GeneProductAssociation's "name"
    * attribute is set.
    *
-   * @return @c true if this GeneProductAssociation's "name" attribute has been set,
-   * otherwise @c false is returned.
+   * @copydetails doc_isset_name
    */
   virtual bool isSetName() const;
 
@@ -256,29 +273,15 @@ public:
   /**
    * Sets the value of the "id" attribute of this GeneProductAssociation.
    *
-   * @param id; const std::string& value of the "id" attribute to be set
-   *
-   * @return integer value indicating success/failure of the
-   * function.  @if clike The value is drawn from the
-   * enumeration #OperationReturnValues_t. @endif The possible values
-   * returned by this function are:
-   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
+   * @copydetails doc_set_id
    */
-  virtual int setId(const std::string& id);
+  virtual int setId(const std::string& sid);
 
 
   /**
    * Sets the value of the "name" attribute of this GeneProductAssociation.
    *
-   * @param name; const std::string& value of the "name" attribute to be set
-   *
-   * @return integer value indicating success/failure of the
-   * function.  @if clike The value is drawn from the
-   * enumeration #OperationReturnValues_t. @endif The possible values
-   * returned by this function are:
-   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
+   * @copydetails doc_set_name
    */
   virtual int setName(const std::string& name);
 
@@ -286,12 +289,9 @@ public:
   /**
    * Sets the "association" element of this GeneProductAssociation.
    *
-   * @param association; FbcAssociation* to be set.
+   * @param association FbcAssociation to be set.
    *
-   * @return integer value indicating success/failure of the
-   * function.  @if clike The value is drawn from the
-   * enumeration #OperationReturnValues_t. @endif The possible values
-   * returned by this function are:
+   * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
    * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
    */
@@ -300,26 +300,37 @@ public:
   /**
   * Sets the "association" element of this GeneProductAssociation.
   *
-  * @param association; string representation of the association to be set
+  * This is a helper method that allows a user to set the
+  * GeneProductAssociation via a string such as <code>&quot;a1 AND b1 OR
+  * C2&quot;</code> and have the method work out the correct XML structure.
   *
-  * @return integer value indicating success/failure of the
-  * function.  @if clike The value is drawn from the
-  * enumeration #OperationReturnValues_t. @endif The possible values
-  * returned by this function are:
+  * @param association string representation of the association to be set.
+  * @param usingId
+  * @param addMissingGP
+  *
+  * @param usingId If @c true, this method assumes that the infix
+  * string @p association uses the identifiers of GeneProduct objects.  If
+  * @c false (the default), the method assumes that the string uses the label
+  * attributes of GeneProduct objects.
+  *
+  * @param addMissingGP If @c true (the default), then while
+  * parsing the infix string in @p association, any identifiers or labels
+  * (depending on @p usingId) found in the expression that do not correspond
+  * to an existing GeneProduct object will result in the addition of that
+  * GeneProduct.  If @c false, this method will not add a GeneProduct in
+  * that circumstance.
+  *
+  * @copydetails doc_returns_success_code
   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
   * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
   */
-  virtual int setAssociation(const std::string& association);
+  virtual int setAssociation(const std::string& association, bool usingId = false,
+    bool addMissingGP = true);
 
   /**
    * Unsets the value of the "id" attribute of this GeneProductAssociation.
    *
-   * @return integer value indicating success/failure of the
-   * function.  @if clike The value is drawn from the
-   * enumeration #OperationReturnValues_t. @endif The possible values
-   * returned by this function are:
-   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   * @copydetails doc_unset_id
    */
   virtual int unsetId();
 
@@ -327,12 +338,7 @@ public:
   /**
    * Unsets the value of the "name" attribute of this GeneProductAssociation.
    *
-   * @return integer value indicating success/failure of the
-   * function.  @if clike The value is drawn from the
-   * enumeration #OperationReturnValues_t. @endif The possible values
-   * returned by this function are:
-   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   * @copydetails doc_unset_name
    */
   virtual int unsetName();
 
@@ -340,10 +346,7 @@ public:
   /**
    * Unsets the "association" element of this GeneProductAssociation.
    *
-   * @return integer value indicating success/failure of the
-   * function.  @if clike The value is drawn from the
-   * enumeration #OperationReturnValues_t. @endif The possible values
-   * returned by this function are:
+   * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
    * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
    */
@@ -354,7 +357,7 @@ public:
    * Returns a List of all child SBase objects, including those nested to an
    * arbitrary depth.
    *
-   * @return a List* of pointers to all child objects.
+   * @return a List of pointers to all child objects.
    */
    virtual List* getAllElements(ElementFilter * filter = NULL);
 
@@ -415,13 +418,13 @@ public:
 
   /**
    * Subclasses should override this method to write out their contained
-   * SBML objects as XML elements.  Be sure to call your parents
+   * SBML objects as XML elements.  Be sure to call your parent's
    * implementation of this method as well.
    */
   virtual void writeElements (XMLOutputStream& stream) const;
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -432,7 +435,7 @@ public:
   virtual bool accept (SBMLVisitor& v) const;
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -443,7 +446,7 @@ public:
   virtual void setSBMLDocument (SBMLDocument* d);
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -454,7 +457,7 @@ public:
   virtual void connectToChild ();
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -466,7 +469,305 @@ public:
                const std::string& pkgPrefix, bool flag);
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
+
+
+  #ifndef SWIG
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this
+   * GeneProductAssociation.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, bool& value)
+    const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this
+   * GeneProductAssociation.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this
+   * GeneProductAssociation.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           double& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this
+   * GeneProductAssociation.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           unsigned int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this
+   * GeneProductAssociation.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           std::string& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Predicate returning @c true if this GeneProductAssociation's attribute
+   * "attributeName" is set.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @return @c true if this GeneProductAssociation's attribute "attributeName"
+   * has been set, otherwise @c false is returned.
+   */
+  virtual bool isSetAttribute(const std::string& attributeName) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this
+   * GeneProductAssociation.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, bool value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this
+   * GeneProductAssociation.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this
+   * GeneProductAssociation.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, double value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this
+   * GeneProductAssociation.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           unsigned int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this
+   * GeneProductAssociation.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           const std::string& value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Unsets the value of the "attributeName" attribute of this
+   * GeneProductAssociation.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int unsetAttribute(const std::string& attributeName);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Creates and returns an new "elementName" object in this
+   * GeneProductAssociation.
+   *
+   * @param elementName, the name of the element to create.
+   *
+   * @return pointer to the element created.
+   */
+  virtual SBase* createChildObject(const std::string& elementName);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Returns the number of "elementName" in this GeneProductAssociation.
+   *
+   * @param elementName, the name of the element to get number of.
+   *
+   * @return unsigned int number of elements.
+   */
+  virtual unsigned int getNumObjects(const std::string& elementName);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Returns the nth object of "objectName" in this GeneProductAssociation.
+   *
+   * @param elementName, the name of the element to get number of.
+   *
+   * @param index, unsigned int the index of the object to retrieve.
+   *
+   * @return pointer to the object.
+   */
+  virtual SBase* getObject(const std::string& elementName, unsigned int index);
+
+  /** @endcond */
+
+
+
+
+  #endif /* !SWIG */
+
 
 
 protected:
@@ -479,7 +780,7 @@ protected:
   virtual SBase* createObject(XMLInputStream& stream);
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -490,7 +791,7 @@ protected:
   virtual void addExpectedAttributes(ExpectedAttributes& attributes);
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -502,7 +803,7 @@ protected:
                                const ExpectedAttributes& expectedAttributes);
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -513,7 +814,7 @@ protected:
   virtual void writeAttributes (XMLOutputStream& stream) const;
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
 
@@ -532,13 +833,16 @@ BEGIN_C_DECLS
 
 /**
  * Creates a new GeneProductAssociation_t structure using the given SBML @p level and
- * @p version values.
+ * @p version, and the @p pkgVersion package version.
  *
  * @param level an unsigned int, the SBML level to assign to this
  * GeneProductAssociation_t structure.
  *
  * @param version an unsigned int, the SBML version to assign to this
  * GeneProductAssociation_t structure.
+ *
+ * @param pkgVersion an unsigned int, the version of the package to assign
+ * to this GeneProductAssociation_t structure.
  *
  * @returns the newly-created GeneProductAssociation_t structure, or a null pointer if
  * an error occurred during construction.
@@ -588,7 +892,7 @@ GeneProductAssociation_clone(GeneProductAssociation_t * gpa);
  *
  * @return the id of this structure.
  *
- * @member of GeneProductAssociation_t
+ * @memberof GeneProductAssociation_t
  */
 LIBSBML_EXTERN
 const char *
@@ -603,7 +907,7 @@ GeneProductAssociation_getId(const GeneProductAssociation_t * gpa);
  *
  * @return the name of this structure.
  *
- * @member of GeneProductAssociation_t
+ * @memberof GeneProductAssociation_t
  */
 LIBSBML_EXTERN
 const char *
@@ -631,15 +935,15 @@ GeneProductAssociation_createGeneProductRef(GeneProductAssociation_t * gpa);
 
 
 /**
- * Predicate returning @c 1 if the given GeneProductAssociation_t structure's
+ * Predicate returning @c 1 (true) if the given GeneProductAssociation_t structure's
  * "id" is set.
  *
  * @param gpa the GeneProductAssociation_t structure.
  *
- * @return @c 1 if the "id" of this GeneProductAssociation_t structure is
- * set, @c 0 otherwise.
+ * @return @c 1 (true) if the "id" of this GeneProductAssociation_t structure is
+ * set, @c 0 (false) otherwise.
  *
- * @member of GeneProductAssociation_t
+ * @memberof GeneProductAssociation_t
  */
 LIBSBML_EXTERN
 int
@@ -647,15 +951,15 @@ GeneProductAssociation_isSetId(const GeneProductAssociation_t * gpa);
 
 
 /**
- * Predicate returning @c 1 if the given GeneProductAssociation_t structure's "name"
+ * Predicate returning @c 1 (true) if the given GeneProductAssociation_t structure's "name"
  * is set.
  *
  * @param gpa the GeneProductAssociation_t structure.
  *
- * @return @c 1 if the "name" of this GeneProductAssociation_t structure is
- * set, @c 0 otherwise.
+ * @return @c 1 (true) if the "name" of this GeneProductAssociation_t structure is
+ * set, @c 0 (false) otherwise.
  *
- * @member of GeneProductAssociation_t
+ * @memberof GeneProductAssociation_t
  */
 LIBSBML_EXTERN
 int
@@ -663,15 +967,15 @@ GeneProductAssociation_isSetName(const GeneProductAssociation_t * gpa);
 
 
 /**
- * Predicate returning @c 1 if the given GeneProductAssociation_t structure's "association"
+ * Predicate returning @c 1 (true) if the given GeneProductAssociation_t structure's "association"
  * is set.
  *
  * @param gpa the GeneProductAssociation_t structure.
  *
- * @return @c 1 if the "association" of this GeneProductAssociation_t structure is
- * set, @c 0 otherwise.
+ * @return @c 1 (true) if the "association" of this GeneProductAssociation_t structure is
+ * set, @c 0 (false) otherwise.
  *
- * @member of GeneProductAssociation_t
+ * @memberof GeneProductAssociation_t
  */
 LIBSBML_EXTERN
 int
@@ -681,26 +985,23 @@ GeneProductAssociation_isSetAssociation(const GeneProductAssociation_t * gpa);
 /**
  * Sets the "id" attribute of the given GeneProductAssociation_t structure.
  *
- * This function copies the string given in @p string.  If the string is
- * a null pointer, this function performs GeneProductAssociation_unsetId() instead.
+ * This function copies the string given in @p id.  If the string is
+ * a null pointer, this function is equivalent to calling GeneProductAssociation_unsetId().
  *
  * @param gpa the GeneProductAssociation_t structure.
  *
  * @param id the string to which the structures "id" attribute should be
  * set.
  *
- * @return integer value indicating success/failure of the
- * function.  @if clike The value is drawn from the
- * enumeration #OperationReturnValues_t. @endif@~ The possible values
- * returned by this function are:
+ * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
  *
- * @note Using this function with a null pointer for @p name is equivalent to
- * unsetting the value of the "name" attribute.
+ * @note Using this function with a null pointer for @p id is equivalent to
+ * unsetting the value of the "id" attribute.
  * 
- * @member of GeneProductAssociation_t
+ * @memberof GeneProductAssociation_t
  */
 LIBSBML_EXTERN
 int
@@ -710,18 +1011,15 @@ GeneProductAssociation_setId(GeneProductAssociation_t * gpa, const char * id);
 /**
  * Sets the "name" attribute of the given GeneProductAssociation_t structure.
  *
- * This function copies the string given in @p string.  If the string is
- * a null pointer, this function performs GeneProductAssociation_unsetName() instead.
+ * This function copies the string given in @p name.  If the string is
+ * a null pointer, this function is equivalent to calling GeneProductAssociation_unsetName().
  *
  * @param gpa the GeneProductAssociation_t structure.
  *
  * @param name the string to which the structures "name" attribute should be
  * set.
  *
- * @return integer value indicating success/failure of the
- * function.  @if clike The value is drawn from the
- * enumeration #OperationReturnValues_t. @endif@~ The possible values
- * returned by this function are:
+ * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
@@ -729,7 +1027,7 @@ GeneProductAssociation_setId(GeneProductAssociation_t * gpa, const char * id);
  * @note Using this function with a null pointer for @p name is equivalent to
  * unsetting the value of the "name" attribute.
  * 
- * @member of GeneProductAssociation_t
+ * @memberof GeneProductAssociation_t
  */
 LIBSBML_EXTERN
 int
@@ -747,15 +1045,12 @@ GeneProductAssociation_setAssociation(GeneProductAssociation_t * gpa, FbcAssocia
  *
  * @param gpa the GeneProductAssociation_t structure.
  *
- * @return integer value indicating success/failure of the
- * function.  @if clike The value is drawn from the
- * enumeration #OperationReturnValues_t. @endif@~ The possible values
- * returned by this function are:
+ * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
  *
- * @member of GeneProductAssociation_t
+ * @memberof GeneProductAssociation_t
  */
 LIBSBML_EXTERN
 int
@@ -768,15 +1063,12 @@ GeneProductAssociation_unsetId(GeneProductAssociation_t * gpa);
  *
  * @param gpa the GeneProductAssociation_t structure.
  *
- * @return integer value indicating success/failure of the
- * function.  @if clike The value is drawn from the
- * enumeration #OperationReturnValues_t. @endif@~ The possible values
- * returned by this function are:
+ * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
  *
- * @member of GeneProductAssociation_t
+ * @memberof GeneProductAssociation_t
  */
 LIBSBML_EXTERN
 int
@@ -784,15 +1076,15 @@ GeneProductAssociation_unsetName(GeneProductAssociation_t * gpa);
 
 
 /**
- * Predicate returning @c 1 or *c 0 depending on whether all the required
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether all the required
  * attributes of the given GeneProductAssociation_t structure have been set.
  *
  * @param gpa the GeneProductAssociation_t structure to check.
  *
- * @return @c 1 if all the required attributes for this
- * structure have been defined, @c 0 otherwise.
+ * @return @c 1 (true) if all the required attributes for this
+ * structure have been defined, @c 0 (false) otherwise.
  *
- * @member of GeneProductAssociation_t
+ * @memberof GeneProductAssociation_t
  */
 LIBSBML_EXTERN
 int
@@ -800,19 +1092,20 @@ GeneProductAssociation_hasRequiredAttributes(const GeneProductAssociation_t * gp
 
 
 /**
- * Predicate returning @c 1 or *c 0 depending on whether all the required
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether all the required
  * sub-elements of the given GeneProductAssociation_t structure have been set.
  *
  * @param gpa the GeneProductAssociation_t structure to check.
  *
- * @return @c 1 if all the required sub-elements for this
- * structure have been defined, @c 0 otherwise.
+ * @return @c 1 (true) if all the required sub-elements for this
+ * structure have been defined, @c 0 (false) otherwise.
  *
- * @member of GeneProductAssociation_t
+ * @memberof GeneProductAssociation_t
  */
 LIBSBML_EXTERN
 int
 GeneProductAssociation_hasRequiredElements(const GeneProductAssociation_t * gpa);
+
 
 
 

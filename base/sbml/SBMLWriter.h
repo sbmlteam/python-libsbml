@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -140,7 +144,7 @@ public:
    * @param name the name of this program (where "this program" refers to
    * program in which libSBML is embedded, not libSBML itself!)
    *
-   * @copydetails doc_returns_success_code
+   * @copydetails doc_returns_one_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
    * 
    * @see setProgramVersion(const std::string& version)
@@ -167,7 +171,7 @@ public:
    * @param version the version of this program (where "this program"
    * refers to program in which libSBML is embedded, not libSBML itself!)
    *
-   * @copydetails doc_returns_success_code
+   * @copydetails doc_returns_one_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
    *
    * @see setProgramName(const std::string& name)
@@ -180,7 +184,7 @@ public:
    *
    * @htmlinclude assuming-compressed-file.html
    *
-   * @param d the SBML document to be written
+   * @param d the SBML document to be written.
    *
    * @param filename the name or full pathname of the file where the SBML
    * is to be written. 
@@ -199,7 +203,7 @@ public:
   /**
    * Writes the given SBML document to the output stream.
    *
-   * @param d the SBML document to be written
+   * @param d the SBML document to be written.
    *
    * @param stream the stream object where the SBML is to be written.
    *
@@ -220,7 +224,7 @@ public:
    * The string is owned by the caller and should be freed (with @c free())
    * when no longer needed.
    *
-   * @param d the SBML document to be written
+   * @param d the SBML document to be written.
    *
    * @return the string on success and @c 0 if one of the underlying parser
    * components fail.
@@ -237,7 +241,7 @@ public:
    *
    * @htmlinclude assuming-compressed-file.html
    *
-   * @param d the SBML document to be written
+   * @param d the SBML document to be written.
    *
    * @param filename the name or full pathname of the file where the SBML
    * is to be written. 
@@ -260,7 +264,7 @@ public:
    * The string is owned by the caller and should be freed (with @c free())
    * when no longer needed.
    *
-   * @param d the SBML document to be written
+   * @param d the SBML document to be written.
    *
    * @return the string on success and @c 0 if one of the underlying parser
    * components fail.
@@ -274,7 +278,7 @@ public:
   /**
    * Writes the given SBML document to an in-memory string and returns it.
    *
-   * @param d the SBML document to be written
+   * @param d the SBML document to be written.
    *
    * @return the string on success or an empty string, 
    *         if one of the underlying parser
@@ -338,7 +342,7 @@ public:
 /**
  * Writes the given SBML document to an in-memory string that is returned.
  *
- * @param d the SBML document to be written
+ * @param d the SBML document to be written.
  *
  * @return the string on success or an empty string, 
  *         if one of the underlying parser
@@ -383,14 +387,17 @@ SBMLWriter_free (SBMLWriter_t *sw);
 /**
  * Sets the name of this program. i.\ e.\ the one about to write out the
  * SBMLDocument.  If the program name and version are set
- * (setProgramVersion()), the following XML comment, intended for human
+ * (SBMLWriter_setProgramVersion()), the following XML comment, intended for human
  * consumption, will be written at the beginning of the document:
  *
- *   <!-- Created by <program name> version <program version>
- *   on yyyy-MM-dd HH:mm with libSBML version <libsbml version>. -->
+ * @verbatim
+ <!-- Created by <program name> version <program version>
+ on yyyy-MM-dd HH:mm with libSBML version <libsbml version>. -->
+ @endverbatim
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
  *
  * @memberof SBMLWriter_t
  */
@@ -401,14 +408,17 @@ SBMLWriter_setProgramName (SBMLWriter_t *sw, const char *name);
 /**
  * Sets the version of this program. i.\ e.\ the one about to write out the
  * SBMLDocument.  If the program version and name are set
- * (setProgramName()), the following XML comment, intended for human
+ * (SBMLWriter_setProgramName()), the following XML comment, intended for human
  * consumption, will be written at the beginning of the document:
  *
- *   <!-- Created by <program name> version <program version>
- *   on yyyy-MM-dd HH:mm with libSBML version <libsbml version>. -->
+ * @verbatim
+ <!-- Created by <program name> version <program version>
+ on yyyy-MM-dd HH:mm with libSBML version <libsbml version>. -->
+ @endverbatim
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
  *
  * @memberof SBMLWriter_t
  */
@@ -436,14 +446,14 @@ SBMLWriter_setProgramVersion (SBMLWriter_t *sw, const char *version);
  * compile time.  It also needs to be linked with the <a target="_blank"
  * href="">bzip2</a> library to write files in @em bzip2 format.  (Both
  * of these are the default configurations for libSBML.)  Errors about
- * unreadable files will be logged and this method will return @c false
+ * unreadable files will be logged and this method will return @c 0 (false)
  * if a compressed filename is given and libSBML was @em not linked with
  * the corresponding required library.
  *
  * @note SBMLWriter_hasZlib() and SBMLWriter_hasBzip2() can be used to
  * check whether libSBML has been linked with each library.
  *
- * @return non-zero on success and zero if the filename could not be opened
+ * @return @c 1 (true) on success and @c 0 (false) if the filename could not be opened
  * for writing.
  *
  * @memberof SBMLWriter_t
@@ -469,12 +479,12 @@ SBMLWriter_writeSBML ( SBMLWriter_t         *sw,
  *
  * @note To create a gzip/zip file, libSBML needs to be linked with zlib at 
  * compile time. Also, libSBML needs to be linked with bzip2 to create a bzip2 file.
- * File unwritable error will be logged and @c zero will be returned if a compressed 
+ * File unwritable error will be logged and @c 0 (false) will be returned if a compressed 
  * file name is given and libSBML is not linked with the required library.
  * SBMLWriter_hasZlib() and SBMLWriter_hasBzip2() can be used to check whether
  * libSBML was linked with the library at compile time.
  *
- * @return non-zero on success and zero if the filename could not be opened
+ * @return @c 1 (true) on success and @c 0 (false) if the filename could not be opened
  * for writing.
  *
  * @memberof SBMLWriter_t
@@ -502,10 +512,10 @@ SBMLWriter_writeSBMLToString (SBMLWriter_t *sw, const SBMLDocument_t *d);
 
 
 /**
- * Predicate returning @c non-zero or @c zero depending on whether
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether
  * libSBML is linked with zlib at compile time.
  *
- * @return @c non-zero if zlib is linked, @c zero otherwise.
+ * @return @c 1 (true) if zlib is linked, @c 0 (false) otherwise.
  *
  * @memberof SBMLWriter_t
  */
@@ -515,10 +525,10 @@ SBMLWriter_hasZlib ();
 
 
 /**
- * Predicate returning @c non-zero or @c zero depending on whether
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether
  * libSBML is linked with bzip2 at compile time.
  *
- * @return @c non-zero if bzip2 is linked, @c zero otherwise.
+ * @return @c 1 (true) if bzip2 is linked, @c 0 (false) otherwise.
  *
  * @memberof SBMLWriter_t
  */
@@ -537,20 +547,20 @@ SBMLWriter_hasBzip2 ();
  *
  * @htmlinclude assuming-compressed-file.html
  *
- * @param d the SBMLDocument object to be written out in XML format
+ * @param d the SBMLDocument object to be written out in XML format.
  * 
  * @param filename a string giving the path to a file where the XML
  * content is to be written.
  *
- * @return @c 1 on success and @c 0 (zero) if @p filename could not be
+ * @return @c 1 (true) on success and @c 0 (false) if @p filename could not be
  * written.  Some possible reasons for failure include (a) being unable to
  * open the file, and (b) using a filename that indicates a compressed SBML
  * file (i.e., a filename ending in <code>&quot;.zip&quot;</code> or
  * similar) when the compression functionality has not been enabled in
  * the underlying copy of libSBML.
  *
- * @see SBMLWriter::hasZlib()
- * @see SBMLWriter::hasBzip2()
+ * @see @if conly SBMLWriter_hasZlib() @else SBMLWriter::hasZlib() @endif
+ * @see @if conly SBMLWriter_hasBzip2() @else SBMLWriter::hasBzip2() @endif
  *
  * @if conly
  * @memberof SBMLWriter_t
@@ -571,7 +581,7 @@ writeSBML (const SBMLDocument_t *d, const char *filename);
  *
  * but does not require the caller to create an SBMLWriter object first.
  *
- * @param d an SBMLDocument object to be written out in XML format
+ * @param d an SBMLDocument object to be written out in XML format.
  *
  * @return the string on success and @c NULL if one of the underlying parser
  * components fail.
@@ -598,12 +608,12 @@ writeSBMLToString (const SBMLDocument_t *d);
  *
  * @htmlinclude assuming-compressed-file.html
  * 
- * @param d an SBMLDocument object to be written out in XML format
+ * @param d an SBMLDocument object to be written out in XML format.
  *
  * @param filename a string giving the path to a file where the XML
  * content is to be written.
  *
- * @return @c 1 on success and @c 0 (zero) if @p filename could not be
+ * @return @c 1 (true) on success and @c 0 (false) if @p filename could not be
  * written.  Some possible reasons for failure include (a) being unable to
  * open the file, and (b) using a filename that indicates a compressed SBML
  * file (i.e., a filename ending in <code>&quot;.zip&quot;</code> or

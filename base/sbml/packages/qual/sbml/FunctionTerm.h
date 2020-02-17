@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -36,8 +40,17 @@
  * Each FunctionTerm is associated with a result and with a Boolean function
  * inside a Math element that can be used to set the conditions under which
  * this term is selected.
+ *
+ * <!-- ------------------------------------------------------------------- -->
+ * @class ListOfFunctionTerms
+ * @sbmlbrief{qual} A list of FunctionTerm objects.
+ *
+ * The ListOfFunctionTerms is a container for the FunctionTerms of a Transition.
+ *
+ * @copydetails doc_what_is_listof
+ *
+ * @see Input
  */
-
 
 #ifndef FunctionTerm_H__
 #define FunctionTerm_H__
@@ -80,11 +93,13 @@ public:
   /**
    * Creates a new FunctionTerm with the given level, version, and package version.
    *
-   * @param level an unsigned int, the SBML Level to assign to this FunctionTerm
+   * @param level an unsigned int, the SBML Level to assign to this FunctionTerm.
    *
-   * @param version an unsigned int, the SBML Version to assign to this FunctionTerm
+   * @param version an unsigned int, the SBML Version to assign to this FunctionTerm.
    *
-   * @param pkgVersion an unsigned int, the SBML Qual Version to assign to this FunctionTerm
+   * @param pkgVersion an unsigned int, the SBML Qual Version to assign to this FunctionTerm.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   FunctionTerm(unsigned int level      = QualExtension::getDefaultLevel(),
                unsigned int version    = QualExtension::getDefaultVersion(),
@@ -94,7 +109,11 @@ public:
   /**
    * Creates a new FunctionTerm with the given QualPkgNamespaces object.
    *
-   * @param qualns the QualPkgNamespaces object
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param qualns the QualPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   FunctionTerm(QualPkgNamespaces* qualns);
 
@@ -111,7 +130,7 @@ public:
    * Assignment operator for FunctionTerm.
    *
    * @param rhs the object whose values are used as the basis
-   * of the assignment
+   * of the assignment.
    */
   FunctionTerm& operator=(const FunctionTerm& rhs);
 
@@ -151,7 +170,7 @@ public:
   /**
    * Sets the value of the "resultLevel" attribute of this FunctionTerm.
    *
-   * @param resultLevel int value of the "resultLevel" attribute to be set
+   * @param resultLevel int value of the "resultLevel" attribute to be set.
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -173,7 +192,7 @@ public:
   /**
    * Returns the "math" element of this FunctionTerm.
    *
-   * @return the "math" element of this FunctionTerm.
+   * @return the "math" element of this FunctionTerm, or @c NULL if the math is not set.
    */
   virtual const ASTNode* getMath() const;
 
@@ -191,13 +210,13 @@ public:
   /**
    * Sets the "math" element of this FunctionTerm.
    *
-   * @param math ASTNode * math of the "resultLevel" attribute to be set
+   * @param math ASTNode * math of the "resultLevel" attribute to be set.
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
    * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
    */
-  virtual int setMath(ASTNode* math);
+  virtual int setMath(const ASTNode* math);
 
 
   /**
@@ -268,7 +287,7 @@ public:
   /** @cond doxygenLibsbmlInternal */
   /**
    * Subclasses should override this method to write out their contained
-   * SBML objects as XML elements.  Be sure to call your parents
+   * SBML objects as XML elements.  Be sure to call your parent's
    * implementation of this method as well.
    */
   virtual void writeElements (XMLOutputStream& stream) const;
@@ -306,6 +325,246 @@ public:
   /** @endcond */
 
 
+
+
+  #ifndef SWIG
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this FunctionTerm.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, bool& value)
+    const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this FunctionTerm.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this FunctionTerm.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           double& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this FunctionTerm.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           unsigned int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this FunctionTerm.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           std::string& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Predicate returning @c true if this FunctionTerm's attribute
+   * "attributeName" is set.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @return @c true if this FunctionTerm's attribute "attributeName" has been
+   * set, otherwise @c false is returned.
+   */
+  virtual bool isSetAttribute(const std::string& attributeName) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this FunctionTerm.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, bool value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this FunctionTerm.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this FunctionTerm.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, double value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this FunctionTerm.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           unsigned int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this FunctionTerm.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           const std::string& value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Unsets the value of the "attributeName" attribute of this FunctionTerm.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int unsetAttribute(const std::string& attributeName);
+
+  /** @endcond */
+
+
+
+
+  #endif /* !SWIG */
+
+
 protected:
 
   /** @cond doxygenLibsbmlInternal */
@@ -333,7 +592,7 @@ protected:
    * Subclasses should override this method to read (and store) XHTML,
    * MathML, etc. directly from the XMLInputStream.
    *
-   * @return true if the subclass read from the stream, false otherwise.
+   * @return @c true if the subclass read from the stream, @c false otherwise.
    */
   virtual bool readOtherXML (XMLInputStream& stream);
 
@@ -353,17 +612,6 @@ protected:
 
 };
 
-/**
- *
- * @class ListOfFunctionTerms
- * @sbmlbrief{qual} A list of FunctionTerm objects.
- * 
- * The ListOfFunctionTerms is a container for the FunctionTerms of a Transition.
- * 
- * @copydetails doc_what_is_listof
- *
- * @see Input
- */
 class LIBSBML_EXTERN ListOfFunctionTerms : public ListOf
 {
 
@@ -372,11 +620,13 @@ public:
   /**
    * Creates a new ListOfFunctionTerms with the given level, version, and package version.
    *
-   * @param level an unsigned int, the SBML Level to assign to this ListOfFunctionTerms
+   * @param level an unsigned int, the SBML Level to assign to this ListOfFunctionTerms.
    *
-   * @param version an unsigned int, the SBML Version to assign to this ListOfFunctionTerms
+   * @param version an unsigned int, the SBML Version to assign to this ListOfFunctionTerms.
    *
-   * @param pkgVersion an unsigned int, the SBML Qual Version to assign to this ListOfFunctionTerms
+   * @param pkgVersion an unsigned int, the SBML Qual Version to assign to this ListOfFunctionTerms.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   ListOfFunctionTerms(unsigned int level      = QualExtension::getDefaultLevel(),
                       unsigned int version    = QualExtension::getDefaultVersion(),
@@ -386,14 +636,28 @@ public:
   /**
    * Creates a new ListOfFunctionTerms with the given QualPkgNamespaces object.
    *
-   * @param qualns the QualPkgNamespaces object
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param qualns the QualPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   ListOfFunctionTerms(QualPkgNamespaces* qualns);
 
 
+  /**
+   * Creates a new ListOfFunctionTerms from the original.
+   *
+   * @param orig the ListOfFunctionTerms object.
+   */
   ListOfFunctionTerms(const ListOfFunctionTerms& orig);
 
   
+  /**
+   * Creates a new ListOfFunctionTerms from the original.
+   *
+   * @param rhs the ListOfFunctionTerms object.
+   */
   ListOfFunctionTerms& operator=(const ListOfFunctionTerms& rhs);
   
   
@@ -416,6 +680,7 @@ public:
    * @param n the index number of the FunctionTerm to get.
    *
    * @return the nth FunctionTerm in this ListOfFunctionTerms.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -428,6 +693,7 @@ public:
    * @param n the index number of the FunctionTerm to get.
    *
    * @return the nth FunctionTerm in this ListOfFunctionTerms.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -442,7 +708,7 @@ public:
    * of the FunctionTerm to get.
    *
    * @return FunctionTerm in this ListOfFunctionTerms
-   * with the given id or NULL if no such
+   * with the given id or @c NULL if no such
    * FunctionTerm exists.
    *
    * @see get(unsigned int n)   *
@@ -459,7 +725,7 @@ public:
    * of the FunctionTerm to get.
    *
    * @return FunctionTerm in this ListOfFunctionTerms
-   * with the given id or NULL if no such
+   * with the given id or @c NULL if no such
    * FunctionTerm exists.
    *
    * @see get(unsigned int n)   *
@@ -501,7 +767,7 @@ public:
    * Returns a List of all child SBase objects, including those nested to an
    * arbitary depth.
    *
-   * @return a List* of pointers to all child objects.
+   * @return a List of pointers to all child objects.
    */
    virtual List* getAllElements(ElementFilter * filter = NULL);
 
@@ -531,7 +797,7 @@ public:
   /**
    * Get the DefaultTerm from this ListOfFunctionTerms.
    *
-   * @return the DefaultTerm in this ListOfFunctionTerms, or NULL if no such value is set.
+   * @return the DefaultTerm in this ListOfFunctionTerms, or @c NULL if no such value is set.
    *
    * @see Transition::getDefaultTerm
    */
@@ -540,7 +806,7 @@ public:
   /**
    * Get the DefaultTerm from this ListOfFunctionTerms.
    *
-   * @return the DefaultTerm in this ListOfFunctionTerms, or NULL if no such value is set.
+   * @return the DefaultTerm in this ListOfFunctionTerms, or @c NULL if no such value is set.
    *
    * @see Transition::getDefaultTerm
    */
@@ -549,7 +815,7 @@ public:
   /**
    * Sets the given DefaultTerm to this Transition.
    *
-   * @param dt the DefaultTerm object to add
+   * @param dt the DefaultTerm object to add.
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -570,7 +836,7 @@ public:
    * Creates a new DefaultTerm object, adds it to this
    * ListOfFunctionTerms and returns the DefaultTerm object created. 
    *
-   * @return a new DefaultTerm object instance
+   * @return a new DefaultTerm object instance.
    *
    * @see setDefaultTerm(const DefaultTerm* ft)
    */
@@ -654,14 +920,14 @@ BEGIN_C_DECLS
 
 /**
  * Creates a new FunctionTerm_t structure using the given SBML @p level
- * and @p version values.
+ * and @p version, and the @p pkgVersion package version.
  *
  * @param level an unsigned int, the SBML Level to assign to this
- * FunctionTerm_t
+ * FunctionTerm_t.
  * @param version an unsigned int, the SBML Version to assign to this
- * FunctionTerm_t
+ * FunctionTerm_t.
  * @param pkgVersion an unsigned int, the SBML 'Qual' package Version to assign to this
- * FunctionTerm_t
+ * FunctionTerm_t.
  *
  * @return a pointer to the newly created FunctionTerm_t structure.
  *
@@ -714,13 +980,13 @@ FunctionTerm_getResultLevel(FunctionTerm_t * ft);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether the given
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether the given
  * FunctionTerm_t structure's resultLevel is set.
  *
- * @param ft the FunctionTerm_t structure to query
+ * @param ft the FunctionTerm_t structure to query.
  * 
- * @return @c non-zero (true) if the "resultLevel" attribute of the given
- * FunctionTerm_t structure is set, zero (false) otherwise.
+ * @return @c 1 (true) if the "resultLevel" attribute of the given
+ * FunctionTerm_t structure is set, @c 0 (false) otherwise.
  *
  * @memberof FunctionTerm_t
  */
@@ -733,9 +999,9 @@ FunctionTerm_isSetResultLevel(FunctionTerm_t * ft);
  * Sets the "resultLevel" attribute of the given FunctionTerm_t
  * structure.
  *
- * @param ft the FunctionTerm_t structure
+ * @param ft the FunctionTerm_t structure.
  * 
- * @param resultLevel the value of resultLevel to assign to the "resultLevel" attribute
+ * @param resultLevel the value of resultLevel to assign to the "resultLevel" attribute.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -751,7 +1017,7 @@ FunctionTerm_setResultLevel(FunctionTerm_t * ft, int resultLevel);
 /**
  * Unsets the "resultLevel" attribute of the given FunctionTerm_t structure.
  *
- * @param ft the FunctionTerm_t structure to unset
+ * @param ft the FunctionTerm_t structure to unset.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -765,46 +1031,109 @@ FunctionTerm_unsetResultLevel(FunctionTerm_t * ft);
 
 
 /**
-  * Predicate returning @c true or @c false depending on whether
-  * all the required attributes for the given FunctionTerm_t structure
-  * have been set.
-  *
-  * @note The required attributes for a FunctionTerm_t structure are:
-  * @li useValuesfromTriggerTime ( L3 onwards )
-  *
+ * Returns the value of the "math" element of this FunctionTerm_t.
+ *
+ * @param ft the FunctionTerm_t structure whose math is sought.
+ *
+ * @return the value of the "math" element of this FunctionTerm_t as a
+ * ASTNode_t.
+ *
  * @memberof FunctionTerm_t
  */
 LIBSBML_EXTERN
-int
-FunctionTerm_hasRequiredAttributes(FunctionTerm_t * ft);
+const ASTNode_t*
+FunctionTerm_getMath(const FunctionTerm_t * ft);
 
 
 /**
-  * Predicate returning @c true or @c false depending on whether
-  * all the required elements for the given FunctionTerm_t structure
+ * Predicate returning @c 1 (true) if this FunctionTerm_t's "math" element is
+ * set.
+ *
+ * @param ft the FunctionTerm_t structure.
+ *
+ * @return @c 1 (true) if this FunctionTerm_t's "math" element has been set,
+ * otherwise @c 0 (false) is returned.
+ *
+ * @memberof FunctionTerm_t
+ */
+LIBSBML_EXTERN
+int
+FunctionTerm_isSetMath(const FunctionTerm_t * ft);
+
+
+/**
+ * Sets the value of the "math" element of this FunctionTerm_t.
+ *
+ * @param ft the FunctionTerm_t structure.
+ *
+ * @param math ASTNode_t value of the "math" element to be set.
+ *
+ * @copydetails doc_returns_success_code
+ * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
+ *
+ * @memberof FunctionTerm_t
+ */
+LIBSBML_EXTERN
+int
+FunctionTerm_setMath(FunctionTerm_t * ft, const ASTNode_t* math);
+
+
+/**
+ * Unsets the value of the "math" element of this FunctionTerm_t.
+ *
+ * @param ft the FunctionTerm_t structure.
+ *
+ * @copydetails doc_returns_success_code
+ * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
+ *
+ * @memberof FunctionTerm_t
+ */
+LIBSBML_EXTERN
+int
+FunctionTerm_unsetMath(FunctionTerm_t * ft);
+
+
+/**
+  * Predicate returning @c 1 (true) or @c 0 (false) depending on whether
+  * all the required attributes for the given FunctionTerm_t structure
   * have been set.
-  *
-  * @note The required elements for an FunctionTerm_t structure are:
-  * @li trigger
-  * @li listOfEventAssignments (requirement removed in L3)
   *
  * @memberof FunctionTerm_t
  */
 LIBSBML_EXTERN
 int
-FunctionTerm_hasRequiredElements(FunctionTerm_t * ft);
+FunctionTerm_hasRequiredAttributes(const FunctionTerm_t * ft);
+
+
+/**
+  * Predicate returning @c 1 (true) or @c 0 (false) depending on whether
+  * all the required elements for the given FunctionTerm_t structure
+  * have been set.
+  *
+   * @note The required elements for a FunctionTerm object are:
+   * @li "math"
+  *
+ * @memberof FunctionTerm_t
+ */
+LIBSBML_EXTERN
+int
+FunctionTerm_hasRequiredElements(const FunctionTerm_t * ft);
 
 
 /**
  * Return the FunctionTerm_t indicated by the given @p sid.
  *
- * @param lo the ListOf_t structure to use
+ * @param lo the ListOf_t structure to use.
  *
  * @param sid a string, the identifier of the
- * FunctionTerm_t is being sought.
+ * FunctionTerm_t being sought.
  *
  * @return the FunctionTerm_t for the given variable, or @c NULL if no such
- * FunctionTerm_t exits.
+ * FunctionTerm_t exists.
  *
  * @memberof FunctionTerm_t
  */
@@ -819,14 +1148,14 @@ ListOfFunctionTerms_getById(ListOf_t * lo, const char * sid);
  *
  * The caller owns the returned structure and is responsible for deleting it.
  *
- * @param lo the ListOf_t structure
- * @param sid the string of the "id" attribute of the FunctionTerm_t sought
+ * @param lo the ListOf_t structure.
+ * @param sid the string of the "id" attribute of the FunctionTerm_t sought.
  *
  * @return the FunctionTerm_t structure removed.  As mentioned above, the 
  * caller owns the returned structure. @c NULL is returned if no FunctionTerm_t
  * structure with the "id" attribute exists in the given ListOf_t structure.
  *
- * @memberof FunctionTerm_t
+ * @memberof ListOfFunctionTerms_t
  */
 LIBSBML_EXTERN
 FunctionTerm_t *

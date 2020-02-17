@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -409,7 +413,7 @@ CubicBezier::setBasePoint1 (const Point* p)
 
 
 /*
- * Initializes first base point with the given ccordinates.
+ * Initializes first base point with the given coordinates.
  */
 void
 CubicBezier::setBasePoint1 (double x, double y, double z)
@@ -458,7 +462,7 @@ void CubicBezier::setBasePoint2 (const Point* p)
 
 
 /*
- * Initializes second base point with the given ccordinates.
+ * Initializes second base point with the given coordinates.
  */
 void
 CubicBezier::setBasePoint2 (double x, double y, double z)

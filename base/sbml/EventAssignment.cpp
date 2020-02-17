@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -171,7 +175,7 @@ EventAssignment::getMath () const
 
 
 /*
- * @return true if the variable of this EventAssignment is set, false
+ * @return @c true if the variable of this EventAssignment is set, false
  * otherwise.
  */
 bool
@@ -182,7 +186,7 @@ EventAssignment::isSetVariable () const
 
 
 /*
- * @return true if the math of this EventAssignment is set, false
+ * @return @c true if the math of this EventAssignment is set, false
  * otherwise.
  */
 bool
@@ -193,7 +197,7 @@ EventAssignment::isSetMath () const
 
 
 /*
- * Sets the variable of this EventAssignment to a copy of sid.
+ * Sets the variable of this EventAssignment to a copy of @p sid.
  */
 int
 EventAssignment::setVariable (const std::string& sid)
@@ -294,12 +298,16 @@ EventAssignment::getDerivedUnitDefinition()
     {
       m->populateListFormulaUnitsData();
     }
+
+    Event * e = (Event*)(getAncestorOfType(SBML_EVENT));
+    std::string eid = "";
+    if (e != NULL) eid = e->getInternalId();
     
-    std::string id = getVariable() + getAncestorOfType(SBML_EVENT)->getId();
-    if (m->getFormulaUnitsData(id, getTypeCode()) != NULL)
+    std::string id = getVariable() + eid;
+    FormulaUnitsData *fud = m->getFormulaUnitsData(id, getTypeCode());
+    if (fud != NULL)
     {
-      return m->getFormulaUnitsData(id, getTypeCode())
-                                             ->getUnitDefinition();
+      return fud->getUnitDefinition();
     }
     else
     {
@@ -366,11 +374,15 @@ EventAssignment::containsUndeclaredUnits()
       m->populateListFormulaUnitsData();
     }
 
-    std::string id = getVariable() + getAncestorOfType(SBML_EVENT)->getId();
-    if (m->getFormulaUnitsData(id, getTypeCode()) != NULL)
+    Event * e = (Event*)(getAncestorOfType(SBML_EVENT));
+    std::string eid = "";
+    if (e != NULL) eid = e->getInternalId();
+
+    std::string id = getVariable() + eid;
+    FormulaUnitsData *fud = m->getFormulaUnitsData(id, getTypeCode());
+    if (fud != NULL)
     {
-      return m->getFormulaUnitsData(id, getTypeCode())
-      ->getContainsUndeclaredUnits();
+      return fud->getContainsUndeclaredUnits();
     }
     else
     {
@@ -454,12 +466,312 @@ EventAssignment::hasRequiredElements() const
   bool allPresent = true;
 
   /* required attributes for eventAssignment: math */
+  /* l3v2 removed that requirement */
 
-  if (!isSetMath())
-    allPresent = false;
+  if ((getLevel() < 3 ) || (getLevel() == 3 && getVersion() == 1))
+  {
+    if (!isSetMath())
+      allPresent = false;
+  }
 
   return allPresent;
 }
+
+
+
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this EventAssignment.
+ */
+int
+EventAssignment::getAttribute(const std::string& attributeName,
+                              bool& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this EventAssignment.
+ */
+int
+EventAssignment::getAttribute(const std::string& attributeName,
+                              int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this EventAssignment.
+ */
+int
+EventAssignment::getAttribute(const std::string& attributeName,
+                              double& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this EventAssignment.
+ */
+int
+EventAssignment::getAttribute(const std::string& attributeName,
+                              unsigned int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this EventAssignment.
+ */
+int
+EventAssignment::getAttribute(const std::string& attributeName,
+                              std::string& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "variable")
+  {
+    value = getVariable();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this EventAssignment.
+ */
+//int
+//EventAssignment::getAttribute(const std::string& attributeName,
+//                              const char* value) const
+//{
+//  int return_value = SBase::getAttribute(attributeName, value);
+//
+//  if (return_value == LIBSBML_OPERATION_SUCCESS)
+//  {
+//    return return_value;
+//  }
+//
+//  if (attributeName == "variable")
+//  {
+//    value = getVariable().c_str();
+//    return_value = LIBSBML_OPERATION_SUCCESS;
+//  }
+//
+//  return return_value;
+//}
+//
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Predicate returning @c true if this EventAssignment's attribute
+ * "attributeName" is set.
+ */
+bool
+EventAssignment::isSetAttribute(const std::string& attributeName) const
+{
+  bool value = SBase::isSetAttribute(attributeName);
+
+  if (attributeName == "variable")
+  {
+    value = isSetVariable();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this EventAssignment.
+ */
+int
+EventAssignment::setAttribute(const std::string& attributeName, bool value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this EventAssignment.
+ */
+int
+EventAssignment::setAttribute(const std::string& attributeName, int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this EventAssignment.
+ */
+int
+EventAssignment::setAttribute(const std::string& attributeName, double value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this EventAssignment.
+ */
+int
+EventAssignment::setAttribute(const std::string& attributeName,
+                              unsigned int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this EventAssignment.
+ */
+int
+EventAssignment::setAttribute(const std::string& attributeName,
+                              const std::string& value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  if (attributeName == "variable")
+  {
+    return_value = setVariable(value);
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this EventAssignment.
+ */
+//int
+//EventAssignment::setAttribute(const std::string& attributeName,
+//                              const char* value)
+//{
+//  int return_value = SBase::setAttribute(attributeName, value);
+//
+//  if (attributeName == "variable")
+//  {
+//    return_value = setVariable(value);
+//  }
+//
+//  return return_value;
+//}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Unsets the value of the "attributeName" attribute of this EventAssignment.
+ */
+int
+EventAssignment::unsetAttribute(const std::string& attributeName)
+{
+  int value = SBase::unsetAttribute(attributeName);
+
+  if (attributeName == "variable")
+  {
+    value = unsetVariable();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
 
 
 void
@@ -528,7 +840,7 @@ EventAssignment::multiplyAssignmentsToSIdByFunction(const std::string& id, const
 /** @cond doxygenLibsbmlInternal */
 /*
  * Subclasses should override this method to write out their contained
- * SBML objects as XML elements.  Be sure to call your parents
+ * SBML objects as XML elements.  Be sure to call your parent's
  * implementation of this method as well.
  */
 void
@@ -551,7 +863,7 @@ EventAssignment::writeElements (XMLOutputStream& stream) const
  * Subclasses should override this method to read (and store) XHTML,
  * MathML, etc. directly from the XMLInputStream.
  *
- * @return true if the subclass read from the stream, false otherwise.
+ * @return @c true if the subclass read from the stream, false otherwise.
  */
 bool
 EventAssignment::readOtherXML (XMLInputStream& stream)
@@ -637,7 +949,7 @@ EventAssignment::addExpectedAttributes(ExpectedAttributes& attributes)
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 EventAssignment::readAttributes (const XMLAttributes& attributes,
@@ -670,7 +982,7 @@ EventAssignment::readAttributes (const XMLAttributes& attributes,
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 EventAssignment::readL2Attributes (const XMLAttributes& attributes)
@@ -704,7 +1016,7 @@ EventAssignment::readL2Attributes (const XMLAttributes& attributes)
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 EventAssignment::readL3Attributes (const XMLAttributes& attributes)
@@ -734,7 +1046,7 @@ EventAssignment::readL3Attributes (const XMLAttributes& attributes)
 /** @cond doxygenLibsbmlInternal */
 /*
  * Subclasses should override this method to write their XML attributes
- * to the XMLOutputStream.  Be sure to call your parents implementation
+ * to the XMLOutputStream.  Be sure to call your parent's implementation
  * of this method as well.
  */
 void

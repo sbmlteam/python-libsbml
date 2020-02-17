@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -106,7 +110,7 @@ public:
   /**
    * Removes the resolver with the given index.
    * 
-   * @param index the index of the resolver to be removed
+   * @param index the index of the resolver to be removed.
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -151,24 +155,24 @@ public:
   /**
    * Resolves the document for the given URI.
    *
-   * @param uri the URI to the target document
-   * @param baseUri base URI, in case the URI is a relative one
+   * @param uri the URI to the target document.
+   * @param baseUri base URI, in case the URI is a relative one.
    *
-   * @return  the document, if this resolver can resolve the document or NULL.
+   * @return  the document, if this resolver can resolve the document or @c NULL.
    */
-  virtual SBMLDocument* resolve(const std::string &uri, const std::string& baseUri="") const;
+  virtual SBMLDocument* resolve(const std::string &uri, const std::string baseUri="") const;
 
   
   /**
    * Resolves the full URI for the given URI without actually reading the
    * document.
    *
-   * @param uri the URI to the target document
-   * @param baseUri base URI, in case the URI is a relative one
+   * @param uri the URI to the target document.
+   * @param baseUri base URI, in case the URI is a relative one.
    *
-   * @return  the full URI to the document, if this resolver can resolve the document or NULL.
+   * @return  the full URI to the document, if this resolver can resolve the document or @c NULL.
    */
-  virtual SBMLUri* resolveUri(const std::string &uri, const std::string& baseUri="") const;
+  virtual SBMLUri* resolveUri(const std::string &uri, const std::string baseUri="") const;
 
   /**
    * deletes the static resolver registry instance

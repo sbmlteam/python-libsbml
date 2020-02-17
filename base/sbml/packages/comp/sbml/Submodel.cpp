@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -56,8 +60,8 @@ static std::vector<ModelProcessingCallbackData*> mProcessingCBs = std::vector<Mo
 
 Submodel::Submodel (unsigned int level, unsigned int version, unsigned int pkgVersion) 
   : CompBase (level,version, pkgVersion)
-  , mId("")
-  , mName("")
+//  , mId("")
+//  , mName("")
   , mModelRef("")
   , mTimeConversionFactor("")
   , mExtentConversionFactor("")
@@ -71,8 +75,8 @@ Submodel::Submodel (unsigned int level, unsigned int version, unsigned int pkgVe
 
 Submodel::Submodel(CompPkgNamespaces* compns)
   : CompBase(compns)
-  , mId("")
-  , mName("")
+//  , mId("")
+//  , mName("")
   , mModelRef("")
   , mTimeConversionFactor("")
   , mExtentConversionFactor("")
@@ -87,8 +91,8 @@ Submodel::Submodel(CompPkgNamespaces* compns)
 
 Submodel::Submodel(const Submodel& source) 
   : CompBase (source)
-  , mId(source.mId)
-  , mName(source.mName)
+//  , mId(source.mId)
+//  , mName(source.mName)
   , mModelRef(source.mModelRef)
   , mTimeConversionFactor(source.mTimeConversionFactor)
   , mExtentConversionFactor(source.mExtentConversionFactor)
@@ -554,7 +558,7 @@ Submodel::readAttributes (const XMLAttributes& attributes,
           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownPackageAttribute);
         getErrorLog()->logPackageError("comp", CompLOSubmodelsAllowedAttributes,
-          getPackageVersion(), sbmlLevel, sbmlVersion, details);
+          getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
       } 
       else if (getErrorLog()->getError((unsigned int)n)->getErrorId() == UnknownCoreAttribute)
       {
@@ -562,70 +566,50 @@ Submodel::readAttributes (const XMLAttributes& attributes,
           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownCoreAttribute);
         getErrorLog()->logPackageError("comp", CompLOSubmodelsAllowedAttributes,
-          getPackageVersion(), sbmlLevel, sbmlVersion, details);
+          getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
       } 
     }
   }
 
 
-  CompBase::readAttributes(attributes,expectedAttributes);
+  CompBase::readAttributes(attributes,expectedAttributes, true, true, CompSubmodelAllowedAttributes);
 
   // look to see whether an unknown attribute error was logged
-  if (getErrorLog() != NULL)
+  SBMLErrorLog* log = getErrorLog();
+  if (log != NULL)
   {
     unsigned int numErrs = getErrorLog()->getNumErrors();
-    for (int n = (int)numErrs-1; n >= 0; n--)
+    for (int n = (int)numErrs - 1; n >= 0; n--)
     {
       if (getErrorLog()->getError((unsigned int)n)->getErrorId() == UnknownPackageAttribute)
       {
-        const std::string details = 
+        const std::string details =
           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownPackageAttribute);
         getErrorLog()->logPackageError("comp", CompSubmodelAllowedAttributes,
-          getPackageVersion(), sbmlLevel, sbmlVersion, details);
-      } 
+          getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
+      }
       else if (getErrorLog()->getError((unsigned int)n)->getErrorId() == UnknownCoreAttribute)
       {
-        const std::string details = 
+        const std::string details =
           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownCoreAttribute);
         getErrorLog()->logPackageError("comp", CompSubmodelAllowedCoreAttributes,
-          getPackageVersion(), sbmlLevel, sbmlVersion, details);
-      } 
+          getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
+      }
     }
   }
 
 
   if ( sbmlLevel > 2 )
   {
-    XMLTriple tripleId("id", mURI, getPrefix());
-    bool assigned = attributes.readInto(tripleId, mId);
-
-    if (assigned == false)
-    {
-      std::string message = "Comp attribute 'id' is missing.";
-      getErrorLog()->logPackageError("comp", CompSubmodelAllowedAttributes, 
-        getPackageVersion(), sbmlLevel, sbmlVersion, message);
-    }
-    else
-    {
-      if (!SyntaxChecker::isValidSBMLSId(mId)) {
-        logInvalidId("comp:id", mId);
-      }
-    }
-    XMLTriple tripleName("name", mURI, getPrefix());
-    if (attributes.readInto(tripleName, mName, getErrorLog(), false, getLine(), getColumn())) {
-      if (mName.empty()) {
-        logInvalidId("comp:name", mName);
-      }
-    }
     XMLTriple tripleModelRef("modelRef", mURI, getPrefix());
-    assigned = attributes.readInto(tripleModelRef, mModelRef);
+    bool assigned = attributes.readInto(tripleModelRef, mModelRef);
     if (assigned == false)
     {
       std::string message = "Comp attribute 'modelRef' is missing.";
       getErrorLog()->logPackageError("comp", CompSubmodelAllowedAttributes, 
-        getPackageVersion(), sbmlLevel, sbmlVersion, message);
+        getPackageVersion(), sbmlLevel, sbmlVersion, message, getLine(), getColumn());
     }
     else
     {
@@ -707,7 +691,7 @@ Submodel::createObject(XMLInputStream& stream)
       if (mListOfDeletions.size() != 0)
       {
         getErrorLog()->logPackageError("comp", CompOneListOfDeletionOnSubmodel, 
-          getPackageVersion(), getLevel(), getVersion());
+          getPackageVersion(), getLevel(), getVersion(), "", getLine(), getColumn());
       }
 
       object = &mListOfDeletions;
@@ -1006,9 +990,10 @@ Submodel::replaceElement(SBase* toReplace, SBase* replacement)
   string oldSId = toReplace->getId();
   string oldMetaId = toReplace->getMetaId();
 
-  List* allelements = mInstantiatedModel->getAllElements();
-  for (unsigned int el=0; el<allelements->getSize(); el++) {
-    SBase* element = static_cast<SBase*>(allelements->get(el));
+  List* allElements = mInstantiatedModel->getAllElements();
+  for (ListIterator iter = allElements->begin(); iter != allElements->end(); ++iter)
+  {
+    SBase* element = static_cast<SBase*>(*iter);
     assert(element != NULL);
     if (element == NULL) continue;
     if (toReplace->isSetId()) {
@@ -1024,7 +1009,7 @@ Submodel::replaceElement(SBase* toReplace, SBase* replacement)
     }
   }
 
-  delete allelements;
+  delete allElements;
   return LIBSBML_OPERATION_FAILED;
 }
 
@@ -1132,9 +1117,10 @@ int Submodel::convertTimeAndExtentWith(const ASTNode* tcf, const ASTNode* xcf, c
     rxndivide.addChild(rxnref.deepCopy());
     rxndivide.addChild(klmod->deepCopy());
   }
-  List* allelements = model->getAllElements();
-  for (unsigned int el=0; el<allelements->getSize(); el++) {
-    SBase* element = static_cast<SBase*>(allelements->get(el));
+  List* allElements = model->getAllElements();
+  for (ListIterator iter = allElements->begin(); iter != allElements->end(); ++iter)
+  {
+    SBase* element = static_cast<SBase*>(*iter);
     assert(element != NULL);
     ASTNode* ast1 = NULL;
     ASTNode* ast2 = NULL;
@@ -1152,8 +1138,9 @@ int Submodel::convertTimeAndExtentWith(const ASTNode* tcf, const ASTNode* xcf, c
     //Reaction math will be converted below, in the bits with the kinetic law.  But because of that, we need to handle references *to* the reaction:  even if it has no kinetic law, the units have changed, and this needs to be reflected by the flattening routine.
     if (rxndivide.getNumChildren() != 0 && element->getTypeCode()==SBML_REACTION && element->isSetId()) {
       rxndivide.getChild(0)->setName(element->getId().c_str());
-      for (unsigned int sube=0; sube<allelements->getSize(); sube++) {
-        SBase* subelement = static_cast<SBase*>(allelements->get(sube));
+      for (ListIterator iter = allElements->begin(); iter != allElements->end(); ++iter)
+      {
+        SBase* subelement = static_cast<SBase*>(*iter);
         subelement->replaceSIDWithFunction(element->getId(), &rxndivide);
       }
     }
@@ -1309,7 +1296,7 @@ int Submodel::convertTimeAndExtentWith(const ASTNode* tcf, const ASTNode* xcf, c
     }
   }
 
-  delete allelements;
+  delete allElements;
 
   return LIBSBML_OPERATION_SUCCESS;
 }
@@ -1736,24 +1723,10 @@ Submodel_hasRequiredAttributes(Submodel_t * s)
 
 
 LIBSBML_EXTERN
-Submodel_t *
-ListOfSubmodels_getById(ListOf_t * lo, const char * sid)
+int
+Submodel_hasRequiredElements(Submodel_t * s)
 {
-  if (lo == NULL)
-    return NULL;
-
-  return (sid != NULL) ? static_cast <ListOfSubmodels *>(lo)->get(sid) : NULL;
-}
-
-
-LIBSBML_EXTERN
-Submodel_t *
-ListOfSubmodels_removeById(ListOf_t * lo, const char * sid)
-{
-  if (lo == NULL)
-    return NULL;
-
-  return (sid != NULL) ? static_cast <ListOfSubmodels *>(lo)->remove(sid) : NULL;
+  return (s != NULL) ? static_cast<int>(s->hasRequiredElements()) : 0;
 }
 /** @endcond */
 LIBSBML_CPP_NAMESPACE_END

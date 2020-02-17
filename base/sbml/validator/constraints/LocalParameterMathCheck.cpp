@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -139,6 +143,27 @@ LocalParameterMathCheck::checkCiElement (const Model& m,
       m.getParameter(name)   == NULL &&
       m.getReaction(name)    == NULL)
   {
+    if (m.getLevel() >= 3 || (m.getLevel() == 2 && m.getVersion() == 5))
+    {
+      for (unsigned int rxn = 0; rxn < m.getNumReactions(); rxn++)
+      {
+        const Reaction* reaction = m.getReaction(rxn);
+        for (unsigned int reactant = 0; reactant < reaction->getNumReactants(); reactant++)
+        {
+          if (reaction->getReactant(reactant)->getIdAttribute() == name)
+          {
+            return;
+          }
+        }
+        for (unsigned int product = 0; product < reaction->getNumProducts(); product++)
+        {
+          if (reaction->getProduct(product)->getIdAttribute() == name)
+          {
+            return;
+          }
+        }
+      }
+    }
 
     /* check whether we are in a kinetic law since there
      * may be local parameters to this law that are allowed
@@ -173,12 +198,12 @@ const string
 LocalParameterMathCheck::getMessage (const ASTNode& node, const SBase& object)
 {
 
-  ostringstream msg;
+  ostringstream oss_msg;
 
-  //msg << getPreamble();
+  //oss_msg << getPreamble();
 
-  msg << "The <" << getFieldname() << "> element of the <" << object.getElementName();
-  msg << "> ";
+  oss_msg << "The <" << getFieldname() << "> element of the <" << object.getElementName();
+  oss_msg << "> ";
   switch(object.getTypeCode()) {
   case SBML_INITIAL_ASSIGNMENT:
   case SBML_EVENT_ASSIGNMENT:
@@ -188,13 +213,13 @@ LocalParameterMathCheck::getMessage (const ASTNode& node, const SBase& object)
     break;
   default:
     if (object.isSetId()) {
-      msg << "with id '" << object.getId() << "' ";
+      oss_msg << "with id '" << object.getId() << "' ";
     }
     break;
   }
-  msg << "uses '" << node.getName() << "' that is the id of a local parameter.";
+  oss_msg << "uses '" << node.getName() << "' that is the id of a local parameter.";
 
-  return msg.str();
+  return oss_msg.str();
 }
 
 #endif /* __cplusplus */

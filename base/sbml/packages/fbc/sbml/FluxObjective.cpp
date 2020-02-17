@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -54,8 +58,8 @@ LIBSBML_CPP_NAMESPACE_BEGIN
  */
 FluxObjective::FluxObjective (unsigned int level, unsigned int version, unsigned int pkgVersion)
   : SBase(level, version)
-  , mId ("")
-  , mName ("")
+//  , mId ("")
+//  , mName ("")
   , mReaction ("")
   , mCoefficient (numeric_limits<double>::quiet_NaN())
   , mIsSetCoefficient (false)
@@ -70,8 +74,8 @@ FluxObjective::FluxObjective (unsigned int level, unsigned int version, unsigned
  */
 FluxObjective::FluxObjective (FbcPkgNamespaces* fbcns)
   : SBase(fbcns)
-  , mId ("")
-  , mName ("")
+//  , mId ("")
+//  , mName ("")
   , mReaction ("")
   , mCoefficient (numeric_limits<double>::quiet_NaN())
   , mIsSetCoefficient (false)
@@ -402,7 +406,7 @@ FluxObjective::writeElements (XMLOutputStream& stream) const
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -417,7 +421,7 @@ FluxObjective::accept (SBMLVisitor& v) const
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -432,7 +436,7 @@ FluxObjective::setSBMLDocument (SBMLDocument* d)
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -448,7 +452,303 @@ FluxObjective::enablePackageInternal(const std::string& pkgURI,
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FluxObjective.
+ */
+int
+FluxObjective::getAttribute(const std::string& attributeName,
+                            bool& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FluxObjective.
+ */
+int
+FluxObjective::getAttribute(const std::string& attributeName,
+                            int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FluxObjective.
+ */
+int
+FluxObjective::getAttribute(const std::string& attributeName,
+                            double& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "coefficient")
+  {
+    value = getCoefficient();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FluxObjective.
+ */
+int
+FluxObjective::getAttribute(const std::string& attributeName,
+                            unsigned int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FluxObjective.
+ */
+int
+FluxObjective::getAttribute(const std::string& attributeName,
+                            std::string& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "id")
+  {
+    value = getId();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "name")
+  {
+    value = getName();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "reaction")
+  {
+    value = getReaction();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Predicate returning @c true if this FluxObjective's attribute
+ * "attributeName" is set.
+ */
+bool
+FluxObjective::isSetAttribute(const std::string& attributeName) const
+{
+  bool value = SBase::isSetAttribute(attributeName);
+
+  if (attributeName == "id")
+  {
+    value = isSetId();
+  }
+  else if (attributeName == "name")
+  {
+    value = isSetName();
+  }
+  else if (attributeName == "reaction")
+  {
+    value = isSetReaction();
+  }
+  else if (attributeName == "coefficient")
+  {
+    value = isSetCoefficient();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FluxObjective.
+ */
+int
+FluxObjective::setAttribute(const std::string& attributeName, bool value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FluxObjective.
+ */
+int
+FluxObjective::setAttribute(const std::string& attributeName, int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FluxObjective.
+ */
+int
+FluxObjective::setAttribute(const std::string& attributeName, double value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  if (attributeName == "coefficient")
+  {
+    return_value = setCoefficient(value);
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FluxObjective.
+ */
+int
+FluxObjective::setAttribute(const std::string& attributeName,
+                            unsigned int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FluxObjective.
+ */
+int
+FluxObjective::setAttribute(const std::string& attributeName,
+                            const std::string& value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  if (attributeName == "id")
+  {
+    return_value = setId(value);
+  }
+  else if (attributeName == "name")
+  {
+    return_value = setName(value);
+  }
+  else if (attributeName == "reaction")
+  {
+    return_value = setReaction(value);
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Unsets the value of the "attributeName" attribute of this FluxObjective.
+ */
+int
+FluxObjective::unsetAttribute(const std::string& attributeName)
+{
+  int value = SBase::unsetAttribute(attributeName);
+
+  if (attributeName == "id")
+  {
+    value = unsetId();
+  }
+  else if (attributeName == "name")
+  {
+    value = unsetName();
+  }
+  else if (attributeName == "reaction")
+  {
+    value = unsetReaction();
+  }
+  else if (attributeName == "coefficient")
+  {
+    value = unsetCoefficient();
+  }
+
+  return value;
+}
+
+/** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -468,7 +768,7 @@ FluxObjective::addExpectedAttributes(ExpectedAttributes& attributes)
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -498,7 +798,7 @@ FluxObjective::readAttributes (const XMLAttributes& attributes,
           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownPackageAttribute);
         getErrorLog()->logPackageError("fbc", FbcObjectiveLOFluxObjAllowedAttribs,
-          getPackageVersion(), sbmlLevel, sbmlVersion, details);
+          getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
       }
       else if (getErrorLog()->getError((unsigned int)n)->getErrorId() == UnknownCoreAttribute)
       {
@@ -506,7 +806,7 @@ FluxObjective::readAttributes (const XMLAttributes& attributes,
           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownCoreAttribute);
         getErrorLog()->logPackageError("fbc", FbcObjectiveLOFluxObjAllowedAttribs,
-          getPackageVersion(), sbmlLevel, sbmlVersion, details);
+          getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
       }
     }
   }
@@ -525,7 +825,7 @@ FluxObjective::readAttributes (const XMLAttributes& attributes,
           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownPackageAttribute);
         getErrorLog()->logPackageError("fbc", FbcFluxObjectRequiredAttributes,
-          getPackageVersion(), sbmlLevel, sbmlVersion, details);
+          getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
       }
       else if (getErrorLog()->getError((unsigned int)n)->getErrorId() == UnknownCoreAttribute)
       {
@@ -533,7 +833,7 @@ FluxObjective::readAttributes (const XMLAttributes& attributes,
           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownCoreAttribute);
         getErrorLog()->logPackageError("fbc", FbcFluxObjectAllowedL3Attributes,
-          getPackageVersion(), sbmlLevel, sbmlVersion, details);
+          getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
       }
     }
   }
@@ -562,7 +862,7 @@ FluxObjective::readAttributes (const XMLAttributes& attributes,
       // conform to the SBML type SId.
       //
       getErrorLog()->logPackageError("fbc", FbcSBMLSIdSyntax,
-        getPackageVersion(), sbmlLevel, sbmlVersion);
+        getPackageVersion(), sbmlLevel, sbmlVersion, "", getLine(), getColumn());
     }
   }
 
@@ -573,7 +873,7 @@ FluxObjective::readAttributes (const XMLAttributes& attributes,
   {
     std::string message = "Fbc attribute 'reaction' is missing.";
     getErrorLog()->logPackageError("fbc", FbcFluxObjectRequiredAttributes,
-      getPackageVersion(), sbmlLevel, sbmlVersion, message);
+      getPackageVersion(), sbmlLevel, sbmlVersion, message, getLine(), getColumn());
   }
   else
   {
@@ -591,7 +891,7 @@ FluxObjective::readAttributes (const XMLAttributes& attributes,
       // conform to the SBML type SId.
       //
       getErrorLog()->logPackageError("fbc", FbcFluxObjectReactionMustBeSIdRef,
-        getPackageVersion(), sbmlLevel, sbmlVersion);
+        getPackageVersion(), sbmlLevel, sbmlVersion, "", getLine(), getColumn());
     }
   }
 
@@ -606,20 +906,20 @@ FluxObjective::readAttributes (const XMLAttributes& attributes,
     {
       getErrorLog()->remove(XMLAttributeTypeMismatch);
       getErrorLog()->logPackageError("fbc", FbcFluxObjectCoefficientMustBeDouble,
-        getPackageVersion(), sbmlLevel, sbmlVersion);
+        getPackageVersion(), sbmlLevel, sbmlVersion, "", getLine(), getColumn());
     }
     else
     {
       std::string message = "Fbc attribute 'coefficient' is missing.";
       getErrorLog()->logPackageError("fbc", FbcFluxObjectRequiredAttributes,
-        getPackageVersion(), sbmlLevel, sbmlVersion, message);
+        getPackageVersion(), sbmlLevel, sbmlVersion, message, getLine(), getColumn());
     }
   }
 
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -652,7 +952,7 @@ FluxObjective::writeAttributes (XMLOutputStream& stream) const
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
 /*
@@ -689,7 +989,7 @@ ListOfFluxObjectives::clone () const
 
 /*
  * Get a FluxObjective from the ListOfFluxObjectives by index.
-*/
+ */
 FluxObjective*
 ListOfFluxObjectives::get(unsigned int n)
 {
@@ -732,14 +1032,11 @@ ListOfFluxObjectives::get(const std::string& sid) const
 
 
 /*
- * Adds a copy the given "FluxObjective" to this ListOfFluxObjectives.
+ * Adds a copy the given FluxObjective to this ListOfFluxObjectives.
  *
- * @param fo; the FluxObjective object to add
+ * @param fo the FluxObjective object to add.
  *
- * @return integer value indicating success/failure of the
- * function.  @if clike The value is drawn from the
- * enumeration #OperationReturnValues_t. @endif The possible values
- * returned by this function are:
+ * @copydetails doc_returns_success_code
  * @li LIBSBML_OPERATION_SUCCESS
  * @li LIBSBML_INVALID_ATTRIBUTE_VALUE
  */
@@ -768,8 +1065,7 @@ ListOfFluxObjectives::addFluxObjective(const FluxObjective* fo)
   }
   else
   {
-  append(fo);
-    return LIBSBML_OPERATION_SUCCESS;
+    return append(fo);
   }
 }
 
@@ -788,7 +1084,7 @@ ListOfFluxObjectives::getNumFluxObjectives() const
 
 /*
  * Creates a new FluxObjective object, adds it to this ListOfFluxObjectives
- * FluxObjective and returns the FluxObjective object created. 
+ * and returns the FluxObjective object created. 
  *
  * @return a new FluxObjective object instance
  *
@@ -907,7 +1203,7 @@ ListOfFluxObjectives::createObject(XMLInputStream& stream)
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -935,7 +1231,7 @@ ListOfFluxObjectives::writeXMLNS(XMLOutputStream& stream) const
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
 LIBSBML_EXTERN
@@ -1119,9 +1415,6 @@ FluxObjective_hasRequiredAttributes(const FluxObjective_t * fo)
 }
 
 
-/*
- *
- */
 LIBSBML_EXTERN
 FluxObjective_t *
 ListOfFluxObjectives_getById(ListOf_t * lo, const char * sid)
@@ -1133,9 +1426,6 @@ ListOfFluxObjectives_getById(ListOf_t * lo, const char * sid)
 }
 
 
-/*
- *
- */
 LIBSBML_EXTERN
 FluxObjective_t *
 ListOfFluxObjectives_removeById(ListOf_t * lo, const char * sid)

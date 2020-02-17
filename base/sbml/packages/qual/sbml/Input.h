@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -37,6 +41,16 @@
  * corresponding Transition. In Petri nets, these are the input places of the
  * transition. In logical models, they are the regulators of the species
  * whose behaviour is defined by the transition.
+ *
+ * <!-- ------------------------------------------------------------------- -->
+ * @class ListOfInputs
+ * @sbmlbrief{qual} A list of Input objects.
+ *
+ * The ListOfInputs is a container for the Inputs of a Transition.
+ *
+ * @copydetails doc_what_is_listof
+ *
+ * @see Input
  */
 
 
@@ -97,10 +111,10 @@ class LIBSBML_EXTERN Input : public SBase
 protected:
 
   /** @cond doxygenLibsbmlInternal */
-  std::string   mId;
+//  std::string   mId;
   std::string   mQualitativeSpecies;
   InputTransitionEffect_t   mTransitionEffect;
-  std::string   mName;
+//  std::string   mName;
   InputSign_t   mSign;
   int           mThresholdLevel;
   bool          mIsSetThresholdLevel;
@@ -112,11 +126,13 @@ public:
   /**
    * Creates a new Input with the given level, version, and package version.
    *
-   * @param level an unsigned int, the SBML Level to assign to this Input
+   * @param level an unsigned int, the SBML Level to assign to this Input.
    *
-   * @param version an unsigned int, the SBML Version to assign to this Input
+   * @param version an unsigned int, the SBML Version to assign to this Input.
    *
-   * @param pkgVersion an unsigned int, the SBML Qual Version to assign to this Input
+   * @param pkgVersion an unsigned int, the SBML Qual Version to assign to this Input.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   Input(unsigned int level      = QualExtension::getDefaultLevel(),
         unsigned int version    = QualExtension::getDefaultVersion(),
@@ -126,7 +142,11 @@ public:
   /**
    * Creates a new Input with the given QualPkgNamespaces object.
    *
-   * @param qualns the QualPkgNamespaces object
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param qualns the QualPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   Input(QualPkgNamespaces* qualns);
 
@@ -143,7 +163,7 @@ public:
    * Assignment operator for Input.
    *
    * @param rhs the object whose values are used as the basis
-   * of the assignment
+   * of the assignment.
    */
   Input& operator=(const Input& rhs);
 
@@ -165,7 +185,18 @@ public:
   /**
    * Returns the value of the "id" attribute of this Input.
    *
-   * @return the value of the "id" attribute of this Input as a string.
+   * @note Because of the inconsistent behavior of this function with 
+   * respect to assignments and rules, it is now recommended to
+   * use the getIdAttribute() function instead.
+   *
+   * @copydetails doc_id_attribute
+   *
+   * @return the id of this Input.
+   *
+   * @see getIdAttribute()
+   * @see setIdAttribute(const std::string& sid)
+   * @see isSetIdAttribute()
+   * @see unsetIdAttribute()
    */
   virtual const std::string& getId() const;
 
@@ -187,9 +218,9 @@ public:
 
 
   /**
-   * Returns the value of the "name" attribute of this Input.
+   * Returns the value of the "name" attribute of this Input object.
    *
-   * @return the value of the "name" attribute of this Input as a string.
+   * @copydetails doc_get_name
    */
   virtual const std::string& getName() const;
 
@@ -214,8 +245,7 @@ public:
    * Predicate returning @c true or @c false depending on whether this
    * Input's "id" attribute has been set.
    *
-   * @return @c true if this Input's "id" attribute has been set,
-   * otherwise @c false is returned.
+   * @copydetails doc_isset_id
    */
   virtual bool isSetId() const;
 
@@ -244,8 +274,7 @@ public:
    * Predicate returning @c true or @c false depending on whether this
    * Input's "name" attribute has been set.
    *
-   * @return @c true if this Input's "name" attribute has been set,
-   * otherwise @c false is returned.
+   * @copydetails doc_isset_name
    */
   virtual bool isSetName() const;
 
@@ -271,21 +300,17 @@ public:
 
 
   /**
-   * Sets the value of the "id" attribute of this Input.
+   * Sets the value of the "id" attribute of this obInputject.
    *
-   * @param id const std::string& value of the "id" attribute to be set
-   *
-   * @copydetails doc_returns_success_code
-   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
+   * @copydetails doc_set_id
    */
-  virtual int setId(const std::string& id);
+  virtual int setId(const std::string& sid);
 
 
   /**
    * Sets the value of the "qualitativeSpecies" attribute of this Input.
    *
-   * @param qualitativeSpecies const std::string& value of the "qualitativeSpecies" attribute to be set
+   * @param qualitativeSpecies the value of the "qualitativeSpecies" attribute to be set.
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -297,7 +322,7 @@ public:
   /**
    * Sets the value of the "transitionEffect" attribute of this Input.
    *
-   * @param transitionEffect const std::string& value of the "transitionEffect" attribute to be set
+   * @param transitionEffect the value of the "transitionEffect" attribute to be set.
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -309,11 +334,7 @@ public:
   /**
    * Sets the value of the "name" attribute of this Input.
    *
-   * @param name const std::string& value of the "name" attribute to be set
-   *
-   * @copydetails doc_returns_success_code
-   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
+   * @copydetails doc_set_name
    */
   virtual int setName(const std::string& name);
 
@@ -321,7 +342,7 @@ public:
   /**
    * Sets the value of the "sign" attribute of this Input.
    *
-   * @param sign const std::string& value of the "sign" attribute to be set
+   * @param sign the value of the "sign" attribute to be set.
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -333,7 +354,7 @@ public:
   /**
    * Sets the value of the "thresholdLevel" attribute of this Input.
    *
-   * @param thresholdLevel int value of the "thresholdLevel" attribute to be set
+   * @param thresholdLevel int value of the "thresholdLevel" attribute to be set.
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -345,9 +366,7 @@ public:
   /**
    * Unsets the value of the "id" attribute of this Input.
    *
-   * @copydetails doc_returns_success_code
-   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   * @copydetails doc_unset_id
    */
   virtual int unsetId();
 
@@ -375,9 +394,7 @@ public:
   /**
    * Unsets the value of the "name" attribute of this Input.
    *
-   * @copydetails doc_returns_success_code
-   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   * @copydetails doc_unset_name
    */
   virtual int unsetName();
 
@@ -449,7 +466,7 @@ public:
   /** @cond doxygenLibsbmlInternal */
   /**
    * Subclasses should override this method to write out their contained
-   * SBML objects as XML elements.  Be sure to call your parents
+   * SBML objects as XML elements.  Be sure to call your parent's
    * implementation of this method as well.
    */
   virtual void writeElements (XMLOutputStream& stream) const;
@@ -485,6 +502,246 @@ public:
 
 
   /** @endcond */
+
+
+
+
+  #ifndef SWIG
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Input.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, bool& value)
+    const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Input.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Input.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           double& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Input.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           unsigned int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Input.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           std::string& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Predicate returning @c true if this Input's attribute "attributeName" is
+   * set.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @return @c true if this Input's attribute "attributeName" has been set,
+   * otherwise @c false is returned.
+   */
+  virtual bool isSetAttribute(const std::string& attributeName) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Input.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, bool value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Input.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Input.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, double value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Input.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           unsigned int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Input.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           const std::string& value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Unsets the value of the "attributeName" attribute of this Input.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int unsetAttribute(const std::string& attributeName);
+
+  /** @endcond */
+
+
+
+
+  #endif /* !SWIG */
 
 
 protected:
@@ -523,16 +780,6 @@ protected:
 
 };
 
-/**
- * @class ListOfInputs
- * @sbmlbrief{qual} A list of Input objects.
- * 
- * The ListOfInputs is a container for the Inputs of a Transition.
- * 
- * @copydetails doc_what_is_listof
- *
- * @see Input
- */
 class LIBSBML_EXTERN ListOfInputs : public ListOf
 {
 
@@ -541,11 +788,13 @@ public:
   /**
    * Creates a new ListOfInputs with the given level, version, and package version.
    *
-   * @param level an unsigned int, the SBML Level to assign to this ListOfInputs
+   * @param level an unsigned int, the SBML Level to assign to this ListOfInputs.
    *
-   * @param version an unsigned int, the SBML Version to assign to this ListOfInputs
+   * @param version an unsigned int, the SBML Version to assign to this ListOfInputs.
    *
-   * @param pkgVersion an unsigned int, the SBML Qual Version to assign to this ListOfInputs
+   * @param pkgVersion an unsigned int, the SBML Qual Version to assign to this ListOfInputs.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   ListOfInputs(unsigned int level      = QualExtension::getDefaultLevel(),
                unsigned int version    = QualExtension::getDefaultVersion(),
@@ -555,7 +804,11 @@ public:
   /**
    * Creates a new ListOfInputs with the given QualPkgNamespaces object.
    *
-   * @param qualns the QualPkgNamespaces object
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param qualns the QualPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   ListOfInputs(QualPkgNamespaces* qualns);
 
@@ -574,6 +827,7 @@ public:
    * @param n the index number of the Input to get.
    *
    * @return the nth Input in this ListOfInputs.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -586,6 +840,7 @@ public:
    * @param n the index number of the Input to get.
    *
    * @return the nth Input in this ListOfInputs.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -600,7 +855,7 @@ public:
    * of the Input to get.
    *
    * @return Input in this ListOfInputs
-   * with the given id or NULL if no such
+   * with the given id or @c NULL if no such
    * Input exists.
    *
    * @see get(unsigned int n)   *
@@ -617,7 +872,7 @@ public:
    * of the Input to get.
    *
    * @return Input in this ListOfInputs
-   * with the given id or NULL if no such
+   * with the given id or @c NULL if no such
    * Input exists.
    *
    * @see get(unsigned int n)   *
@@ -634,7 +889,7 @@ public:
    * of the Input to get.
    *
    * @return the first Input in this ListOfInputs
-   * with the given qualitativeSpecies or NULL if no such
+   * with the given qualitativeSpecies or @c NULL if no such
    * Input exists.
    *
    * @see get(unsigned int n)   *
@@ -651,7 +906,7 @@ public:
    * of the Input to get.
    *
    * @return the first Input in this ListOfInputs
-   * with the given qualitativeSpecies or NULL if no such
+   * with the given qualitativeSpecies or @c NULL if no such
    * Input exists.
    *
    * @see get(unsigned int n)   *
@@ -750,14 +1005,14 @@ BEGIN_C_DECLS
 
 /**
  * Creates a new Input_t structure using the given SBML @p level
- * and @p version values.
+ * and @p version, and the @p pkgVersion package version.
  *
  * @param level an unsigned int, the SBML Level to assign to this
- * Input_t
+ * Input_t.
  * @param version an unsigned int, the SBML Version to assign to this
- * Input_t
+ * Input_t.
  * @param pkgVersion an unsigned int, the SBML 'Qual' package Version to assign to this
- * Input_t
+ * Input_t.
  *
  * @return a pointer to the newly created Input_t structure.
  *
@@ -798,7 +1053,7 @@ Input_clone(Input_t * i);
 /**
  * Takes an Input_t structure and returns its identifier.
  *
- * @param i the Input_t structure whose identifier is sought
+ * @param i the Input_t structure whose identifier is sought.
  * 
  * @return the identifier of this Input_t, as a pointer to a string.
  *
@@ -824,12 +1079,12 @@ Input_getQualitativeSpecies(Input_t * i);
 
 
 /**
- * Takes a Input_t structure and returns its transitionEffect as a ENUMTYPE 
+ * Takes a Input_t structure and returns its transitionEffect as a #InputTransitionEffect_t 
  * (an enumerated value of legal possible values for the attribute).
  *
  * @param i the Input_t whose transitionEffect is sought.
  *
- * @return the transitionEffect of the given Input_t, as a ENUMTYPE
+ * @return the transitionEffect of the given Input_t, as a #InputTransitionEffect_t
  *
  * @memberof Input_t
  */
@@ -853,12 +1108,12 @@ Input_getName(Input_t * i);
 
 
 /**
- * Takes a Input_t structure and returns its sign as a ENUMTYPE 
+ * Takes a Input_t structure and returns its sign as a #InputSign_t
  * (an enumerated value of legal possible values for the attribute).
  *
  * @param i the Input_t whose sign is sought.
  *
- * @return the sign of the given Input_t, as a ENUMTYPE
+ * @return the sign of the given Input_t, as a #InputSign_t
  *
  * @memberof Input_t
  */
@@ -882,13 +1137,13 @@ Input_getThresholdLevel(Input_t * i);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether the given
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether the given
  * Input_t structure's identifier is set.
  *
- * @param i the Input_t structure to query
+ * @param i the Input_t structure to query.
  * 
- * @return @c non-zero (true) if the "id" attribute of the given
- * Input_t structure is set, zero (false) otherwise.
+ * @return @c 1 (true) if the "id" attribute of the given
+ * Input_t structure is set, @c 0 (false) otherwise.
  *
  * @memberof Input_t
  */
@@ -898,13 +1153,13 @@ Input_isSetId(Input_t * i);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether the given
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether the given
  * Input_t structure's qualitativeSpecies is set.
  *
- * @param i the Input_t structure to query
+ * @param i the Input_t structure to query.
  * 
- * @return @c non-zero (true) if the "qualitativeSpecies" attribute of the given
- * Input_t structure is set, zero (false) otherwise.
+ * @return @c 1 (true) if the "qualitativeSpecies" attribute of the given
+ * Input_t structure is set, @c 0 (false) otherwise.
  *
  * @memberof Input_t
  */
@@ -914,13 +1169,13 @@ Input_isSetQualitativeSpecies(Input_t * i);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether the given
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether the given
  * Input_t structure's transitionEffect is set.
  *
- * @param i the Input_t structure to query
+ * @param i the Input_t structure to query.
  * 
- * @return @c non-zero (true) if the "transitionEffect" attribute of the given
- * Input_t structure is set, zero (false) otherwise.
+ * @return @c 1 (true) if the "transitionEffect" attribute of the given
+ * Input_t structure is set, @c 0 (false) otherwise.
  *
  * @memberof Input_t
  */
@@ -930,13 +1185,13 @@ Input_isSetTransitionEffect(Input_t * i);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether the given
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether the given
  * Input_t structure's name is set.
  *
- * @param i the Input_t structure to query
+ * @param i the Input_t structure to query.
  * 
- * @return @c non-zero (true) if the "name" attribute of the given
- * Input_t structure is set, zero (false) otherwise.
+ * @return @c 1 (true) if the "name" attribute of the given
+ * Input_t structure is set, @c 0 (false) otherwise.
  *
  * @memberof Input_t
  */
@@ -946,13 +1201,13 @@ Input_isSetName(Input_t * i);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether the given
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether the given
  * Input_t structure's sign is set.
  *
- * @param i the Input_t structure to query
+ * @param i the Input_t structure to query.
  * 
- * @return @c non-zero (true) if the "sign" attribute of the given
- * Input_t structure is set, zero (false) otherwise.
+ * @return @c 1 (true) if the "sign" attribute of the given
+ * Input_t structure is set, @c 0 (false) otherwise.
  *
  * @memberof Input_t
  */
@@ -962,13 +1217,13 @@ Input_isSetSign(Input_t * i);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether the given
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether the given
  * Input_t structure's thresholdLevel is set.
  *
- * @param i the Input_t structure to query
+ * @param i the Input_t structure to query.
  * 
- * @return @c non-zero (true) if the "thresholdLevel" attribute of the given
- * Input_t structure is set, zero (false) otherwise.
+ * @return @c 1 (true) if the "thresholdLevel" attribute of the given
+ * Input_t structure is set, @c 0 (false) otherwise.
  *
  * @memberof Input_t
  */
@@ -980,7 +1235,7 @@ Input_isSetThresholdLevel(Input_t * i);
 /**
  * Assigns the identifier of an Input_t structure.
  *
- * This makes a copy of the string passed in the param @p sid.
+ * This makes a copy of the string passed in the parameter @p sid.
  *
  * @param i the Input_t structure to set.
  * @param sid the string to use as the identifier.
@@ -989,7 +1244,7 @@ Input_isSetThresholdLevel(Input_t * i);
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
  *
- * @note Using this function with an id of NULL is equivalent to
+ * @note Using this function with an @p sid of NULL is equivalent to
  * unsetting the "id" attribute.
  *
  * @memberof Input_t
@@ -1002,7 +1257,7 @@ Input_setId(Input_t * i, const char * sid);
 /**
  * Sets the qualitativeSpecies of the given Input_t to a copy of @p qualitativeSpecies.
  *
- * @param i the Input_t structure to set
+ * @param i the Input_t structure to set.
  * @param qualitativeSpecies the qualitativeSpecies to assign to the given Input_t's "qualitativeSpecies" attribute.
  *
  * @copydetails doc_returns_success_code
@@ -1020,10 +1275,10 @@ Input_setQualitativeSpecies(Input_t * i, const char * qualitativeSpecies);
 
 
 /**
- * Sets the transitionEffect of this Input_t to a copy of the given InputTransitionEffect_t.
+ * Sets the transitionEffect of this Input_t to a copy of the given #InputTransitionEffect_t.
  *
- * @param i the Input_t structure to set
- * @param transitionEffect the InputTransitionEffect_t structure to use.
+ * @param i the Input_t structure to set.
+ * @param transitionEffect the #InputTransitionEffect_t structure to use.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -1040,7 +1295,7 @@ Input_setTransitionEffect(Input_t * i, InputTransitionEffect_t transitionEffect)
 /**
  * Sets the name of the given Input_t to a copy of @p name.
  *
- * @param i the Input_t structure to set
+ * @param i the Input_t structure to set.
  * @param name the name to assign to the given Input_t's "name" attribute.
  *
  * @copydetails doc_returns_success_code
@@ -1058,10 +1313,10 @@ Input_setName(Input_t * i, const char * name);
 
 
 /**
- * Sets the sign of this Input_t to a copy of the given InputSign_t.
+ * Sets the sign of this Input_t to a copy of the given #InputSign_t.
  *
- * @param i the Input_t structure to set
- * @param sign the InputSign_t structure to use.
+ * @param i the Input_t structure to set.
+ * @param sign the #InputSign_t structure to use.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -1079,9 +1334,9 @@ Input_setSign(Input_t * i, InputSign_t sign);
  * Sets the "thresholdLevel" attribute of the given Input_t
  * structure.
  *
- * @param i the Input_t structure
+ * @param i the Input_t structure.
  * 
- * @param thresholdLevel the value of thresholdLevel to assign to the "thresholdLevel" attribute
+ * @param thresholdLevel the value of thresholdLevel to assign to the "thresholdLevel" attribute.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -1097,7 +1352,7 @@ Input_setThresholdLevel(Input_t * i, int thresholdLevel);
 /**
  * Unsets the "id" attribute of the given Input_t structure.
  *
- * @param i the Input_t structure to unset
+ * @param i the Input_t structure to unset.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -1113,7 +1368,7 @@ Input_unsetId(Input_t * i);
 /**
  * Unsets the "qualitativeSpecies" attribute of the given Input_t structure.
  *
- * @param i the Input_t structure to unset
+ * @param i the Input_t structure to unset.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -1129,7 +1384,7 @@ Input_unsetQualitativeSpecies(Input_t * i);
 /**
  * Unsets the "transitionEffect" attribute of the given Input_t structure.
  *
- * @param i the Input_t structure to unset
+ * @param i the Input_t structure to unset.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -1145,7 +1400,7 @@ Input_unsetTransitionEffect(Input_t * i);
 /**
  * Unsets the "name" attribute of the given Input_t structure.
  *
- * @param i the Input_t structure to unset
+ * @param i the Input_t structure to unset.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -1161,7 +1416,7 @@ Input_unsetName(Input_t * i);
 /**
  * Unsets the "sign" attribute of the given Input_t structure.
  *
- * @param i the Input_t structure to unset
+ * @param i the Input_t structure to unset.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -1177,7 +1432,7 @@ Input_unsetSign(Input_t * i);
 /**
  * Unsets the "thresholdLevel" attribute of the given Input_t structure.
  *
- * @param i the Input_t structure to unset
+ * @param i the Input_t structure to unset.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -1191,13 +1446,14 @@ Input_unsetThresholdLevel(Input_t * i);
 
 
 /**
-  * Predicate returning @c true or @c false depending on whether
-  * all the required attributes for the given Input_t structure
-  * have been set.
-  *
-  * @note The required attributes for a Input_t structure are:
-  * @li useValuesfromTriggerTime ( L3 onwards )
-  *
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether
+ * all the required attributes for the given Input_t structure
+ * have been set.
+ *
+ * @note The required attributes for a Input_t structure are:
+ * @li qualitativeSpecies
+ * @li transitionEffect
+ *
  * @memberof Input_t
  */
 LIBSBML_EXTERN
@@ -1208,15 +1464,15 @@ Input_hasRequiredAttributes(Input_t * i);
 /**
  * Return the Input_t indicated by the given @p sid.
  *
- * @param lo the ListOf_t structure to use
+ * @param lo the ListOf_t structure to use.
  *
  * @param sid a string, the identifier of the
- * Input_t is being sought.
+ * Input_t being sought.
  *
  * @return the Input_t for the given variable, or @c NULL if no such
- * Input_t exits.
+ * Input_t exists.
  *
- * @memberof Input_t
+ * @memberof ListOfInputs_t
  */
 LIBSBML_EXTERN
 Input_t *
@@ -1229,26 +1485,27 @@ ListOfInputs_getById(ListOf_t * lo, const char * sid);
  *
  * The caller owns the returned structure and is responsible for deleting it.
  *
- * @param lo the ListOf_t structure
- * @param sid the string of the "id" attribute of the Input_t sought
+ * @param lo the ListOf_t structure.
+ * @param sid the string of the "id" attribute of the Input_t sought.
  *
  * @return the Input_t structure removed.  As mentioned above, the 
  * caller owns the returned structure. @c NULL is returned if no Input_t
  * structure with the "id" attribute exists in the given ListOfInputs_t structure.
  *
- * @memberof Input_t
+ * @memberof ListOfInputs_t
  */
 LIBSBML_EXTERN
 Input_t *
 ListOfInputs_removeById(ListOf_t * lo, const char * sid);
 
 /**
- * Returns the string version of the provided InputTransitionEffect_t enumeration.
+ * Returns the string version of the provided #InputTransitionEffect_t enumeration.
  *
- * @param effect The InputTransitionEffect_t enumeration to convert
+ * @param effect the #InputTransitionEffect_t enumeration to convert.
  *
  * @return A string corresponding to the given effect:  "none", 
- * "consumption", or NULL if the value is INPUT_TRANSITION_EFFECT_UNKNOWN 
+ * "consumption", or @c NULL if the value is 
+ * @sbmlconstant{INPUT_TRANSITION_EFFECT_UNKNOWN, InputTransitionEffect_t}
  * or another invalid enumeration value.
  *
  * @memberof Input_t
@@ -1258,16 +1515,17 @@ const char*
 InputTransitionEffect_toString(InputTransitionEffect_t effect);
 
 /**
- * Returns the InputTransitionEffect_t enumeration corresponding to 
- * the given string, or INPUT_TRANSITION_EFFECT_UNKNOWN if there is 
+ * Returns the #InputTransitionEffect_t enumeration corresponding to 
+ * the given string, or @sbmlconstant{INPUT_TRANSITION_EFFECT_UNKNOWN, InputTransitionEffect_t} if there is 
  * no such match.  The matching is case-sensitive:  "none" will 
- * return INPUT_TRANSITION_EFFECT_NONE, but "NONE" will return 
- * INPUT_TRANSITION_EFFECT_UNKNOWN.
+ * return @sbmlconstant{INPUT_TRANSITION_EFFECT_NONE, InputTransitionEffect_t}, 
+ * but "NONE" will return 
+ * @sbmlconstant{INPUT_TRANSITION_EFFECT_UNKNOWN, InputTransitionEffect_t}.
  *
- * @param s The string to convert to an InputTransitionEffect_t
+ * @param s the string to convert to an #InputTransitionEffect_t.
  *
- * @return The corresponding InputTransitionEffect_t, or 
- * INPUT_TRANSITION_EFFECT_UNKNOWN if no match found.
+ * @return The corresponding #InputTransitionEffect_t, or 
+ * @sbmlconstant{INPUT_TRANSITION_EFFECT_UNKNOWN, InputTransitionEffect_t} if no match found.
  *
  * @memberof Input_t
  */
@@ -1277,14 +1535,16 @@ InputTransitionEffect_fromString(const char* s);
 
 
 /**
- * Predicate returning @c true (non-zero) or @c false (zero) depending on whether the given
- * InputTransitionEffect_t is valid.
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether the given
+ * #InputTransitionEffect_t is valid.
  *
- * @param effect the InputTransitionEffect_t enumeration to query
+ * @param effect the #InputTransitionEffect_t enumeration to query.
  * 
- * @return @c non-zero (true) if the InputTransitionEffect_t is
- * INPUT_TRANSITION_EFFECT_NONE or INPUT_TRANSITION_EFFECT_CONSUMPTION,
- * zero (false) otherwise (including INPUT_TRANSITION_EFFECT_UNKNOWN).
+ * @return @c 1 (true) if the #InputTransitionEffect_t is
+ * @sbmlconstant{INPUT_TRANSITION_EFFECT_NONE, InputTransitionEffect_t} 
+ * or @sbmlconstant{INPUT_TRANSITION_EFFECT_CONSUMPTION, InputTransitionEffect_t},
+ * @c 0 (false) otherwise (including
+ * @sbmlconstant{INPUT_TRANSITION_EFFECT_UNKNOWN, InputTransitionEffect_t}).
  *
  * @memberof Input_t
  */
@@ -1294,15 +1554,15 @@ InputTransitionEffect_isValidInputTransitionEffect(InputTransitionEffect_t effec
 
 
 /**
- * Predicate returning @c true (non-zero) or @c false (zero) depending 
- * on whether the given string is a valid InputTransitionEffect_t.  
- * The matching is case-sensitive:  "none" will return @c true, but 
- * "NONE" will return @c false.
+ * Predicate returning @c 1 (true) or @c 0 (false) depending 
+ * on whether the given string is a valid #InputTransitionEffect_t.  
+ * The matching is case-sensitive:  "none" will return @c 1 (true), but 
+ * "NONE" will return @c 0 (false).
  *
- * @param s The string to query
+ * @param s the string to query.
  * 
- * @return @c non-zero (true) if the string is
- * "none" or "consumption"; zero (false) otherwise.
+ * @return @c 1 (true) if the string is
+ * "none" or "consumption"; @c 0 (false) otherwise.
  *
  * @memberof Input_t
  */
@@ -1311,12 +1571,12 @@ int
 InputTransitionEffect_isValidInputTransitionEffectString(const char* s);
 
 /**
- * Returns the string version of the provided InputSign_t enumeration.
+ * Returns the string version of the provided #InputSign_t enumeration.
  *
- * @param effect The InputSign_t enumeration to convert
+ * @param effect the #InputSign_t enumeration to convert.
  *
  * @return A string corresponding to the given effect:  "positive", 
- * "negative", "dual", "unknown", or NULL if the value is INPUT_SIGN_VALUE_NOTSET
+ * "negative", "dual", "unknown", or @c NULL if the value is @sbmlconstant{INPUT_SIGN_VALUE_NOTSET, InputSign_t}
  * or some other invalid enumeration value.
  *
  * @memberof Input_t
@@ -1327,15 +1587,15 @@ InputSign_toString(InputSign_t effect);
 
 
 /**
- * Returns the InputSign_t enumeration corresponding to 
- * the given string, or INPUT_SIGN_VALUE_NOTSET if there is 
+ * Returns the #InputSign_t enumeration corresponding to 
+ * the given string, or @sbmlconstant{INPUT_SIGN_VALUE_NOTSET, InputSign_t} if there is 
  * no such match.  The matching is case-sensitive:  "negative" will 
- * return INPUT_SIGN_NEGATIVE, but "Negative" will return 
- * INPUT_SIGN_VALUE_NOTSET.
+ * return @sbmlconstant{INPUT_SIGN_NEGATIVE, InputSign_t}, but "Negative" will return 
+ * @sbmlconstant{INPUT_SIGN_VALUE_NOTSET, InputSign_t}.
  *
- * @param s The string to convert to an InputSign_t
+ * @param s the string to convert to an #InputSign_t.
  *
- * @return The corresponding InputSign_t, or INPUT_SIGN_VALUE_NOTSET if no match found.
+ * @return The corresponding #InputSign_t, or @sbmlconstant{INPUT_SIGN_VALUE_NOTSET, InputSign_t} if no match found.
  *
  * @memberof Input_t
  */
@@ -1345,14 +1605,17 @@ InputSign_fromString(const char* s);
 
 
 /**
- * Predicate returning @c true (non-zero) or @c false (zero) depending on whether the given
- * InputSign_t is valid.
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether the given
+ * #InputSign_t is valid.
  *
- * @param effect the InputSign_t enumeration to query
+ * @param effect the #InputSign_t enumeration to query.
  * 
- * @return @c non-zero (true) if the InputSign_t is INPUT_SIGN_POSITIVE, 
- * INPUT_SIGN_NEGATIVE, INPUT_SIGN_DUAL, or INPUT_SIGN_UNKNOWN;
- * zero (false) otherwise (including INPUT_SIGN_VALUE_NOTSET).
+ * @return @c 1 (true) if the #InputSign_t is 
+ * @sbmlconstant{INPUT_SIGN_POSITIVE, InputSign_t}, 
+ * @sbmlconstant{INPUT_SIGN_NEGATIVE, InputSign_t},
+ * @sbmlconstant{INPUT_SIGN_DUAL, InputSign_t}, 
+ * or @sbmlconstant{INPUT_SIGN_UNKNOWN, InputSign_t};
+ * @c 0 (false) otherwise (including @sbmlconstant{INPUT_SIGN_VALUE_NOTSET, InputSign_t}).
  *
  * @memberof Input_t
  */
@@ -1362,15 +1625,15 @@ InputSign_isValidInputSign(InputSign_t effect);
 
 
 /**
- * Predicate returning @c true (non-zero) or @c false (zero) depending 
- * on whether the given string is a valid InputSign_t.  
- * The matching is case-sensitive:  "negative" will return @c true, but 
- * "Negative" will return @c false.
+ * Predicate returning @c 1 (true) or @c 0 (false) depending 
+ * on whether the given string is a valid #InputSign_t.  
+ * The matching is case-sensitive:  "negative" will return @c 1 (true), but 
+ * "Negative" will return @c 0 (false).
  *
- * @param s The string to query
+ * @param s the string to query.
  * 
- * @return @c non-zero (true) if the string is "positive",
- * "negative", "dual", or "unknown"; zero (false) otherwise.
+ * @return @c 1 (true) if the string is "positive",
+ * "negative", "dual", or "unknown"; @c 0 (false) otherwise.
  *
  * @memberof Input_t
  */

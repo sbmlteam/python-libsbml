@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -44,8 +48,8 @@
  * type construct, it would be impossible within SBML itself to indicate
  * that all of the compartments share an underlying conceptual relationship
  * because each SBML compartment must be given a unique and separate
- * identity.  Compartment types have no mathematical meaning in
- * SBML---they have no effect on a model's mathematical interpretation.
+ * identity.  A CompartmentType has no mathematical meaning in
+ * SBML---it has no effect on a model's mathematical interpretation.
  * Simulators and other numerical analysis software may ignore
  * CompartmentType definitions and references to them in a model.
  * 
@@ -108,10 +112,10 @@ public:
    * @p version values.
    *
    * @param level an unsigned int, the SBML Level to assign to this
-   * CompartmentType
+   * CompartmentType.
    *
    * @param version an unsigned int, the SBML Version to assign to this
-   * CompartmentType
+   * CompartmentType.
    *
    * @copydetails doc_throw_exception_lv
    *
@@ -159,7 +163,7 @@ public:
   /**
    * Assignment operator for CompartmentType.
    *
-   * @param rhs The object whose values are used as the basis of the
+   * @param rhs the object whose values are used as the basis of the
    * assignment.
    */
   CompartmentType& operator=(const CompartmentType& rhs);
@@ -188,28 +192,28 @@ public:
 
 
   /**
-   * Returns the value of the "id" attribute of this CompartmentType object.
+   * Returns the value of the "id" attribute of this CompartmentType.
    *
-   * @return the identifier of this CompartmentType object.
+   * @note Because of the inconsistent behavior of this function with 
+   * respect to assignments and rules, it is now recommended to
+   * use the getIdAttribute() function instead.
    *
-   * @see getName()
-   * @see setId(@if java String@endif)
-   * @see unsetId()
-   * @see isSetId()
+   * @copydetails doc_id_attribute
+   *
+   * @return the id of this CompartmentType.
+   *
+   * @see getIdAttribute()
+   * @see setIdAttribute(const std::string& sid)
+   * @see isSetIdAttribute()
+   * @see unsetIdAttribute()
    */
   virtual const std::string& getId () const;
 
 
   /**
-   * Returns the value of the "name" attribute of this CompartmentType
-   * object.
+   * Returns the value of the "name" attribute of this CompartmentType object.
    *
-   * @return the name of this CompartmentType object.
-   *
-   * @see getId()
-   * @see isSetName()
-   * @see setName(@if java String@endif)
-   * @see unsetName()
+   * @copydetails doc_get_name
    */
   virtual const std::string& getName () const;
 
@@ -218,12 +222,7 @@ public:
    * Predicate returning @c true if this CompartmentType object's "id"
    * attribute is set.
    *
-   * @return @c true if the "id" attribute of this CompartmentType object is
-   * set, @c false otherwise.
-   *
-   * @see getId()
-   * @see unsetId()
-   * @see setId(@if java String@endif)
+   * @copydetails doc_isset_id
    */
   virtual bool isSetId () const;
 
@@ -232,50 +231,23 @@ public:
    * Predicate returning @c true if this CompartmentType object's "name"
    * attribute is set.
    *
-   * @return @c true if the "name" attribute of this CompartmentType object
-   * is set, @c false otherwise.
-   *
-   * @see getName()
-   * @see setName(@if java String@endif)
-   * @see unsetName()
+   * @copydetails doc_isset_name
    */
   virtual bool isSetName () const;
 
 
   /**
-   * Sets the value of the "id" attribute of this CompartmentType object.
+   * Sets the value of the "id" attribute of this CompartmentType.
    *
-   * The string @p sid is copied.
-   *
-   * @copydetails doc_id_syntax
-   *
-   * @param sid the string to use as the identifier of this CompartmentType
-   *
-   * @copydetails doc_returns_success_code
-   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
-   *
-   * @see getId()
-   * @see unsetId()
-   * @see isSetId()
+   * @copydetails doc_set_id
    */
-  virtual int setId (const std::string& sid);
+  virtual int setId(const std::string& sid);
 
 
   /**
-   * Sets the value of the "name" attribute of this CompartmentType object.
+   * Sets the value of the "name" attribute of this CompartmentType.
    *
-   * The string in @p name is copied.
-   *
-   * @param name the new name for the CompartmentType
-   *
-   * @copydetails doc_returns_success_code
-   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
-   *
-   * @see getName()
-   * @see isSetName()
-   * @see unsetName()
+   * @copydetails doc_set_name
    */
   virtual int setName (const std::string& name);
 
@@ -283,13 +255,7 @@ public:
   /**
    * Unsets the value of the "name" attribute of this CompartmentType object.
    *
-   * @copydetails doc_returns_success_code
-   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
-   *
-   * @see getName()
-   * @see setName(@if java String@endif)
-   * @see isSetName()
+   * @copydetails doc_unset_name
    */
   virtual int unsetName ();
 
@@ -326,7 +292,7 @@ public:
   /** @cond doxygenLibsbmlInternal */
   /**
    * Subclasses should override this method to write out their contained
-   * SBML objects as XML elements.  Be sure to call your parents
+   * SBML objects as XML elements.  Be sure to call your parent's
    * implementation of this method as well.
    */
   virtual void writeElements (XMLOutputStream& stream) const;
@@ -346,6 +312,286 @@ public:
   virtual bool hasRequiredAttributes() const;
 
 
+
+
+  #ifndef SWIG
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this CompartmentType.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, bool& value)
+    const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this CompartmentType.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this CompartmentType.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           double& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this CompartmentType.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           unsigned int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this CompartmentType.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           std::string& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this CompartmentType.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  //virtual int getAttribute(const std::string& attributeName,
+  //                         const char* value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Predicate returning @c true if this CompartmentType's attribute
+   * "attributeName" is set.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @return @c true if this CompartmentType's attribute "attributeName" has
+   * been set, otherwise @c false is returned.
+   */
+  virtual bool isSetAttribute(const std::string& attributeName) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this CompartmentType.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, bool value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this CompartmentType.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this CompartmentType.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, double value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this CompartmentType.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           unsigned int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this CompartmentType.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           const std::string& value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this CompartmentType.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  //virtual int setAttribute(const std::string& attributeName, const char*
+  //  value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Unsets the value of the "attributeName" attribute of this CompartmentType.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int unsetAttribute(const std::string& attributeName);
+
+  /** @endcond */
+
+
+
+
+  #endif /* !SWIG */
+
+
 protected:
   /** @cond doxygenLibsbmlInternal */
   /**
@@ -360,7 +606,7 @@ protected:
   /**
    * Subclasses should override this method to read values from the given
    * XMLAttributes set into their specific fields.  Be sure to call your
-   * parents implementation of this method as well.
+   * parent's implementation of this method as well.
    *
    * @param attributes the XMLAttributes to use.
    */
@@ -373,15 +619,15 @@ protected:
 
   /**
    * Subclasses should override this method to write their XML attributes
-   * to the XMLOutputStream.  Be sure to call your parents implementation
+   * to the XMLOutputStream.  Be sure to call your parent's implementation
    * of this method as well.
    *
    * @param stream the XMLOutputStream to use.
    */
   virtual void writeAttributes (XMLOutputStream& stream) const;
 
-  std::string mId;
-  std::string mName;
+  //std::string mId;
+  //std::string mName;
 
   /* the validator classes need to be friends to access the
    * protected constructor that takes no arguments
@@ -416,9 +662,9 @@ public:
    * The object is constructed such that it is valid for the given SBML
    * Level and Version combination.
    *
-   * @param level the SBML Level
+   * @param level the SBML Level.
    *
-   * @param version the Version within the SBML Level
+   * @param version the Version within the SBML Level.
    *
    * @copydetails doc_throw_exception_lv
    *
@@ -470,8 +716,8 @@ public:
   /**
    * Returns the XML element name of this object.
    *
-   * For ListOfCompartmentTypes, the XML element name is @c
-   * "listOfCompartmentTypes".
+   * For ListOfCompartmentTypes, the XML element name is
+   * @c "listOfCompartmentTypes".
    *
    * @return the name of this element, i.e., @c "listOfCompartmentTypes".
    */
@@ -484,6 +730,7 @@ public:
    * @param n the index number of the CompartmentType object to get.
    *
    * @return the nth CompartmentType object in this ListOfCompartmentTypes.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -496,6 +743,7 @@ public:
    * @param n the index number of the CompartmentType object to get.
    *
    * @return the nth CompartmentType object in this ListOfCompartmentTypes.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -542,7 +790,7 @@ public:
    *
    * The caller owns the returned item and is responsible for deleting it.
    *
-   * @param n the index of the item to remove
+   * @param n the index of the item to remove.
    *
    * @see size()
    */
@@ -553,10 +801,10 @@ public:
    * Removes item in this ListOfCompartmentTypes items with the given identifier.
    *
    * The caller owns the returned item and is responsible for deleting it.
-   * If none of the items in this list have the identifier @p sid, then @c
-   * NULL is returned.
+   * If none of the items in this list have the identifier @p sid, then
+   * @c NULL is returned.
    *
-   * @param sid the identifier of the item to remove
+   * @param sid the identifier of the item to remove.
    *
    * @return the item removed.  As mentioned above, the caller owns the
    * returned item.
@@ -612,21 +860,14 @@ BEGIN_C_DECLS
  * and @p version values.
  *
  * @param level an unsigned int, the SBML Level to assign to this
- 
-* CompartmentType_t
+ * CompartmentType_t.
  *
  * @param version an unsigned int, the SBML Version to assign to this
- * CompartmentType_t
+ * CompartmentType_t.
  *
  * @return a pointer to the newly created CompartmentType_t structure.
  *
- * @note Once a CompartmentType_t has been added to an SBMLDocument_t, the @p
- * level and @p version for the document @em override those used to create
- * the CompartmentType_t.  Despite this, the ability to supply the values at
- * creation time is an important aid to creating valid SBML.  Knowledge of
- * the intended SBML Level and Version  determine whether it is valid to
- * assign a particular value to an attribute, or whether it is valid to add
- * a structure to an existing SBMLDocument_t.
+ * @copydetails doc_note_setting_lv
  *
  * @memberof CompartmentType_t
  */
@@ -640,17 +881,11 @@ CompartmentType_create (unsigned int level, unsigned int version);
  * SBMLNamespaces_t structure.
  *
  * @param sbmlns SBMLNamespaces_t, a pointer to an SBMLNamespaces_t structure
- * to assign to this CompartmentType_t
+ * to assign to this CompartmentType_t.
  *
  * @return a pointer to the newly created CompartmentType_t structure.
  *
- * @note Once a CompartmentType_t has been added to an SBMLDocument_t, the
- * @p sbmlns namespaces for the document @em override those used to create
- * the CompartmentType_t.  Despite this, the ability to supply the values at
- * creation time is an important aid to creating valid SBML.  Knowledge of the
- * intended SBML Level and Version determine whether it is valid to assign a
- * particular value to an attribute, or whether it is valid to add a structure
- * to an existing SBMLDocument_t.
+ * @copydetails doc_note_setting_lv
  *
  * @memberof CompartmentType_t
  */
@@ -674,7 +909,7 @@ CompartmentType_free (CompartmentType_t *ct);
 /**
  * Creates a deep copy of the given CompartmentType_t structure
  *
- * @param ct the CompartmentType_t structure to be copied
+ * @param ct the CompartmentType_t structure to be copied.
  *
  * @return a (deep) copy of this CompartmentType_t structure.
  *
@@ -689,7 +924,7 @@ CompartmentType_clone (const CompartmentType_t *ct);
  * Returns a list of XMLNamespaces_t associated with this CompartmentType_t
  * structure.
  *
- * @param ct the CompartmentType_t structure
+ * @param ct the CompartmentType_t structure.
  *
  * @return pointer to the XMLNamespaces_t structure associated with
  * this structure
@@ -704,7 +939,7 @@ CompartmentType_getNamespaces(CompartmentType_t *ct);
 /**
  * Takes a CompartmentType_t structure and returns its identifier.
  *
- * @param ct the CompartmentType_t structure whose identifier is sought
+ * @param ct the CompartmentType_t structure whose identifier is sought.
  *
  * @return the identifier of this CompartmentType_t, as a pointer to a string.
  *
@@ -730,13 +965,13 @@ CompartmentType_getName (const CompartmentType_t *ct);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether the given
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether the given
  * CompartmentType_t structure's identifier is set.
  *
- * @param ct the CompartmentType_t structure to query
+ * @param ct the CompartmentType_t structure to query.
  *
- * @return @c non-zero (true) if the "id" field of the given
- * CompartmentType_t is set, zero (false) otherwise.
+ * @return @c 1 (true) if the "id" field of the given
+ * CompartmentType_t is set, @c 0 (false) otherwise.
  *
  * @memberof CompartmentType_t
  */
@@ -746,13 +981,13 @@ CompartmentType_isSetId (const CompartmentType_t *ct);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether the given
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether the given
  * CompartmentType_t structure's name is set.
  *
- * @param ct the CompartmentType_t structure to query
+ * @param ct the CompartmentType_t structure to query.
  *
- * @return @c non-zero (true) if the "name" field of the given
- * CompartmentType_t is set, zero (false) otherwise.
+ * @return @c 1 (true) if the "name" field of the given
+ * CompartmentType_t is set, @c 0 (false) otherwise.
  *
  * @memberof CompartmentType_t
  */
@@ -773,7 +1008,7 @@ CompartmentType_isSetName (const CompartmentType_t *ct);
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
  *
- * @note Using this function with an id of NULL is equivalent to
+ * @note Using this function with an @p sid of NULL is equivalent to
  * unsetting the "id" attribute.
  *
  * @memberof CompartmentType_t
@@ -845,7 +1080,7 @@ ListOfCompartmentTypes_getById (ListOf_t *lo, const char *sid);
  * The caller owns the returned item and is responsible for deleting it.
  *
  * @param lo the list of CompartmentType_t structures to search.
- * @param sid the "id" attribute value of the structure to remove
+ * @param sid the "id" attribute value of the structure to remove.
  *
  * @return The CompartmentType_t structure removed, or a null pointer if no such
  * item exists in @p lo.

@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -56,7 +60,7 @@ LIBSBML_CPP_NAMESPACE_BEGIN
 
 static const char* PREAMBLE =
     "The arguments of the MathML logical operators 'and', 'or', 'xor', and "
-    "'not' must have boolean values. (References: L2V2 Section 3.5.8.)";
+    "'not' must have Boolean values. (References: L2V2 Section 3.5.8.)";
 
 
 /*
@@ -94,6 +98,17 @@ LogicalArgsMathCheck::getPreamble ()
 void
 LogicalArgsMathCheck::checkMath (const Model& m, const ASTNode& node, const SBase & sb)
 {
+  // does not apply in L3V2 for general consistency checking
+  // BUT we want to use it for telling a converter that this occurs in L3V2
+  if (this->mValidator.getCategory() == LIBSBML_CAT_MATHML_CONSISTENCY)
+  {
+    if (m.getLevel() == 3 && m.getVersion() > 1) return;
+  }
+  else
+  {
+    if (m.getLevel() != 3) return;
+    else if (m.getVersion() == 1) return;
+  }
 
   ASTNodeType_t type = node.getType();
 
@@ -128,14 +143,18 @@ LogicalArgsMathCheck::checkMath (const Model& m, const ASTNode& node, const SBas
   * If not, an error message is logged.
   */
 void 
-LogicalArgsMathCheck::checkMathFromLogical (const Model&, const ASTNode& node, 
+LogicalArgsMathCheck::checkMathFromLogical (const Model&m, const ASTNode& node, 
                                                 const SBase & sb)
 {
   unsigned int n;
   
   for (n = 0; n < node.getNumChildren(); n++)
   {
-    if (!node.getChild(n)->isBoolean())
+    if (node.getChild(n)->isUserFunction())
+    {
+      checkMath(m, *(node.getChild(n)), sb);
+    }
+    else if (!node.getChild(n)->isBoolean())
     {
       logMathConflict(node, sb);
     }
@@ -155,14 +174,14 @@ const string
 LogicalArgsMathCheck::getMessage (const ASTNode& node, const SBase& object)
 {
 
-  ostringstream msg;
+  ostringstream oss_msg;
 
-  //msg << getPreamble();
+  //oss_msg << getPreamble();
 
   char * formula = SBML_formulaToString(&node);
-  msg << "The formula '" << formula;
-  msg << "' in the " << getFieldname() << " element of the <" << object.getElementName();
-  msg << "> ";
+  oss_msg << "The formula '" << formula;
+  oss_msg << "' in the " << getFieldname() << " element of the <" << object.getElementName();
+  oss_msg << "> ";
   switch(object.getTypeCode()) {
   case SBML_INITIAL_ASSIGNMENT:
   case SBML_EVENT_ASSIGNMENT:
@@ -172,14 +191,14 @@ LogicalArgsMathCheck::getMessage (const ASTNode& node, const SBase& object)
     break;
   default:
     if (object.isSetId()) {
-      msg << "with id '" << object.getId() << "' ";
+      oss_msg << "with id '" << object.getId() << "' ";
     }
     break;
   }
-  msg << "uses an argument to a logical operator that is not boolean.";
+  oss_msg << "uses an argument to a logical operator that is not Boolean.";
   safe_free(formula);
 
-  return msg.str();
+  return oss_msg.str();
 }
 
 LIBSBML_CPP_NAMESPACE_END

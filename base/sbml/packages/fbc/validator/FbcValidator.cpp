@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  * 
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -103,7 +107,7 @@ public:
   }
 
   /*
-   * @return true if this ConstraintSet is empty, false otherwise.
+   * @return @c true if this ConstraintSet is empty, @c false otherwise.
    */
   bool empty () const
   {
@@ -146,6 +150,7 @@ struct FbcValidatorConstraints
   ConstraintSet<Reaction>                 mReaction;
   ConstraintSet<SpeciesReference>         mSpeciesReference;
   ConstraintSet<GeneProductRef>           mGeneProductRef;
+  ConstraintSet<GeneProductAssociation>   mGeneProductAssociation;
   ConstraintSet<GeneProduct>              mGeneProduct;
   ConstraintSet<FbcAnd>                   mFbcAnd;
   ConstraintSet<FbcOr>                    mFbcOr;
@@ -246,6 +251,13 @@ FbcValidatorConstraints::add (VConstraint* c)
   {
     mGeneProductRef.add( 
       static_cast< TConstraint<GeneProductRef>* >(c) );
+    return;
+  }
+
+  if (dynamic_cast< TConstraint<GeneProductAssociation>* >(c) != NULL)
+  {
+    mGeneProductAssociation.add(
+      static_cast< TConstraint<GeneProductAssociation>* >(c));
     return;
   }
 
@@ -350,6 +362,12 @@ public:
     return !v.mFbcConstraints->mGeneProductRef.empty();
   }
 
+  virtual bool visit(const GeneProductAssociation &x)
+  {
+    v.mFbcConstraints->mGeneProductAssociation.applyTo(m, x);
+    return !v.mFbcConstraints->mGeneProductAssociation.empty();
+  }
+
   virtual bool visit (const GeneProduct &x)
   {
     v.mFbcConstraints->mGeneProduct.applyTo(m, x);
@@ -411,6 +429,10 @@ public:
       {
         return visit((const GeneProductRef&)x);
       } 
+      else if (code == SBML_FBC_GENEPRODUCTASSOCIATION)
+      {
+        return visit((const GeneProductAssociation&)x);
+      }
       else if (code == SBML_FBC_GENEPRODUCT)
       {
         return visit((const GeneProduct&)x);

@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -81,8 +85,8 @@
  * stoichiometry found in textbooks.  Examples and more explanations of
  * this are given in the SBML specification.
  * 
- * The following is a simple example of a species reference for species @c
- * "X0", with stoichiometry @c 2, in a list of reactants within a reaction
+ * The following is a simple example of a species reference for species
+ * @c "X0", with stoichiometry @c 2, in a list of reactants within a reaction
  * having the identifier @c "J1":
  * @verbatim
  <model>
@@ -131,8 +135,8 @@
  *
  * @section l3-stoichiometries Stoichiometries in SBML Level 3
  *
- * The StoichiometryMath construct is not defined in SBML Level&nbsp;3
- * Version&nbsp;1 Core.  Instead, Level&nbsp;3 defines the identifier of
+ * The StoichiometryMath construct is not defined in SBML Level&nbsp;3.
+ * Instead, Level&nbsp;3 defines the identifier of
  * SpeciesReference objects as a stand-in for the stoichiometry of the
  * reactant or product being referenced, and allows that identifier to be
  * used elsewhere in SBML models, including (for example) InitialAssignment
@@ -208,10 +212,10 @@ public:
    * Creates a new StoichiometryMath object using the given SBML @p level
    * values.
    *
-   * @param level an unsigned int, the SBML Level to assign to this StoichiometryMath
+   * @param level an unsigned int, the SBML Level to assign to this StoichiometryMath.
    *
    * @param version an unsigned int, the SBML Version to assign to this
-   * StoichiometryMath
+   * StoichiometryMath.
    *
    * @copydetails doc_throw_exception_lv
    *
@@ -256,7 +260,7 @@ public:
   /**
    * Assignment operator
    *
-   * @param rhs The object whose values are used as the basis of the
+   * @param rhs the object whose values are used as the basis of the
    * assignment.
    */
   StoichiometryMath& operator=(const StoichiometryMath& rhs);
@@ -286,11 +290,11 @@ public:
    * Retrieves the mathematical formula within this StoichiometryMath and
    * return it as an AST.
    * 
-   * @return the math of this StoichiometryMath.
+   * @return the math of this StoichiometryMath, or @c NULL if the math is not set.
    *
    * @copydetails doc_note_stoichiometrymath_availability
    */
-  const ASTNode* getMath () const;
+  virtual const ASTNode* getMath () const;
 
 
   /**
@@ -317,7 +321,7 @@ public:
    *
    * @copydetails doc_note_stoichiometrymath_availability
    */
-  int setMath (const ASTNode* math);
+  virtual int setMath (const ASTNode* math);
 
 
   /**
@@ -470,7 +474,7 @@ public:
    * Returns the XML element name of this object, which for StoichiometryMath, is
    * always @c "stoichiometryMath".
    * 
-   * @return the name of this element, i.e., @c "stoichiometryMath". 
+   * @return the name of this element, i.e., @c "stoichiometryMath".
    */
   virtual const std::string& getElementName () const;
 
@@ -489,7 +493,7 @@ public:
   /** @cond doxygenLibsbmlInternal */
   /**
    * Subclasses should override this method to write out their contained
-   * SBML objects as XML elements.  Be sure to call your parents
+   * SBML objects as XML elements.  Be sure to call your parent's
    * implementation of this method as well.
    */
   virtual void writeElements (XMLOutputStream& stream) const;
@@ -548,8 +552,8 @@ public:
   /*
    * Function to set/get an identifier for unit checking.
    */
-  std::string getInternalId() const { return mInternalId; };
-  void setInternalId(std::string id) { mInternalId = id; };
+  std::string getInternalId() const;
+  void setInternalId(std::string id);
   /** @endcond */
 
 
@@ -559,7 +563,7 @@ protected:
    * Subclasses should override this method to read (and store) XHTML,
    * MathML, etc. directly from the XMLInputStream.
    *
-   * @return true if the subclass read from the stream, false otherwise.
+   * @return @c true if the subclass read from the stream, @c false otherwise.
    */
   virtual bool readOtherXML (XMLInputStream& stream);
 
@@ -584,7 +588,7 @@ protected:
   /**
    * Subclasses should override this method to read values from the given
    * XMLAttributes set into their specific fields.  Be sure to call your
-   * parents implementation of this method as well.
+   * parent's implementation of this method as well.
    */
   virtual void readAttributes (const XMLAttributes& attributes,
                                const ExpectedAttributes& expectedAttributes);
@@ -593,7 +597,7 @@ protected:
 
   /**
    * Subclasses should override this method to write their XML attributes
-   * to the XMLOutputStream.  Be sure to call your parents implementation
+   * to the XMLOutputStream.  Be sure to call your parent's implementation
    * of this method as well.
    */
   virtual void writeAttributes (XMLOutputStream& stream) const;
@@ -641,20 +645,14 @@ BEGIN_C_DECLS
  * and @p version values.
  *
  * @param level an unsigned int, the SBML Level to assign to this
- * StoichiometryMath_t
+ * StoichiometryMath_t.
  *
  * @param version an unsigned int, the SBML Version to assign to this
- * StoichiometryMath_t
+ * StoichiometryMath_t.
  *
  * @return a pointer to the newly created StoichiometryMath_t structure.
  *
- * @note Once a StoichiometryMath_t has been added to an SBMLDocument_t, the @p
- * level and @p version for the document @em override those used to create
- * the StoichiometryMath_t.  Despite this, the ability to supply the values at
- * creation time is an important aid to creating valid SBML.  Knowledge of
- * the intended SBML Level and Version  determine whether it is valid to
- * assign a particular value to an attribute, or whether it is valid to add
- * a structure to an existing SBMLDocument_t.
+ * @copydetails doc_note_setting_lv
  *
  * @memberof StoichiometryMath_t
  */
@@ -668,17 +666,11 @@ StoichiometryMath_create (unsigned int level, unsigned int version);
  * SBMLNamespaces_t structure.
  *
  * @param sbmlns SBMLNamespaces_t, a pointer to an SBMLNamespaces_t structure
- * to assign to this StoichiometryMath_t
+ * to assign to this StoichiometryMath_t.
  *
  * @return a pointer to the newly created StoichiometryMath_t structure.
  *
- * @note Once a StoichiometryMath_t has been added to an SBMLDocument_t, the
- * @p sbmlns namespaces for the document @em override those used to create
- * the StoichiometryMath_t.  Despite this, the ability to supply the values at 
- * creation time is an important aid to creating valid SBML.  Knowledge of the
- * intended SBML Level and Version determine whether it is valid to assign a 
- * particular value to an attribute, or whether it is valid to add a structure 
- * to an existing SBMLDocument_t.
+ * @copydetails doc_note_setting_lv
  *
  * @memberof StoichiometryMath_t
  */
@@ -711,7 +703,7 @@ StoichiometryMath_clone (const StoichiometryMath_t *t);
  * Returns a list of XMLNamespaces_t associated with this StoichiometryMath_t
  * structure.
  *
- * @param sm the StoichiometryMath_t structure
+ * @param sm the StoichiometryMath_t structure.
  * 
  * @return pointer to the XMLNamespaces_t structure associated with 
  * this structure
@@ -724,7 +716,7 @@ StoichiometryMath_getNamespaces(StoichiometryMath_t *sm);
 
 
 /**
- * @return the stoichMath of this StoichiometryMath_t.
+ * @return the math of this StoichiometryMath_t as an ASTNode_t.
  *
  * @memberof StoichiometryMath_t
  */
@@ -734,8 +726,8 @@ StoichiometryMath_getMath (const StoichiometryMath_t *t);
 
 
 /**
- * @return true (non-zero) if the stoichMath (or equivalently the formula) of
- * this StoichiometryMath_t is set, false (0) otherwise.
+ * @return @c 1 (true) if the math (or equivalently the formula) of
+ * this StoichiometryMath_t is set, @c 0 (false) otherwise.
  *
  * @memberof StoichiometryMath_t
  */
@@ -762,7 +754,7 @@ StoichiometryMath_setMath (StoichiometryMath_t *t, const ASTNode_t *math);
  * Calculates and returns a UnitDefinition_t that expresses the units
  * returned by the math expression in this StoichiometryMath_t.
  *
- * @param math the StoichiometryMath_t structure to check
+ * @param math the StoichiometryMath_t structure to check.
  *
  * @return A UnitDefinition_t that expresses the units of the math 
  *
@@ -770,18 +762,18 @@ StoichiometryMath_setMath (StoichiometryMath_t *t, const ASTNode_t *math);
  * The units are calculated based on the mathematical expression in the
  * StoichiometryMath_t and the model quantities referenced by
  * <code>&lt;ci&gt;</code> elements used within that expression.  The
- * getDerivedUnitDefinition() method returns the calculated units.
+ * StoichiometryMath_getDerivedUnitDefinition() method returns the calculated units.
  * 
  * @warning Note that it is possible the "math" expression in the
  * StoichiometryMath_t contains pure numbers or parameters with undeclared
  * units.  In those cases, it is not possible to calculate the units of
  * the overall expression without making assumptions.  LibSBML does not
- * make assumptions about the units, and getDerivedUnitDefinition() only
- * returns the units as far as it is able to determine them.  For
+ * make assumptions about the units, and StoichiometryMath_getDerivedUnitDefinition()
+ * only returns the units as far as it is able to determine them.  For
  * example, in an expression <em>X + Y</em>, if <em>X</em> has
  * unambiguously-defined units and <em>Y</em> does not, it will return
  * the units of <em>X</em>.  <strong>It is important that callers also
- * invoke the method</strong> containsUndeclaredUnits() <strong>to
+ * invoke the method StoichiometryMath_containsUndeclaredUnits() to
  * determine whether this situation holds</strong>.  Callers may wish to
  * take suitable actions in those scenarios.
  *
@@ -795,19 +787,19 @@ StoichiometryMath_getDerivedUnitDefinition(StoichiometryMath_t *math);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether 
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether 
  * the math expression of this StoichiometryMath_t contains
  * parameters/numbers with undeclared units.
  *
- * @param math the StoichiometryMath_t structure to check
+ * @param math the StoichiometryMath_t structure to check.
  * 
- * @return @c true if the math expression of this StoichiometryMath_t
+ * @return @c 1 (true) if the math expression of this StoichiometryMath_t
  * includes parameters/numbers 
- * with undeclared units, @c false otherwise.
+ * with undeclared units, @c 0 (false) otherwise.
  *
- * @note A return value of @c true indicates that the UnitDefinition_t
- * returned by getDerivedUnitDefinition() may not accurately represent
- * the units of the expression.
+ * @note a return value of @c 1 (true) indicates that the UnitDefinition_t
+ * returned by StoichiometryMath_getDerivedUnitDefinition() may not 
+ * accurately represent the units of the expression.
  *
  * @see StoichiometryMath_getDerivedUnitDefinition()
  *

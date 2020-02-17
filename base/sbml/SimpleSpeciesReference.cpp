@@ -8,7 +8,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -59,8 +63,6 @@ LIBSBML_CPP_NAMESPACE_BEGIN
 SimpleSpeciesReference::SimpleSpeciesReference (unsigned int level, 
                                                 unsigned int version) :
    SBase ( level, version )
- , mId     ( "" )
- , mName   ( "" )
  , mSpecies( "" )
 {
 }
@@ -69,8 +71,6 @@ SimpleSpeciesReference::SimpleSpeciesReference (unsigned int level,
 /** @cond doxygenLibsbmlInternal */
 SimpleSpeciesReference::SimpleSpeciesReference (SBMLNamespaces *sbmlns) :
    SBase   (sbmlns  )
- , mId     ( "" )
- , mName   ( "" )
  , mSpecies( "" )
 {
   // does not need to load here as this is an inbetween class
@@ -92,8 +92,6 @@ SimpleSpeciesReference::~SimpleSpeciesReference ()
  */
 SimpleSpeciesReference::SimpleSpeciesReference(const SimpleSpeciesReference& orig)
  : SBase     ( orig                    )
- , mId       ( orig.mId )
- , mName     ( orig.mName )
  , mSpecies  ( orig.mSpecies)
 {
 }
@@ -107,8 +105,6 @@ SimpleSpeciesReference& SimpleSpeciesReference::operator=(const SimpleSpeciesRef
   if(&rhs!=this)
   {
     this->SBase::operator =(rhs);
-    mId = rhs.mId;
-    mName = rhs.mName;
     mSpecies = rhs.mSpecies;
   }
 
@@ -156,7 +152,7 @@ SimpleSpeciesReference::getSpecies () const
 
 
 /*
- * @return true if the id of this SBML object is set, false
+ * @return @c true if the id of this SBML object is set, false
  * otherwise.
  */
 bool
@@ -167,7 +163,7 @@ SimpleSpeciesReference::isSetId () const
 
 
 /*
- * @return true if the name of this SBML object is set, false
+ * @return @c true if the name of this SBML object is set, false
  * otherwise.
  */
 bool
@@ -179,7 +175,7 @@ SimpleSpeciesReference::isSetName () const
 
 
 /*
- * @return true if the species for this SimpleSpeciesReference is 
+ * @return @c true if the species for this SimpleSpeciesReference is 
  * set, false otherwise.
  */
 bool
@@ -190,7 +186,7 @@ SimpleSpeciesReference::isSetSpecies () const
 
 
 /*
- * Sets the species of this SimpleSpeciesReference to a copy of sid.
+ * Sets the species of this SimpleSpeciesReference to a copy of @p sid.
  */
 int
 SimpleSpeciesReference::setSpecies (const std::string& sid)
@@ -208,7 +204,7 @@ SimpleSpeciesReference::setSpecies (const std::string& sid)
 
 
 /*
- * Sets the id of this SBML object to a copy of sid.
+ * Sets the id of this SBML object to a copy of @p sid.
  */
 int
 SimpleSpeciesReference::setId (const std::string& sid)
@@ -357,7 +353,7 @@ SimpleSpeciesReference::unsetSpecies ()
   }
 }
 /*
- * @return true if this SpeciesReference is a ModiferSpeciesReference,
+ * @return @c true if this SpeciesReference is a ModiferSpeciesReference,
  * false otherwise.
  */
 bool
@@ -389,6 +385,315 @@ SimpleSpeciesReference::hasRequiredAttributes() const
 }
 
 
+
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this
+ * SimpleSpeciesReference.
+ */
+int
+SimpleSpeciesReference::getAttribute(const std::string& attributeName,
+                                     bool& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this
+ * SimpleSpeciesReference.
+ */
+int
+SimpleSpeciesReference::getAttribute(const std::string& attributeName,
+                                     int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this
+ * SimpleSpeciesReference.
+ */
+int
+SimpleSpeciesReference::getAttribute(const std::string& attributeName,
+                                     double& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this
+ * SimpleSpeciesReference.
+ */
+int
+SimpleSpeciesReference::getAttribute(const std::string& attributeName,
+                                     unsigned int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this
+ * SimpleSpeciesReference.
+ */
+int
+SimpleSpeciesReference::getAttribute(const std::string& attributeName,
+                                     std::string& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "species")
+  {
+    value = getSpecies();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this
+ * SimpleSpeciesReference.
+ */
+//int
+//SimpleSpeciesReference::getAttribute(const std::string& attributeName,
+//                                     const char* value) const
+//{
+//  int return_value = SBase::getAttribute(attributeName, value);
+//
+//  if (return_value == LIBSBML_OPERATION_SUCCESS)
+//  {
+//    return return_value;
+//  }
+//
+//  if (attributeName == "species")
+//  {
+//    value = getSpecies().c_str();
+//    return_value = LIBSBML_OPERATION_SUCCESS;
+//  }
+//
+//  return return_value;
+//}
+//
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Predicate returning @c true if this SimpleSpeciesReference's attribute
+ * "attributeName" is set.
+ */
+bool
+SimpleSpeciesReference::isSetAttribute(const std::string& attributeName) const
+{
+  bool value = SBase::isSetAttribute(attributeName);
+
+  if (attributeName == "species")
+  {
+    value = isSetSpecies();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this
+ * SimpleSpeciesReference.
+ */
+int
+SimpleSpeciesReference::setAttribute(const std::string& attributeName,
+                                     bool value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this
+ * SimpleSpeciesReference.
+ */
+int
+SimpleSpeciesReference::setAttribute(const std::string& attributeName,
+                                     int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this
+ * SimpleSpeciesReference.
+ */
+int
+SimpleSpeciesReference::setAttribute(const std::string& attributeName,
+                                     double value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this
+ * SimpleSpeciesReference.
+ */
+int
+SimpleSpeciesReference::setAttribute(const std::string& attributeName,
+                                     unsigned int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this
+ * SimpleSpeciesReference.
+ */
+int
+SimpleSpeciesReference::setAttribute(const std::string& attributeName,
+                                     const std::string& value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  if (attributeName == "species")
+  {
+    return_value = setSpecies(value);
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this
+ * SimpleSpeciesReference.
+ */
+//int
+//SimpleSpeciesReference::setAttribute(const std::string& attributeName,
+//                                     const char* value)
+//{
+//  int return_value = SBase::setAttribute(attributeName, value);
+//
+//  if (attributeName == "species")
+//  {
+//    return_value = setSpecies(value);
+//  }
+//
+//  return return_value;
+//}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Unsets the value of the "attributeName" attribute of this
+ * SimpleSpeciesReference.
+ */
+int
+SimpleSpeciesReference::unsetAttribute(const std::string& attributeName)
+{
+  int value = SBase::unsetAttribute(attributeName);
+
+  if (attributeName == "species")
+  {
+    value = unsetSpecies();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+/** @cond doxygenLibsbmlInternal */
 /**
  * Subclasses should override this method to get the list of
  * expected attributes.
@@ -419,11 +724,13 @@ SimpleSpeciesReference::addExpectedAttributes(ExpectedAttributes& attributes)
 
   }
 }
+/** @endcond */
 
+/** @cond doxygenLibsbmlInternal */
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 SimpleSpeciesReference::readAttributes (const XMLAttributes& attributes,
@@ -447,8 +754,10 @@ SimpleSpeciesReference::readAttributes (const XMLAttributes& attributes,
     break;
   }
 }
+/** @endcond */
 
 
+/** @cond doxygenLibsbmlInternal */
 void
 SimpleSpeciesReference::readL1Attributes (const XMLAttributes& attributes)
 {
@@ -461,8 +770,10 @@ SimpleSpeciesReference::readL1Attributes (const XMLAttributes& attributes)
   const string s = (version == 1) ? "specie" : "species";
   attributes.readInto(s , mSpecies, getErrorLog(), true, getLine(), getColumn());
 }
+/** @endcond */
 
 
+/** @cond doxygenLibsbmlInternal */
 void
 SimpleSpeciesReference::readL2Attributes (const XMLAttributes& attributes)
 {
@@ -501,24 +812,41 @@ SimpleSpeciesReference::readL2Attributes (const XMLAttributes& attributes)
   }
 
 }
+/** @endcond */
 
 
+/** @cond doxygenLibsbmlInternal */
 void
 SimpleSpeciesReference::readL3Attributes (const XMLAttributes& attributes)
 {
   const unsigned int level   = getLevel  ();
   const unsigned int version = getVersion();
-  //
-  // id: SId  { use="optional" }  (L2v2->)
-  //
-  bool assigned = attributes.readInto("id", mId, getErrorLog(), false, getLine(), getColumn());
-  if (assigned && mId.size() == 0)
+
+  bool assigned;
+  
+  // for l3v2 sbase will read this as generically optional
+  // we want to log errors relating to the specific object
+  if (version == 1)
   {
-    logEmptyString("id", level, version, "<speciesReference>");
-  }
-  if (!SyntaxChecker::isValidInternalSId(mId)) 
-  {
-    logError(InvalidIdSyntax, level, version, "The id '" + mId + "' does not conform to the syntax.");
+    //
+    // id: SId  { use="optional" }  (L2v2->)
+    //
+    assigned = attributes.readInto("id", mId, getErrorLog(), false, 
+                                              getLine(), getColumn());
+    if (assigned && mId.size() == 0)
+    {
+      logEmptyString("id", level, version, "<speciesReference>");
+    }
+    if (!SyntaxChecker::isValidInternalSId(mId)) 
+    {
+      logError(InvalidIdSyntax, level, version, "The id '" + mId + "' does not conform to the syntax.");
+    }
+
+    //
+    // name: string  { use="optional" }  (L2v2->)
+    //
+    attributes.readInto("name" , mName, getErrorLog(), false, 
+                                        getLine(), getColumn());
   }
 
   //
@@ -546,11 +874,6 @@ SimpleSpeciesReference::readL3Attributes (const XMLAttributes& attributes)
                      + elplusid + ".");
   }
  
-  //
-  // name: string  { use="optional" }  (L2v2->)
-  //
-  attributes.readInto("name" , mName, getErrorLog(), false, getLine(), getColumn());
-
 }
 /** @endcond */
 
@@ -558,7 +881,7 @@ SimpleSpeciesReference::readL3Attributes (const XMLAttributes& attributes)
 /** @cond doxygenLibsbmlInternal */
 /*
  * Subclasses should override this method to write their XML attributes
- * to the XMLOutputStream.  Be sure to call your parents implementation
+ * to the XMLOutputStream.  Be sure to call your parent's implementation
  * of this method as well.
  */
 void
@@ -570,31 +893,29 @@ SimpleSpeciesReference::writeAttributes (XMLOutputStream& stream) const
   const unsigned int version = getVersion();
 
 
-  if (level > 1)
+  //
+  // sboTerm: SBOTerm { use="optional" }  (L2v2->)
+  //
+  //
+  // sboTerm for L2V3 or later is written in SBase::writeAttributes()
+  //
+  if ( (level == 2) && (version == 2) )
   {
-    if (!(level == 2 && version == 1))
-    {
-      //
-      // sboTerm: SBOTerm { use="optional" }  (L2v2->)
-      //
-      //
-      // sboTerm for L2V3 or later is written in SBase::writeAttributes()
-      //
-      if ( (level == 2) && (version == 2) )
-      {
-        SBO::writeTerm(stream, mSBOTerm);
-      }
+    SBO::writeTerm(stream, mSBOTerm);
+  }
+  
+  if ((level == 2 && version > 1) || (level == 3 && version == 1))
+  {
+    // for L3V2 and above SBase will write this out
+    //
+    // id: SId  { use="optional" }  (L2v2->)
+    //
+    stream.writeAttribute("id" , mId);
 
-      //
-      // id: SId  { use="optional" }  (L2v2->)
-      //
-      stream.writeAttribute("id" , mId);
-
-      //
-      // name: string  { use="optional" }  (L2v2->)
-      //
-      stream.writeAttribute("name" , mName);
-    }
+    //
+    // name: string  { use="optional" }  (L2v2->)
+    //
+    stream.writeAttribute("name" , mName);
   }
 
   //

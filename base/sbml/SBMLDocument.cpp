@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -43,6 +47,7 @@
 
 #include <sbml/validator/SBMLInternalValidator.h>
 #include <sbml/validator/StrictUnitConsistencyValidator.h>
+#include <sbml/validator/UnitConsistencyValidator.h>
 
 #include <sbml/Model.h>
 #include <sbml/SBMLErrorLog.h>
@@ -298,6 +303,10 @@ SBMLDocument& SBMLDocument::operator=(const SBMLDocument& rhs)
     mVersion                           = rhs.mVersion;
     mLocationURI                       = rhs.mLocationURI;
 
+    if (mInternalValidator != NULL)
+    {
+      delete mInternalValidator;
+    }
     mInternalValidator = (SBMLInternalValidator*)rhs.mInternalValidator->clone();
     mInternalValidator->setDocument(this);
     mRequiredAttrOfUnknownPkg = rhs.mRequiredAttrOfUnknownPkg;
@@ -364,6 +373,50 @@ SBMLDocument::getModel ()
   return mModel;
 }
 
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Returns the number of "elementName" in this Reaction.
+ */
+unsigned int
+SBMLDocument::getNumObjects(const std::string& elementName)
+{
+  unsigned int n = 0;
+
+  if (elementName == "model")
+  {
+    if (isSetModel())
+    {
+      return 1;
+    }
+  }
+
+  return n;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Returns the nth object of "objectName" in this Reaction.
+ */
+SBase*
+SBMLDocument::getObject(const std::string& elementName, unsigned int index)
+{
+  SBase* obj = NULL;
+
+  if (elementName == "model")
+  {
+    return getModel();
+  }
+
+  return obj;
+}
+
+/** @endcond */
 
 SBase* 
 SBMLDocument::getElementBySId(const std::string& id)
@@ -501,92 +554,40 @@ SBMLDocument::setLevelAndVersion (unsigned int level, unsigned int version,
     return false;
 }
 
+/** @cond doxygenLibsbmlInternal */
+
+/* 
+ * function to set level to 0 on a doc that was just been created to read in to
+ * the SBMLReader will only do this if the file is found to be invalid
+ * this will allow for testing for an SBMLDocument without
+ * relying on it having a model to be valid 
+ * (in L3V2 a missing model will be valid) 
+ */
+void 
+SBMLDocument::setInvalidLevel()
+{
+  mLevel = 0;
+  mVersion = 0;
+}
+
+/** @endcond */
 
 /** @cond doxygenLibsbmlInternal */
 void 
-SBMLDocument::updateSBMLNamespace(const std::string&, unsigned int level,
+SBMLDocument::updateSBMLNamespace(const std::string& package, unsigned int level,
                             unsigned int version)
 {
-  // is there a prefix on the sbml namespace
-  std::string currentSBMLCoreURI = 
-                        SBMLNamespaces::getSBMLNamespaceURI(getLevel(), 
-                                                            getVersion()); 
-  std::string currentSBMLCorePrefix = mSBMLNamespaces->getNamespaces()->
-    getPrefix(currentSBMLCoreURI);
-
-  //bool sbmlDecl = false;
-
-  //if (currentSBMLCorePrefix.empty() == false)
-  //  sbmlDecl = true;
-
-  mLevel   = level;
-  mVersion = version;
-
-  if (mSBMLNamespaces == NULL) 
-    mSBMLNamespaces = new SBMLNamespaces(mLevel, mVersion);
-
-  std::string uri;
-
-  switch (mLevel)
+  SBase::updateSBMLNamespace(package, level, version);
+  if (package.empty() || package == "core")
   {
-    case 1:
-      uri = SBML_XMLNS_L1;
-      break;
-    case 2:
-      switch (mVersion)
-      {
-      case 1:
-        uri = SBML_XMLNS_L2V1;
-        break;
-      case 2:
-        uri = SBML_XMLNS_L2V2;
-        break;
-      case 3:
-        uri = SBML_XMLNS_L2V3;
-        break;
-      case 4:
-        uri = SBML_XMLNS_L2V4;
-        break;
-      case 5:
-      default:
-        uri = SBML_XMLNS_L2V5;
-        break;
-      }
-      break;
-    case 3:
-    default:
-      switch (mVersion)
-      {
-      case 1:
-      default:
-        uri = SBML_XMLNS_L3V1;
-        break;
-      }
-      break;
+    mLevel = level;
+    mVersion = version;
   }
 
-
-  mSBMLNamespaces->getNamespaces()->remove(currentSBMLCorePrefix);
-  mSBMLNamespaces->getNamespaces()->add(uri, currentSBMLCorePrefix);
-  // it is possible that the ns exists unprefixed as well as prefixed
-  // the code will return the first it encounters
-  // so check if the original ns is still there
-  if (mSBMLNamespaces->getNamespaces()->containsUri(currentSBMLCoreURI) == true)
+  if (isSetModel())
   {
-    currentSBMLCorePrefix = mSBMLNamespaces->getNamespaces()
-      ->getPrefix(currentSBMLCoreURI);
-    mSBMLNamespaces->getNamespaces()->remove(currentSBMLCorePrefix);
-    mSBMLNamespaces->getNamespaces()->add(uri, currentSBMLCorePrefix);
+    mModel->updateSBMLNamespace(package, level, version);
   }
-
-
-  //if (sbmlDecl)
-  //{
-  //  mSBMLNamespaces->getNamespaces()->add(uri, currentSBMLCorePrefix);
-  //}
-  mSBMLNamespaces->setLevel(mLevel);
-  mSBMLNamespaces->setVersion(mVersion);
-  setElementNamespace(uri); // this needs to propagate
 }
 /** @endcond */
 
@@ -624,7 +625,7 @@ SBMLDocument::setModel (const Model* m)
       mModel->connectToParent(this);
     }
 
-    if (getURI() != mModel->getURI()) 
+    if (mModel != NULL && getURI() != mModel->getURI()) 
     {
       mModel->setElementNamespace(getURI());
     }
@@ -639,7 +640,7 @@ SBMLDocument::setModel (const Model* m)
  * SBMLDocument and returns it.
  */
 Model*
-SBMLDocument::createModel (const std::string& sid)
+SBMLDocument::createModel (const std::string sid)
 {
   if (mModel != NULL) delete mModel;
 
@@ -888,6 +889,12 @@ SBMLDocument::checkInternalConsistency()
   return numErrors;
 }
 
+unsigned int
+getLevelVersionSeverity(unsigned int errorId, unsigned int level, unsigned int version)
+{
+  return SBMLError(errorId, level, version).getSeverity();
+}
+
 /*
  * Performs a set of semantic consistency checks on the document to establish
  * whether it is compatible with L1 and can be converted.  Query
@@ -896,9 +903,47 @@ SBMLDocument::checkInternalConsistency()
  * @return the number of failed checks (errors) encountered.
  */
 unsigned int
-SBMLDocument::checkL1Compatibility ()
+SBMLDocument::checkL1Compatibility (bool inConversion)
 {
-  return mInternalValidator->checkL1Compatibility();
+  unsigned int nerrors =  mInternalValidator->checkL1Compatibility();
+  unsigned int unit_errors = 0;
+
+  if (inConversion == false)
+  {
+    UnitConsistencyValidator unit_validator;
+    unit_validator.init();
+    unit_errors = unit_validator.validate(*this);
+    if (unit_errors > 0)
+    {
+      // need to check whether these are what would be warnings
+      // and only log the error if there would be a units error
+      bool logUnitError = false;
+      std::list<SBMLError> errors = unit_validator.getFailures();
+      std::list<SBMLError>::iterator it = errors.begin();
+
+      while(!logUnitError && it != errors.end())
+      {
+        SBMLError err = (SBMLError)(*it);
+        unsigned int l2v1_sev = getLevelVersionSeverity(err.getErrorId(), 1, 2);
+        if (l2v1_sev == LIBSBML_SEV_ERROR)
+        {
+          logUnitError = true;
+        }
+        it++;
+      }
+      if (logUnitError)
+      {
+        getErrorLog()->logError(StrictUnitsRequiredInL1, getLevel(), getVersion());
+        unit_errors = 1;
+      }
+      else
+      {
+        unit_errors = 0;
+      }
+    }
+  }
+
+  return nerrors + unit_errors;
 }
 
 
@@ -910,9 +955,47 @@ SBMLDocument::checkL1Compatibility ()
  * @return the number of failed checks (errors) encountered.
  */
 unsigned int
-SBMLDocument::checkL2v1Compatibility ()
+SBMLDocument::checkL2v1Compatibility (bool inConversion)
 {
-  return mInternalValidator->checkL2v1Compatibility();
+  unsigned int nerrors = mInternalValidator->checkL2v1Compatibility();
+  unsigned int unit_errors = 0;
+
+  if (inConversion == false)
+  {
+    UnitConsistencyValidator unit_validator;
+    unit_validator.init();
+    unit_errors = unit_validator.validate(*this);
+    if (unit_errors > 0)
+    {
+      // need to check whether these are what would be warnings
+      // and only log the error if there would be a units error
+      bool logUnitError = false;
+      std::list<SBMLError> errors = unit_validator.getFailures();
+      std::list<SBMLError>::iterator it = errors.begin();
+
+      while(!logUnitError && it != errors.end())
+      {
+        SBMLError err = (SBMLError)(*it);
+        unsigned int l2v1_sev = getLevelVersionSeverity(err.getErrorId(), 2, 1);
+        if (l2v1_sev == LIBSBML_SEV_ERROR)
+        {
+          logUnitError = true;
+        }
+        it++;
+      }
+      if (logUnitError)
+      {
+        getErrorLog()->logError(StrictUnitsRequiredInL2v1, getLevel(), getVersion());
+        unit_errors = 1;
+      }
+      else
+      {
+        unit_errors = 0;
+      }
+    }
+  }
+
+  return nerrors + unit_errors;
 }
 
 
@@ -924,9 +1007,47 @@ SBMLDocument::checkL2v1Compatibility ()
  * @return the number of failed checks (errors) encountered.
  */
 unsigned int
-SBMLDocument::checkL2v2Compatibility ()
+SBMLDocument::checkL2v2Compatibility (bool inConversion)
 {
-  return mInternalValidator->checkL2v2Compatibility();
+  unsigned int nerrors =  mInternalValidator->checkL2v2Compatibility();
+  unsigned int unit_errors = 0;
+
+  if (inConversion == false)
+  {
+    UnitConsistencyValidator unit_validator;
+    unit_validator.init();
+    unit_errors = unit_validator.validate(*this);
+    if (unit_errors > 0)
+    {
+      // need to check whether these are what would be warnings
+      // and only log the error if there would be a units error
+      bool logUnitError = false;
+      std::list<SBMLError> errors = unit_validator.getFailures();
+      std::list<SBMLError>::iterator it = errors.begin();
+
+      while(!logUnitError && it != errors.end())
+      {
+        SBMLError err = (SBMLError)(*it);
+        unsigned int l2v1_sev = getLevelVersionSeverity(err.getErrorId(), 1, 2);
+        if (l2v1_sev == LIBSBML_SEV_ERROR)
+        {
+          logUnitError = true;
+        }
+        it++;
+      }
+      if (logUnitError)
+      {
+        getErrorLog()->logError(StrictUnitsRequiredInL2v2, getLevel(), getVersion());
+        unit_errors = 1;
+      }
+      else
+      {
+        unit_errors = 0;
+      }
+    }
+  }
+
+  return nerrors + unit_errors;
 }
 
 
@@ -938,9 +1059,47 @@ SBMLDocument::checkL2v2Compatibility ()
  * @return the number of failed checks (errors) encountered.
  */
 unsigned int
-SBMLDocument::checkL2v3Compatibility ()
+SBMLDocument::checkL2v3Compatibility (bool inConversion)
 {
-  return mInternalValidator->checkL2v3Compatibility();
+  unsigned int nerrors =  mInternalValidator->checkL2v3Compatibility();
+  unsigned int unit_errors = 0;
+
+  if (inConversion == false)
+  {
+    UnitConsistencyValidator unit_validator;
+    unit_validator.init();
+    unit_errors = unit_validator.validate(*this);
+    if (unit_errors > 0)
+    {
+      // need to check whether these are what would be warnings
+      // and only log the error if there would be a units error
+      bool logUnitError = false;
+      std::list<SBMLError> errors = unit_validator.getFailures();
+      std::list<SBMLError>::iterator it = errors.begin();
+
+      while(!logUnitError && it != errors.end())
+      {
+        SBMLError err = (SBMLError)(*it);
+        unsigned int l2v1_sev = getLevelVersionSeverity(err.getErrorId(), 1, 2);
+        if (l2v1_sev == LIBSBML_SEV_ERROR)
+        {
+          logUnitError = true;
+        }
+        it++;
+      }
+      if (logUnitError)
+      {
+        getErrorLog()->logError(StrictUnitsRequiredInL2v3, getLevel(), getVersion());
+        unit_errors = 1;
+      }
+      else
+      {
+        unit_errors = 0;
+      }
+    }
+  }
+
+  return nerrors + unit_errors;
 }
 
 
@@ -960,7 +1119,21 @@ SBMLDocument::checkL2v4Compatibility ()
 
 /*
  * Performs a set of semantic consistency checks on the document to establish
- * whether it is compatible with L2v1 and can be converted.  Query
+ * whether it is compatible with L2v4 and can be converted.  Query
+ * the results by calling getNumErrors() and getError().
+ *
+ * @return the number of failed checks (errors) encountered.
+ */
+unsigned int
+SBMLDocument::checkL2v5Compatibility ()
+{
+  return mInternalValidator->checkL2v5Compatibility();
+}
+
+
+/*
+ * Performs a set of semantic consistency checks on the document to establish
+ * whether it is compatible with L3v1 and can be converted.  Query
  * the results by calling getNumErrors() and getError().
  *
  * @return the number of failed checks (errors) encountered.
@@ -969,6 +1142,20 @@ unsigned int
 SBMLDocument::checkL3v1Compatibility ()
 {
   return mInternalValidator->checkL3v1Compatibility();
+}
+
+
+/*
+ * Performs a set of semantic consistency checks on the document to establish
+ * whether it is compatible with L3v2 and can be converted.  Query
+ * the results by calling getNumErrors() and getError().
+ *
+ * @return the number of failed checks (errors) encountered.
+ */
+unsigned int
+SBMLDocument::checkL3v2Compatibility()
+{
+  return mInternalValidator->checkL3v2Compatibility();
 }
 
 
@@ -1127,8 +1314,8 @@ SBMLDocument::createObject (XMLInputStream& stream)
       if (getLevel() < 3 || (getLevel() == 3 && getVersion() < 2)) 
       {
         logError(NotSchemaConformant, getLevel(), getVersion(),
-	        "Only one <model> element is permitted inside a "
-	        "document.");
+          "Only one <model> element is permitted inside a "
+          "document.");
       }
       else
       {
@@ -1292,9 +1479,7 @@ SBMLDocument::addUnknownPackageRequired(const std::string& pkgURI,
 {
   std::string value = (flag) ? "true" : "false";
 
-  mRequiredAttrOfUnknownPkg.add("required", value, pkgURI, prefix);
-
-  return LIBSBML_OPERATION_SUCCESS;
+  return mRequiredAttrOfUnknownPkg.add("required", value, pkgURI, prefix);
 }
 /** @endcond */
 
@@ -1413,7 +1598,7 @@ SBMLDocument::isDisabledIgnoredPackage(const std::string& pkgURI)
 bool
 SBMLDocument::hasUnknownPackage(const std::string& pkgURI)
 {
-  // has this package been added to teh list of unknown required attributes
+  // has this package been added to the list of unknown required attributes
   std::string req = mRequiredAttrOfUnknownPkg.getValue("required", pkgURI);
   if (!req.empty()) return true;
 
@@ -1498,7 +1683,7 @@ SBMLDocument::addExpectedAttributes(ExpectedAttributes& attributes)
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 SBMLDocument::readAttributes (const XMLAttributes& attributes,
@@ -1548,6 +1733,32 @@ SBMLDocument::readAttributes (const XMLAttributes& attributes,
 
       if (sbmlext && sbmlext->isEnabled())
       {
+        // if we are in l3v2 and there exists an l3v2 version for the package
+        // we wont accept the l3v1 version
+        if (sbmlext->getVersion(uri) < 2 && this->getVersion() > 1)
+        {
+          std::string dummyURI;
+          dummyURI.assign(uri);
+          size_t pos = dummyURI.find("level3");
+          if (pos != std::string::npos)
+          {
+            dummyURI.replace(pos, 15, "level3/version2");
+            if (sbmlext->getVersion(dummyURI) == 2)
+            {
+              ostringstream msg;
+
+              msg << "Package '" << xmlns->getPrefix(i) <<
+                "' has a L3V2V1 specification which must be used in an L3V2 document.";
+              logError(InvalidPackageLevelVersion, mLevel, mVersion, msg.str());
+              return;
+
+
+            }
+          }
+        }
+
+
+
         const std::string &prefix = xmlns->getPrefix(i);
         SBaseExtensionPoint extPoint(getPackageName(), SBML_DOCUMENT);
         const SBasePluginCreatorBase* sbPluginCreator = sbmlext->getSBasePluginCreator(extPoint);
@@ -1572,7 +1783,7 @@ SBMLDocument::readAttributes (const XMLAttributes& attributes,
         //     if the value is true.
         //  4) Added a check that the uri could possibly be a l3 ns
         //
-        size_t pos = uri.find("http://www.sbml.org/sbml/level3/version1");
+        size_t pos = uri.find("http://www.sbml.org/sbml/level3/version");
         std::string requiredAttr = attributes.getValue("required",uri);
         if (pos == 0 && !requiredAttr.empty())
         {
@@ -1635,7 +1846,7 @@ SBMLDocument::readAttributes (const XMLAttributes& attributes,
   }
   else if (mLevel == 3)
   {
-    if (mVersion > 1)
+    if (mVersion > 2)
     {
       logError(InvalidSBMLLevelVersion);
     }
@@ -1755,6 +1966,20 @@ SBMLDocument::readAttributes (const XMLAttributes& attributes,
         }
         break;
       }
+      else if (!strcmp(ns->getURI(n).c_str(), 
+                "http://www.sbml.org/sbml/level3/version2/core"))
+      {
+        match = 1;
+        if (mLevel != 3 || !levelRead)
+        {
+          logError(MissingOrInconsistentLevel);
+        }
+        if (mVersion != 2 || !versionRead)
+        {
+          logError(MissingOrInconsistentVersion);
+        }
+        break;
+      }
     }
     if (match == 0)
     {
@@ -1803,7 +2028,7 @@ SBMLDocument::readAttributes (const XMLAttributes& attributes,
 /** @cond doxygenLibsbmlInternal */
 /*
  * Subclasses should override this method to write their XML attributes
- * to the XMLOutputStream.  Be sure to call your parents implementation
+ * to the XMLOutputStream.  Be sure to call your parent's implementation
  * of this method as well.
  */
 void
@@ -1828,14 +2053,39 @@ SBMLDocument::writeAttributes (XMLOutputStream& stream) const
   // level: positiveInteger  { use="required" fixed="1" }  (L1v1)
   // level: positiveInteger  { use="required" fixed="2" }  (L2v1)
   //
-  stream.writeAttribute("level", mLevel);
+
+  /* when a non xml model is read in level and version are set to 0
+   * is we were for some obscure reason writing out the SBMLDocument that 
+   * was created - we dont want to use l0v0
+   */
+  if (mLevel > 0)
+  {
+    stream.writeAttribute("level", mLevel);
+  }
+  else
+  {
+    stream.writeAttribute("level", getDefaultLevel());
+  }
 
   //
   // version: positiveInteger  { use="required" fixed="1" }  (L1v1, L2v1)
   // version: positiveInteger  { use="required" fixed="2" }  (L1v2, L2v2)
   // version: positiveInteger  { use="required" fixed="3" }  (L2v3)
   //
-  stream.writeAttribute("version", mVersion);
+
+  /* when a non xml model is read in level and version are set to 0
+  * is we were for some obscure reason writing out the SBMLDocument that
+  * was created - we dont want to use l0v0
+  */
+  if (mVersion > 0)
+  {
+    stream.writeAttribute("version", mVersion);
+  }
+  else
+  {
+    stream.writeAttribute("version", getDefaultVersion());
+  }
+
 
 
   //
@@ -1874,13 +2124,24 @@ SBMLDocument::writeAttributes (XMLOutputStream& stream) const
 /*
  *
  * Subclasses should override this method to write their xmlns attriubutes
- * (if any) to the XMLOutputStream.  Be sure to call your parents implementation
+ * (if any) to the XMLOutputStream.  Be sure to call your parent's implementation
  * of this method as well.
  *
  */
 void
 SBMLDocument::writeXMLNS (XMLOutputStream& stream) const
 {
+  /* when a non xml model is read in level and version are set to 0
+  * is we were for some obscure reason writing out the SBMLDocument that
+  * was created - we dont want to use l0v0
+  */
+  unsigned int level = mLevel;
+  unsigned int version = mVersion;
+  if (mLevel == 0 && mVersion == 0)
+  {
+    level = getDefaultLevel();
+    version = getDefaultVersion();
+  }
   // need to check that we have indeed a namespace set!
   XMLNamespaces * thisNs = this->getNamespaces();
 
@@ -1888,19 +2149,19 @@ SBMLDocument::writeXMLNS (XMLOutputStream& stream) const
   if (thisNs == NULL)
   {
     XMLNamespaces xmlns;
-    xmlns.add(SBMLNamespaces::getSBMLNamespaceURI(mLevel, mVersion));
+    xmlns.add(SBMLNamespaces::getSBMLNamespaceURI(level, version));
 
     mSBMLNamespaces->setNamespaces(&xmlns);
     thisNs = getNamespaces();
   }
   else if (thisNs->getLength() == 0)
   {
-     thisNs->add(SBMLNamespaces::getSBMLNamespaceURI(mLevel, mVersion));
+     thisNs->add(SBMLNamespaces::getSBMLNamespaceURI(level, version));
   }
   else
   {
     // check that there is an sbml namespace
-    std::string sbmlURI = SBMLNamespaces::getSBMLNamespaceURI(mLevel, mVersion);
+    std::string sbmlURI = SBMLNamespaces::getSBMLNamespaceURI(level, version);
     std::string sbmlPrefix = thisNs->getPrefix(sbmlURI);
     if (thisNs->hasNS(sbmlURI, sbmlPrefix) == false)
     {
@@ -1938,7 +2199,7 @@ SBMLDocument::writeXMLNS (XMLOutputStream& stream) const
 /** @cond doxygenLibsbmlInternal */
 /*
  * Subclasses should override this method to write out their contained
- * SBML objects as XML elements.  Be sure to call your parents
+ * SBML objects as XML elements.  Be sure to call your parent's
  * implementation of this method as well.
  */
 void
@@ -2287,9 +2548,25 @@ SBMLDocument_checkL2v4Compatibility (SBMLDocument_t *d)
 
 LIBSBML_EXTERN
 unsigned int 
+SBMLDocument_checkL2v5Compatibility (SBMLDocument_t *d)
+{
+  return (d != NULL) ? d->checkL2v5Compatibility() : SBML_INT_MAX;
+}
+
+
+LIBSBML_EXTERN
+unsigned int 
 SBMLDocument_checkL3v1Compatibility (SBMLDocument_t *d)
 {
   return (d != NULL) ? d->checkL3v1Compatibility() : SBML_INT_MAX;
+}
+
+
+LIBSBML_EXTERN
+unsigned int
+SBMLDocument_checkL3v2Compatibility(SBMLDocument_t *d)
+{
+  return (d != NULL) ? d->checkL3v2Compatibility() : SBML_INT_MAX;
 }
 
 

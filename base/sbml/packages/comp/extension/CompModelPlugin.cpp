@@ -8,7 +8,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -121,7 +125,7 @@ CompModelPlugin::createObject(XMLInputStream& stream)
       if (mListOfSubmodels.size() != 0)
       {
         getErrorLog()->logPackageError("comp", CompOneListOfOnModel, 
-          getPackageVersion(), getLevel(), getVersion());
+          getPackageVersion(), getLevel(), getVersion(), "", getLine(), getColumn());
       }
 
       object = &mListOfSubmodels;
@@ -145,7 +149,7 @@ CompModelPlugin::createObject(XMLInputStream& stream)
       if (mListOfPorts.size() != 0)
       {
         getErrorLog()->logPackageError("comp", CompOneListOfOnModel, 
-          getPackageVersion(), getLevel(), getVersion());
+          getPackageVersion(), getLevel(), getVersion(), "", getLine(), getColumn());
       }
 
       object = &mListOfPorts;
@@ -217,6 +221,13 @@ List*
 
 const ListOfSubmodels*
 CompModelPlugin::getListOfSubmodels () const
+{
+  return &mListOfSubmodels;
+}
+
+
+ListOfSubmodels*
+CompModelPlugin::getListOfSubmodels()
 {
   return &mListOfSubmodels;
 }
@@ -308,10 +319,20 @@ CompModelPlugin::createSubmodel ()
 
 
 /*
- * Returns the listofports object that holds all ports.
- */ 
+ * Returns the ListOfPorts from this CompModelPlugin.
+ */
 const ListOfPorts*
-CompModelPlugin::getListOfPorts () const
+CompModelPlugin::getListOfPorts() const
+{
+  return &mListOfPorts;
+}
+
+
+/*
+ * Returns the ListOfPorts from this CompModelPlugin.
+ */
+ListOfPorts*
+CompModelPlugin::getListOfPorts()
 {
   return &mListOfPorts;
 }
@@ -545,7 +566,8 @@ Model* CompModelPlugin::flattenModel() const
     success = flat->appendFrom(submodel);
     if (success != LIBSBML_OPERATION_SUCCESS) {
       string error = "Unable to flatten model in CompModelPlugin::flattenModel: appending elements from the submodel '" + submodel->getId() + "' to the elements of the parent model failed.";
-      doc->getErrorLog()->logPackageError("comp", CompModelFlatteningFailed, getPackageVersion(), getLevel(), getVersion(), error);
+      doc->getErrorLog()->logPackageError("comp", CompModelFlatteningFailed, 
+        getPackageVersion(), getLevel(), getVersion(), error, getLine(), getColumn());
       delete flat;
       return NULL;
     }
@@ -578,13 +600,13 @@ Model* CompModelPlugin::flattenModel() const
   flatplug->clearReplacedElements();
   flatplug->unsetReplacedBy();
   
-  List* allelements = flat->getAllElements();
+  List* allElements = flat->getAllElements();
   
   vector<SBase*> nonReplacedElements;
   
-  for (unsigned int el=0; el<allelements->getSize(); el++) 
+  for (ListIterator iter = allElements->begin(); iter != allElements->end(); ++iter)
   {
-    SBase* element = static_cast<SBase*>(allelements->get(el));
+    SBase* element = static_cast<SBase*>(*iter);
     int type = element->getTypeCode();
     if (!(type==SBML_COMP_REPLACEDBY ||
           type==SBML_COMP_REPLACEDELEMENT ||
@@ -595,7 +617,7 @@ Model* CompModelPlugin::flattenModel() const
   }
 
   // delete the list
-  delete allelements;
+  delete allElements;
 
   for (unsigned int el=0; el<nonReplacedElements.size(); el++) 
   {
@@ -780,17 +802,17 @@ CompModelPlugin::instantiateSubmodels()
 int CompModelPlugin::saveAllReferencedElements()
 {
   set<SBase*> norefs;
-  return saveAllReferencedElements(norefs, norefs);
+  return saveAllReferencedElements(norefs, norefs, getSBMLDocument());
 }
 
-int CompModelPlugin::saveAllReferencedElements(set<SBase*> uniqueRefs, set<SBase*> replacedBys)
+int CompModelPlugin::saveAllReferencedElements(set<SBase*> uniqueRefs, set<SBase*> replacedBys, SBMLDocument* doc)
 {
-  SBMLDocument* doc = getSBMLDocument();
   Model* model = static_cast<Model*>(getParentSBMLObject());
   if (model==NULL) {
     if (doc) {
       string error = "Unable to discover any referenced elements in CompModelPlugin::saveAllReferencedElements: no Model parent of the 'comp' model plugin.";
-      doc->getErrorLog()->logPackageError("comp", CompModelFlatteningFailed, getPackageVersion(), getLevel(), getVersion(), error);
+      doc->getErrorLog()->logPackageError("comp", CompModelFlatteningFailed, 
+        getPackageVersion(), getLevel(), getVersion(), error, getLine(), getColumn());
     }
     return LIBSBML_OPERATION_FAILED;
   }
@@ -805,8 +827,12 @@ int CompModelPlugin::saveAllReferencedElements(set<SBase*> uniqueRefs, set<SBase
     modname = "the model '" + model->getId() + "'";
   }
   set<SBase*> todelete;
-  for (unsigned int el=0; el<allElements->getSize(); el++) {
-    SBase* element = static_cast<SBase*>(allElements->get(el));
+  //for (unsigned int el=0; el<allElements->getSize(); el++) {
+  //  SBase* element = static_cast<SBase*>(allElements->get(el));
+  // Using ListIterator is faster
+  for (ListIterator iter = allElements->begin(); iter != allElements->end(); ++iter)
+  {
+    SBase* element = static_cast<SBase*>(*iter);
     int type = element->getTypeCode();
     if (type==SBML_COMP_DELETION ||
         type==SBML_COMP_REPLACEDBY ||
@@ -879,7 +905,8 @@ int CompModelPlugin::saveAllReferencedElements(set<SBase*> uniqueRefs, set<SBase
                   error += "with the metaId '" + rbParent->getMetaId() + "'";
                 }
                 error += " has a <replacedBy> child and is also pointed to by a <port>, <deletion>, <replacedElement>, or one or more <replacedBy> objects.";
-                doc->getErrorLog()->logPackageError("comp", CompNoMultipleReferences, getPackageVersion(), getLevel(), getVersion(), error);
+                doc->getErrorLog()->logPackageError("comp", CompNoMultipleReferences, 
+                  getPackageVersion(), getLevel(), getVersion(), error, getLine(), getColumn());
               }
               delete allElements;
               return LIBSBML_OPERATION_FAILED;
@@ -913,7 +940,8 @@ int CompModelPlugin::saveAllReferencedElements(set<SBase*> uniqueRefs, set<SBase
                 else if (direct->isSetMetaId()) {
                   error += "with the metaId '" + direct->getMetaId() + "'.";
                 }
-                doc->getErrorLog()->logPackageError("comp", CompNoMultipleReferences, getPackageVersion(), getLevel(), getVersion(), error);
+                doc->getErrorLog()->logPackageError("comp", CompNoMultipleReferences, 
+                  getPackageVersion(), getLevel(), getVersion(), error, getLine(), getColumn());
               }
               delete allElements;
               return LIBSBML_OPERATION_FAILED;
@@ -937,7 +965,7 @@ int CompModelPlugin::saveAllReferencedElements(set<SBase*> uniqueRefs, set<SBase
     if (subplug==NULL) {
       return LIBSBML_OPERATION_FAILED;
     }
-    ret = subplug->saveAllReferencedElements(uniqueRefs, replacedBys);
+    ret = subplug->saveAllReferencedElements(uniqueRefs, replacedBys, doc);
     if (ret != LIBSBML_OPERATION_SUCCESS) {
       return ret;
     }
@@ -954,7 +982,8 @@ CompModelPlugin::renameAllIDsAndPrepend(const std::string& prefix)
   if (model==NULL) {
     if (doc) {
       string error = "Unable to rename elements in CompModelPlugin::renameAllIDsAndPrepend: no parent model could be found for the given 'comp' model plugin element.";
-      doc->getErrorLog()->logPackageError("comp", CompModelFlatteningFailed, getPackageVersion(), getLevel(), getVersion(), error);
+      doc->getErrorLog()->logPackageError("comp", CompModelFlatteningFailed, 
+        getPackageVersion(), getLevel(), getVersion(), error, getLine(), getColumn());
     }
     return LIBSBML_INVALID_OBJECT;
   }
@@ -969,7 +998,7 @@ CompModelPlugin::renameAllIDsAndPrepend(const std::string& prefix)
         stringstream error;
         error << "Unable to rename elements in CompModelPlugin::renameAllIDsAndPrepend: no valid submodel number " << sm << "for model " << model->getId();
         doc->getErrorLog()->logPackageError("comp", CompModelFlatteningFailed,
-          getPackageVersion(), getLevel(), getVersion(), error.str());
+          getPackageVersion(), getLevel(), getVersion(), error.str(), getLine(), getColumn());
       }
       return LIBSBML_OPERATION_FAILED;
     }
@@ -978,7 +1007,7 @@ CompModelPlugin::renameAllIDsAndPrepend(const std::string& prefix)
         stringstream error;
         error << "Unable to rename elements in CompModelPlugin::renameAllIDsAndPrepend: submodel number " << sm << "for model " << model->getId() << " is invalid: it has no 'id' attribute set.";
         doc->getErrorLog()->logPackageError("comp", CompSubmodelAllowedAttributes,
-          getPackageVersion(), getLevel(), getVersion(), error.str());
+          getPackageVersion(), getLevel(), getVersion(), error.str(), getLine(), getColumn());
       }
       return LIBSBML_INVALID_OBJECT;
     }
@@ -1003,7 +1032,8 @@ CompModelPlugin::renameAllIDsAndPrepend(const std::string& prefix)
       if (doc) {
         //Shouldn't happen:  'getInstantiation' turns on the comp plugin.
         string error = "Unable to rename elements in CompModelPlugin::renameAllIDsAndPrepend: no valid 'comp' plugin for the model instantiated from submodel " + subm->getId();
-        doc->getErrorLog()->logPackageError("comp", CompModelFlatteningFailed, getPackageVersion(), getLevel(), getVersion(), error);
+        doc->getErrorLog()->logPackageError("comp", CompModelFlatteningFailed, 
+          getPackageVersion(), getLevel(), getVersion(), error, getLine(), getColumn());
       }
       delete allElements;
       return LIBSBML_OPERATION_FAILED;
@@ -1045,8 +1075,14 @@ void CompModelPlugin::findUniqueSubmodPrefixes(vector<string>& submodids, List* 
         fullprefix << suffixes[str];
       }
       fullprefix << getDivider();
-      for (unsigned long el=0; el<allElements->getSize(); ++el) {
-        SBase* element = static_cast<SBase*>(allElements->get((unsigned int)el));
+      //for (unsigned long el=0; el<allElements->getSize(); ++el) {
+      //  SBase* element = static_cast<SBase*>(allElements->get((unsigned int)el));
+      // Using ListIterator is faster
+      for (ListIterator iter = allElements->begin(); iter != allElements->end(); ++iter)
+      {
+        SBase* element = static_cast<SBase*>(*iter);
+      //for (unsigned long el=0; el<allElements->getSize(); ++el) {
+      //  SBase* element = static_cast<SBase*>(allElements->get((unsigned int)el));
         if (element==NULL) {
           assert(false);
           continue;
@@ -1104,10 +1140,10 @@ void CompModelPlugin::renameIDs(List* allElements, const string& prefix)
   if (isSetTransformer())
     mTransformer->setPrefix(prefix);
   
-  for (unsigned long el=0; el < allElements->getSize(); ++el) 
+  for (ListIterator iter = allElements->begin(); iter != allElements->end(); ++iter)
   {
-    SBase* element = static_cast<SBase*>(allElements->get((unsigned int)el));
-    string id = element->getId();
+    SBase* element = static_cast<SBase*>(*iter);
+    string id = element->getIdAttribute();
     string metaid = element->getMetaId();
     
     // if a custom prefix transformer was specified, use it, other wise
@@ -1120,7 +1156,7 @@ void CompModelPlugin::renameIDs(List* allElements, const string& prefix)
     if (element->getTypeCode() == SBML_LOCAL_PARAMETER) {
       element->setId(id); //Change it back.  This would perhaps be better served by overriding 'prependStringToAllIdentifiers' but hey.
     }
-    string newid = element->getId();
+    string newid = element->getIdAttribute();
     string newmetaid = element->getMetaId();
     if (id != newid) {
       int type = element->getTypeCode();
@@ -1142,9 +1178,13 @@ void CompModelPlugin::renameIDs(List* allElements, const string& prefix)
     }
   }
 
-  for (unsigned long el=0; el<allElements->getSize(); el++) {
-    SBase* element = static_cast<SBase*>(allElements->get((unsigned int)el));
-    for (size_t id=0; id<renamedSIds.size(); id++) 
+  //for (unsigned long el=0; el<allElements->getSize(); el++) {
+  //  SBase* element = static_cast<SBase*>(allElements->get((unsigned int)el));
+  // Using ListIterator is faster
+  for (ListIterator iter = allElements->begin(); iter != allElements->end(); ++iter)
+  {
+    SBase* element = static_cast<SBase*>(*iter);
+    for (size_t id=0; id<renamedSIds.size(); id++)
     {
       element->renameSIdRefs(renamedSIds[id].first, renamedSIds[id].second);
     }
@@ -1168,7 +1208,8 @@ int CompModelPlugin::collectDeletionsAndDeleteSome(set<SBase*>* removed, set<SBa
   if (model==NULL) {
     if (doc) {
       string error = "Unable to attempt to perform deletions in CompModelPlugin::collectDeletionsAndDeleteSome: no parent model could be found for the given 'comp' model plugin element.";
-      doc->getErrorLog()->logPackageError("comp", CompModelFlatteningFailed, getPackageVersion(), getLevel(), getVersion(), error);
+      doc->getErrorLog()->logPackageError("comp", CompModelFlatteningFailed, 
+        getPackageVersion(), getLevel(), getVersion(), error, getLine(), getColumn());
     }
     return LIBSBML_OPERATION_FAILED;
   }
@@ -1209,7 +1250,8 @@ int CompModelPlugin::collectDeletionsAndDeleteSome(set<SBase*>* removed, set<SBa
       if (doc) {
         //Shouldn't happen:  'getInstantiation' turns on the comp plugin.
         string error = "Unable to rename elements in CompModelPlugin::collectDeletionsAndDeleteSome: no valid 'comp' plugin for the model instantiated from submodel " + submodel->getId();
-        doc->getErrorLog()->logPackageError("comp", CompModelFlatteningFailed, getPackageVersion(), getLevel(), getVersion(), error);
+        doc->getErrorLog()->logPackageError("comp", CompModelFlatteningFailed, 
+          getPackageVersion(), getLevel(), getVersion(), error, getLine(), getColumn());
       }
       return LIBSBML_OPERATION_FAILED;
     }
@@ -1224,7 +1266,8 @@ int CompModelPlugin::performDeletions()
 {
   SBMLDocument* doc = getSBMLDocument();
   if (doc) {
-    doc->getErrorLog()->logPackageError("comp", CompDeprecatedDeleteFunction, getPackageVersion(), getLevel(), getVersion());
+    doc->getErrorLog()->logPackageError("comp", CompDeprecatedDeleteFunction, 
+      getPackageVersion(), getLevel(), getVersion(), "", getLine(), getColumn());
   }
 
   set<SBase*> toremove;
@@ -1245,7 +1288,8 @@ int CompModelPlugin::collectRenameAndConvertReplacements(set<SBase*>* removed, s
   if (model==NULL) {
     if (doc) {
       string error = "Unable to perform replacements in CompModelPlugin::collectRenameAndConvertReplacements: no parent model could be found for the given 'comp' model plugin element.";
-      doc->getErrorLog()->logPackageError("comp", CompModelFlatteningFailed, getPackageVersion(), getLevel(), getVersion(), error);
+      doc->getErrorLog()->logPackageError("comp", CompModelFlatteningFailed, 
+        getPackageVersion(), getLevel(), getVersion(), error, getLine(), getColumn());
     }
     return LIBSBML_OPERATION_FAILED;
   }
@@ -1253,8 +1297,12 @@ int CompModelPlugin::collectRenameAndConvertReplacements(set<SBase*>* removed, s
   vector<ReplacedElement*> res;
   vector<ReplacedBy*> rbs;
   //Collect replaced elements and replaced by's.
-  for (unsigned int e=0; e<allElements->getSize(); e++) {
-    SBase* element = static_cast<SBase*>(allElements->get(e));
+  //for (unsigned int e=0; e<allElements->getSize(); e++) {
+  //  SBase* element = static_cast<SBase*>(allElements->get(e));
+  // Using ListIterator is faster
+  for (ListIterator iter = allElements->begin(); iter != allElements->end(); ++iter)
+  {
+    SBase* element = static_cast<SBase*>(*iter);
     int type = element->getTypeCode();
     if (type==SBML_COMP_REPLACEDELEMENT) {
       ReplacedElement* reference = static_cast<ReplacedElement*>(element);
@@ -1306,7 +1354,8 @@ int CompModelPlugin::performReplacementsAndConversions()
 {
   SBMLDocument* doc = getSBMLDocument();
   if (doc) {
-    doc->getErrorLog()->logPackageError("comp", CompDeprecatedReplaceFunction, getPackageVersion(), getLevel(), getVersion());
+    doc->getErrorLog()->logPackageError("comp", CompDeprecatedReplaceFunction, 
+      getPackageVersion(), getLevel(), getVersion(), "", getLine(), getColumn());
   }
 
   set<SBase*> toremove;
@@ -1319,6 +1368,7 @@ int CompModelPlugin::performReplacementsAndConversions()
 }
 /** @endcond */
 
+/** @cond doxygenLibsbmlInternal */
 int CompModelPlugin::removeCollectedElements(set<SBase*>* removed, set<SBase*>* toremove)
 {
   while (toremove->size() > 0) {
@@ -1326,8 +1376,9 @@ int CompModelPlugin::removeCollectedElements(set<SBase*>* removed, set<SBase*>* 
     if (removed->insert(removeme).second == true) {
       //Need to remove the element.
       List* children = removeme->getAllElements();
-      for (unsigned int el=0; el<children->getSize(); el++) {
-        SBase* element = static_cast<SBase*>(children->get(el));
+      for (ListIterator iter = children->begin(); iter != children->end(); ++iter)
+      {
+        SBase* element = static_cast<SBase*>(*iter);
         removed->insert(element);
       }
       delete children;
@@ -1337,6 +1388,7 @@ int CompModelPlugin::removeCollectedElements(set<SBase*>* removed, set<SBase*>* 
   }
   return LIBSBML_OPERATION_SUCCESS;
 }
+/** @endcond */
 
   
 /** @cond doxygenLibsbmlInternal */
@@ -1397,15 +1449,167 @@ CompModelPlugin::getRemovedSet()
 /** @endcond */
 
 #endif /* __cplusplus */
-/** @cond doxygenIgnored */
+
+
+/*
+ * Creates a new Submodel_t object, adds it to this CompModelPlugin_t object
+ * and returns the Submodel_t object created.
+ */
 LIBSBML_EXTERN
-Submodel_t *
-CompModelPlugin_createSubmodel(CompModelPlugin_t * modelPlug)
+Submodel_t*
+CompModelPlugin_createSubmodel(CompModelPlugin_t* cmp)
 {
-  return modelPlug->createSubmodel();
+  return (cmp != NULL) ? cmp->createSubmodel() : NULL;
 }
-/** @endcond */
+
+
+/*
+ * Returns a ListOf_t * containing Submodel_t objects from this
+ * CompModelPlugin_t.
+ */
+LIBSBML_EXTERN
+ListOf_t*
+CompModelPlugin_getListOfSubmodels(CompModelPlugin_t* cmp)
+{
+  return (cmp != NULL) ? cmp->getListOfSubmodels() : NULL;
+}
+
+
+/*
+ * Get a Submodel_t from the CompModelPlugin_t.
+ */
+LIBSBML_EXTERN
+Submodel_t*
+CompModelPlugin_getSubmodel(CompModelPlugin_t* cmp, unsigned int n)
+{
+  return (cmp != NULL) ? cmp->getSubmodel(n) : NULL;
+}
+
+
+/*
+ * Get a Submodel_t from the CompModelPlugin_t based on its identifier.
+ */
+LIBSBML_EXTERN
+Submodel_t*
+CompModelPlugin_getSubmodelById(CompModelPlugin_t* cmp, const char *sid)
+{
+  return (cmp != NULL && sid != NULL) ? cmp->getSubmodel(sid) : NULL;
+}
+
+
+/*
+ * Adds a copy of the given Submodel_t to this CompModelPlugin_t.
+ */
+LIBSBML_EXTERN
+int
+CompModelPlugin_addSubmodel(CompModelPlugin_t* cmp, const Submodel_t* s)
+{
+  return (cmp != NULL) ? cmp->addSubmodel(s) : LIBSBML_INVALID_OBJECT;
+}
+
+
+/*
+ * Get the number of Submodel_t objects in this CompModelPlugin_t.
+ */
+LIBSBML_EXTERN
+unsigned int
+CompModelPlugin_getNumSubmodels(CompModelPlugin_t* cmp)
+{
+  return (cmp != NULL) ? cmp->getNumSubmodels() : SBML_INT_MAX;
+}
+
+
+/*
+ * Removes the nth Submodel_t from this CompModelPlugin_t and returns a pointer
+ * to it.
+ */
+LIBSBML_EXTERN
+Submodel_t*
+CompModelPlugin_removeSubmodel(CompModelPlugin_t* cmp, unsigned int n)
+{
+  return (cmp != NULL) ? cmp->removeSubmodel(n) : NULL;
+}
+
+
+/*
+ * Returns a ListOf_t * containing Port_t objects from this CompModelPlugin_t.
+ */
+LIBSBML_EXTERN
+ListOf_t*
+CompModelPlugin_getListOfPorts(CompModelPlugin_t* cmp)
+{
+  return (cmp != NULL) ? cmp->getListOfPorts() : NULL;
+}
+
+
+/*
+ * Get a Port_t from the CompModelPlugin_t.
+ */
+LIBSBML_EXTERN
+Port_t*
+CompModelPlugin_getPort(CompModelPlugin_t* cmp, unsigned int n)
+{
+  return (cmp != NULL) ? cmp->getPort(n) : NULL;
+}
+
+
+/*
+ * Get a Port_t from the CompModelPlugin_t based on its identifier.
+ */
+LIBSBML_EXTERN
+Port_t*
+CompModelPlugin_getPortById(CompModelPlugin_t* cmp, const char *sid)
+{
+  return (cmp != NULL && sid != NULL) ? cmp->getPort(sid) : NULL;
+}
+
+
+/*
+ * Adds a copy of the given Port_t to this CompModelPlugin_t.
+ */
+LIBSBML_EXTERN
+int
+CompModelPlugin_addPort(CompModelPlugin_t* cmp, const Port_t* p)
+{
+  return (cmp != NULL) ? cmp->addPort(p) : LIBSBML_INVALID_OBJECT;
+}
+
+
+/*
+ * Get the number of Port_t objects in this CompModelPlugin_t.
+ */
+LIBSBML_EXTERN
+unsigned int
+CompModelPlugin_getNumPorts(CompModelPlugin_t* cmp)
+{
+  return (cmp != NULL) ? cmp->getNumPorts() : SBML_INT_MAX;
+}
+
+
+/*
+ * Creates a new Port_t object, adds it to this CompModelPlugin_t object and
+ * returns the Port_t object created.
+ */
+LIBSBML_EXTERN
+Port_t*
+CompModelPlugin_createPort(CompModelPlugin_t* cmp)
+{
+  return (cmp != NULL) ? cmp->createPort() : NULL;
+}
+
+
+/*
+ * Removes the nth Port_t from this CompModelPlugin_t and returns a pointer to
+ * it.
+ */
+LIBSBML_EXTERN
+Port_t*
+CompModelPlugin_removePort(CompModelPlugin_t* cmp, unsigned int n)
+{
+  return (cmp != NULL) ? cmp->removePort(n) : NULL;
+}
+
+
 
 
 LIBSBML_CPP_NAMESPACE_END
-

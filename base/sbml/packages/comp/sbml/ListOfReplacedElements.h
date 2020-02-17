@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -75,9 +79,11 @@ public:
    * Creates a new ListOfReplacedElements with the given level, version, and
    * package version.
    *
-   * @param level the SBML Level
-   * @param version the Version within the SBML Level
-   * @param pkgVersion the version of the package
+   * @param level the SBML Level.
+   * @param version the Version within the SBML Level.
+   * @param pkgVersion the version of the package.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   ListOfReplacedElements(unsigned int level      = CompExtension::getDefaultLevel(), 
                          unsigned int version    = CompExtension::getDefaultVersion(), 
@@ -88,7 +94,11 @@ public:
    * Creates a new ListOfReplacedElements with the given CompPkgNamespaces
    * object.
    *
-   * @param compns the namespace to use
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param compns the CompPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   ListOfReplacedElements(CompPkgNamespaces* compns);
 
@@ -99,6 +109,7 @@ public:
    * @param n the index number of the ReplacedElement to get.
    * 
    * @return the nth ReplacedElement in this ListOfReplacedElements.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -111,6 +122,7 @@ public:
    * @param n the index number of the ReplacedElement to get.
    * 
    * @return the nth ReplacedElement in this ListOfReplacedElements.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -123,7 +135,7 @@ public:
    *
    * The caller owns the returned item and is responsible for deleting it.
    *
-   * @param n the index of the item to remove
+   * @param n the index of the item to remove.
    *
    * @see size()
    */
@@ -161,7 +173,7 @@ protected:
    * Create and return an SBML object of this class, if present.
    *
    * @return the SBML object corresponding to next XMLToken in the
-   * XMLInputStream or NULL if the token was not recognized.
+   * XMLInputStream or @c NULL if the token was not recognized.
    */
   virtual SBase* createObject (XMLInputStream& stream);
 
@@ -180,9 +192,46 @@ LIBSBML_CPP_NAMESPACE_END
 LIBSBML_CPP_NAMESPACE_BEGIN
 BEGIN_C_DECLS
 
-//
-// C API will be added here.
-//
+
+/**
+ * Get a ReplacedElement_t from the ListOf_t.
+ *
+ * @param lo the ListOf_t structure to search.
+ *
+ * @param n an unsigned int representing the index of the ReplacedElement_t to
+ * retrieve.
+ *
+ * @return the nth ReplacedElement_t in this ListOf_t.
+ * If the index @p n is invalid, @c NULL is returned.
+ *
+ * @copydetails doc_returned_unowned_pointer
+ *
+ * @memberof ListOfReplacedElements_t
+ */
+LIBSBML_EXTERN
+ReplacedElement_t*
+ListOfReplacedElements_getReplacedElement(ListOf_t* lo, unsigned int n);
+
+
+/**
+ * Removes the nth ReplacedElement_t from this ListOf_t and returns a pointer
+ * to it.
+ *
+ * @param lo the ListOf_t structure to search.
+ *
+ * @param n an unsigned int representing the index of the ReplacedElement_t to
+ * remove.
+ *
+ * @return a pointer to the nth ReplacedElement_t in this ListOf_t.
+ *
+ * @copydetails doc_warning_returns_owned_pointer
+ *
+ * @memberof ListOfReplacedElements_t
+ */
+LIBSBML_EXTERN
+ReplacedElement_t*
+ListOfReplacedElements_remove(ListOf_t* lo, unsigned int n);
+
 
 END_C_DECLS
 LIBSBML_CPP_NAMESPACE_END

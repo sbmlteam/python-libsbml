@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -96,8 +100,8 @@ typedef enum
  * @if clike LibSBML attaches an identifying code to every kind of SBML
  * object.  These are known as <em>SBML type codes</em>.  The set of
  * possible type codes is defined in the enumeration #SBMLTypeCode_t.
- * The names of the type codes all begin with the characters @c
- * SBML_. @endif@if java LibSBML attaches an identifying code to every
+ * The names of the type codes all begin with the characters
+ * @c SBML_. @endif@if java LibSBML attaches an identifying code to every
  * kind of SBML object.  These are known as <em>SBML type codes</em>.  In
  * other languages, the set of type codes is stored in an enumeration; in
  * the Java language interface for libSBML, the type codes are defined as

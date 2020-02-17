@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -48,7 +52,7 @@ class L3v1CompatibilityValidator: public Validator
 public:
 
   L3v1CompatibilityValidator () :
-    Validator( LIBSBML_CAT_SBML_L2V1_COMPAT ) { }
+    Validator( LIBSBML_CAT_SBML_L3V1_COMPAT ) { }
 
   virtual ~L3v1CompatibilityValidator () { }
 

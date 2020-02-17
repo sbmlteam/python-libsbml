@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -48,10 +52,10 @@ LIBSBML_CPP_NAMESPACE_BEGIN
  */
 Input::Input (unsigned int level, unsigned int version, unsigned int pkgVersion)
   : SBase(level, version)
-   ,mId ("")
+//   ,mId ("")
    ,mQualitativeSpecies ("")
    ,mTransitionEffect (INPUT_TRANSITION_EFFECT_UNKNOWN)
-   ,mName ("")
+//   ,mName ("")
    ,mSign (INPUT_SIGN_VALUE_NOTSET)
    ,mThresholdLevel (SBML_INT_MAX)
    ,mIsSetThresholdLevel (false)
@@ -66,10 +70,10 @@ Input::Input (unsigned int level, unsigned int version, unsigned int pkgVersion)
  */
 Input::Input (QualPkgNamespaces* qualns)
   : SBase(qualns)
-   ,mId ("")
+//   ,mId ("")
    ,mQualitativeSpecies ("")
    ,mTransitionEffect (INPUT_TRANSITION_EFFECT_UNKNOWN)
-   ,mName ("")
+//   ,mName ("")
    ,mSign (INPUT_SIGN_VALUE_NOTSET)
    ,mThresholdLevel (SBML_INT_MAX)
    ,mIsSetThresholdLevel (false)
@@ -87,10 +91,10 @@ Input::Input (QualPkgNamespaces* qualns)
  */
 Input::Input (const Input& orig)
   : SBase(orig)
-  , mId (orig.mId)
+  //, mId (orig.mId)
   , mQualitativeSpecies (orig.mQualitativeSpecies)
   , mTransitionEffect (orig.mTransitionEffect)
-  , mName (orig.mName)
+  //, mName (orig.mName)
   , mSign (orig.mSign)
   , mThresholdLevel (orig.mThresholdLevel)
   , mIsSetThresholdLevel (orig.mIsSetThresholdLevel)
@@ -541,6 +545,333 @@ Input::enablePackageInternal(const std::string& pkgURI,
 /** @endcond */
 
 
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Input.
+ */
+int
+Input::getAttribute(const std::string& attributeName, bool& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Input.
+ */
+int
+Input::getAttribute(const std::string& attributeName, int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Input.
+ */
+int
+Input::getAttribute(const std::string& attributeName, double& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Input.
+ */
+int
+Input::getAttribute(const std::string& attributeName,
+                    unsigned int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "thresholdLevel")
+  {
+    value = getThresholdLevel();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Input.
+ */
+int
+Input::getAttribute(const std::string& attributeName,
+                    std::string& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "id")
+  {
+    value = getId();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "name")
+  {
+    value = getName();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "sign")
+  {
+    value = InputSign_toString(getSign());
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "qualitativeSpecies")
+  {
+    value = getQualitativeSpecies();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "transitionEffect")
+  {
+    value = InputTransitionEffect_toString(getTransitionEffect());
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Predicate returning @c true if this Input's attribute "attributeName" is
+ * set.
+ */
+bool
+Input::isSetAttribute(const std::string& attributeName) const
+{
+  bool value = SBase::isSetAttribute(attributeName);
+
+  if (attributeName == "id")
+  {
+    value = isSetId();
+  }
+  else if (attributeName == "name")
+  {
+    value = isSetName();
+  }
+  else if (attributeName == "sign")
+  {
+    value = isSetSign();
+  }
+  else if (attributeName == "qualitativeSpecies")
+  {
+    value = isSetQualitativeSpecies();
+  }
+  else if (attributeName == "transitionEffect")
+  {
+    value = isSetTransitionEffect();
+  }
+  else if (attributeName == "thresholdLevel")
+  {
+    value = isSetThresholdLevel();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Input.
+ */
+int
+Input::setAttribute(const std::string& attributeName, bool value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Input.
+ */
+int
+Input::setAttribute(const std::string& attributeName, int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Input.
+ */
+int
+Input::setAttribute(const std::string& attributeName, double value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Input.
+ */
+int
+Input::setAttribute(const std::string& attributeName, unsigned int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  if (attributeName == "thresholdLevel")
+  {
+    return_value = setThresholdLevel(value);
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Input.
+ */
+int
+Input::setAttribute(const std::string& attributeName,
+                    const std::string& value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  if (attributeName == "id")
+  {
+    return_value = setId(value);
+  }
+  else if (attributeName == "name")
+  {
+    return_value = setName(value);
+  }
+  else if (attributeName == "sign")
+  {
+    return_value = setSign(InputSign_fromString(value.c_str()));
+  }
+  else if (attributeName == "qualitativeSpecies")
+  {
+    return_value = setQualitativeSpecies(value);
+  }
+  else if (attributeName == "transitionEffect")
+  {
+    return_value = setTransitionEffect(InputTransitionEffect_fromString(value.c_str()));
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Unsets the value of the "attributeName" attribute of this Input.
+ */
+int
+Input::unsetAttribute(const std::string& attributeName)
+{
+  int value = SBase::unsetAttribute(attributeName);
+
+  if (attributeName == "id")
+  {
+    value = unsetId();
+  }
+  else if (attributeName == "name")
+  {
+    value = unsetName();
+  }
+  else if (attributeName == "sign")
+  {
+    value = unsetSign();
+  }
+  else if (attributeName == "qualitativeSpecies")
+  {
+    value = unsetQualitativeSpecies();
+  }
+  else if (attributeName == "transitionEffect")
+  {
+    value = unsetTransitionEffect();
+  }
+  else if (attributeName == "thresholdLevel")
+  {
+    value = unsetThresholdLevel();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
 /** @cond doxygenLibsbmlInternal */
 void
 Input::addExpectedAttributes(ExpectedAttributes& attributes)
@@ -587,7 +918,7 @@ Input::readAttributes (const XMLAttributes& attributes,
           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownPackageAttribute);
         getErrorLog()->logPackageError("qual", QualTransitionLOInputAttributes,
-          getPackageVersion(), sbmlLevel, sbmlVersion, details);
+          getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
       } 
       else if (getErrorLog()->getError((unsigned int)n)->getErrorId() == UnknownCoreAttribute)
       {
@@ -595,7 +926,7 @@ Input::readAttributes (const XMLAttributes& attributes,
           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownCoreAttribute);
         getErrorLog()->logPackageError("qual", QualTransitionLOInputAttributes,
-          getPackageVersion(), sbmlLevel, sbmlVersion, details);
+          getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
       } 
     }
   }
@@ -614,7 +945,7 @@ Input::readAttributes (const XMLAttributes& attributes,
                           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownPackageAttribute);
         getErrorLog()->logPackageError("qual", QualInputAllowedAttributes,
-                       getPackageVersion(), sbmlLevel, sbmlVersion, details);
+                       getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
       }
       else if (getErrorLog()->getError((unsigned int)n)->getErrorId() == UnknownCoreAttribute)
       {
@@ -622,7 +953,7 @@ Input::readAttributes (const XMLAttributes& attributes,
                           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownCoreAttribute);
         getErrorLog()->logPackageError("qual", QualInputAllowedCoreAttributes,
-                       getPackageVersion(), sbmlLevel, sbmlVersion, details);
+                       getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
       }
     }
   }
@@ -672,7 +1003,7 @@ Input::readAttributes (const XMLAttributes& attributes,
   {
     std::string message = "Qual attribute 'qualitativeSpecies' is missing.";
     getErrorLog()->logPackageError("qual", QualInputAllowedAttributes,
-                   getPackageVersion(), sbmlLevel, sbmlVersion, message);
+                   getPackageVersion(), sbmlLevel, sbmlVersion, message, getLine(), getColumn());
   }
 
   //
@@ -700,7 +1031,7 @@ Input::readAttributes (const XMLAttributes& attributes,
           }
           msg += "is '" + effect + "', which is not a valid option.";
           getErrorLog()->logPackageError("qual", QualInputTransEffectMustBeInputEffect,
-                       getPackageVersion(), sbmlLevel, sbmlVersion, msg);
+                       getPackageVersion(), sbmlLevel, sbmlVersion, msg, getLine(), getColumn());
        }
     }
   }
@@ -708,7 +1039,7 @@ Input::readAttributes (const XMLAttributes& attributes,
   {
     std::string message = "Qual attribute 'transitionEffect' is missing.";
     getErrorLog()->logPackageError("qual", QualInputAllowedAttributes,
-                   getPackageVersion(), sbmlLevel, sbmlVersion, message);
+                   getPackageVersion(), sbmlLevel, sbmlVersion, message, getLine(), getColumn());
   }
 
   //
@@ -751,7 +1082,7 @@ Input::readAttributes (const XMLAttributes& attributes,
           }
           msg += "is '" + sign + "', which is not a valid option.";
           getErrorLog()->logPackageError("qual", QualInputSignMustBeSignEnum,
-                       getPackageVersion(), sbmlLevel, sbmlVersion, msg);
+                       getPackageVersion(), sbmlLevel, sbmlVersion, msg, getLine(), getColumn());
        }
     }
   }
@@ -771,7 +1102,7 @@ Input::readAttributes (const XMLAttributes& attributes,
       {
         getErrorLog()->remove(XMLAttributeTypeMismatch);
         getErrorLog()->logPackageError("qual", QualInputThreshMustBeInteger,
-                     getPackageVersion(), sbmlLevel, sbmlVersion);
+                     getPackageVersion(), sbmlLevel, sbmlVersion, "", getLine(), getColumn());
       }
     }
   }
@@ -786,7 +1117,7 @@ Input::readAttributes (const XMLAttributes& attributes,
       }
       msg << "is '" << mThresholdLevel << "', which is negative.";
       getErrorLog()->logPackageError("qual", QualInputThreshMustBeNonNegative,
-                   getPackageVersion(), sbmlLevel, sbmlVersion, msg.str());
+                   getPackageVersion(), sbmlLevel, sbmlVersion, msg.str(), getLine(), getColumn());
     }
   }
 
@@ -862,7 +1193,7 @@ ListOfInputs::clone () const
 
 /*
  * Get a Input from the ListOfInputs by index.
-*/
+ */
 Input*
 ListOfInputs::get(unsigned int n)
 {

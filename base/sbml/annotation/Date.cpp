@@ -3,7 +3,11 @@
  * @brief   Date I/O
  * @author  Sarah Keating
  * 
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -36,6 +40,38 @@
 #include <sbml/common/common.h>
 #include <sbml/SBase.h>
 #include <cstdio>
+
+#if defined(_MSC_VER) && _MSC_VER < 1900
+
+#define snprintf c99_snprintf
+#define vsnprintf c99_vsnprintf
+
+__inline int c99_vsnprintf(char *outBuf, size_t size, const char *format, va_list ap)
+{
+    int count = -1;
+
+    if (size != 0)
+        count = _vsnprintf_s(outBuf, size, _TRUNCATE, format, ap);
+    if (count == -1)
+        count = _vscprintf(format, ap);
+
+    return count;
+}
+
+__inline int c99_snprintf(char *outBuf, size_t size, const char *format, ...)
+{
+    int count;
+    va_list ap;
+
+    va_start(ap, format);
+    count = c99_vsnprintf(outBuf, size, format, ap);
+    va_end(ap);
+
+    return count;
+}
+
+#endif
+
 
 /** @cond doxygenIgnored */
 using namespace std;
@@ -418,61 +454,62 @@ Date::setDateAsString (const std::string& date)
 void
 Date::parseDateNumbersToString()
 {
-  char cdate[10];
+  char cdate[11];
+  cdate[10] = '\0';
 
   if (mMonth < 10)
-    sprintf(cdate, "%u-0%u-", mYear, mMonth);
+    snprintf(cdate, 10, "%u-0%u-", mYear, mMonth);
   else
-    sprintf(cdate, "%u-%u-", mYear, mMonth);
+    snprintf(cdate, 10, "%u-%u-", mYear, mMonth);
   mDate = cdate;
   
   if (mDay < 10)
-    sprintf(cdate, "0%uT", mDay);
+    snprintf(cdate, 10, "0%uT", mDay);
   else
-    sprintf(cdate, "%uT", mDay);
+    snprintf(cdate, 10, "%uT", mDay);
   mDate.append(cdate);
 
   if (mHour < 10)
-    sprintf(cdate, "0%u:", mHour);
+    snprintf(cdate, 10, "0%u:", mHour);
   else
-    sprintf(cdate, "%u:", mHour);
+    snprintf(cdate, 10, "%u:", mHour);
   mDate.append(cdate);
   
   if (mMinute < 10)
-    sprintf(cdate, "0%u:", mMinute);
+    snprintf(cdate, 10, "0%u:", mMinute);
   else
-    sprintf(cdate, "%u:", mMinute);
+    snprintf(cdate, 10, "%u:", mMinute);
   mDate.append(cdate);
   
   if (mSecond < 10)
-    sprintf(cdate, "0%u", mSecond);
+    snprintf(cdate, 10, "0%u", mSecond);
   else
-    sprintf(cdate, "%u", mSecond);
+    snprintf(cdate, 10, "%u", mSecond);
   mDate.append(cdate);
 
   if (mHoursOffset == 0 && mMinutesOffset == 0)
   {
-    sprintf(cdate, "Z");
+    snprintf(cdate, 10, "Z");
     mDate.append(cdate);
   }
   else
   {
     if (mSignOffset == 0)
-      sprintf(cdate, "-");
+      snprintf(cdate, 10, "-");
     else
-      sprintf(cdate, "+");
+      snprintf(cdate, 10, "+");
     mDate.append(cdate);
 
     if (mHoursOffset < 10)
-      sprintf(cdate, "0%u:", mHoursOffset);
+      snprintf(cdate, 10, "0%u:", mHoursOffset);
     else
-      sprintf(cdate, "%u:", mHoursOffset);
+      snprintf(cdate, 10, "%u:", mHoursOffset);
     mDate.append(cdate);
     
     if (mMinutesOffset < 10)
-      sprintf(cdate, "0%u", mMinutesOffset);
+      snprintf(cdate, 10, "0%u", mMinutesOffset);
     else
-      sprintf(cdate, "%u", mMinutesOffset);
+      snprintf(cdate, 10, "%u", mMinutesOffset);
     mDate.append(cdate);
   }
 

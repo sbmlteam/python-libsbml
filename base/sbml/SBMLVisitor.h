@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -93,6 +97,7 @@ class SimpleSpeciesReference;
 class ModifierSpeciesReference;
 class SpeciesReference;
 class KineticLaw;
+class StoichiometryMath;
 
 class Event;
 class EventAssignment;
@@ -333,6 +338,16 @@ public:
    * @param x the SpeciesReference object to visit.
    */
   virtual bool visit (const SpeciesReference         &x);
+
+
+  /**
+  * Interface method for using the <a target="_blank"
+  * href="http://en.wikipedia.org/wiki/Design_pattern_(computer_science)"><i>Visitor
+  * Pattern</i></a> to perform operations on StoichiometryMath objects.
+  *
+  * @param x the StoichiometryMath object to visit.
+  */
+  virtual bool visit(const StoichiometryMath         &x);
 
 
   /**

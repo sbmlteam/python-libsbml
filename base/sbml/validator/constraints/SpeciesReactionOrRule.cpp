@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -85,22 +89,6 @@ SpeciesReactionOrRule::check_ (const Model& m, const Model&)
       mRules.append(r->getVariable());
     }
   }
-  /* redid this to get better information in the error message 
-  for (n = 0; n < m.getNumReactions(); n++)
-  {
-    const Reaction * react = m.getReaction(n);
-
-    for (nsr = 0; nsr < react->getNumReactants(); nsr++)
-    {
-      mReactions.append(react->getReactant(nsr)->getSpecies());
-    }
-
-    for (nsr = 0; nsr < react->getNumProducts(); nsr++)
-    {
-      mReactions.append(react->getProduct(nsr)->getSpecies());
-    }
-  }
-*/
   for (n = 0; n < m.getNumSpecies(); ++n)
   {
     s = m.getSpecies(n);

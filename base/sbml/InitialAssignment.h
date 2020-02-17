@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -65,8 +69,10 @@
  * follow the guidelines for identifiers described in the %SBML
  * specification (e.g., Section 3.3 in the Level 2 Version 4
  * specification).  The value of this attribute in an InitialAssignment
- * object can be the identifier of a Compartment, Species or global
- * Parameter elsewhere in the model.  The InitialAssignment defines the
+ * object can be the identifier of a Compartment, Species, SpeciesReference 
+ * (in SBML Level&nbsp;3),  global Parameter, or (as of SBML 
+ * Level&nbsp;3 Version&nbsp;2) the identifier of a SBML Level&nbsp;3 
+ * package element with mathematical meaning.  The InitialAssignment defines the
  * initial value of the constant or variable referred to by the "symbol"
  * attribute.  (The attribute's name is "symbol" rather than "variable"
  * because it may assign values to constants as well as variables in a
@@ -76,11 +82,14 @@
  * value of a Reaction object in the model.  This is identical to a
  * restriction placed on rules.
  *
- * InitialAssignment also has a required "math" subelement that contains a
+ * InitialAssignment also has a "math" subelement that contains a
  * MathML expression used to calculate the value of the constant or the
- * initial value of the variable.  The units of the value computed by the
- * formula in the "math" subelement should (in SBML Level&nbsp;2
- * Version&nbsp;4 and in SBML Level&nbsp;3) or must (in previous Versions) be identical to be the
+ * initial value of the variable.  This subelement is required in SBML
+ * Level&nbsp;2 and SBML Level&nbsp;3 Version&nbsp;1, but the requirement
+ * was relaxed in SBML Level&nbsp;3 Version&nbsp;2, making it optional.
+ * The units of the value computed by the formula in the "math" subelement 
+ * should (in SBML Level&nbsp;2 Version&nbsp;4 and in SBML Level&nbsp;3) 
+ * or must (in previous Versions) be identical to be the
  * units associated with the identifier given in the "symbol" attribute.
  * (That is, the units are the units of the species, compartment, or
  * parameter, as appropriate for the kind of object identified by the value
@@ -99,8 +108,10 @@
  * interpretation is that the "size" assigned in the Compartment object
  * should be ignored and the value assigned based on the computation
  * defined in the InitialAssignment.  Initial assignments can take place
- * for Compartment, Species and global Parameter objects regardless of the
- * value of their "constant" attribute.
+ * for Compartment, Species, global Parameter, SpeciesReference (in 
+ * Level&nbsp;3), and SBML Level&nbsp;3 package elements (in 
+ * Level&nbsp;3 Version&nbsp;2), regardless of the value of their 
+ * "constant" attribute.
  * 
  * The actions of all InitialAssignment objects are in general terms
  * the same, but differ in the precise details depending on the type
@@ -123,12 +134,46 @@
  * referenced parameter's initial value to that determined by the formula
  * in "math".  The overall units of the formula should (in SBML
  * Level&nbsp;2 Version&nbsp;4 and SBML Level&nbsp;3) or must (in previous Versions) be the same
- * as the units defined for the parameter.  </ul>
+ * as the units defined for the parameter.  
+ *
+ * <li> (For SBML Level&nbsp;3 only) <em>In the case of a species
+ * reference</em>, an initial assignment sets the initial value of the 
+ * stoichiometry of the referenced reactant or product to the value determined 
+ * by the formula in "math".  The unit associated with the value produced by 
+ * the "math" formula should be consistent with the unit "dimensionless",
+ * because reactant and product stoichiometries in reactions are dimensionless
+ * quantities.
+ *
+ * <li>(For SBML Level&nbsp;3 Version&nbsp;2 only) <em>In the case 
+ * of an object from an SBML Level&nbsp;3 package</em>, an InitialAssignment 
+ * sets the referenced object's initial value (however such values are 
+ * defined by the package) to the value of the formula in math. The unit 
+ * of measurement associated with the value produced by the formula 
+ * should be the same as that object's units attribute value (if it has 
+ * such an attribute), or be equal to the units of model components of 
+ * that type (if objects of that class are defined by the package as 
+ * having the same units).
+ *
+ * </ul>
+ *
+ * If the symbol attribute of an InitialAssignment object references 
+ * an object in an SBML namespace that is not understood by the 
+ * interpreter reading a given SBML document (that is, if the object 
+ * is defined by an SBML Level&nbsp;3 package that the software does 
+ * not support), the assignment must be ignored--the object's initial 
+ * value will not need to be set, as the interpreter could not understand 
+ * that package. If an interpreter cannot establish whether a referenced 
+ * object is missing from the model or instead is defined in an SBML 
+ * namespace not understood by the interpreter, it may produce a 
+ * warning to the user. (The latter situation may only arise if an SBML 
+ * package is present in the SBML document with a package:required 
+ * attribute of "true".)
  * 
  * In the context of a simulation, initial assignments establish values
  * that are in effect prior to and including the start of simulation time,
- * i.e., <em>t \f$\leq\f$ 0</em>.  Section 3.4.8 in the SBML Level 2
- * Version 4  and SBML Level&nbsp;3 Version&nbsp;1 Core specifications provides information about the interpretation of
+ * i.e., <em>t \f$\leq\f$ 0</em>.  Section 3.4.8 in the SBML Level&nbsp;2
+ * Version&nbsp;4  and SBML Level&nbsp;3 specifications 
+ * provides information about the interpretation of
  * assignments, rules, and entity values for simulation time up to and
  * including the start time <em>t = 0</em>; this is important for
  * establishing the initial conditions of a simulation if the model
@@ -243,10 +288,10 @@ public:
    * Creates a new InitialAssignment using the given SBML @p level and @p version
    * values.
    *
-   * @param level an unsigned int, the SBML Level to assign to this InitialAssignment
+   * @param level an unsigned int, the SBML Level to assign to this InitialAssignment.
    *
    * @param version an unsigned int, the SBML Version to assign to this
-   * InitialAssignment
+   * InitialAssignment.
    *
    * @copydetails doc_throw_exception_lv
    *
@@ -287,7 +332,7 @@ public:
   /**
    * Assignment operator for InitialAssignment.
    *
-   * @param rhs The object whose values are used as the basis of the
+   * @param rhs the object whose values are used as the basis of the
    * assignment.
    */
   InitialAssignment& operator=(const InitialAssignment& rhs);
@@ -328,9 +373,9 @@ public:
    * Get the mathematical formula of this InitialAssignment.
    *
    * @return an ASTNode, the value of the "math" subelement of this
-   * InitialAssignment
+   * InitialAssignment, or @c NULL if the math is not set.
    */
-  const ASTNode* getMath () const;
+  virtual const ASTNode* getMath () const;
 
 
   /**
@@ -356,8 +401,8 @@ public:
   /**
    * Sets the "symbol" attribute value of this InitialAssignment.
    *
-   * @param sid the identifier of a Species, Compartment or Parameter
-   * object defined elsewhere in this Model.
+   * @param sid the identifier of an element defined in this model whose
+   * value can be set.
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -388,7 +433,7 @@ public:
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
    * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
    */
-  int setMath (const ASTNode* math);
+  virtual int setMath (const ASTNode* math);
 
 
   /**
@@ -491,7 +536,7 @@ public:
   /** @cond doxygenLibsbmlInternal */
   /**
    * Subclasses should override this method to write out their contained
-   * SBML objects as XML elements.  Be sure to call your parents
+   * SBML objects as XML elements.  Be sure to call your parent's
    * implementation of this method as well.
    */
   virtual void writeElements (XMLOutputStream& stream) const;
@@ -516,7 +561,8 @@ public:
    * InitialAssignment object have been set.
    *
    * @note The required elements for a InitialAssignment object are:
-   * @li "math"
+   * @li "math" inSBML Level&nbsp;2 and Level&nbsp;3 Version&nbsp;1.  
+   *     (In SBML Level&nbsp;3 Version&nbsp;2+, it is no longer required.)
    *
    * @return a boolean value indicating whether all the required
    * elements for this object have been defined.
@@ -524,19 +570,26 @@ public:
   virtual bool hasRequiredElements() const ;
 
 
-  /** @cond doxygenLibsbmlInternal */
-  /*
-   * Return the variable attribute of this object.
+  /**
+   * Returns the value of the "symbol" attribute of this InitialAssignment (NOT the "id").
    *
-   * @note This function is an alias of getSymbol() function.
-   *       (id attribute is not defined in InitialAssignment element.)
+   * @note Because of the inconsistent behavior of this function with 
+   * respect to assignments and rules, it is now recommended to
+   * use the getIdAttribute() or InitialAssignment::getSymbol() 
+   * functions instead.
    *
-   * @return the string of variable attribute of this object.
+   * The "symbol" attribute of an InitialAssignment indicates the element which
+   * the results of the "math" are to be applied.
    *
+   * @return the symbol of this InitialAssignment.
+   *
+   * @see getIdAttribute()
+   * @see setIdAttribute(const std::string& sid)
+   * @see isSetIdAttribute()
+   * @see unsetIdAttribute()
    * @see getSymbol()
    */
   virtual const std::string& getId() const;
-  /** @endcond */
 
 
   /**
@@ -576,13 +629,296 @@ public:
   /** @endcond */
 
 
+
+
+
+
+  #ifndef SWIG
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this InitialAssignment.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, bool& value)
+    const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this InitialAssignment.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this InitialAssignment.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           double& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this InitialAssignment.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           unsigned int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this InitialAssignment.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           std::string& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this InitialAssignment.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  //virtual int getAttribute(const std::string& attributeName,
+  //                         const char* value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Predicate returning @c true if this InitialAssignment's attribute
+   * "attributeName" is set.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @return @c true if this InitialAssignment's attribute "attributeName" has
+   * been set, otherwise @c false is returned.
+   */
+  virtual bool isSetAttribute(const std::string& attributeName) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this InitialAssignment.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, bool value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this InitialAssignment.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this InitialAssignment.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, double value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this InitialAssignment.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           unsigned int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this InitialAssignment.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           const std::string& value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this InitialAssignment.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  //virtual int setAttribute(const std::string& attributeName, const char*
+  //  value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Unsets the value of the "attributeName" attribute of this
+   * InitialAssignment.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int unsetAttribute(const std::string& attributeName);
+
+  /** @endcond */
+
+
+
+
+  #endif /* !SWIG */
+
+
 protected:
   /** @cond doxygenLibsbmlInternal */
   /**
    * Subclasses should override this method to read (and store) XHTML,
    * MathML, etc. directly from the XMLInputStream.
    *
-   * @return true if the subclass read from the stream, false otherwise.
+   * @return @c true if the subclass read from the stream, @c false otherwise.
    */
   virtual bool readOtherXML (XMLInputStream& stream);
 
@@ -599,7 +935,7 @@ protected:
   /**
    * Subclasses should override this method to read values from the given
    * XMLAttributes set into their specific fields.  Be sure to call your
-   * parents implementation of this method as well.
+   * parent's implementation of this method as well.
    */
   virtual void readAttributes (const XMLAttributes& attributes,
                                const ExpectedAttributes& expectedAttributes);
@@ -611,7 +947,7 @@ protected:
 
   /**
    * Subclasses should override this method to write their XML attributes
-   * to the XMLOutputStream.  Be sure to call your parents implementation
+   * to the XMLOutputStream.  Be sure to call your parent's implementation
    * of this method as well.
    */
   virtual void writeAttributes (XMLOutputStream& stream) const;
@@ -653,9 +989,9 @@ public:
    * The object is constructed such that it is valid for the given SBML
    * Level and Version combination.
    *
-   * @param level the SBML Level
+   * @param level the SBML Level.
    * 
-   * @param version the Version within the SBML Level
+   * @param version the Version within the SBML Level.
    *
    * @copydetails doc_throw_exception_lv
    *
@@ -707,8 +1043,8 @@ public:
   /**
    * Returns the XML element name of this object.
    *
-   * For ListOfInitialAssignments, the XML element name is @c
-   * "listOfInitialAssignments".
+   * For ListOfInitialAssignments, the XML element name is
+   * @c "listOfInitialAssignments".
    * 
    * @return the name of this element, i.e., @c "listOfInitialAssignments".
    */
@@ -721,6 +1057,7 @@ public:
    * @param n the index number of the InitialAssignment to get.
    * 
    * @return the nth InitialAssignment in this ListOfInitialAssignments.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -733,6 +1070,7 @@ public:
    * @param n the index number of the InitialAssignment to get.
    * 
    * @return the nth InitialAssignment in this ListOfInitialAssignments.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -779,7 +1117,7 @@ public:
    *
    * The caller owns the returned item and is responsible for deleting it.
    *
-   * @param n the index of the item to remove
+   * @param n the index of the item to remove.
    *
    * @see size()
    */
@@ -790,10 +1128,10 @@ public:
    * Removes item in this ListOfInitialAssignments items with the given identifier.
    *
    * The caller owns the returned item and is responsible for deleting it.
-   * If none of the items in this list have the identifier @p sid, then @c
-   * NULL is returned.
+   * If none of the items in this list have the identifier @p sid, then
+   * @c NULL is returned.
    *
-   * @param sid the identifier of the item to remove
+   * @param sid the identifier of the item to remove.
    *
    * @return the item removed.  As mentioned above, the caller owns the
    * returned item.
@@ -809,7 +1147,7 @@ public:
    * libsbml interface pretends that they do: no initial assignment is
    * returned by this function.
    *
-   * @param id string representing the id of objects to find
+   * @param id string representing the id of the object to find.
    *
    * @return pointer to the first element found with the given @p id.
    */
@@ -863,20 +1201,14 @@ BEGIN_C_DECLS
  * and @p version values.
  *
  * @param level an unsigned int, the SBML Level to assign to this
- * InitialAssignment_t
+ * InitialAssignment_t.
  *
  * @param version an unsigned int, the SBML Version to assign to this
- * InitialAssignment_t
+ * InitialAssignment_t.
  *
  * @return a pointer to the newly created InitialAssignment_t structure.
  *
- * @note Once a InitialAssignment_t has been added to an SBMLDocument_t, the @p
- * level and @p version for the document @em override those used to create
- * the InitialAssignment_t.  Despite this, the ability to supply the values at
- * creation time is an important aid to creating valid SBML.  Knowledge of
- * the intended SBML Level and Version  determine whether it is valid to
- * assign a particular value to an attribute, or whether it is valid to add
- * a structure to an existing SBMLDocument_t.
+ * @copydetails doc_note_setting_lv
  *
  * @memberof InitialAssignment_t
  */
@@ -890,17 +1222,11 @@ InitialAssignment_create (unsigned int level, unsigned int version);
  * SBMLNamespaces_t structure.
  *
  * @param sbmlns SBMLNamespaces_t, a pointer to an SBMLNamespaces_t structure
- * to assign to this InitialAssignment_t
+ * to assign to this InitialAssignment_t.
  *
  * @return a pointer to the newly created InitialAssignment_t structure.
  *
- * @note Once a InitialAssignment_t has been added to an SBMLDocument_t, the
- * @p sbmlns namespaces for the document @em override those used to create
- * the InitialAssignment_t.  Despite this, the ability to supply the values at 
- * creation time is an important aid to creating valid SBML.  Knowledge of the 
- * intended SBML Level and Version determine whether it is valid to assign a 
- * particular value to an attribute, or whether it is valid to add a structure to 
- * an existing SBMLDocument_t.
+ * @copydetails doc_note_setting_lv
  *
  * @memberof InitialAssignment_t
  */
@@ -924,7 +1250,7 @@ InitialAssignment_free (InitialAssignment_t *ia);
 /**
  * Copy constructor; creates a copy of this InitialAssignment_t.
  *
- * @param ia the InitialAssignment_t structure
+ * @param ia the InitialAssignment_t structure.
  *
  * @return a (deep) copy of the given InitialAssignment_t structure.
  *
@@ -939,7 +1265,7 @@ InitialAssignment_clone (const InitialAssignment_t *ia);
  * Returns a list of XMLNamespaces_t associated with this InitialAssignment_t
  * structure.
  *
- * @param ia the InitialAssignment_t structure
+ * @param ia the InitialAssignment_t structure.
  * 
  * @return pointer to the XMLNamespaces_t structure associated with 
  * this structure
@@ -954,7 +1280,7 @@ InitialAssignment_getNamespaces(InitialAssignment_t *ia);
 /**
  * Get the value of the "symbol" attribute of this InitialAssignment_t.
  *
- * @param ia the InitialAssignment_t structure
+ * @param ia the InitialAssignment_t structure.
  * 
  * @return the identifier string stored as the "symbol" attribute value
  * in this InitialAssignment_t.
@@ -969,7 +1295,7 @@ InitialAssignment_getSymbol (const InitialAssignment_t *ia);
 /**
  * Get the mathematical formula of this InitialAssignment_t.
  *
- * @param ia the InitialAssignment_t structure
+ * @param ia the InitialAssignment_t structure.
  *
  * @return an ASTNode_t, the value of the "math" subelement of this
  * InitialAssignment_t
@@ -982,13 +1308,13 @@ InitialAssignment_getMath (const InitialAssignment_t *ia);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether this
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether this
  * InitialAssignment_t's "symbol" attribute is set.
  *
- * @param ia the InitialAssignment_t structure
+ * @param ia the InitialAssignment_t structure.
  * 
- * @return nonzero if the "symbol" attribute of this InitialAssignment_t
- * is set, zero (0) otherwise.
+ * @return @c 1 (true) if the "symbol" attribute of this InitialAssignment_t
+ * is set, @c 0 (false) otherwise.
  *
  * @memberof InitialAssignment_t
  */
@@ -998,13 +1324,13 @@ InitialAssignment_isSetSymbol (const InitialAssignment_t *ia);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether this
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether this
  * InitialAssignment_t's "math" subelement contains a value.
  *
- * @param ia the InitialAssignment_t structure
+ * @param ia the InitialAssignment_t structure.
  * 
- * @return nonzero if the "math" for this InitialAssignment_t is set,
- * zero (0) otherwise.
+ * @return @c 1 (true) if the "math" for this InitialAssignment_t is set,
+ * @c 0 (false) otherwise.
  *
  * @memberof InitialAssignment_t
  */
@@ -1016,16 +1342,16 @@ InitialAssignment_isSetMath (const InitialAssignment_t *ia);
 /**
  * Sets the "symbol" attribute value of this InitialAssignment_t
  *
- * @param ia the InitialAssignment_t structure
+ * @param ia the InitialAssignment_t structure.
  *
- * @param sid the identifier of a Species_t, Compartment_t or Parameter_t
- * structure defined elsewhere in this Model_t.
+ * @param sid the identifier of an element defined in this model whose
+ * value can be set.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
  *
- * @note Using this function with an id of NULL is equivalent to
+ * @note Using this function with an @p sid of NULL is equivalent to
  * unsetting the "symbol" attribute.
  *
  * @memberof InitialAssignment_t
@@ -1038,7 +1364,7 @@ InitialAssignment_setSymbol (InitialAssignment_t *ia, const char *sid);
 /**
  * Unsets the "symbol" attribute value of this InitialAssignment_t
  *
- * @param ia the InitialAssignment_t structure
+ * @param ia the InitialAssignment_t structure.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -1056,7 +1382,7 @@ InitialAssignment_unsetSymbol (InitialAssignment_t *ia);
  *
  * The ASTNode tree passed in @p math is copied.
  *
- * @param ia the InitialAssignment_t structure
+ * @param ia the InitialAssignment_t structure.
  *
  * @param math an ASTNode_t tree containing the mathematical expression to
  * be used as the formula for this InitialAssignment_t.
@@ -1100,15 +1426,15 @@ InitialAssignment_getDerivedUnitDefinition(InitialAssignment_t *ia);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether 
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether 
  * the math expression of this InitialAssignment_t contains
  * parameters/numbers with undeclared units.
  * 
- * @return @c true if the math expression of this InitialAssignment_t
+ * @return @c 1 (true) if the math expression of this InitialAssignment_t
  * includes parameters/numbers 
- * with undeclared units, @c false otherwise.
+ * with undeclared units, @c 0 (false) otherwise.
  *
- * @note a return value of @c true indicates that the UnitDefinition_t
+ * @note a return value of @c 1 (true) indicates that the UnitDefinition_t
  * returned by the getDerivedUnitDefinition function may not 
  * accurately represent the units of the expression.
  *
@@ -1121,13 +1447,14 @@ int
 InitialAssignment_containsUndeclaredUnits(InitialAssignment_t *ia);
 
 /**
- * Returns the InitialAssignment_t structure having a given identifier.
+ * Despite its name, returns the InitialAssignment_t structure with the 
+ * "symbol" attribute matching the given identifier.
  *
  * @param lo the ListOfInitialAssignments_t structure to search.
- * @param sid the "id" attribute value being sought.
+ * @param sid the "symbol" attribute value being sought.
  *
- * @return item in the @p lo ListOfInitialAssignments with the given @p sid or a
- * null pointer if no such item exists.
+ * @return item in the @p lo ListOfInitialAssignments whose "symbol" attribute 
+ * matches the given @p sid or @c NULL if no such item exists.
  *
  * @see ListOf_t
  *
@@ -1139,15 +1466,16 @@ ListOfInitialAssignments_getById (ListOf_t *lo, const char *sid);
 
 
 /**
- * Removes a InitialAssignment_t structure based on its identifier.
+ * Despite its name, removes a InitialAssignment_t structure with the 
+ * "symbol" attribute matching the given identifier.
  *
  * The caller owns the returned item and is responsible for deleting it.
  *
  * @param lo the list of InitialAssignment_t structures to search.
- * @param sid the "id" attribute value of the structure to remove
+ * @param sid the "symbol" attribute value of the structure to remove.
  *
- * @return The InitialAssignment_t structure removed, or a null pointer if no such
- * item exists in @p lo.
+ * @return The InitialAssignment_t structure removed whose "symbol" attribute 
+ * matches the given @p sid or @c NULL if no such item exists.
  *
  * @see ListOf_t
  *

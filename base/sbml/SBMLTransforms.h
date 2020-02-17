@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -92,9 +96,9 @@ public:
    * The outcome of the function is that the ASTNode now represents
    * the math expression: s * p
    *
-   * @param math ASTNode representing the math to be transformed
+   * @param math ASTNode representing the math to be transformed.
    *
-   * @param fd the FunctionDefinition to be expanded
+   * @param fd the FunctionDefinition to be expanded.
    *
    * @param idsToExclude an optional list of function definition ids to exclude.
    *
@@ -115,9 +119,9 @@ public:
    * The outcome of the function is that the ASTNode now represents
    * the math expression: s * p/q
    *
-   * @param math ASTNode representing the math to be transformed
+   * @param math ASTNode representing the math to be transformed.
    *
-   * @param lofd the ListOfFunctionDefinitions to be expanded
+   * @param lofd the ListOfFunctionDefinitions to be expanded.
    * 
    * @param idsToExclude an optional list of function definition ids to exclude.
    *
@@ -132,6 +136,9 @@ public:
 
   static double evaluateASTNode(const ASTNode * node, const Model * m = NULL);
 
+  static bool expandL3V2InitialAssignments(Model * m);
+
+
 #ifndef SWIG
   static double evaluateASTNode(const ASTNode * node, const IdValueMap& values, const Model * m = NULL);
   static double evaluateASTNode(const ASTNode * node, const std::map<std::string, double>& values, const Model * m = NULL);
@@ -142,13 +149,14 @@ public:
 
   static void clearComponentValues();
 
+  static bool nodeContainsId(const ASTNode * node, IdList& ids);
+
 
 protected:  
   static void replaceBvars(ASTNode * math, const FunctionDefinition * fd);
   
   static bool checkFunctionNodeForIds(ASTNode * node, IdList& ids);
   
-  static bool nodeContainsId(const ASTNode * node, IdList& ids);
   
   static bool nodeContainsNameNotInList(const ASTNode * node, IdList& ids);
   
@@ -163,6 +171,8 @@ protected:
   
   static bool expandInitialAssignment(Species * s, 
                                           const InitialAssignment *ia);
+
+  static bool expandIA(Model* m, const InitialAssignment *ia);
 
   static void recurseReplaceFD(ASTNode * math, const FunctionDefinition * fd,
                         const IdList* idsToExclude);

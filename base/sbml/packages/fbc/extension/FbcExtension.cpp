@@ -8,7 +8,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -229,7 +233,7 @@ FbcExtension::getURI(unsigned int sbmlLevel,
 {
   if (sbmlLevel == 3)
   {
-    if (sbmlVersion == 1)
+    if (sbmlVersion == 1 || sbmlVersion == 2)
     {
       if (pkgVersion == 1)
       {
@@ -239,7 +243,6 @@ FbcExtension::getURI(unsigned int sbmlLevel,
       {
         return getXmlnsL3V1V2();
       }
-  
     }
   }
 
@@ -319,7 +322,7 @@ FbcExtension::getSBMLExtensionNamespaces(const std::string &uri) const
 
 /** @cond doxygenLibsbmlInternal */
 bool
-FbcExtension::hasMultipleVersions() const
+FbcExtension::hasMutiplePackageVersions() const
 {
   return true;
 }
@@ -428,7 +431,7 @@ FbcExtension::init()
   FbcV2ToV1Converter c4;
   SBMLConverterRegistry::getInstance().addConverter(&c4);
 }
-/** @endcond doxygenLibsbmlInternal */
+/** @endcond */
 
 
 /** @cond doxygenLibsbmlInternal */
@@ -442,7 +445,7 @@ FbcExtension::getErrorTableV2(unsigned int index) const
   return fbcErrorTableV2[index];
 }
 
-/** @endcond doxygenLibsbmlInternal */
+/** @endcond */
 
 
 /** @cond doxygenLibsbmlInternal */
@@ -469,7 +472,7 @@ FbcExtension::getErrorTableIndex(unsigned int errorId) const
   return index;
 }
 
-/** @endcond doxygenLibsbmlInternal */
+/** @endcond */
 
 
 /** @cond doxygenLibsbmlInternal */
@@ -483,7 +486,7 @@ FbcExtension::getErrorIdOffset() const
   return 2000000;
 }
 
-/** @endcond doxygenLibsbmlInternal */
+/** @endcond */
 
 
 

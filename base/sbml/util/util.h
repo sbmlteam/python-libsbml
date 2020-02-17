@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -50,9 +54,9 @@ LIBSBML_CPP_NAMESPACE_BEGIN
  * Utility function that replaces all occurences of 'from' to 'to' 
  * in the given string. 
  * 
- * @param str, the string to be modified
- * @param from, the substring to be replaced
- * @param to, the target substring to be used instead of 'from'
+ * @param str, the string to be modified.
+ * @param from, the substring to be replaced.
+ * @param to, the target substring to be used instead of 'from'.
  *
  * @return a reference to the string, so that the replace calls can be chained
  */
@@ -162,7 +166,7 @@ util_bsearchStringsI (const char **strings, const char *s, int lo, int hi);
 
 
 /**
- * @returns true (non-zero) if filename exists, false (zero) otherwise.
+ * @returns @c 1 (true) if filename exists, @c 0 (false) otherwise.
  */
 LIBSBML_EXTERN
 int
@@ -173,7 +177,7 @@ util_file_exists (const char *filename);
  * Removes leading and trailing whitespace from the string s.
  *
  * @return a pointer to a new string which is a duplicate of the string s,
- * with leading and trailing whitespace removed or NULL is s is NULL.
+ * with leading and trailing whitespace removed or @c NULL if s is @c NULL.
  *
  * Whitespace is determined by isspace().
  */
@@ -240,10 +244,10 @@ util_NegZero (void);
 /**
  * Function for testing whether a given value represents negative infinity.
  *
- * @param d the floating-point value to test
+ * @param d the floating-point value to test.
  * 
- * @return @c -1 (for false) if @p d represents negative infinity, @c 1 if
- * @p d represents positive infinity, and @c 0 otherwise.
+ * @return @c -1 (for false) if @p d represents negative infinity, @c 1 (true) if
+ * @p d represents positive infinity, and @c 0 (false) otherwise.
  */
 LIBSBML_EXTERN
 int
@@ -267,10 +271,10 @@ util_isFinite (double d);
 /**
  * Function for testing whether a given value represents negative zero.
  *
- * @param d the floating-point value to test
+ * @param d the floating-point value to test.
  * 
- * @return nonzero (for true) if @p d is an IEEE-754 negative zero, zero
- * (for false) otherwise.
+ * @return @c 1 (true) if @p d is an IEEE-754 negative zero,
+ * @c 0 (false) otherwise.
  */
 LIBSBML_EXTERN
 int

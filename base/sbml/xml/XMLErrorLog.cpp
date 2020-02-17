@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -59,8 +63,8 @@ XMLErrorLog::XMLErrorLog ()
 
 /** @cond doxygenLibsbmlInternal */
 /*
-* Copy Constructor
-*/
+ * Copy Constructor
+ */
 XMLErrorLog::XMLErrorLog (const XMLErrorLog& other)
   : mParser(NULL)
   , mOverriddenSeverity(other.mOverriddenSeverity)
@@ -71,8 +75,8 @@ XMLErrorLog::XMLErrorLog (const XMLErrorLog& other)
 
 /** @cond doxygenLibsbmlInternal */
 /*
-* Assignment operator
-*/
+ * Assignment operator
+ */
 XMLErrorLog& XMLErrorLog::operator=(const XMLErrorLog& other)  
 {
   if (this != &other)
@@ -335,7 +339,7 @@ XMLErrorLog::changeErrorSeverity(XMLErrorSeverity_t originalSeverity,
 
   for (iter = mErrors.begin(); iter != mErrors.end(); ++iter) 
   {
-    if ((*iter)->getSeverity() == originalSeverity)
+    if ((*iter)->getSeverity() == (unsigned int)(originalSeverity))
     {
       if (package == "all" || (*iter)->getPackage() == package)
       {
@@ -345,6 +349,48 @@ XMLErrorLog::changeErrorSeverity(XMLErrorSeverity_t originalSeverity,
     }
   }
 }
+
+/*
+ * Helper class used by XMLErrorLog::contains.
+ */
+class MatchErrorId
+{
+public:
+  MatchErrorId(const unsigned int theId) : idToFind(theId) {};
+
+  bool operator() (XMLError* e) const
+  {
+    return e->getErrorId() == idToFind;
+  };
+
+private:
+  unsigned int idToFind;
+};
+
+
+
+
+bool
+XMLErrorLog::contains(const unsigned int errorId) const
+{
+  vector<XMLError*>::const_iterator iter;
+
+  // finds an item with the given errorId (the first item will be found if
+  // there are two or more items with the same Id)
+  iter = find_if(mErrors.begin(), mErrors.end(), MatchErrorId(errorId));
+
+  if (iter != mErrors.end())
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
+
+
 
 #endif /* __cplusplus */
 /** @cond doxygenIgnored */

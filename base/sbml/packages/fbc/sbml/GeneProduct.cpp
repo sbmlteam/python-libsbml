@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -40,6 +44,8 @@
 using namespace std;
 
 
+#ifdef __cplusplus
+
 LIBSBML_CPP_NAMESPACE_BEGIN
 
 
@@ -48,8 +54,8 @@ LIBSBML_CPP_NAMESPACE_BEGIN
  */
 GeneProduct::GeneProduct (unsigned int level, unsigned int version, unsigned int pkgVersion)
   : SBase(level, version)
-  , mId ("")
-  , mName ("")
+//  , mId ("")
+//  , mName ("")
   , mLabel ("")
   , mAssociatedSpecies ("")
 {
@@ -63,8 +69,8 @@ GeneProduct::GeneProduct (unsigned int level, unsigned int version, unsigned int
  */
 GeneProduct::GeneProduct (FbcPkgNamespaces* fbcns)
   : SBase(fbcns)
-  , mId ("")
-  , mName ("")
+//  , mId ("")
+//  , mName ("")
   , mLabel ("")
   , mAssociatedSpecies ("")
 {
@@ -402,7 +408,7 @@ GeneProduct::writeElements (XMLOutputStream& stream) const
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -417,7 +423,7 @@ GeneProduct::accept (SBMLVisitor& v) const
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -432,7 +438,7 @@ GeneProduct::setSBMLDocument (SBMLDocument* d)
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -448,7 +454,294 @@ GeneProduct::enablePackageInternal(const std::string& pkgURI,
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this GeneProduct.
+ */
+int
+GeneProduct::getAttribute(const std::string& attributeName, bool& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this GeneProduct.
+ */
+int
+GeneProduct::getAttribute(const std::string& attributeName, int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this GeneProduct.
+ */
+int
+GeneProduct::getAttribute(const std::string& attributeName,
+                          double& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this GeneProduct.
+ */
+int
+GeneProduct::getAttribute(const std::string& attributeName,
+                          unsigned int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this GeneProduct.
+ */
+int
+GeneProduct::getAttribute(const std::string& attributeName,
+                          std::string& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "id")
+  {
+    value = getId();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "name")
+  {
+    value = getName();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "label")
+  {
+    value = getLabel();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "associatedSpecies")
+  {
+    value = getAssociatedSpecies();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Predicate returning @c true if this GeneProduct's attribute "attributeName"
+ * is set.
+ */
+bool
+GeneProduct::isSetAttribute(const std::string& attributeName) const
+{
+  bool value = SBase::isSetAttribute(attributeName);
+
+  if (attributeName == "id")
+  {
+    value = isSetId();
+  }
+  else if (attributeName == "name")
+  {
+    value = isSetName();
+  }
+  else if (attributeName == "label")
+  {
+    value = isSetLabel();
+  }
+  else if (attributeName == "associatedSpecies")
+  {
+    value = isSetAssociatedSpecies();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this GeneProduct.
+ */
+int
+GeneProduct::setAttribute(const std::string& attributeName, bool value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this GeneProduct.
+ */
+int
+GeneProduct::setAttribute(const std::string& attributeName, int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this GeneProduct.
+ */
+int
+GeneProduct::setAttribute(const std::string& attributeName, double value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this GeneProduct.
+ */
+int
+GeneProduct::setAttribute(const std::string& attributeName,
+                          unsigned int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this GeneProduct.
+ */
+int
+GeneProduct::setAttribute(const std::string& attributeName,
+                          const std::string& value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  if (attributeName == "id")
+  {
+    return_value = setId(value);
+  }
+  else if (attributeName == "name")
+  {
+    return_value = setName(value);
+  }
+  else if (attributeName == "label")
+  {
+    return_value = setLabel(value);
+  }
+  else if (attributeName == "associatedSpecies")
+  {
+    return_value = setAssociatedSpecies(value);
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Unsets the value of the "attributeName" attribute of this GeneProduct.
+ */
+int
+GeneProduct::unsetAttribute(const std::string& attributeName)
+{
+  int value = SBase::unsetAttribute(attributeName);
+
+  if (attributeName == "id")
+  {
+    value = unsetId();
+  }
+  else if (attributeName == "name")
+  {
+    value = unsetName();
+  }
+  else if (attributeName == "label")
+  {
+    value = unsetLabel();
+  }
+  else if (attributeName == "associatedSpecies")
+  {
+    value = unsetAssociatedSpecies();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -468,7 +761,7 @@ GeneProduct::addExpectedAttributes(ExpectedAttributes& attributes)
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -629,7 +922,7 @@ GeneProduct::readAttributes (const XMLAttributes& attributes,
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -657,7 +950,7 @@ GeneProduct::writeAttributes (XMLOutputStream& stream) const
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
 /*
@@ -694,7 +987,7 @@ ListOfGeneProducts::clone () const
 
 /*
  * Get a GeneProduct from the ListOfGeneProducts by index.
-*/
+ */
 GeneProduct*
 ListOfGeneProducts::get(unsigned int n)
 {
@@ -718,7 +1011,7 @@ ListOfGeneProducts::get(unsigned int n) const
 GeneProduct*
 ListOfGeneProducts::get(const std::string& sid)
 {
-	return const_cast<GeneProduct*>(
+  return const_cast<GeneProduct*>(
     static_cast<const ListOfGeneProducts&>(*this).get(sid));
 }
 
@@ -737,14 +1030,11 @@ ListOfGeneProducts::get(const std::string& sid) const
 
 
 /**
- * Adds a copy the given "GeneProduct" to this ListOfGeneProducts.
+ * Adds a copy the given GeneProduct to this ListOfGeneProducts.
  *
- * @param gp; the GeneProduct object to add
+ * @param gp the GeneProduct object to add.
  *
- * @return integer value indicating success/failure of the
- * function.  @if clike The value is drawn from the
- * enumeration #OperationReturnValues_t. @endif The possible values
- * returned by this function are:
+ * @copydetails doc_returns_success_code
  * @li LIBSBML_OPERATION_SUCCESS
  * @li LIBSBML_INVALID_ATTRIBUTE_VALUE
  */
@@ -773,8 +1063,7 @@ ListOfGeneProducts::addGeneProduct(const GeneProduct* gp)
   }
   else
   {
-	append(gp);
-    return LIBSBML_OPERATION_SUCCESS;
+  return append(gp);
   }
 }
 
@@ -787,13 +1076,13 @@ ListOfGeneProducts::addGeneProduct(const GeneProduct* gp)
 unsigned int 
 ListOfGeneProducts::getNumGeneProducts() const
 {
-	return size();
+  return size();
 }
 
 
 /*
  * Creates a new GeneProduct object, adds it to this ListOfGeneProducts
- * GeneProduct and returns the GeneProduct object created. 
+ * and returns the GeneProduct object created. 
  *
  * @return a new GeneProduct object instance
  *
@@ -854,7 +1143,7 @@ ListOfGeneProducts::remove(const std::string& sid)
     mItems.erase(result);
   }
 
-	return static_cast <GeneProduct*> (item);
+  return static_cast <GeneProduct*> (item);
 }
 
 
@@ -912,7 +1201,7 @@ ListOfGeneProducts::createObject(XMLInputStream& stream)
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -940,7 +1229,7 @@ ListOfGeneProducts::writeXMLNS(XMLOutputStream& stream) const
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
 LIBSBML_EXTERN
@@ -980,7 +1269,7 @@ LIBSBML_EXTERN
 const char *
 GeneProduct_getId(const GeneProduct_t * gp)
 {
-	return (gp != NULL && gp->isSetId()) ? gp->getId().c_str() : NULL;
+  return (gp != NULL && gp->isSetId()) ? gp->getId().c_str() : NULL;
 }
 
 
@@ -988,7 +1277,7 @@ LIBSBML_EXTERN
 const char *
 GeneProduct_getName(const GeneProduct_t * gp)
 {
-	return (gp != NULL && gp->isSetName()) ? gp->getName().c_str() : NULL;
+  return (gp != NULL && gp->isSetName()) ? gp->getName().c_str() : NULL;
 }
 
 
@@ -996,7 +1285,7 @@ LIBSBML_EXTERN
 const char *
 GeneProduct_getLabel(const GeneProduct_t * gp)
 {
-	return (gp != NULL && gp->isSetLabel()) ? gp->getLabel().c_str() : NULL;
+  return (gp != NULL && gp->isSetLabel()) ? gp->getLabel().c_str() : NULL;
 }
 
 
@@ -1004,7 +1293,7 @@ LIBSBML_EXTERN
 const char *
 GeneProduct_getAssociatedSpecies(const GeneProduct_t * gp)
 {
-	return (gp != NULL && gp->isSetAssociatedSpecies()) ? gp->getAssociatedSpecies().c_str() : NULL;
+  return (gp != NULL && gp->isSetAssociatedSpecies()) ? gp->getAssociatedSpecies().c_str() : NULL;
 }
 
 
@@ -1124,9 +1413,6 @@ GeneProduct_hasRequiredAttributes(const GeneProduct_t * gp)
 }
 
 
-/*
- *
- */
 LIBSBML_EXTERN
 GeneProduct_t *
 ListOfGeneProducts_getById(ListOf_t * lo, const char * sid)
@@ -1138,9 +1424,6 @@ ListOfGeneProducts_getById(ListOf_t * lo, const char * sid)
 }
 
 
-/*
- *
- */
 LIBSBML_EXTERN
 GeneProduct_t *
 ListOfGeneProducts_removeById(ListOf_t * lo, const char * sid)
@@ -1155,5 +1438,8 @@ ListOfGeneProducts_removeById(ListOf_t * lo, const char * sid)
 
 
 LIBSBML_CPP_NAMESPACE_END
+
+#endif /* __cplusplus */
+
 
 

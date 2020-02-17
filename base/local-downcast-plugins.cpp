@@ -2,6 +2,10 @@
 
 #include "local-downcast-plugins-comp.cpp"
 #include "local-downcast-plugins-fbc.cpp"
+#include "local-downcast-plugins-groups.cpp"
+#include "local-downcast-plugins-l3v2extendedmath.cpp"
 #include "local-downcast-plugins-layout.cpp"
+#include "local-downcast-plugins-multi.cpp"
 #include "local-downcast-plugins-qual.cpp"
+#include "local-downcast-plugins-render.cpp"
 

@@ -8,7 +8,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -135,8 +139,284 @@ ModifierSpeciesReference::hasRequiredAttributes() const
 
   return allPresent;
 }
+/** @cond doxygenLibsbmlInternal */
 
-#endif /* __cplusplus */
+/*
+ * Gets the value of the "attributeName" attribute of this
+ * ModifierSpeciesReference.
+ */
+int
+ModifierSpeciesReference::getAttribute(const std::string& attributeName,
+                                       bool& value) const
+{
+  int return_value = SimpleSpeciesReference::getAttribute(attributeName,
+    value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this
+ * ModifierSpeciesReference.
+ */
+int
+ModifierSpeciesReference::getAttribute(const std::string& attributeName,
+                                       int& value) const
+{
+  int return_value = SimpleSpeciesReference::getAttribute(attributeName,
+    value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this
+ * ModifierSpeciesReference.
+ */
+int
+ModifierSpeciesReference::getAttribute(const std::string& attributeName,
+                                       double& value) const
+{
+  int return_value = SimpleSpeciesReference::getAttribute(attributeName,
+    value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this
+ * ModifierSpeciesReference.
+ */
+int
+ModifierSpeciesReference::getAttribute(const std::string& attributeName,
+                                       unsigned int& value) const
+{
+  int return_value = SimpleSpeciesReference::getAttribute(attributeName,
+    value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this
+ * ModifierSpeciesReference.
+ */
+int
+ModifierSpeciesReference::getAttribute(const std::string& attributeName,
+                                       std::string& value) const
+{
+  int return_value = SimpleSpeciesReference::getAttribute(attributeName,
+    value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this
+ * ModifierSpeciesReference.
+ */
+//int
+//ModifierSpeciesReference::getAttribute(const std::string& attributeName,
+//                                       const char* value) const
+//{
+//  int return_value = SimpleSpeciesReference::getAttribute(attributeName,
+//    value);
+//
+//  return return_value;
+//}
+//
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Predicate returning @c true if this ModifierSpeciesReference's attribute
+ * "attributeName" is set.
+ */
+bool
+ModifierSpeciesReference::isSetAttribute(const std::string& attributeName)
+  const
+{
+  bool value = SimpleSpeciesReference::isSetAttribute(attributeName);
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this
+ * ModifierSpeciesReference.
+ */
+int
+ModifierSpeciesReference::setAttribute(const std::string& attributeName,
+                                       bool value)
+{
+  int return_value = SimpleSpeciesReference::setAttribute(attributeName,
+    value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this
+ * ModifierSpeciesReference.
+ */
+int
+ModifierSpeciesReference::setAttribute(const std::string& attributeName,
+                                       int value)
+{
+  int return_value = SimpleSpeciesReference::setAttribute(attributeName,
+    value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this
+ * ModifierSpeciesReference.
+ */
+int
+ModifierSpeciesReference::setAttribute(const std::string& attributeName,
+                                       double value)
+{
+  int return_value = SimpleSpeciesReference::setAttribute(attributeName,
+    value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this
+ * ModifierSpeciesReference.
+ */
+int
+ModifierSpeciesReference::setAttribute(const std::string& attributeName,
+                                       unsigned int value)
+{
+  int return_value = SimpleSpeciesReference::setAttribute(attributeName,
+    value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this
+ * ModifierSpeciesReference.
+ */
+int
+ModifierSpeciesReference::setAttribute(const std::string& attributeName,
+                                       const std::string& value)
+{
+  int return_value = SimpleSpeciesReference::setAttribute(attributeName,
+    value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this
+ * ModifierSpeciesReference.
+ */
+//int
+//ModifierSpeciesReference::setAttribute(const std::string& attributeName,
+//                                       const char* value)
+//{
+//  int return_value = SimpleSpeciesReference::setAttribute(attributeName,
+//    value);
+//
+//  return return_value;
+//}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Unsets the value of the "attributeName" attribute of this
+ * ModifierSpeciesReference.
+ */
+int
+ModifierSpeciesReference::unsetAttribute(const std::string& attributeName)
+{
+  int value = SimpleSpeciesReference::unsetAttribute(attributeName);
+
+  return value;
+}
+
+/** @endcond */
+
+#endif /* cplusplus */
+
+/** @cond doxygenLibsbmlInternal */
 
 
 /** @cond doxygenIgnored */

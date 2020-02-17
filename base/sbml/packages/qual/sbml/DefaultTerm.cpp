@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -255,7 +259,243 @@ DefaultTerm::enablePackageInternal(const std::string& pkgURI,
 
   /** @cond doxygenLibsbmlInternal */
 /*
- * Get the list of expected attributes for this element.
+ * Gets the value of the "attributeName" attribute of this DefaultTerm.
+ */
+int
+DefaultTerm::getAttribute(const std::string& attributeName, bool& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this DefaultTerm.
+ */
+int
+DefaultTerm::getAttribute(const std::string& attributeName, int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this DefaultTerm.
+ */
+int
+DefaultTerm::getAttribute(const std::string& attributeName,
+                          double& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this DefaultTerm.
+ */
+int
+DefaultTerm::getAttribute(const std::string& attributeName,
+                          unsigned int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "resultLevel")
+  {
+    value = getResultLevel();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this DefaultTerm.
+ */
+int
+DefaultTerm::getAttribute(const std::string& attributeName,
+                          std::string& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Predicate returning @c true if this DefaultTerm's attribute "attributeName"
+ * is set.
+ */
+bool
+DefaultTerm::isSetAttribute(const std::string& attributeName) const
+{
+  bool value = SBase::isSetAttribute(attributeName);
+
+  if (attributeName == "resultLevel")
+  {
+    value = isSetResultLevel();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this DefaultTerm.
+ */
+int
+DefaultTerm::setAttribute(const std::string& attributeName, bool value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this DefaultTerm.
+ */
+int
+DefaultTerm::setAttribute(const std::string& attributeName, int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this DefaultTerm.
+ */
+int
+DefaultTerm::setAttribute(const std::string& attributeName, double value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this DefaultTerm.
+ */
+int
+DefaultTerm::setAttribute(const std::string& attributeName,
+                          unsigned int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  if (attributeName == "resultLevel")
+  {
+    return_value = setResultLevel(value);
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this DefaultTerm.
+ */
+int
+DefaultTerm::setAttribute(const std::string& attributeName,
+                          const std::string& value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Unsets the value of the "attributeName" attribute of this DefaultTerm.
+ */
+int
+DefaultTerm::unsetAttribute(const std::string& attributeName)
+{
+  int value = SBase::unsetAttribute(attributeName);
+
+  if (attributeName == "resultLevel")
+  {
+    value = unsetResultLevel();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Adds the expected attributes for this element
  */
 void
 DefaultTerm::addExpectedAttributes(ExpectedAttributes& attributes)
@@ -294,7 +534,7 @@ DefaultTerm::readAttributes (const XMLAttributes& attributes,
                           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownPackageAttribute);
         getErrorLog()->logPackageError("qual", QualDefaultTermAllowedAttributes,
-                       getPackageVersion(), sbmlLevel, sbmlVersion, details);
+                       getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
       }
       else if (getErrorLog()->getError((unsigned int)n)->getErrorId() == UnknownCoreAttribute)
       {
@@ -302,7 +542,7 @@ DefaultTerm::readAttributes (const XMLAttributes& attributes,
                           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownCoreAttribute);
         getErrorLog()->logPackageError("qual", QualDefaultTermAllowedCoreAttributes,
-                       getPackageVersion(), sbmlLevel, sbmlVersion, details);
+                       getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
       }
     }
   }
@@ -322,13 +562,13 @@ DefaultTerm::readAttributes (const XMLAttributes& attributes,
       {
         getErrorLog()->remove(XMLAttributeTypeMismatch);
         getErrorLog()->logPackageError("qual", QualDefaultTermResultMustBeInteger,
-                     getPackageVersion(), sbmlLevel, sbmlVersion);
+                     getPackageVersion(), sbmlLevel, sbmlVersion, "", getLine(), getColumn());
       }
       else
       {
         std::string message = "Qual attribute 'resultLevel' is missing.";
         getErrorLog()->logPackageError("qual", QualDefaultTermAllowedAttributes,
-                       getPackageVersion(), sbmlLevel, sbmlVersion, message);
+                       getPackageVersion(), sbmlLevel, sbmlVersion, message, getLine(), getColumn());
       }
     }
   }
@@ -343,7 +583,7 @@ DefaultTerm::readAttributes (const XMLAttributes& attributes,
       }
       msg << "is '" << mResultLevel << "', which is negative.";
       getErrorLog()->logPackageError("qual", QualDefaultTermResultMustBeNonNeg,
-                   getPackageVersion(), sbmlLevel, sbmlVersion, msg.str());
+                   getPackageVersion(), sbmlLevel, sbmlVersion, msg.str(), getLine(), getColumn());
     }
   }
 

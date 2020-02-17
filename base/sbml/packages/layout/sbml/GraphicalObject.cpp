@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -78,7 +82,7 @@ GraphicalObject::renameMetaIdRefs(const std::string& oldid, const std::string& n
  */
 GraphicalObject::GraphicalObject(unsigned int level, unsigned int version, unsigned int pkgVersion)
 : SBase(level, version)
-, mId("")
+//, mId("")
 , mMetaIdRef("")
 , mBoundingBox(level, version, pkgVersion)
 , mBoundingBoxExplicitlySet(false)
@@ -92,7 +96,7 @@ GraphicalObject::GraphicalObject(unsigned int level, unsigned int version, unsig
  */
 GraphicalObject::GraphicalObject(LayoutPkgNamespaces* layoutns)
 : SBase(layoutns)
-, mId("")
+//, mId("")
 , mMetaIdRef("")
 , mBoundingBox(layoutns)
 , mBoundingBoxExplicitlySet(false)
@@ -116,11 +120,13 @@ GraphicalObject::GraphicalObject(LayoutPkgNamespaces* layoutns)
  */
 GraphicalObject::GraphicalObject(LayoutPkgNamespaces* layoutns, const std::string& id)
 : SBase(layoutns)
-, mId(id)
+//, mId(id)
 , mMetaIdRef("")
 , mBoundingBox(layoutns)
 , mBoundingBoxExplicitlySet(false)
 {
+  setId(id);
+
   //
   // set the element namespace of this object
   //
@@ -142,11 +148,13 @@ GraphicalObject::GraphicalObject(LayoutPkgNamespaces* layoutns, const std::strin
 GraphicalObject::GraphicalObject(LayoutPkgNamespaces* layoutns, const std::string& id,
   double x, double y, double w, double h)
   : SBase(layoutns)
-  , mId(id)
+  //, mId(id)
   , mMetaIdRef("")
   , mBoundingBox(BoundingBox(layoutns, "", x, y, 0.0, w, h, 0.0))
   , mBoundingBoxExplicitlySet(true)
 {
+  setId(id);
+
   //
   // set the element namespace of this object
   //
@@ -169,11 +177,13 @@ GraphicalObject::GraphicalObject(LayoutPkgNamespaces* layoutns, const std::strin
   double x, double y, double z,
   double w, double h, double d)
   : SBase(layoutns)
-  , mId(id)
+  //, mId(id)
   , mMetaIdRef("")
   , mBoundingBox(BoundingBox(layoutns, "", x, y, z, w, h, d))
   , mBoundingBoxExplicitlySet(true)
 {
+  setId(id);
+
   //
   // set the element namespace of this object
   //
@@ -196,11 +206,13 @@ GraphicalObject::GraphicalObject(LayoutPkgNamespaces* layoutns, const std::strin
   const Point*       p,
   const Dimensions*  d)
   : SBase(layoutns)
-  , mId(id)
+  //, mId(id)
   , mMetaIdRef("")
   , mBoundingBox(BoundingBox(layoutns, "", p, d))
   , mBoundingBoxExplicitlySet(true)
 {
+  setId(id);
+
   //
   // set the element namespace of this object
   //
@@ -221,11 +233,13 @@ GraphicalObject::GraphicalObject(LayoutPkgNamespaces* layoutns, const std::strin
  */
 GraphicalObject::GraphicalObject(LayoutPkgNamespaces* layoutns, const std::string& id, const BoundingBox* bb)
 : SBase(layoutns)
-, mId(id)
+//, mId(id)
 , mMetaIdRef("")
 , mBoundingBox(layoutns)
 , mBoundingBoxExplicitlySet(false)
 {
+  setId(id);
+
   //
   // set the element namespace of this object
   //
@@ -417,8 +431,18 @@ bool GraphicalObject::isSetMetaIdRef() const
 int GraphicalObject::setMetaIdRef(const std::string& metaid)
 {
   if (metaid.empty())
+  {
     return unsetMetaIdRef();
-  return SyntaxChecker::checkAndSetSId(metaid, mMetaIdRef);
+  }
+  else if (!(SyntaxChecker::isValidXMLID(metaid)))
+  {
+    return LIBSBML_INVALID_ATTRIBUTE_VALUE;
+  }
+  else
+  {
+    mMetaIdRef = metaid;
+    return LIBSBML_OPERATION_SUCCESS;
+  }
 }
 
 
@@ -822,7 +846,7 @@ void GraphicalObject::readAttributes(const XMLAttributes& attributes,
   assigned = attributes.readInto("metaidRef", mMetaIdRef);
   if (assigned == true && getErrorLog() != NULL)
   {
-    if (!SyntaxChecker::isValidInternalSId(mMetaIdRef))
+    if (!SyntaxChecker::isValidXMLID(mMetaIdRef))
     {
       int tc = this->getTypeCode();
       std::string msg = "The metaIdRef on the <" + this->getElementName() + "> ";
@@ -1040,7 +1064,7 @@ const std::string& pkgPrefix, bool flag)
 
 
 /*
- * Ctor.
+ * Constructor.
  */
 ListOfGraphicalObjects::ListOfGraphicalObjects(LayoutPkgNamespaces* layoutns)
 : ListOf(layoutns)
@@ -1054,7 +1078,7 @@ ListOfGraphicalObjects::ListOfGraphicalObjects(LayoutPkgNamespaces* layoutns)
 
 
 /*
- * Ctor.
+ * Constructor.
  */
 ListOfGraphicalObjects::ListOfGraphicalObjects(unsigned int level, unsigned int version, unsigned int pkgVersion)
 : ListOf(level, version)

@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -102,7 +106,7 @@
 #ifdef __cplusplus
 namespace LIBSBML_CPP_NAMESPACE {
   const unsigned int SBML_DEFAULT_LEVEL   = 3;
-  const unsigned int SBML_DEFAULT_VERSION = 1;
+  const unsigned int SBML_DEFAULT_VERSION = 2;
   const char* const SBML_XMLNS_L1   = "http://www.sbml.org/sbml/level1";
   const char* const SBML_XMLNS_L2V1 = "http://www.sbml.org/sbml/level2";
   const char* const SBML_XMLNS_L2V2 = "http://www.sbml.org/sbml/level2/version2";
@@ -110,10 +114,11 @@ namespace LIBSBML_CPP_NAMESPACE {
   const char* const SBML_XMLNS_L2V4 = "http://www.sbml.org/sbml/level2/version4";
   const char* const SBML_XMLNS_L2V5 = "http://www.sbml.org/sbml/level2/version5";
   const char* const SBML_XMLNS_L3V1 = "http://www.sbml.org/sbml/level3/version1/core";
+  const char* const SBML_XMLNS_L3V2 = "http://www.sbml.org/sbml/level3/version2/core";
 }
 #else
 static const unsigned int SBML_DEFAULT_LEVEL   = 3;
-static const unsigned int SBML_DEFAULT_VERSION = 1;
+static const unsigned int SBML_DEFAULT_VERSION = 2;
 static const char* const SBML_XMLNS_L1   = "http://www.sbml.org/sbml/level1";
 static const char* const SBML_XMLNS_L2V1 = "http://www.sbml.org/sbml/level2";
 static const char* const SBML_XMLNS_L2V2 = "http://www.sbml.org/sbml/level2/version2";
@@ -121,6 +126,7 @@ static const char* const SBML_XMLNS_L2V3 = "http://www.sbml.org/sbml/level2/vers
 static const char* const SBML_XMLNS_L2V4 = "http://www.sbml.org/sbml/level2/version4";
 static const char* const SBML_XMLNS_L2V5 = "http://www.sbml.org/sbml/level2/version5";
 static const char* const SBML_XMLNS_L3V1 = "http://www.sbml.org/sbml/level3/version1/core";
+static const char* const SBML_XMLNS_L3V2 = "http://www.sbml.org/sbml/level3/version2/core";
 #endif
 
 #ifdef __cplusplus
@@ -140,8 +146,8 @@ public:
    *
    * @copydetails doc_sbmlnamespaces_what_is_it 
    *
-   * @param level the SBML level
-   * @param version the SBML version
+   * @param level the SBML level.
+   * @param version the SBML version.
    * 
    * @ifnot hasDefaultArgs @htmlinclude warn-default-args-in-docs.html @endif@~
    */
@@ -156,10 +162,10 @@ public:
    *
    * @copydetails doc_sbmlnamespaces_what_is_it 
    *
-   * @param level   the SBML Level
-   * @param version the SBML Version
-   * @param pkgName the string of package name (e.g. "layout", "multi")
-   * @param pkgVersion the package version
+   * @param level   the SBML Level.
+   * @param version the SBML Version.
+   * @param pkgName the string of package name (e.g. "layout", "multi").
+   * @param pkgVersion the package version.
    * @param pkgPrefix the prefix of the package namespace (e.g. "layout", "multi") to be added.
    *        The package's name will be used if the given string is empty (default).
    *
@@ -168,7 +174,7 @@ public:
    * package version has not been registered with libSBML.
    */
   SBMLNamespaces(unsigned int level, unsigned int version, const std::string &pkgName,
-                 unsigned int pkgVersion, const std::string& pkgPrefix = ""); 
+                 unsigned int pkgVersion, const std::string pkgPrefix = ""); 
   
 
   /**
@@ -187,6 +193,9 @@ public:
 
   /**
    * Assignment operator for SBMLNamespaces.
+   *
+   * @param rhs the object whose values are used as the basis of the
+   * assignment.
    */
   SBMLNamespaces& operator=(const SBMLNamespaces& rhs);
 
@@ -203,8 +212,8 @@ public:
    * Returns a string representing the SBML XML namespace for the 
    * given @p level and @p version of SBML.
    *
-   * @param level the SBML level
-   * @param version the SBML version
+   * @param level the SBML level.
+   * @param version the SBML version.
    *
    * @return a string representing the SBML namespace that reflects the
    * SBML Level and Version specified.
@@ -219,7 +228,7 @@ public:
    * Returns a list of all supported SBMLNamespaces in this version of 
    * libsbml. 
    * 
-   * @return a list with supported SBML namespaces. 
+   * @return a list with supported SBML namespaces.
    *
    * @copydetails doc_note_static_methods
    */
@@ -450,8 +459,8 @@ else
    *
    * The SBML Level and SBML Version of this object is used.
    * 
-   * @param pkgName the string of package name (e.g. "layout", "multi")
-   * @param pkgVersion the package version
+   * @param pkgName the string of package name (e.g. "layout", "multi").
+   * @param pkgVersion the package version.
    * @param prefix the prefix of the package namespace to be added.
    *        The package's name will be used if the given string is empty (default).
    *
@@ -482,7 +491,7 @@ else
    *
    * @note XML namespaces of a non-registered package extensions are not
    * added (just ignored) by this function. @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t} will be returned if the given
-   * xmlns is null.
+   * xmlns is @c NULL.
    */
   int addPackageNamespaces(const XMLNamespaces* xmlns);
 
@@ -491,10 +500,10 @@ else
    * Removes an XML namespace of a package extension from the set of namespaces 
    * within this SBMLNamespaces object.
    *
-   * @param level   the SBML level
-   * @param version the SBML version
-   * @param pkgName the string of package name (e.g. "layout", "multi")
-   * @param pkgVersion the package version
+   * @param level   the SBML level.
+   * @param version the SBML version.
+   * @param pkgName the string of package name (e.g. "layout", "multi").
+   * @param pkgVersion the package version.
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -512,8 +521,8 @@ else
    * 
    * The SBML Level and SBML Version of this object is used.
    * 
-   * @param pkgName the string of package name (e.g. "layout", "multi")
-   * @param pkgVersion the package version
+   * @param pkgName the string of package name (e.g. "layout", "multi").
+   * @param pkgVersion the package version.
    * @param prefix the prefix of the package namespace to be added.
    *        The package's name will be used if the given string is empty (default).
    *
@@ -545,7 +554,7 @@ else
    *
    * @note XML namespaces of a non-registered package extensions are not
    * added (just ignored) by this function. @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t} will be returned if the given
-   * xmlns is null.
+   * xmlns is @c NULL.
    */
   int addPkgNamespaces(const XMLNamespaces* xmlns);
 
@@ -554,10 +563,10 @@ else
    * Removes an XML namespace of a package extension from the set of
    * namespaces within this SBMLNamespaces object.
    *
-   * @param level   the SBML level
-   * @param version the SBML version
-   * @param pkgName the string of package name (e.g. "layout", "multi")
-   * @param pkgVersion the package version
+   * @param level   the SBML level.
+   * @param version the SBML version.
+   * @param pkgName the string of package name (e.g. "layout", "multi").
+   * @param pkgVersion the package version.
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -573,7 +582,7 @@ else
    * Predicate returning @c true if the given URL is one of SBML XML
    * namespaces.
    *
-   * @param uri the URI of namespace
+   * @param uri the URI of namespace.
    *
    * @return @c true if the "uri" is one of SBML namespaces, @c false otherwise.
    *
@@ -650,8 +659,8 @@ BEGIN_C_DECLS
  * SBML Level&nbsp;3, the SBMLNamespaces_t structure only records one SBML
  * Level/Version/namespace combination at a time.
  *
- * @param level the SBML level
- * @param version the SBML version
+ * @param level the SBML level.
+ * @param version the SBML version.
  *
  * @return SBMLNamespaces_t structure created
  *
@@ -679,7 +688,7 @@ SBMLNamespaces_free (SBMLNamespaces_t *ns);
 /**
  * Get the SBML Level of this SBMLNamespaces_t structure.
  *
- * @param sbmlns the SBMLNamespaces_t structure to query
+ * @param sbmlns the SBMLNamespaces_t structure to query.
  *
  * @return the SBML Level of this SBMLNamespaces_t structure.
  *
@@ -693,7 +702,7 @@ SBMLNamespaces_getLevel(SBMLNamespaces_t *sbmlns);
 /**
  * Get the SBML Version of this SBMLNamespaces_t structure.
  *
- * @param sbmlns the SBMLNamespaces_t structure to query
+ * @param sbmlns the SBMLNamespaces_t structure to query.
  *
  * @return the SBML Version of this SBMLNamespaces_t structure.
  *
@@ -705,9 +714,9 @@ SBMLNamespaces_getVersion(SBMLNamespaces_t *sbmlns);
 
 
 /**
- * Get the SBML Version of this SBMLNamespaces_t structure.
+ * Get the XML Namespaces list of this SBMLNamespaces_t structure.
  *
- * @param sbmlns the SBMLNamespaces_t structure to query
+ * @param sbmlns the SBMLNamespaces_t structure to query.
  *
  * @return the XMLNamespaces_t structure of this SBMLNamespaces_t structure.
  *
@@ -722,8 +731,8 @@ SBMLNamespaces_getNamespaces(SBMLNamespaces_t *sbmlns);
  * Returns a string representing the SBML XML namespace for the 
  * given @p level and @p version of SBML.
  *
- * @param level the SBML level
- * @param version the SBML version
+ * @param level the SBML level.
+ * @param version the SBML version.
  *
  * @return a string representing the SBML namespace that reflects the
  * SBML Level and Version specified.
@@ -739,7 +748,7 @@ SBMLNamespaces_getSBMLNamespaceURI(unsigned int level, unsigned int version);
  * Add the XML namespaces list to the set of namespaces
  * within this SBMLNamespaces_t structure.
  * 
- * @param sbmlns the SBMLNamespaces_t structure to add to
+ * @param sbmlns the SBMLNamespaces_t structure to add to.
  * @param xmlns the XML namespaces to be added.
  *
  * @memberof SBMLNamespaces_t
@@ -754,7 +763,7 @@ SBMLNamespaces_addNamespaces(SBMLNamespaces_t *sbmlns,
  * Returns an array of SBML Namespaces supported by this version of 
  * LibSBML. 
  *
- * @param length an integer holding the length of the array
+ * @param length an integer holding the length of the array.
  * @return an array of SBML namespaces, or @c NULL if length is @c NULL. The array 
  *         has to be freed by the caller.
  *

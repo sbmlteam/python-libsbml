@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -117,12 +121,12 @@ LayoutSBMLDocumentPlugin::readAttributes (const XMLAttributes& attributes,
     {
       getErrorLog()->remove(XMLAttributeTypeMismatch);
       getErrorLog()->logPackageError("layout", LayoutAttributeRequiredMustBeBoolean,
-        getPackageVersion(), getLevel(), getVersion());
+        getPackageVersion(), getLevel(), getVersion(), "", getLine(), getColumn());
     }
     else
     {
       getErrorLog()->logPackageError("layout", LayoutAttributeRequiredMissing,
-        getPackageVersion(), getLevel(), getVersion());
+        getPackageVersion(), getLevel(), getVersion(), "", getLine(), getColumn());
     }
   }
   else
@@ -132,7 +136,7 @@ LayoutSBMLDocumentPlugin::readAttributes (const XMLAttributes& attributes,
     if (mRequired == true)
     {
       getErrorLog()->logPackageError("layout", LayoutRequiredFalse,
-        getPackageVersion(), getLevel(), getVersion());
+        getPackageVersion(), getLevel(), getVersion(), "", getLine(), getColumn());
     }
   }
 }
@@ -271,10 +275,9 @@ LayoutSBMLDocumentPlugin::populateValidationLists()
     allElementsWithMetaid = doc->getModel()->getAllElements(&metaidFilter);
   }  
 
-  for (unsigned int i = 0; i < allElementsWithMetaid->getSize(); i++)
+  for (ListIterator iter = allElementsWithMetaid->begin(); iter != allElementsWithMetaid->end(); ++iter)
   {
-    mMetaIdList.append(static_cast<SBase*>
-                      (allElementsWithMetaid->get(i))->getMetaId());
+    mMetaIdList.append(static_cast<SBase*>(*iter)->getMetaId());
   }
   
   delete allElementsWithMetaid;
@@ -288,9 +291,9 @@ LayoutSBMLDocumentPlugin::populateValidationLists()
     mElementsWithId = doc->getModel()->getAllElements(&idFilter);
   }  
   
-  for (unsigned int i = 0; i < mElementsWithId->getSize(); i++)
+  for (ListIterator iter = mElementsWithId->begin(); iter != mElementsWithId->end(); ++iter)
   {
-    mIdList.append(static_cast<SBase*>(mElementsWithId->get(i))->getId());
+    mIdList.append(static_cast<SBase*>(*iter)->getId());
   }
 
   mValidationListsPopulated = true;

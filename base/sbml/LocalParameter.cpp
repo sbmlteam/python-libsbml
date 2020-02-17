@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -148,7 +152,7 @@ LocalParameter::clone () const
 
 /** @cond doxygenLibsbmlInternal */
 /*
- * @return true as a localParameter is always constant.
+ * @return @c true as a localParameter is always constant.
  */
 bool
 LocalParameter::getConstant () const
@@ -255,6 +259,324 @@ LocalParameter::hasRequiredAttributes() const
 }
 
 
+
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this LocalParameter.
+ */
+int
+LocalParameter::getAttribute(const std::string& attributeName,
+                             bool& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this LocalParameter.
+ */
+int
+LocalParameter::getAttribute(const std::string& attributeName,
+                             int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this LocalParameter.
+ */
+int
+LocalParameter::getAttribute(const std::string& attributeName,
+                             double& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "value")
+  {
+    value = getValue();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this LocalParameter.
+ */
+int
+LocalParameter::getAttribute(const std::string& attributeName,
+                             unsigned int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this LocalParameter.
+ */
+int
+LocalParameter::getAttribute(const std::string& attributeName,
+                             std::string& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "units")
+  {
+    value = getUnits();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this LocalParameter.
+ */
+//int
+//LocalParameter::getAttribute(const std::string& attributeName,
+//                             const char* value) const
+//{
+//  int return_value = SBase::getAttribute(attributeName, value);
+//
+//  if (return_value == LIBSBML_OPERATION_SUCCESS)
+//  {
+//    return return_value;
+//  }
+//
+//  if (attributeName == "units")
+//  {
+//    value = getUnits().c_str();
+//    return_value = LIBSBML_OPERATION_SUCCESS;
+//  }
+//
+//  return return_value;
+//}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Predicate returning @c true if this LocalParameter's attribute
+ * "attributeName" is set.
+ */
+bool
+LocalParameter::isSetAttribute(const std::string& attributeName) const
+{
+  bool value = SBase::isSetAttribute(attributeName);
+
+  if (attributeName == "value")
+  {
+    value = isSetValue();
+  }
+  else if (attributeName == "units")
+  {
+    value = isSetUnits();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this LocalParameter.
+ */
+int
+LocalParameter::setAttribute(const std::string& attributeName, bool value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this LocalParameter.
+ */
+int
+LocalParameter::setAttribute(const std::string& attributeName, int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this LocalParameter.
+ */
+int
+LocalParameter::setAttribute(const std::string& attributeName, double value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  if (attributeName == "value")
+  {
+    return_value = setValue(value);
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this LocalParameter.
+ */
+int
+LocalParameter::setAttribute(const std::string& attributeName,
+                             unsigned int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this LocalParameter.
+ */
+int
+LocalParameter::setAttribute(const std::string& attributeName,
+                             const std::string& value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  if (attributeName == "units")
+  {
+    return_value = setUnits(value);
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this LocalParameter.
+ */
+//int
+//LocalParameter::setAttribute(const std::string& attributeName,
+//                             const char* value)
+//{
+//  int return_value = SBase::setAttribute(attributeName, value);
+//
+//  if (attributeName == "units")
+//  {
+//    return_value = setUnits(value);
+//  }
+//
+//  return return_value;
+//}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Unsets the value of the "attributeName" attribute of this LocalParameter.
+ */
+int
+LocalParameter::unsetAttribute(const std::string& attributeName)
+{
+  int value = SBase::unsetAttribute(attributeName);
+
+  if (attributeName == "value")
+  {
+    value = unsetValue();
+  }
+  else if (attributeName == "units")
+  {
+    value = unsetUnits();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
 /** @cond doxygenLibsbmlInternal */
 /**
  * Subclasses should override this method to get the list of
@@ -272,9 +594,9 @@ LocalParameter::addExpectedAttributes(ExpectedAttributes& attributes)
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  *
- * @param attributes the XMLAttributes object to use
+ * @param attributes the XMLAttributes object to use.
  */
 void
 LocalParameter::readAttributes (const XMLAttributes& attributes,
@@ -288,10 +610,10 @@ LocalParameter::readAttributes (const XMLAttributes& attributes,
 /** @cond doxygenLibsbmlInternal */
 /*
  * Subclasses should override this method to write their XML attributes
- * to the XMLOutputStream.  Be sure to call your parents implementation
+ * to the XMLOutputStream.  Be sure to call your parent's implementation
  * of this method as well.
  *
- * @param stream the XMLOutputStream to use
+ * @param stream the XMLOutputStream to use.
  */
 void
 LocalParameter::writeAttributes (XMLOutputStream& stream) const
@@ -462,7 +784,7 @@ ListOfLocalParameters::getElementPosition () const
  * @return the SBML object corresponding to next XMLToken in the
  * XMLInputStream or @c NULL if the token was not recognized.
  *
- * @param stream the XMLInputStream to use
+ * @param stream the XMLInputStream to use.
  */
 SBase*
 ListOfLocalParameters::createObject (XMLInputStream& stream)

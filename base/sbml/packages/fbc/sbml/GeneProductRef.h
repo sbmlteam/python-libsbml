@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -78,9 +82,9 @@ class LIBSBML_EXTERN GeneProductRef : public FbcAssociation
 protected:
 
   /** @cond doxygenLibsbmlInternal */
-  std::string   mId;
+//  std::string   mId;
   std::string   mGeneProduct;
-  std::string   mName;
+//  std::string   mName;
   /** @endcond */
 
 
@@ -91,13 +95,15 @@ public:
    * &ldquo;fbc&rdquo;package version.
    *
    * @param level an unsigned int, the SBML Level to assign to this
-   * GeneProductRef
+   * GeneProductRef.
    *
    * @param version an unsigned int, the SBML Version to assign to this
-   * GeneProductRef
+   * GeneProductRef.
    *
    * @param pkgVersion an unsigned int, the SBML Fbc Version to assign to
-   * this GeneProductRef
+   * this GeneProductRef.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   GeneProductRef(unsigned int level      = FbcExtension::getDefaultLevel(),
                  unsigned int version    = FbcExtension::getDefaultVersion(),
@@ -107,7 +113,11 @@ public:
   /**
    * Creates a new GeneProductRef with the given FbcPkgNamespaces object.
    *
-   * @param fbcns the FbcPkgNamespaces object
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param fbcns the FbcPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   GeneProductRef(FbcPkgNamespaces* fbcns);
 
@@ -115,7 +125,7 @@ public:
    /**
    * Copy constructor for GeneProductRef.
    *
-   * @param orig; the GeneProductRef instance to copy.
+   * @param orig the GeneProductRef instance to copy.
    */
   GeneProductRef(const GeneProductRef& orig);
 
@@ -123,8 +133,8 @@ public:
    /**
    * Assignment operator for GeneProductRef.
    *
-   * @param rhs; the object whose values are used as the basis
-   * of the assignment
+   * @param rhs the object whose values are used as the basis
+   * of the assignment.
    */
   GeneProductRef& operator=(const GeneProductRef& rhs);
 
@@ -143,10 +153,21 @@ public:
   virtual ~GeneProductRef();
 
 
-   /**
+  /**
    * Returns the value of the "id" attribute of this GeneProductRef.
    *
-   * @return the value of the "id" attribute of this GeneProductRef as a string.
+   * @note Because of the inconsistent behavior of this function with 
+   * respect to assignments and rules, it is now recommended to
+   * use the getIdAttribute() function instead.
+   *
+   * @copydetails doc_id_attribute
+   *
+   * @return the id of this GeneProductRef.
+   *
+   * @see getIdAttribute()
+   * @see setIdAttribute(const std::string& sid)
+   * @see isSetIdAttribute()
+   * @see unsetIdAttribute()
    */
   virtual const std::string& getId() const;
 
@@ -163,12 +184,12 @@ public:
   *
   * @return the association as infix string.
   */
-  virtual std::string toInfix() const;
+  virtual std::string toInfix(bool usingId=false) const;
 
   /**
-   * Returns the value of the "name" attribute of this GeneProductRef.
+   * Returns the value of the "name" attribute of this GeneProductRef object.
    *
-   * @return the value of the "name" attribute of this GeneProductRef as a string.
+   * @copydetails doc_get_name
    */
   virtual const std::string& getName() const;
 
@@ -177,8 +198,7 @@ public:
    * Predicate returning @c true if this GeneProductRef's "id" attribute is
    * set.
    *
-   * @return @c true if this GeneProductRef's "id" attribute has been set,
-   * otherwise @c false is returned.
+   * @copydetails doc_isset_id
    */
   virtual bool isSetId() const;
 
@@ -197,8 +217,7 @@ public:
    * Predicate returning @c true if this GeneProductRef's "name" attribute is
    * set.
    *
-   * @return @c true if this GeneProductRef's "name" attribute has been set,
-   * otherwise @c false is returned.
+   * @copydetails doc_isset_name
    */
   virtual bool isSetName() const;
 
@@ -206,27 +225,17 @@ public:
   /**
    * Sets the value of the "id" attribute of this GeneProductRef.
    *
-   * @param id; const std::string& value of the "id" attribute to be set
-   *
-   * @return integer value indicating success/failure of the
-   * function.  @if clike The value is drawn from the
-   * enumeration #OperationReturnValues_t. @endif The possible values
-   * returned by this function are:
-   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
+   * @copydetails doc_set_id
    */
-  virtual int setId(const std::string& id);
+  virtual int setId(const std::string& sid);
 
 
   /**
    * Sets the value of the "geneProduct" attribute of this GeneProductRef.
    *
-   * @param geneProduct; const std::string& value of the "geneProduct" attribute to be set
+   * @param geneProduct the value of the "geneProduct" attribute to be set.
    *
-   * @return integer value indicating success/failure of the
-   * function.  @if clike The value is drawn from the
-   * enumeration #OperationReturnValues_t. @endif The possible values
-   * returned by this function are:
+   * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
    * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
    */
@@ -236,14 +245,7 @@ public:
   /**
    * Sets the value of the "name" attribute of this GeneProductRef.
    *
-   * @param name; const std::string& value of the "name" attribute to be set
-   *
-   * @return integer value indicating success/failure of the
-   * function.  @if clike The value is drawn from the
-   * enumeration #OperationReturnValues_t. @endif The possible values
-   * returned by this function are:
-   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
+   * @copydetails doc_set_name
    */
   virtual int setName(const std::string& name);
 
@@ -251,12 +253,7 @@ public:
   /**
    * Unsets the value of the "id" attribute of this GeneProductRef.
    *
-   * @return integer value indicating success/failure of the
-   * function.  @if clike The value is drawn from the
-   * enumeration #OperationReturnValues_t. @endif The possible values
-   * returned by this function are:
-   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   * @copydetails doc_unset_id
    */
   virtual int unsetId();
 
@@ -264,10 +261,7 @@ public:
   /**
    * Unsets the value of the "geneProduct" attribute of this GeneProductRef.
    *
-   * @return integer value indicating success/failure of the
-   * function.  @if clike The value is drawn from the
-   * enumeration #OperationReturnValues_t. @endif The possible values
-   * returned by this function are:
+   * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
    * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
    */
@@ -277,12 +271,7 @@ public:
   /**
    * Unsets the value of the "name" attribute of this GeneProductRef.
    *
-   * @return integer value indicating success/failure of the
-   * function.  @if clike The value is drawn from the
-   * enumeration #OperationReturnValues_t. @endif The possible values
-   * returned by this function are:
-   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   * @copydetails doc_unset_name
    */
   virtual int unsetName();
 
@@ -336,13 +325,13 @@ public:
 
   /**
    * Subclasses should override this method to write out their contained
-   * SBML objects as XML elements.  Be sure to call your parents
+   * SBML objects as XML elements.  Be sure to call your parent's
    * implementation of this method as well.
    */
   virtual void writeElements (XMLOutputStream& stream) const;
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -353,7 +342,7 @@ public:
   virtual bool accept (SBMLVisitor& v) const;
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -364,7 +353,7 @@ public:
   virtual void setSBMLDocument (SBMLDocument* d);
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -376,8 +365,245 @@ public:
                const std::string& pkgPrefix, bool flag);
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
+
+  #ifndef SWIG
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this GeneProductRef.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, bool& value)
+    const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this GeneProductRef.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this GeneProductRef.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           double& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this GeneProductRef.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           unsigned int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this GeneProductRef.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           std::string& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Predicate returning @c true if this GeneProductRef's attribute
+   * "attributeName" is set.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @return @c true if this GeneProductRef's attribute "attributeName" has
+   * been set, otherwise @c false is returned.
+   */
+  virtual bool isSetAttribute(const std::string& attributeName) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this GeneProductRef.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, bool value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this GeneProductRef.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this GeneProductRef.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, double value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this GeneProductRef.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           unsigned int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this GeneProductRef.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           const std::string& value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Unsets the value of the "attributeName" attribute of this GeneProductRef.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int unsetAttribute(const std::string& attributeName);
+
+  /** @endcond */
+
+
+
+
+  #endif /* !SWIG */
 
 protected:
 
@@ -389,7 +615,7 @@ protected:
   virtual SBase* createObject(XMLInputStream& stream);
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -400,7 +626,7 @@ protected:
   virtual void addExpectedAttributes(ExpectedAttributes& attributes);
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -412,7 +638,7 @@ protected:
                                const ExpectedAttributes& expectedAttributes);
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -423,7 +649,7 @@ protected:
   virtual void writeAttributes (XMLOutputStream& stream) const;
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
 
@@ -442,13 +668,16 @@ BEGIN_C_DECLS
 
 /**
  * Creates a new GeneProductRef_t structure using the given SBML @p level and
- * @p version values.
+ * @p version, and the @p pkgVersion package version.
  *
  * @param level an unsigned int, the SBML level to assign to this
  * GeneProductRef_t structure.
  *
  * @param version an unsigned int, the SBML version to assign to this
  * GeneProductRef_t structure.
+ *
+ * @param pkgVersion an unsigned int, the version of the package to assign
+ * to this GeneProductRef_t structure.
  *
  * @returns the newly-created GeneProductRef_t structure, or a null pointer if
  * an error occurred during construction.
@@ -498,7 +727,7 @@ GeneProductRef_clone(GeneProductRef_t * gpr);
  *
  * @return the id of this structure.
  *
- * @member of GeneProductRef_t
+ * @memberof GeneProductRef_t
  */
 LIBSBML_EXTERN
 const char *
@@ -513,7 +742,7 @@ GeneProductRef_getId(const GeneProductRef_t * gpr);
  *
  * @return the geneProduct of this structure.
  *
- * @member of GeneProductRef_t
+ * @memberof GeneProductRef_t
  */
 LIBSBML_EXTERN
 const char *
@@ -528,7 +757,7 @@ GeneProductRef_getGeneProduct(const GeneProductRef_t * gpr);
  *
  * @return the name of this structure.
  *
- * @member of GeneProductRef_t
+ * @memberof GeneProductRef_t
  */
 LIBSBML_EXTERN
 const char *
@@ -536,15 +765,15 @@ GeneProductRef_getName(const GeneProductRef_t * gpr);
 
 
 /**
- * Predicate returning @c 1 if the given GeneProductRef_t structure's "id"
+ * Predicate returning @c 1 (true) if the given GeneProductRef_t structure's "id"
  * is set.
  *
  * @param gpr the GeneProductRef_t structure.
  *
- * @return @c 1 if the "id" of this GeneProductRef_t structure is
- * set, @c 0 otherwise.
+ * @return @c 1 (true) if the "id" of this GeneProductRef_t structure is
+ * set, @c 0 (false) otherwise.
  *
- * @member of GeneProductRef_t
+ * @memberof GeneProductRef_t
  */
 LIBSBML_EXTERN
 int
@@ -552,15 +781,15 @@ GeneProductRef_isSetId(const GeneProductRef_t * gpr);
 
 
 /**
- * Predicate returning @c 1 if the given GeneProductRef_t structure's "geneProduct"
+ * Predicate returning @c 1 (true) if the given GeneProductRef_t structure's "geneProduct"
  * is set.
  *
  * @param gpr the GeneProductRef_t structure.
  *
- * @return @c 1 if the "geneProduct" of this GeneProductRef_t structure is
- * set, @c 0 otherwise.
+ * @return @c 1 (true) if the "geneProduct" of this GeneProductRef_t structure is
+ * set, @c 0 (false) otherwise.
  *
- * @member of GeneProductRef_t
+ * @memberof GeneProductRef_t
  */
 LIBSBML_EXTERN
 int
@@ -568,15 +797,15 @@ GeneProductRef_isSetGeneProduct(const GeneProductRef_t * gpr);
 
 
 /**
- * Predicate returning @c 1 if the given GeneProductRef_t structure's "name"
+ * Predicate returning @c 1 (true) if the given GeneProductRef_t structure's "name"
  * is set.
  *
  * @param gpr the GeneProductRef_t structure.
  *
- * @return @c 1 if the "name" of this GeneProductRef_t structure is
- * set, @c 0 otherwise.
+ * @return @c 1 (true) if the "name" of this GeneProductRef_t structure is
+ * set, @c 0 (false) otherwise.
  *
- * @member of GeneProductRef_t
+ * @memberof GeneProductRef_t
  */
 LIBSBML_EXTERN
 int
@@ -586,26 +815,23 @@ GeneProductRef_isSetName(const GeneProductRef_t * gpr);
 /**
  * Sets the "id" attribute of the given GeneProductRef_t structure.
  *
- * This function copies the string given in @p string.  If the string is
- * a null pointer, this function performs GeneProductRef_unsetId() instead.
+ * This function copies the string given in @p id.  If the string is
+ * a null pointer, this function is equivalent to calling GeneProductRef_unsetId().
  *
  * @param gpr the GeneProductRef_t structure.
  *
  * @param id the string to which the structures "id" attribute should be
  * set.
  *
- * @return integer value indicating success/failure of the
- * function.  @if clike The value is drawn from the
- * enumeration #OperationReturnValues_t. @endif@~ The possible values
- * returned by this function are:
+ * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
  *
- * @note Using this function with a null pointer for @p name is equivalent to
- * unsetting the value of the "name" attribute.
+ * @note Using this function with a null pointer for @p id is equivalent to
+ * unsetting the value of the "id" attribute.
  * 
- * @member of GeneProductRef_t
+ * @memberof GeneProductRef_t
  */
 LIBSBML_EXTERN
 int
@@ -615,26 +841,23 @@ GeneProductRef_setId(GeneProductRef_t * gpr, const char * id);
 /**
  * Sets the "geneProduct" attribute of the given GeneProductRef_t structure.
  *
- * This function copies the string given in @p string.  If the string is
- * a null pointer, this function performs GeneProductRef_unsetGeneProduct() instead.
+ * This function copies the string given in @p geneProduct.  If the string is
+ * a null pointer, this function is equivalent to calling GeneProductRef_unsetGeneProduct().
  *
  * @param gpr the GeneProductRef_t structure.
  *
  * @param geneProduct the string to which the structures "geneProduct" attribute should be
  * set.
  *
- * @return integer value indicating success/failure of the
- * function.  @if clike The value is drawn from the
- * enumeration #OperationReturnValues_t. @endif@~ The possible values
- * returned by this function are:
+ * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
  *
- * @note Using this function with a null pointer for @p name is equivalent to
- * unsetting the value of the "name" attribute.
+ * @note Using this function with a null pointer for @p geneProduct is equivalent to
+ * unsetting the value of the "geneProduct" attribute.
  * 
- * @member of GeneProductRef_t
+ * @memberof GeneProductRef_t
  */
 LIBSBML_EXTERN
 int
@@ -644,18 +867,15 @@ GeneProductRef_setGeneProduct(GeneProductRef_t * gpr, const char * geneProduct);
 /**
  * Sets the "name" attribute of the given GeneProductRef_t structure.
  *
- * This function copies the string given in @p string.  If the string is
- * a null pointer, this function performs GeneProductRef_unsetName() instead.
+ * This function copies the string given in @p name.  If the string is
+ * a null pointer, this function is equivalent to calling GeneProductRef_unsetName().
  *
  * @param gpr the GeneProductRef_t structure.
  *
  * @param name the string to which the structures "name" attribute should be
  * set.
  *
- * @return integer value indicating success/failure of the
- * function.  @if clike The value is drawn from the
- * enumeration #OperationReturnValues_t. @endif@~ The possible values
- * returned by this function are:
+ * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
@@ -663,7 +883,7 @@ GeneProductRef_setGeneProduct(GeneProductRef_t * gpr, const char * geneProduct);
  * @note Using this function with a null pointer for @p name is equivalent to
  * unsetting the value of the "name" attribute.
  * 
- * @member of GeneProductRef_t
+ * @memberof GeneProductRef_t
  */
 LIBSBML_EXTERN
 int
@@ -676,15 +896,12 @@ GeneProductRef_setName(GeneProductRef_t * gpr, const char * name);
  *
  * @param gpr the GeneProductRef_t structure.
  *
- * @return integer value indicating success/failure of the
- * function.  @if clike The value is drawn from the
- * enumeration #OperationReturnValues_t. @endif@~ The possible values
- * returned by this function are:
+ * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
  *
- * @member of GeneProductRef_t
+ * @memberof GeneProductRef_t
  */
 LIBSBML_EXTERN
 int
@@ -697,15 +914,12 @@ GeneProductRef_unsetId(GeneProductRef_t * gpr);
  *
  * @param gpr the GeneProductRef_t structure.
  *
- * @return integer value indicating success/failure of the
- * function.  @if clike The value is drawn from the
- * enumeration #OperationReturnValues_t. @endif@~ The possible values
- * returned by this function are:
+ * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
  *
- * @member of GeneProductRef_t
+ * @memberof GeneProductRef_t
  */
 LIBSBML_EXTERN
 int
@@ -718,15 +932,12 @@ GeneProductRef_unsetGeneProduct(GeneProductRef_t * gpr);
  *
  * @param gpr the GeneProductRef_t structure.
  *
- * @return integer value indicating success/failure of the
- * function.  @if clike The value is drawn from the
- * enumeration #OperationReturnValues_t. @endif@~ The possible values
- * returned by this function are:
+ * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
  *
- * @member of GeneProductRef_t
+ * @memberof GeneProductRef_t
  */
 LIBSBML_EXTERN
 int
@@ -734,15 +945,15 @@ GeneProductRef_unsetName(GeneProductRef_t * gpr);
 
 
 /**
- * Predicate returning @c 1 or *c 0 depending on whether all the required
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether all the required
  * attributes of the given GeneProductRef_t structure have been set.
  *
  * @param gpr the GeneProductRef_t structure to check.
  *
- * @return @c 1 if all the required attributes for this
- * structure have been defined, @c 0 otherwise.
+ * @return @c 1 (true) if all the required attributes for this
+ * structure have been defined, @c 0 (false) otherwise.
  *
- * @member of GeneProductRef_t
+ * @memberof GeneProductRef_t
  */
 LIBSBML_EXTERN
 int

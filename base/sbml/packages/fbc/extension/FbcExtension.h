@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -26,8 +30,23 @@
  * @class FbcExtension
  * @sbmlbrief{fbc} Base extension class for the &ldquo;fbc&rdquo; package.
  *
+ * @htmlinclude not-sbml-warning.html
+ *
  * @class FbcPkgNamespaces
  * @sbmlbrief{fbc} SBMLNamespaces extension for the &ldquo;fbc&rdquo; package.
+ *
+ * @htmlinclude not-sbml-warning.html
+ *
+ * There are currently two possible namespaces defined for the Flux Balance 
+ * Constraints package: 
+ * "http://www.sbml.org/sbml/level3/version1/fbc/version1" and 
+ * "http://www.sbml.org/sbml/level3/version1/fbc/version2".  Despite both
+ * referencing SBML Level&nbsp;3 Version&nbsp;1 explicitly, both versions of 
+ * this package (and all such packages) can be used without change in SBML 
+ * Level&nbsp;3 Version&nbsp;2 documents.  The only caveat is that features of 
+ * the SBML Level&nbsp;3 Version&nbsp;2 specification that were not present in 
+ * Level&nbsp;1 may not be used by constructs from the Flux Balance Constraints
+ * package.
  */
 
 
@@ -151,7 +170,7 @@ public:
   /**
    * Copy constructor for FbcExtension.
    *
-   * @param orig; the FbcExtension instance to copy.
+   * @param orig the FbcExtension instance to copy.
    */
   FbcExtension(const FbcExtension& orig);
 
@@ -159,8 +178,8 @@ public:
    /**
    * Assignment operator for FbcExtension.
    *
-   * @param rhs; the object whose values are used as the basis
-   * of the assignment
+   * @param rhs the object whose values are used as the basis
+   * of the assignment.
    */
   FbcExtension& operator=(const FbcExtension& rhs);
 
@@ -195,11 +214,11 @@ public:
    * combination of the Level and Version of SBML, and the Version of the
    * SBML Level&nbsp;3 package.  (At the time of this writing, the only SBML
    * Level that supports packages is Level&nbsp;3, so the value of
-   * @p sbmlLevel is necessarily always <code>3</code>.)
+   * @p sbmlLevel must necessarily always be <code>3</code>.)
    *
-   * @param sbmlLevel the level of SBML
-   * @param sbmlVersion the version of SBML
-   * @param pkgVersion the version of package
+   * @param sbmlLevel the level of SBML.
+   * @param sbmlVersion the version of SBML.
+   * @param pkgVersion the version of the package.
    *
    * @return a string representing the package URI, or an empty string if no
    * corresponding URI exists.
@@ -215,7 +234,7 @@ public:
    * @param uri a URI that represents a version of this package.
    *
    * @return the SBML Level for the given URI of this package, or @c 0 if the
-   * given URI is invalid.
+   * given URI is invalid, or for a different package.
    */
   virtual unsigned int getLevel(const std::string &uri) const;
 
@@ -227,7 +246,7 @@ public:
    * @param uri a URI that represents a version of this package.
    *
    * @return the SBML Version within the SBML Level for the given URI of this
-   * package, or @c 0 if the given URI is invalid.
+   * package, or @c 0 if the given URI is invalid, or for a different package.
    */
   virtual unsigned int getVersion(const std::string &uri) const;
 
@@ -240,7 +259,7 @@ public:
    * package.
    *
    * @return the version of the SBML Level&nbsp;3 package with the given URI,
-   * or @c 0 if the given URI is invalid.
+   * or @c 0 if the given URI is invalid, or for a different package.
    */
   virtual unsigned int getPackageVersion(const std::string &uri) const;
 
@@ -249,9 +268,9 @@ public:
    * Returns an FbcPkgNamespaces object.
    *
    * @param uri a URI that represents one of the valid versions of the
-   * &ldquo;fbc&rdquo; package
+   * &ldquo;fbc&rdquo; package.
    *
-   * @return an FbcPkgNamespace object corresponding to the given @p uri, or
+   * @return an FbcPkgNamespaces object corresponding to the given @p uri, or
    * @c NULL if the URI is not defined in the &ldquo;fbc&rdquo; package.
    */
   virtual SBMLNamespaces* getSBMLExtensionNamespaces(const std::string &uri) const;
@@ -292,7 +311,7 @@ public:
   /**
    * Return the entry in the error table at this index. 
    *
-   * @param index an unsigned intgere representing the index of the error in the FbcSBMLErrorTable
+   * @param index an unsigned intgere representing the index of the error in the FbcSBMLErrorTable.
    *
    * @return packageErrorTableEntry object in the FbcSBMLErrorTable corresponding to the index given.
    */
@@ -304,7 +323,7 @@ public:
   /**
    * Return the entry in the error table at this index. 
    *
-   * @param index an unsigned intgere representing the index of the error in the FbcSBMLErrorTable
+   * @param index an unsigned intgere representing the index of the error in the FbcSBMLErrorTable.
    *
    * @return packageErrorTableEntry object in the FbcSBMLErrorTable corresponding to the index given.
    */
@@ -316,7 +335,7 @@ public:
   /**
    * Return the index in the error table with the given errorId. 
    *
-   * @param errorId an unsigned intgere representing the errorId of the error in the FbcSBMLErrorTable
+   * @param errorId an unsigned intgere representing the errorId of the error in the FbcSBMLErrorTable.
    *
    * @return unsigned integer representing the index in the FbcSBMLErrorTable corresponding to the errorId given.
    */
@@ -335,7 +354,7 @@ public:
 
 
   /** @cond doxygenLibsbmlInternal */
-  virtual bool hasMultipleVersions() const;
+  virtual bool hasMutiplePackageVersions() const;
   /** @endcond */
 
 

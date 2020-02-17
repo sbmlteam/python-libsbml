@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -193,9 +197,6 @@ XMLNode::XMLNode(const XMLNode& orig):
 }
 
 
- /*
-  * Assignment operator for XMLNode.
-  */
 XMLNode& 
 XMLNode::operator=(const XMLNode& rhs)
 {
@@ -282,7 +283,7 @@ XMLNode::insertChild (unsigned int n, const XMLNode& node)
  * Removes the nth child of this XMLNode and returned the removed node.
  * The caller owns the returned node and is responsible for deleting it.
  *
- * @return the removed child, or NULL if the given index is out of range. 
+ * @return the removed child, or @c NULL if the given index is out of range. 
  */
 XMLNode* 
 XMLNode::removeChild(unsigned int n)
@@ -408,7 +409,7 @@ XMLNode::getChild (const std::string&  name) const
  * @param name a string, the name of the child for which the 
  * index is required.
  *
- * @return the index of the first child of this XMLNode with the given name, or -1 if not present.
+ * @return the index of the first child of this XMLNode with the given name, or @c -1 if not present.
  */
 int
 XMLNode::getIndex (const std::string& name) const
@@ -431,15 +432,17 @@ XMLNode::getIndex (const std::string& name) const
  * @return boolean indicating whether this XMLNode represents the same XML tree as another.
  */
 bool 
-XMLNode::equals(const XMLNode& other, bool ignoreURI /*=false*/) const
+XMLNode::equals(const XMLNode& other, bool ignoreURI /*=false*/, bool ignoreAttributeValues /*=false*/) const
 {
   bool equal;//=true;
   // check if the nodes have the same name,
   equal=getName()==other.getName();
-  if (!equal) return false;
+  if (!equal) 
+    return false;
   // the same namespace uri, 
   equal=(ignoreURI ||  getURI()==other.getURI());
-  if (!equal) return false;
+  if (!equal)
+    return false;
 
   XMLAttributes attr1=getAttributes(); 
   XMLAttributes attr2=other.getAttributes();
@@ -447,15 +450,20 @@ XMLNode::equals(const XMLNode& other, bool ignoreURI /*=false*/) const
   //the same attributes and the same number of children
   equal=(iMax==attr2.getLength());
   std::string attrName;
+  int attr2Index;
   while(equal && i<iMax)
   {
     attrName=attr1.getName(i);
-    equal=(attr2.getIndex(attrName)!=-1);
-    // also check the namspace
-    equal=(equal && (attr1.getURI(i)==attr2.getURI(i) 
-      || (attr1.getPrefix(i) == "" && getURI() == attr2.getURI(i))
-      || (attr2.getPrefix(i) == "" && other.getURI() == attr1.getURI(i))
+    attr2Index = attr2.getIndex(attrName);
+    equal=(attr2Index !=-1);
+    // also check the namespace
+    equal=(equal && (attr1.getURI(i)==attr2.getURI(attr2Index)
+      || (attr1.getPrefix(i) == "" && getURI() == attr2.getURI(attr2Index))
+      || (attr2.getPrefix(attr2Index) == "" && other.getURI() == attr1.getURI(i))
       ));
+    // also check the value of the attribute
+    if (!ignoreAttributeValues)
+    equal = (equal && (attr1.getValue(i) == attr2.getValue(attr2Index)));
     ++i;
   }
 
@@ -465,7 +473,7 @@ XMLNode::equals(const XMLNode& other, bool ignoreURI /*=false*/) const
   equal=(equal && (iMax==(int)other.getNumChildren()));
   while(equal && i<iMax)
   {
-    equal=getChild(i).equals(other.getChild(i), ignoreURI);
+    equal=getChild(i).equals(other.getChild(i), ignoreURI, ignoreAttributeValues);
     ++i;
   }
   return equal; 
@@ -519,14 +527,20 @@ XMLNode::write (XMLOutputStream& stream) const
 
     if (!mTriple.isEmpty())
     {
-      // edge case ... we have an element with a couple of elements, and 
-      // one is a text node (ugly!) in this case we can get a hanging
-      // indent ... so we downindent ... 
-      if (children > 1 && haveTextNode)
-      {
-        stream.downIndent();
-      }
-      stream.endElement( mTriple );
+      // I removed this as it was creating un - necessary down indents
+      // no tests failed as a result of removing it
+      // but I'm still a bit dubious - but we now have another case
+      // that is not cured by reapplying this so need to dig deeper
+
+//      // edge case ... we have an element with a couple of elements, and 
+//      // one is a text node (ugly!) in this case we can get a hanging
+//      // indent ... so we downindent ... 
+      //if (children > 1 && haveTextNode)
+      //{
+      //  stream.downIndent();
+      //}
+
+      stream.endElement( mTriple, haveTextNode);
     }
   }
   else if ( isStart() && !isEnd() ) 
@@ -537,6 +551,21 @@ XMLNode::write (XMLOutputStream& stream) const
 }
 /** @endcond */
 
+/** @cond doxygenLibsbmlInternal */
+
+void
+XMLNode::writeToStream(XMLOutputStream& stream) const
+{
+  unsigned int savedIndent = stream.getIndent();
+  this->write(stream);
+  if (savedIndent != stream.getIndent() + 1)
+  {
+    stream.setIndent(savedIndent + 1);
+  }
+
+}
+
+/** @endcond */
 
 /*
  * Returns a string which is converted from this XMLNode.

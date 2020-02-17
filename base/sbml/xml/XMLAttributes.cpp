@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -130,8 +134,8 @@ XMLAttributes::clone () const
 int
 XMLAttributes::add (const std::string& name,
 		    const std::string& value,
-		    const std::string& namespaceURI,
-		    const std::string& prefix)
+		    const std::string namespaceURI,
+		    const std::string prefix)
 {
 
   int index = getIndex(name, namespaceURI);
@@ -223,7 +227,7 @@ XMLAttributes::remove (int n)
  * XMLAttributes set.
  */
 int 
-XMLAttributes::remove (const std::string& name, const std::string& uri)
+XMLAttributes::remove (const std::string& name, const std::string uri)
 {
   return remove(getIndex(name,uri));
 }
@@ -254,7 +258,7 @@ XMLAttributes::clear()
 /*
  * Lookup the index of an attribute with the given name.
  *
- * @return the index of an attribute with the given name, or -1 if not present.
+ * @return the index of an attribute with the given name, or @c -1 if not present.
  */
 int
 XMLAttributes::getIndex (const std::string& name) const
@@ -272,7 +276,7 @@ XMLAttributes::getIndex (const std::string& name) const
  * Lookup the index of an attribute with the given name and namespace URI
  *
  * @return the index of an attribute with the given name and namespace URI, 
- * or -1 if not present.
+ * or @c -1 if not present.
  */
 int
 XMLAttributes::getIndex (const std::string& name, const std::string& uri) const
@@ -289,7 +293,7 @@ XMLAttributes::getIndex (const std::string& name, const std::string& uri) const
 /*
  * Lookup the index of an attribute by XMLTriple.
  *
- * @return the index of an attribute with the given XMLTriple, or -1 if not present.
+ * @return the index of an attribute with the given XMLTriple, or @c -1 if not present.
  */
 int 
 XMLAttributes::getIndex (const XMLTriple& triple) const
@@ -393,7 +397,7 @@ XMLAttributes::getValue (int index) const
  * hasAttribute(name) to test for attribute existence.
  */
 std::string
-XMLAttributes::getValue (const std::string name) const
+XMLAttributes::getValue (const std::string& name) const
 {
   return getValue( getIndex(name) );
 }
@@ -407,7 +411,7 @@ XMLAttributes::getValue (const std::string name) const
  * hasAttribute(name,uri) to test for attribute existence.
  */
 std::string
-XMLAttributes::getValue (const std::string name, const std::string uri) const
+XMLAttributes::getValue (const std::string& name, const std::string& uri) const
 {
   return getValue( getIndex(name,uri) );
 }
@@ -443,7 +447,7 @@ XMLAttributes::hasAttribute (int index) const
  * Predicate returning @c true or @c false depending on whether
  * an attribute with the given name and namespace URI exists in this XMLAttributes.
  *
- * @param name a string, the name of the attribute 
+ * @param name a string, the name of the attribute.
  * @param uri  a string, the namespace URI of the attribute.
  *
  * @return @c true if an attribute with the given name exists in this
@@ -451,7 +455,7 @@ XMLAttributes::hasAttribute (int index) const
  *
  */
 bool 
-XMLAttributes::hasAttribute (const std::string name, const std::string uri) const 
+XMLAttributes::hasAttribute (const std::string& name, const std::string uri) const 
 { 
   return ( getIndex(name,uri) != -1 ); 
 }
@@ -461,7 +465,7 @@ XMLAttributes::hasAttribute (const std::string name, const std::string uri) cons
  * Predicate returning @c true or @c false depending on whether
  * an attribute with the given XML triple exists in this XMLAttributes.
  *
- * @param triple an XMLTriple, the XML triple of the attribute 
+ * @param triple an XMLTriple, the XML triple of the attribute.
  *
  * @return @c true if an attribute with the given XML triple exists in this
  * XMLAttributes, @c false otherwise.
@@ -475,7 +479,7 @@ XMLAttributes::hasAttribute (const XMLTriple& triple) const
 
 
 /*
- * @return true if this XMLAttributes set is empty, false otherwise.
+ * @return @c true if this XMLAttributes set is empty, false otherwise.
  */
 bool
 XMLAttributes::isEmpty () const
@@ -487,7 +491,7 @@ XMLAttributes::isEmpty () const
 /** @cond doxygenLibsbmlInternal */
 /*
  * Reads the value for the attribute with the index into value.  If attribute 
- * was not found or value could not be interpreted as a boolean, value is not 
+ * was not found or value could not be interpreted as a Boolean, value is not 
  * modified.
  *
  * According to the W3C XML Schema, valid boolean values are: "true",
@@ -495,7 +499,7 @@ XMLAttributes::isEmpty () const
  * http://www.w3.org/TR/xmlschema-2/#boolean
  *
  * If an XMLErrorLog is passed in datatype format errors are logged.  If
- * required is true, missing attributes are also logged.
+ * @p required is true, missing attributes are also logged.
  *
  * @returns true if the attribute was read into value, false otherwise.
  */
@@ -546,7 +550,7 @@ XMLAttributes::readInto (  int          index
 
 /*
  * Reads the value for the attribute name into value.  If the given local
- * name was not found or value could not be interpreted as a boolean, 
+ * name was not found or value could not be interpreted as a Boolean, 
  * value is not modified.
  *
  * According to the W3C XML Schema, valid boolean values are: "true",
@@ -554,7 +558,7 @@ XMLAttributes::readInto (  int          index
  * http://www.w3.org/TR/xmlschema-2/#boolean
  *
  * If an XMLErrorLog is passed in datatype format errors are logged.  If
- * required is true, missing attributes are also logged.
+ * @p required is true, missing attributes are also logged.
  *
  * @returns true if the attribute was read into value, false otherwise.
  */
@@ -572,14 +576,14 @@ XMLAttributes::readInto (  const std::string&   name
 
 /*
  * Reads the value for the attribute XMLTriple into value.  If XMLTriple was not
- * found or value could not be interpreted as a boolean, value is not modified.
+ * found or value could not be interpreted as a Boolean, value is not modified.
  *
  * According to the W3C XML Schema, valid boolean values are: "true",
  * "false", "1", and "0" (case-insensitive).  For more information, see:
  * http://www.w3.org/TR/xmlschema-2/#boolean
  *
  * If an XMLErrorLog is passed in datatype format errors are logged.  If
- * required is true, missing attributes are also logged.
+ * @p required is true, missing attributes are also logged.
  *
  * @returns true if the attribute was read into value, false otherwise.
  */
@@ -607,7 +611,7 @@ XMLAttributes::readInto (  const XMLTriple& triple
  * http://www.w3.org/TR/xmlschema-2/#double
  *
  * If an XMLErrorLog is passed in datatype format errors are logged.  If
- * required is true, missing attributes are also logged.
+ * @p required is true, missing attributes are also logged.
  *
  * @returns @c true if the attribute was read into value, @c false otherwise.
  *
@@ -697,7 +701,7 @@ XMLAttributes::readInto (  int          index
  * http://www.w3.org/TR/xmlschema-2/#double
  *
  * If an XMLErrorLog is passed in datatype format errors are logged.  If
- * required is true, missing attributes are also logged.
+ * @p required is true, missing attributes are also logged.
  *
  * @returns @c true if the attribute was read into value, @c false otherwise.
  *
@@ -725,7 +729,7 @@ XMLAttributes::readInto (  const XMLTriple& triple
  * http://www.w3.org/TR/xmlschema-2/#double
  *
  * If an XMLErrorLog is passed in datatype format errors are logged.  If
- * required is true, missing attributes are also logged.
+ * @p required is true, missing attributes are also logged.
  *
  * @returns true if the attribute was read into value, false otherwise.
  */
@@ -753,7 +757,7 @@ XMLAttributes::readInto (  const std::string&   name
  * see: http://www.w3.org/TR/xmlschema-2/#integer
  *
  * If an XMLErrorLog is passed in datatype format errors are logged.  If
- * required is true, missing attributes are also logged.
+ * @p required is true, missing attributes are also logged.
  *
  * @returns @c true if the attribute was read into value, @c false otherwise.
  *
@@ -815,7 +819,7 @@ XMLAttributes::readInto (  int          index
  * see: http://www.w3.org/TR/xmlschema-2/#integer
  *
  * If an XMLErrorLog is passed in datatype format errors are logged.  If
- * required is true, missing attributes are also logged.
+ * @p required is true, missing attributes are also logged.
  *
  * @returns @c true if the attribute was read into value, @c false otherwise.
  *
@@ -841,7 +845,7 @@ XMLAttributes::readInto (  const XMLTriple& triple
  * see: http://www.w3.org/TR/xmlschema-2/#integer
  *
  * If an XMLErrorLog is passed in datatype format errors are logged.  If
- * required is true, missing attributes are also logged.
+ * @p required is true, missing attributes are also logged.
  *
  * @returns true if the attribute was read into value, false otherwise.
  */
@@ -869,7 +873,7 @@ XMLAttributes::readInto (  const std::string& name
  * see: http://www.w3.org/TR/xmlschema-2/#integer
  *
  * If an XMLErrorLog is passed in datatype format errors are logged.  If
- * required is true, missing attributes are also logged.
+ * @p required is true, missing attributes are also logged.
  *
  * @returns @c true if the attribute was read into value, @c false otherwise.
  *
@@ -903,7 +907,7 @@ XMLAttributes::readInto (  int          index
  * see: http://www.w3.org/TR/xmlschema-2/#integer
  *
  * If an XMLErrorLog is passed in datatype format errors are logged.  If
- * required is true, missing attributes are also logged.
+ * @p required is true, missing attributes are also logged.
  *
  * @returns @c true if the attribute was read into value, @c false otherwise.
  *
@@ -930,7 +934,7 @@ XMLAttributes::readInto (  const XMLTriple& triple
  * see: http://www.w3.org/TR/xmlschema-2/#integer
  *
  * If an XMLErrorLog is passed in datatype format errors are logged.  If
- * required is true, missing attributes are also logged.
+ * @p required is true, missing attributes are also logged.
  *
  * @returns true if the attribute was read into value, false otherwise.
  */
@@ -958,7 +962,7 @@ XMLAttributes::readInto (  const std::string&  name
  * information, see: http://www.w3.org/TR/xmlschema-2/#integer
  *
  * If an XMLErrorLog is passed in datatype format errors are logged.  If
- * required is true, missing attributes are also logged.
+ * @p required is true, missing attributes are also logged.
  *
  * @returns @c true if the attribute was read into value, @c false otherwise.
  *
@@ -972,7 +976,7 @@ XMLAttributes::readInto (  int           index
                          , const unsigned int line     
                          , const unsigned int column   ) const
 {
-  long  temp;
+  long  temp = 0;
   bool  assigned = readInto(index, name, temp, log, required, line, column);
 
   if (assigned && temp >= 0) value = (unsigned int)temp;
@@ -994,7 +998,7 @@ XMLAttributes::readInto (  int           index
  * information, see: http://www.w3.org/TR/xmlschema-2/#integer
  *
  * If an XMLErrorLog is passed in datatype format errors are logged.  If
- * required is true, missing attributes are also logged.
+ * @p required is true, missing attributes are also logged.
  *
  * @returns @c true if the attribute was read into value, @c false otherwise.
  *
@@ -1022,7 +1026,7 @@ XMLAttributes::readInto (  const XMLTriple& triple
  * information, see: http://www.w3.org/TR/xmlschema-2/#integer
  *
  * If an XMLErrorLog is passed in datatype format errors are logged.  If
- * required is true, missing attributes are also logged.
+ * @p required is true, missing attributes are also logged.
  *
  * @returns true if the attribute was read into value, false otherwise.
  */
@@ -1043,7 +1047,7 @@ XMLAttributes::readInto (  const std::string&  name
  * Reads the value for the attribute with the given index into value.  
  * If the attribute was not found, value is not modified.
  *
- * If an XMLErrorLog is passed in and required is true, missing
+ * If an XMLErrorLog is passed in and @p required is true, missing
  * attributes are logged.
  *
  * @returns @c true if the attribute was read into value, @c false otherwise.
@@ -1082,7 +1086,7 @@ XMLAttributes::readInto (  int          index
  * Reads the value for the attribute with the given XMLTriple into value.  
  * If the XMLTriple was not found, value is not modified.
  *
- * If an XMLErrorLog is passed in and required is true, missing
+ * If an XMLErrorLog is passed in and @p required is true, missing
  * attributes are logged.
  *
  * @returns @c true if the attribute was read into value, @c false otherwise.
@@ -1104,7 +1108,7 @@ XMLAttributes::readInto (  const XMLTriple& triple
  * Reads the value for the attribute name into value.  If name was not
  * found, value is not modified.
  *
- * If an XMLErrorLog is passed in and required is true, missing
+ * If an XMLErrorLog is passed in and @p required is true, missing
  * attributes are logged.
  *
  * @returns true if the attribute was read into value, false otherwise.
@@ -1147,8 +1151,8 @@ XMLAttributes::write (XMLOutputStream& stream) const
 /*
  * Logs an attribute format error.
  *
- * @param  name  Name of the attribute
- * @param  type  The datatype of the attribute value.
+ * @param  name  name of the attribute.
+ * @param  type  the datatype of the attribute value.
  */
 void
 XMLAttributes::attributeTypeError (  const std::string& name
@@ -1198,7 +1202,7 @@ XMLAttributes::attributeTypeError (  const std::string& name
 /*
  * Logs an error indicating a required attribute was missing.
  *
- * @param  name  Name of the attribute
+ * @param  name  name of the attribute.
  */
 void
 XMLAttributes::attributeRequiredError (const std::string&  name

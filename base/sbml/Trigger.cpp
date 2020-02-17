@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -62,6 +66,7 @@ Trigger::Trigger (unsigned int level, unsigned int version) :
  , mPersistent        ( true )
  , mIsSetInitialValue ( false )
  , mIsSetPersistent   ( false )
+ , mInternalId ( "" )
 {
   if (!hasValidLevelVersionNamespaceCombination())
     throw SBMLConstructorException();
@@ -75,6 +80,7 @@ Trigger::Trigger (SBMLNamespaces * sbmlns) :
  , mPersistent        ( true )
  , mIsSetInitialValue ( false )
  , mIsSetPersistent   ( false )
+ , mInternalId ( "" )
 {
   if (!hasValidLevelVersionNamespaceCombination())
   {
@@ -104,6 +110,7 @@ Trigger::Trigger (const Trigger& orig) :
  , mPersistent        ( orig.mPersistent)
  , mIsSetInitialValue ( orig.mIsSetInitialValue)
  , mIsSetPersistent   ( orig.mIsSetPersistent)
+ , mInternalId    ( orig.mInternalId )
 
 {
   if (orig.mMath != NULL) 
@@ -126,6 +133,7 @@ Trigger& Trigger::operator=(const Trigger& rhs)
     this->mPersistent        = rhs.mPersistent;
     this->mIsSetInitialValue = rhs.mIsSetInitialValue;
     this->mIsSetPersistent   = rhs.mIsSetPersistent;
+    this->mInternalId = rhs.mInternalId;
 
     delete mMath;
     if (rhs.mMath != NULL) 
@@ -193,7 +201,7 @@ Trigger::getPersistent () const
 
 
 /*
- * @return true if the math (or equivalently the formula) of this
+ * @return @c true if the math (or equivalently the formula) of this
  * Trigger is set, false otherwise.
  */
 bool
@@ -205,7 +213,7 @@ Trigger::isSetMath () const
 
 
 /*
- * @return true if initialValue is set of this Trigger.
+ * @return @c true if initialValue is set of this Trigger.
  */
 bool
 Trigger::isSetInitialValue () const
@@ -215,7 +223,7 @@ Trigger::isSetInitialValue () const
 
 
 /*
- * @return true if persistent is set of this Trigger.
+ * @return @c true if persistent is set of this Trigger.
  */
 bool
 Trigger::isSetPersistent () const
@@ -365,9 +373,13 @@ Trigger::hasRequiredElements() const
   bool allPresent = true;
 
   /* required attributes for trigger: math */
+  /* l3v2 removed that requirement */
 
-  if (!isSetMath())
-    allPresent = false;
+  if ((getLevel() < 3 ) || (getLevel() == 3 && getVersion() == 1))
+  {
+    if (!isSetMath())
+      allPresent = false;
+  }
 
   return allPresent;
 }
@@ -392,6 +404,298 @@ Trigger::hasRequiredAttributes() const
 
   return allPresent;
 }
+
+
+
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Trigger.
+ */
+int
+Trigger::getAttribute(const std::string& attributeName, bool& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "initialValue")
+  {
+    value = getInitialValue();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "persistent")
+  {
+    value = getPersistent();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Trigger.
+ */
+int
+Trigger::getAttribute(const std::string& attributeName, int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Trigger.
+ */
+int
+Trigger::getAttribute(const std::string& attributeName, double& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Trigger.
+ */
+int
+Trigger::getAttribute(const std::string& attributeName,
+                      unsigned int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Trigger.
+ */
+int
+Trigger::getAttribute(const std::string& attributeName,
+                      std::string& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Trigger.
+ */
+//int
+//Trigger::getAttribute(const std::string& attributeName,
+//                      const char* value) const
+//{
+//  int return_value = SBase::getAttribute(attributeName, value);
+//
+//  return return_value;
+//}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Predicate returning @c true if this Trigger's attribute "attributeName" is
+ * set.
+ */
+bool
+Trigger::isSetAttribute(const std::string& attributeName) const
+{
+  bool value = SBase::isSetAttribute(attributeName);
+
+  if (attributeName == "initialValue")
+  {
+    value = isSetInitialValue();
+  }
+  else if (attributeName == "persistent")
+  {
+    value = isSetPersistent();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Trigger.
+ */
+int
+Trigger::setAttribute(const std::string& attributeName, bool value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  if (attributeName == "initialValue")
+  {
+    return_value = setInitialValue(value);
+  }
+  else if (attributeName == "persistent")
+  {
+    return_value = setPersistent(value);
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Trigger.
+ */
+int
+Trigger::setAttribute(const std::string& attributeName, int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Trigger.
+ */
+int
+Trigger::setAttribute(const std::string& attributeName, double value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Trigger.
+ */
+int
+Trigger::setAttribute(const std::string& attributeName, unsigned int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Trigger.
+ */
+int
+Trigger::setAttribute(const std::string& attributeName,
+                      const std::string& value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Trigger.
+ */
+//int
+//Trigger::setAttribute(const std::string& attributeName, const char* value)
+//{
+//  int return_value = SBase::setAttribute(attributeName, value);
+//
+//  return return_value;
+//}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Unsets the value of the "attributeName" attribute of this Trigger.
+ */
+int
+Trigger::unsetAttribute(const std::string& attributeName)
+{
+  int value = SBase::unsetAttribute(attributeName);
+
+  if (attributeName == "initialValue")
+  {
+    value = unsetInitialValue();
+  }
+  else if (attributeName == "persistent")
+  {
+    value = unsetPersistent();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
 
 int Trigger::removeFromParentAndDelete()
 {
@@ -439,10 +743,31 @@ Trigger::replaceSIDWithFunction(const std::string& id, const ASTNode* function)
 
 /** @cond doxygenLibsbmlInternal */
 /*
+ * Function to set/get an identifier for unit checking
+ */
+std::string 
+Trigger::getInternalId() const
+{ 
+  return mInternalId; 
+}
+
+
+void 
+Trigger::setInternalId(std::string id)
+{ 
+  mInternalId = id; 
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+/*
  * Subclasses should override this method to read (and store) XHTML,
  * MathML, etc. directly from the XMLInputStream.
  *
- * @return true if the subclass read from the stream, false otherwise.
+ * @return @c true if the subclass read from the stream, false otherwise.
  */
 bool
 Trigger::readOtherXML (XMLInputStream& stream)
@@ -528,7 +853,7 @@ Trigger::addExpectedAttributes(ExpectedAttributes& attributes)
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 Trigger::readAttributes (const XMLAttributes& attributes,
@@ -562,7 +887,7 @@ Trigger::readAttributes (const XMLAttributes& attributes,
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 Trigger::readL2Attributes (const XMLAttributes&)
@@ -575,7 +900,7 @@ Trigger::readL2Attributes (const XMLAttributes&)
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 Trigger::readL3Attributes (const XMLAttributes& attributes)
@@ -613,7 +938,7 @@ Trigger::readL3Attributes (const XMLAttributes& attributes)
 /** @cond doxygenLibsbmlInternal */
 /*
  * Subclasses should override this method to write their XML attributes
- * to the XMLOutputStream.  Be sure to call your parents implementation
+ * to the XMLOutputStream.  Be sure to call your parent's implementation
  * of this method as well.
  */
 void
@@ -654,7 +979,7 @@ Trigger::writeAttributes (XMLOutputStream& stream) const
 /** @cond doxygenLibsbmlInternal */
 /*
  * Subclasses should override this method to write out their contained
- * SBML objects as XML elements.  Be sure to call your parents
+ * SBML objects as XML elements.  Be sure to call your parent's
  * implementation of this method as well.
  */
 void

@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -228,7 +232,7 @@ public:
   /**
    * Reads (and checks) sboTerm from the given XMLAttributes set.
    *
-   * @return the sboTerm as an integer or -1 if the sboTerm was not in the
+   * @return the sboTerm as an integer or @c -1 if the sboTerm was not in the
    * correct format or not found.
    */
   static int readTerm (const XMLAttributes& attributes, SBMLErrorLog* log,
@@ -240,13 +244,15 @@ public:
   /**
    * Writes sboTerm as an XMLAttribute with the given prefix to the given XMLOutputStream.
    */
-  static void writeTerm (XMLOutputStream& stream, int sboTerm, const std::string& prefix = "");
+  static void writeTerm (XMLOutputStream& stream, int sboTerm, const std::string prefix = "");
 
   /** @endcond */
 
 
   /**
    * Returns @c true if the given term identifier comes from the stated branch of %SBO.
+   *
+   * @note The @em "quantitative parameter" SBO term is now known as "systems description parameter".
    *
    * @return @c true if @p term is-a %SBO <em>"quantiative parameter"</em>, @c false
    * otherwise.
@@ -369,6 +375,8 @@ public:
   /**
    * Returns @c true if the given term identifier comes from the stated branch of %SBO.
    *
+   * @note The @em "interaction" SBO term is now known as "occurring entity representation".
+   *
    * @return @c true if @p term is-a %SBO <em>"interaction"</em>, @c false otherwise.
    *
    * @copydetails doc_note_static_methods
@@ -378,6 +386,8 @@ public:
 
   /**
    * Returns @c true if the given term identifier comes from the stated branch of %SBO.
+   *
+   * @note The @em "entity" SBO term is now known as "physical entity representation".
    *
    * @return @c true if @p term is-a %SBO <em>"entity"</em>, @c false otherwise.
    *
@@ -574,12 +584,20 @@ public:
    */
   static bool checkTerm (int sboTerm);
 
+  /** @cond doxygenLibsbmlInternal */
+ /**
+   * Returns the parent branch of the term
+   */
+  static unsigned int getParentBranch(unsigned int term);
+
+    /** @endcond */
+
 
 protected:  
   /** @cond doxygenLibsbmlInternal */
  /**
    * Returns @c true if the given term identifier comes from the stated branch of %SBO.
-   * * @return true if the term is-a parent, false otherwise
+   * @return @c true if the term is-a parent, @c false otherwise
    */
   static bool isChildOf(unsigned int term, unsigned int parent);
 

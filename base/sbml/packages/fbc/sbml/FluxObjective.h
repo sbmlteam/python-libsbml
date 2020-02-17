@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -98,8 +102,8 @@ class LIBSBML_EXTERN FluxObjective : public SBase
 
 protected:
   /** @cond doxygenLibsbmlInternal */
-  std::string   mId;
-  std::string   mName;
+//  std::string   mId;
+//  std::string   mName;
   std::string   mReaction;
   double        mCoefficient;
   bool          mIsSetCoefficient;
@@ -112,13 +116,15 @@ public:
    * &ldquo;fbc&rdquo;package version.
    *
    * @param level an unsigned int, the SBML Level to assign to this
-   * FluxObjective
+   * FluxObjective.
    *
    * @param version an unsigned int, the SBML Version to assign to this
-   * FluxObjective
+   * FluxObjective.
    *
    * @param pkgVersion an unsigned int, the SBML Fbc Version to assign to
-   * this FluxObjective
+   * this FluxObjective.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   FluxObjective(unsigned int level      = FbcExtension::getDefaultLevel(),
                 unsigned int version    = FbcExtension::getDefaultVersion(),
@@ -128,7 +134,11 @@ public:
   /**
    * Creates a new FluxObjective with the given FbcPkgNamespaces object.
    *
-   * @param fbcns the FbcPkgNamespaces object
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param fbcns the FbcPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   FluxObjective(FbcPkgNamespaces* fbcns);
 
@@ -136,7 +146,7 @@ public:
    /**
    * Copy constructor for FluxObjective.
    *
-   * @param orig; the FluxObjective instance to copy.
+   * @param orig the FluxObjective instance to copy.
    */
   FluxObjective(const FluxObjective& orig);
 
@@ -144,8 +154,8 @@ public:
    /**
    * Assignment operator for FluxObjective.
    *
-   * @param rhs; the object whose values are used as the basis
-   * of the assignment
+   * @param rhs the object whose values are used as the basis
+   * of the assignment.
    */
   FluxObjective& operator=(const FluxObjective& rhs);
 
@@ -164,19 +174,29 @@ public:
   virtual ~FluxObjective();
 
 
-   /**
+  /**
    * Returns the value of the "id" attribute of this FluxObjective.
    *
-   * @return the value of the "id" attribute of this FluxObjective as a string.
+   * @note Because of the inconsistent behavior of this function with 
+   * respect to assignments and rules, it is now recommended to
+   * use the getIdAttribute() function instead.
+   *
+   * @copydetails doc_id_attribute
+   *
+   * @return the id of this FluxObjective.
+   *
+   * @see getIdAttribute()
+   * @see setIdAttribute(const std::string& sid)
+   * @see isSetIdAttribute()
+   * @see unsetIdAttribute()
    */
   virtual const std::string& getId() const;
 
 
   /**
-   * Returns the value of the "name" attribute of this FluxObjective.
+   * Returns the value of the "name" attribute of this FluxObjective object.
    *
-   * @return the value of the "name" attribute of this FluxObjective as a
-   * string.
+   * @copydetails doc_get_name
    */
   virtual const std::string& getName() const;
 
@@ -203,8 +223,7 @@ public:
    * Predicate returning @c true if this FluxObjective's "id" attribute is
    * set.
    *
-   * @return @c true if this FluxObjective's "id" attribute has been set,
-   * otherwise @c false is returned.
+   * @copydetails doc_isset_id
    */
   virtual bool isSetId() const;
 
@@ -213,8 +232,7 @@ public:
    * Predicate returning @c true if this FluxObjective's "name" attribute is
    * set.
    *
-   * @return @c true if this FluxObjective's "name" attribute has been set,
-   * otherwise @c false is returned.
+   * @copydetails doc_isset_name
    */
   virtual bool isSetName() const;
 
@@ -242,29 +260,15 @@ public:
   /**
    * Sets the value of the "id" attribute of this FluxObjective.
    *
-   * @param id; const std::string& value of the "id" attribute to be set
-   *
-   * @return integer value indicating success/failure of the
-   * function.  @if clike The value is drawn from the
-   * enumeration #OperationReturnValues_t. @endif The possible values
-   * returned by this function are:
-   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
+   * @copydetails doc_set_id
    */
-  virtual int setId(const std::string& id);
+  virtual int setId(const std::string& sid);
 
 
   /**
    * Sets the value of the "name" attribute of this FluxObjective.
    *
-   * @param name; const std::string& value of the "name" attribute to be set
-   *
-   * @return integer value indicating success/failure of the
-   * function.  @if clike The value is drawn from the
-   * enumeration #OperationReturnValues_t. @endif The possible values
-   * returned by this function are:
-   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
+   * @copydetails doc_set_name
    */
   virtual int setName(const std::string& name);
 
@@ -272,12 +276,9 @@ public:
   /**
    * Sets the value of the "reaction" attribute of this FluxObjective.
    *
-   * @param reaction; const std::string& value of the "reaction" attribute to be set
+   * @param reaction the value of the "reaction" attribute to be set.
    *
-   * @return integer value indicating success/failure of the
-   * function.  @if clike The value is drawn from the
-   * enumeration #OperationReturnValues_t. @endif The possible values
-   * returned by this function are:
+   * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
    * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
    */
@@ -287,12 +288,9 @@ public:
   /**
    * Sets the value of the "coefficient" attribute of this FluxObjective.
    *
-   * @param coefficient; double value of the "coefficient" attribute to be set
+   * @param coefficient the value of the "coefficient" attribute to be set.
    *
-   * @return integer value indicating success/failure of the
-   * function.  @if clike The value is drawn from the
-   * enumeration #OperationReturnValues_t. @endif The possible values
-   * returned by this function are:
+   * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
    * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
    */
@@ -302,12 +300,7 @@ public:
   /**
    * Unsets the value of the "id" attribute of this FluxObjective.
    *
-   * @return integer value indicating success/failure of the
-   * function.  @if clike The value is drawn from the
-   * enumeration #OperationReturnValues_t. @endif The possible values
-   * returned by this function are:
-   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   * @copydetails doc_unset_id
    */
   virtual int unsetId();
 
@@ -315,12 +308,7 @@ public:
   /**
    * Unsets the value of the "name" attribute of this FluxObjective.
    *
-   * @return integer value indicating success/failure of the
-   * function.  @if clike The value is drawn from the
-   * enumeration #OperationReturnValues_t. @endif The possible values
-   * returned by this function are:
-   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   * @copydetails doc_unset_name
    */
   virtual int unsetName();
 
@@ -328,10 +316,7 @@ public:
   /**
    * Unsets the value of the "reaction" attribute of this FluxObjective.
    *
-   * @return integer value indicating success/failure of the
-   * function.  @if clike The value is drawn from the
-   * enumeration #OperationReturnValues_t. @endif The possible values
-   * returned by this function are:
+   * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
    * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
    */
@@ -341,10 +326,7 @@ public:
   /**
    * Unsets the value of the "coefficient" attribute of this FluxObjective.
    *
-   * @return integer value indicating success/failure of the
-   * function.  @if clike The value is drawn from the
-   * enumeration #OperationReturnValues_t. @endif The possible values
-   * returned by this function are:
+   * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
    * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
    */
@@ -401,12 +383,12 @@ public:
 
   /**
    * Subclasses should override this method to write out their contained
-   * SBML objects as XML elements.  Be sure to call your parents
+   * SBML objects as XML elements.  Be sure to call your parent's
    * implementation of this method as well.
    */
   virtual void writeElements (XMLOutputStream& stream) const;
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -416,7 +398,7 @@ public:
    */
   virtual bool accept (SBMLVisitor& v) const;
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -426,7 +408,7 @@ public:
    */
   virtual void setSBMLDocument (SBMLDocument* d);
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -437,7 +419,246 @@ public:
   virtual void enablePackageInternal(const std::string& pkgURI,
                const std::string& pkgPrefix, bool flag);
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
+
+
+  #ifndef SWIG
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this FluxObjective.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, bool& value)
+    const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this FluxObjective.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this FluxObjective.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           double& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this FluxObjective.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           unsigned int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this FluxObjective.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           std::string& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Predicate returning @c true if this FluxObjective's attribute
+   * "attributeName" is set.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @return @c true if this FluxObjective's attribute "attributeName" has been
+   * set, otherwise @c false is returned.
+   */
+  virtual bool isSetAttribute(const std::string& attributeName) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this FluxObjective.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, bool value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this FluxObjective.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this FluxObjective.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, double value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this FluxObjective.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           unsigned int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this FluxObjective.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           const std::string& value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Unsets the value of the "attributeName" attribute of this FluxObjective.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int unsetAttribute(const std::string& attributeName);
+
+  /** @endcond */
+
+
+
+
+  #endif /* !SWIG */
+
 
 
 protected:
@@ -449,7 +670,7 @@ protected:
    */
   virtual void addExpectedAttributes(ExpectedAttributes& attributes);
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -460,7 +681,7 @@ protected:
   virtual void readAttributes (const XMLAttributes& attributes,
                                const ExpectedAttributes& expectedAttributes);
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -470,7 +691,7 @@ protected:
    */
   virtual void writeAttributes (XMLOutputStream& stream) const;
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
 
@@ -497,11 +718,13 @@ public:
   /**
    * Creates a new ListOfFluxObjectives with the given level, version, and package version.
    *
-   * @param level an unsigned int, the SBML Level to assign to this ListOfFluxObjectives
+   * @param level an unsigned int, the SBML Level to assign to this ListOfFluxObjectives.
    *
-   * @param version an unsigned int, the SBML Version to assign to this ListOfFluxObjectives
+   * @param version an unsigned int, the SBML Version to assign to this ListOfFluxObjectives.
    *
-   * @param pkgVersion an unsigned int, the SBML Fbc Version to assign to this ListOfFluxObjectives
+   * @param pkgVersion an unsigned int, the SBML Fbc Version to assign to this ListOfFluxObjectives.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   ListOfFluxObjectives(unsigned int level      = FbcExtension::getDefaultLevel(),
                        unsigned int version    = FbcExtension::getDefaultVersion(),
@@ -511,7 +734,11 @@ public:
   /**
    * Creates a new ListOfFluxObjectives with the given FbcPkgNamespaces object.
    *
-   * @param fbcns the FbcPkgNamespaces object
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param fbcns the FbcPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   ListOfFluxObjectives(FbcPkgNamespaces* fbcns);
 
@@ -530,10 +757,11 @@ public:
    * @param n the index number of the FluxObjective to get.
    *
    * @return the nth FluxObjective in this ListOfFluxObjectives.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
-	virtual FluxObjective* get(unsigned int n);
+  virtual FluxObjective* get(unsigned int n);
 
 
   /**
@@ -542,10 +770,11 @@ public:
    * @param n the index number of the FluxObjective to get.
    *
    * @return the nth FluxObjective in this ListOfFluxObjectives.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
-	virtual const FluxObjective* get(unsigned int n) const;
+  virtual const FluxObjective* get(unsigned int n) const;
 
 
   /**
@@ -556,13 +785,13 @@ public:
    * of the FluxObjective to get.
    *
    * @return FluxObjective in this ListOfFluxObjectives
-   * with the given id or NULL if no such
+   * with the given id or @c NULL if no such
    * FluxObjective exists.
    *
    * @see get(unsigned int n)   *
    * @see size()
    */
-	virtual FluxObjective* get(const std::string& sid);
+  virtual FluxObjective* get(const std::string& sid);
 
 
   /**
@@ -573,7 +802,7 @@ public:
    * of the FluxObjective to get.
    *
    * @return FluxObjective in this ListOfFluxObjectives
-   * with the given id or NULL if no such
+   * with the given id or @c NULL if no such
    * FluxObjective exists.
    *
    * @see get(unsigned int n)   *
@@ -582,38 +811,35 @@ public:
   virtual const FluxObjective* get(const std::string& sid) const;
 
 
-	/**
-	 * Adds a copy the given "FluxObjective" to this ListOfFluxObjectives.
-	 *
-	 * @param fo; the FluxObjective object to add
-	 *
-	 * @return integer value indicating success/failure of the
-	 * function.  @if clike The value is drawn from the
-	 * enumeration #OperationReturnValues_t. @endif The possible values
-	 * returned by this function are:
-	 * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-	 * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
-	 */
-	int addFluxObjective(const FluxObjective* fo);
+  /**
+    * Adds a copy the given FluxObjective to this ListOfFluxObjectives.
+    *
+    * @param fo the FluxObjective object to add.
+    *
+    * @copydetails doc_returns_success_code
+    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+    * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
+    */
+  int addFluxObjective(const FluxObjective* fo);
 
 
-	/**
-	 * Get the number of FluxObjective objects in this ListOfFluxObjectives.
-	 *
-	 * @return the number of FluxObjective objects in this ListOfFluxObjectives
-	 */
-	unsigned int getNumFluxObjectives() const;
+  /**
+   * Get the number of FluxObjective objects in this ListOfFluxObjectives.
+   *
+   * @return the number of FluxObjective objects in this ListOfFluxObjectives
+   */
+  unsigned int getNumFluxObjectives() const;
 
 
-	/**
-	 * Creates a new FluxObjective object, adds it to the
-	 * ListOfFluxObjectives and returns the FluxObjective object created. 
-	 *
-	 * @return a new FluxObjective object instance
-	 *
-	 * @see addFluxObjective(const FluxObjective* fo)
-	 */
-	FluxObjective* createFluxObjective();
+  /**
+   * Creates a new FluxObjective object, adds it to the
+   * ListOfFluxObjectives and returns the FluxObjective object created. 
+   *
+   * @return a new FluxObjective object instance
+   *
+   * @see addFluxObjective(const FluxObjective* fo)
+   */
+  FluxObjective* createFluxObjective();
 
 
   /**
@@ -626,7 +852,7 @@ public:
    *
    * @see size()
    */
-	virtual FluxObjective* remove(unsigned int n);
+  virtual FluxObjective* remove(unsigned int n);
 
 
   /**
@@ -642,7 +868,7 @@ public:
    * @return the FluxObjective removed. As mentioned above, the caller owns the
    * returned item.
    */
-	virtual FluxObjective* remove(const std::string& sid);
+  virtual FluxObjective* remove(const std::string& sid);
 
 
   /**
@@ -695,7 +921,7 @@ protected:
   virtual SBase* createObject(XMLInputStream& stream);
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -706,7 +932,7 @@ protected:
   virtual void writeXMLNS(XMLOutputStream& stream) const;
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
 
@@ -725,13 +951,16 @@ BEGIN_C_DECLS
 
 /**
  * Creates a new FluxObjective_t structure using the given SBML @p level and
- * @p version values.
+ * @p version, and the @p pkgVersion package version.
  *
  * @param level an unsigned int, the SBML level to assign to this
  * FluxObjective_t structure.
  *
  * @param version an unsigned int, the SBML version to assign to this
  * FluxObjective_t structure.
+ *
+ * @param pkgVersion an unsigned int, the version of the package to assign
+ * to this FluxObjective_t structure.
  *
  * @returns the newly-created FluxObjective_t structure, or a null pointer if
  * an error occurred during construction.
@@ -781,7 +1010,7 @@ FluxObjective_clone(FluxObjective_t * fo);
  *
  * @return the id of this structure.
  *
- * @member of FluxObjective_t
+ * @memberof FluxObjective_t
  */
 LIBSBML_EXTERN
 const char *
@@ -796,7 +1025,7 @@ FluxObjective_getId(const FluxObjective_t * fo);
  *
  * @return the name of this structure.
  *
- * @member of FluxObjective_t
+ * @memberof FluxObjective_t
  */
 LIBSBML_EXTERN
 const char *
@@ -811,7 +1040,7 @@ FluxObjective_getName(const FluxObjective_t * fo);
  *
  * @return the reaction of this structure.
  *
- * @member of FluxObjective_t
+ * @memberof FluxObjective_t
  */
 LIBSBML_EXTERN
 const char *
@@ -826,7 +1055,7 @@ FluxObjective_getReaction(const FluxObjective_t * fo);
  *
  * @return the coefficient of this structure.
  *
- * @member of FluxObjective_t
+ * @memberof FluxObjective_t
  */
 LIBSBML_EXTERN
 double
@@ -834,15 +1063,15 @@ FluxObjective_getCoefficient(const FluxObjective_t * fo);
 
 
 /**
- * Predicate returning @c 1 if the given FluxObjective_t structure's "id"
+ * Predicate returning @c 1 (true) if the given FluxObjective_t structure's "id"
  * is set.
  *
  * @param fo the FluxObjective_t structure.
  *
- * @return @c 1 if the "id" of this FluxObjective_t structure is
- * set, @c 0 otherwise.
+ * @return @c 1 (true) if the "id" of this FluxObjective_t structure is
+ * set, @c 0 (false) otherwise.
  *
- * @member of FluxObjective_t
+ * @memberof FluxObjective_t
  */
 LIBSBML_EXTERN
 int
@@ -850,15 +1079,15 @@ FluxObjective_isSetId(const FluxObjective_t * fo);
 
 
 /**
- * Predicate returning @c 1 if the given FluxObjective_t structure's "name"
+ * Predicate returning @c 1 (true) if the given FluxObjective_t structure's "name"
  * is set.
  *
  * @param fo the FluxObjective_t structure.
  *
- * @return @c 1 if the "name" of this FluxObjective_t structure is
- * set, @c 0 otherwise.
+ * @return @c 1 (true) if the "name" of this FluxObjective_t structure is
+ * set, @c 0 (false) otherwise.
  *
- * @member of FluxObjective_t
+ * @memberof FluxObjective_t
  */
 LIBSBML_EXTERN
 int
@@ -866,15 +1095,15 @@ FluxObjective_isSetName(const FluxObjective_t * fo);
 
 
 /**
- * Predicate returning @c 1 if the given FluxObjective_t structure's "reaction"
+ * Predicate returning @c 1 (true) if the given FluxObjective_t structure's "reaction"
  * is set.
  *
  * @param fo the FluxObjective_t structure.
  *
- * @return @c 1 if the "reaction" of this FluxObjective_t structure is
- * set, @c 0 otherwise.
+ * @return @c 1 (true) if the "reaction" of this FluxObjective_t structure is
+ * set, @c 0 (false) otherwise.
  *
- * @member of FluxObjective_t
+ * @memberof FluxObjective_t
  */
 LIBSBML_EXTERN
 int
@@ -882,15 +1111,15 @@ FluxObjective_isSetReaction(const FluxObjective_t * fo);
 
 
 /**
- * Predicate returning @c 1 if the given FluxObjective_t structure's "coefficient"
+ * Predicate returning @c 1 (true) if the given FluxObjective_t structure's "coefficient"
  * is set.
  *
  * @param fo the FluxObjective_t structure.
  *
- * @return @c 1 if the "coefficient" of this FluxObjective_t structure is
- * set, @c 0 otherwise.
+ * @return @c 1 (true) if the "coefficient" of this FluxObjective_t structure is
+ * set, @c 0 (false) otherwise.
  *
- * @member of FluxObjective_t
+ * @memberof FluxObjective_t
  */
 LIBSBML_EXTERN
 int
@@ -900,26 +1129,23 @@ FluxObjective_isSetCoefficient(const FluxObjective_t * fo);
 /**
  * Sets the "id" attribute of the given FluxObjective_t structure.
  *
- * This function copies the string given in @p string.  If the string is
- * a null pointer, this function performs FluxObjective_unsetId() instead.
+ * This function copies the string given in @p id.  If the string is
+ * a null pointer, this function is equivalent to calling FluxObjective_unsetId().
  *
  * @param fo the FluxObjective_t structure.
  *
  * @param id the string to which the structures "id" attribute should be
  * set.
  *
- * @return integer value indicating success/failure of the
- * function.  @if clike The value is drawn from the
- * enumeration #OperationReturnValues_t. @endif@~ The possible values
- * returned by this function are:
+ * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
  *
- * @note Using this function with a null pointer for @p name is equivalent to
- * unsetting the value of the "name" attribute.
+ * @note Using this function with a null pointer for @p id is equivalent to
+ * unsetting the value of the "id" attribute.
  * 
- * @member of FluxObjective_t
+ * @memberof FluxObjective_t
  */
 LIBSBML_EXTERN
 int
@@ -929,18 +1155,15 @@ FluxObjective_setId(FluxObjective_t * fo, const char * id);
 /**
  * Sets the "name" attribute of the given FluxObjective_t structure.
  *
- * This function copies the string given in @p string.  If the string is
- * a null pointer, this function performs FluxObjective_unsetName() instead.
+ * This function copies the string given in @p name.  If the string is
+ * a null pointer, this function is equivalent to calling FluxObjective_unsetName().
  *
  * @param fo the FluxObjective_t structure.
  *
  * @param name the string to which the structures "name" attribute should be
  * set.
  *
- * @return integer value indicating success/failure of the
- * function.  @if clike The value is drawn from the
- * enumeration #OperationReturnValues_t. @endif@~ The possible values
- * returned by this function are:
+ * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
@@ -948,7 +1171,7 @@ FluxObjective_setId(FluxObjective_t * fo, const char * id);
  * @note Using this function with a null pointer for @p name is equivalent to
  * unsetting the value of the "name" attribute.
  * 
- * @member of FluxObjective_t
+ * @memberof FluxObjective_t
  */
 LIBSBML_EXTERN
 int
@@ -958,26 +1181,23 @@ FluxObjective_setName(FluxObjective_t * fo, const char * name);
 /**
  * Sets the "reaction" attribute of the given FluxObjective_t structure.
  *
- * This function copies the string given in @p string.  If the string is
- * a null pointer, this function performs FluxObjective_unsetReaction() instead.
+ * This function copies the string given in @p reaction.  If the string is
+ * a null pointer, this function is equivalent to calling FluxObjective_unsetReaction().
  *
  * @param fo the FluxObjective_t structure.
  *
  * @param reaction the string to which the structures "reaction" attribute should be
  * set.
  *
- * @return integer value indicating success/failure of the
- * function.  @if clike The value is drawn from the
- * enumeration #OperationReturnValues_t. @endif@~ The possible values
- * returned by this function are:
+ * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
  *
- * @note Using this function with a null pointer for @p name is equivalent to
- * unsetting the value of the "name" attribute.
+ * @note Using this function with a null pointer for @p reaction is equivalent to
+ * unsetting the value of the "reaction" attribute.
  * 
- * @member of FluxObjective_t
+ * @memberof FluxObjective_t
  */
 LIBSBML_EXTERN
 int
@@ -992,15 +1212,12 @@ FluxObjective_setReaction(FluxObjective_t * fo, const char * reaction);
  * @param coefficient the string to which the structures "coefficient" attribute should be
  * set.
  *
- * @return integer value indicating success/failure of the
- * function.  @if clike The value is drawn from the
- * enumeration #OperationReturnValues_t. @endif@~ The possible values
- * returned by this function are:
+ * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
  *
- * @member of FluxObjective_t
+ * @memberof FluxObjective_t
  */
 LIBSBML_EXTERN
 int
@@ -1013,15 +1230,12 @@ FluxObjective_setCoefficient(FluxObjective_t * fo, double coefficient);
  *
  * @param fo the FluxObjective_t structure.
  *
- * @return integer value indicating success/failure of the
- * function.  @if clike The value is drawn from the
- * enumeration #OperationReturnValues_t. @endif@~ The possible values
- * returned by this function are:
+ * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
  *
- * @member of FluxObjective_t
+ * @memberof FluxObjective_t
  */
 LIBSBML_EXTERN
 int
@@ -1034,15 +1248,12 @@ FluxObjective_unsetId(FluxObjective_t * fo);
  *
  * @param fo the FluxObjective_t structure.
  *
- * @return integer value indicating success/failure of the
- * function.  @if clike The value is drawn from the
- * enumeration #OperationReturnValues_t. @endif@~ The possible values
- * returned by this function are:
+ * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
  *
- * @member of FluxObjective_t
+ * @memberof FluxObjective_t
  */
 LIBSBML_EXTERN
 int
@@ -1055,15 +1266,12 @@ FluxObjective_unsetName(FluxObjective_t * fo);
  *
  * @param fo the FluxObjective_t structure.
  *
- * @return integer value indicating success/failure of the
- * function.  @if clike The value is drawn from the
- * enumeration #OperationReturnValues_t. @endif@~ The possible values
- * returned by this function are:
+ * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
  *
- * @member of FluxObjective_t
+ * @memberof FluxObjective_t
  */
 LIBSBML_EXTERN
 int
@@ -1076,15 +1284,12 @@ FluxObjective_unsetReaction(FluxObjective_t * fo);
  *
  * @param fo the FluxObjective_t structure.
  *
- * @return integer value indicating success/failure of the
- * function.  @if clike The value is drawn from the
- * enumeration #OperationReturnValues_t. @endif@~ The possible values
- * returned by this function are:
+ * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
  *
- * @member of FluxObjective_t
+ * @memberof FluxObjective_t
  */
 LIBSBML_EXTERN
 int
@@ -1092,26 +1297,53 @@ FluxObjective_unsetCoefficient(FluxObjective_t * fo);
 
 
 /**
- * Predicate returning @c 1 or *c 0 depending on whether all the required
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether all the required
  * attributes of the given FluxObjective_t structure have been set.
  *
  * @param fo the FluxObjective_t structure to check.
  *
- * @return @c 1 if all the required attributes for this
- * structure have been defined, @c 0 otherwise.
+ * @return @c 1 (true) if all the required attributes for this
+ * structure have been defined, @c 0 (false) otherwise.
  *
- * @member of FluxObjective_t
+ * @memberof FluxObjective_t
  */
 LIBSBML_EXTERN
 int
 FluxObjective_hasRequiredAttributes(const FluxObjective_t * fo);
 
 
+/**
+ * Return the structure indicated by the given @p sid.
+ *
+ * @param lo the ListOf_t structure to use.
+ *
+ * @param sid a string matching the "id" attribute of the element sought.
+ *
+ * @return the structure for the given variable, or @c NULL if no such
+ * object exists in the list.
+ *
+ * @memberof FluxObjective_t
+ */
 LIBSBML_EXTERN
 FluxObjective_t *
 ListOfFluxObjectives_getById(ListOf_t * lo, const char * sid);
 
 
+/**
+ * Removes the structure with the given @p sid
+ * from the given ListOf_t structure and returns a pointer to it.
+ *
+ * The caller owns the returned structure and is responsible for deleting it.
+ *
+ * @param lo the ListOf_t structure.
+ * @param sid the string of the "id" attribute of the sought structure.
+ *
+ * @return the structure removed.  As mentioned above, the
+ * caller owns the returned structure. @c NULL is returned if no
+ * structure with the "id" attribute exists in the given ListOf_t structure.
+ *
+ * @memberof FluxObjective_t
+ */
 LIBSBML_EXTERN
 FluxObjective_t *
 ListOfFluxObjectives_removeById(ListOf_t * lo, const char * sid);

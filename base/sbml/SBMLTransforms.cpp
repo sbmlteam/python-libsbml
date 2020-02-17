@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -93,9 +97,6 @@ SBMLTransforms::replaceFD(ASTNode * node, const FunctionDefinition *fd, const Id
   
   recurseReplaceFD(node, fd, idsToExclude);
 
-#ifndef LIBSBML_USE_LEGACY_MATH
-  node->setIsChildFlag(false);
-#endif
 }
 
 
@@ -135,10 +136,10 @@ SBMLTransforms::replaceBvars(ASTNode * node, const FunctionDefinition *fd)
   ASTNode fdMath(AST_UNKNOWN);
   unsigned int noBvars;
 
-  if (fd->isSetMath() && fd->getMath()->getRightChild() != NULL)
+  if (fd->isSetMath() && fd->getBody() != NULL)
   {
     noBvars = fd->getMath()->getNumBvars();
-    fdMath = *fd->getMath()->getRightChild();
+    fdMath = *fd->getBody();
 
     for (unsigned int i = 0, nodeCount = 0; i < noBvars; i++, nodeCount++)
     {
@@ -158,10 +159,12 @@ bool
 SBMLTransforms::checkFunctionNodeForIds(ASTNode * node, IdList& ids)
 {
   bool present = false;
+  if (node == NULL) return present;
+
   unsigned int i = 0;
   unsigned int numChildren = node->getNumChildren();
 
-  if (node != NULL && node->getType() == AST_FUNCTION)
+  if (node->getType() == AST_FUNCTION)
   {
     if (ids.contains(node->getName()))
     {
@@ -182,6 +185,9 @@ SBMLTransforms::checkFunctionNodeForIds(ASTNode * node, IdList& ids)
 bool
 SBMLTransforms::nodeContainsId(const ASTNode * node, IdList& ids)
 {
+  if (node == NULL) {
+    return false;
+  }
   bool present = false;
   unsigned int i = 0;
   unsigned int numChildren = node->getNumChildren();
@@ -206,6 +212,9 @@ SBMLTransforms::nodeContainsId(const ASTNode * node, IdList& ids)
 bool
 SBMLTransforms::nodeContainsNameNotInList(const ASTNode * node, IdList& ids)
 {
+  if (node == NULL) {
+    return false;
+  }
   bool notInList = false;
   unsigned int i = 0;
   unsigned int numChildren = node->getNumChildren();
@@ -233,7 +242,27 @@ SBMLTransforms::mapComponentValues(const Model * m)
   return getComponentValuesForModel(m, mValues);
 }
 
-IdList 
+/**
+ * this function checks whether for the given id there exists an initial 
+ * assignment and whether it needs to be evaluated or whether the objects
+ * initial value can be taken
+ * 
+ * 
+ */
+bool shouldUseInitialValue(const std::string& id, const Model * m, bool isL3V2)
+{
+  const Rule * r = m->getRule(id);
+  bool dontHaveUsableRule = (r == NULL) || (r->getType() == RULE_TYPE_RATE);
+  if (r != NULL && isL3V2 && !r->isSetMath()) dontHaveUsableRule = true;
+
+  const InitialAssignment* ia = m->getInitialAssignment(id);
+  bool dontHaveUsableAssignmentRule = (ia == NULL);
+  if (ia != NULL && isL3V2 && !ia->isSetMath()) dontHaveUsableAssignmentRule = true;
+
+  return dontHaveUsableRule && dontHaveUsableAssignmentRule;
+}
+
+IdList
 SBMLTransforms::getComponentValuesForModel(const Model * m, IdValueMap& values)
 {
   values.clear();
@@ -243,6 +272,11 @@ SBMLTransforms::getComponentValuesForModel(const Model * m, IdValueMap& values)
    * keep a list so we can check
    */
   IdList ids;
+
+  if (m == NULL)
+    return ids;
+
+  bool isL3V2 = m->getLevel() == 3 && m->getVersion() == 2;
 
   unsigned int i, j;
   for (i = 0; i < m->getNumCompartments(); i++)
@@ -254,9 +288,7 @@ SBMLTransforms::getComponentValuesForModel(const Model * m, IdValueMap& values)
      * or specified
      * - if none then the model is incomplete
      */
-    const Rule * r = m->getRule(c->getId());
-    if (((r == NULL) || (r->getType() == RULE_TYPE_RATE))
-      && (m->getInitialAssignment(c->getId()) == NULL))
+    if (shouldUseInitialValue(c->getId(), m, isL3V2))
     {
       /* not set by assignment */
       if (!(c->isSetSize()))
@@ -287,9 +319,7 @@ SBMLTransforms::getComponentValuesForModel(const Model * m, IdValueMap& values)
      * or specified
      * - if none then the model is incomplete
      */
-    const Rule * r = m->getRule(s->getId());
-    if (((r == NULL) || (r->getType() == RULE_TYPE_RATE))
-      && (m->getInitialAssignment(s->getId()) == NULL))
+    if (shouldUseInitialValue(s->getId(), m, isL3V2))
     {
       if (!(s->isSetInitialAmount()) && !(s->isSetInitialConcentration()))
       {
@@ -363,9 +393,7 @@ SBMLTransforms::getComponentValuesForModel(const Model * m, IdValueMap& values)
      * or specified
      * - if none then the model is incomplete
      */
-    const Rule * r = m->getRule(p->getId());
-    if (((r == NULL) || (r->getType() == RULE_TYPE_RATE))
-      && (m->getInitialAssignment(p->getId()) == NULL))
+    if (shouldUseInitialValue(p->getId(), m, isL3V2))
     {
       if (!(p->isSetValue()))
       {
@@ -400,12 +428,11 @@ SBMLTransforms::getComponentValuesForModel(const Model * m, IdValueMap& values)
       * or specified
       * - if none then the model is incomplete
       */
-      const Rule * r = m->getRule(sr->getId());
-      if (((r == NULL) || (r->getType() == RULE_TYPE_RATE))
-        && (m->getInitialAssignment(sr->getId()) == NULL))
+      if (shouldUseInitialValue(sr->getId(), m, isL3V2) &&
+          !( sr->isSetStoichiometryMath() && sr->getStoichiometryMath()->isSetMath() ) )
       {
         /* not set by assignment */
-        if (!(sr->isSetStoichiometry()))
+        if (sr->isSetStoichiometry() == false && m->getLevel() > 2 )
         {
           ids.append(sr->getId());
           ValueSet v = make_pair(numeric_limits<double>::quiet_NaN(), false);
@@ -419,9 +446,19 @@ SBMLTransforms::getComponentValuesForModel(const Model * m, IdValueMap& values)
       }
       else
       {
-        /* is set by assignment - need to work it out */
-        ValueSet v = make_pair(numeric_limits<double>::quiet_NaN(), true);
-        values.insert(pair<const std::string, ValueSet>(sr->getId(), v));
+        if (sr->isSetStoichiometryMath())
+        {
+          ValueSet v = make_pair(
+            evaluateASTNode(sr->getStoichiometryMath()->getMath(), values, m), 
+            true);
+          values.insert(pair<const std::string, ValueSet>(sr->getId(), v));
+        }
+        else
+        {
+          /* is set by assignment - need to work it out */
+          ValueSet v = make_pair(numeric_limits<double>::quiet_NaN(), true);
+          values.insert(pair<const std::string, ValueSet>(sr->getId(), v));
+        }
       }
     }
 
@@ -433,9 +470,8 @@ SBMLTransforms::getComponentValuesForModel(const Model * m, IdValueMap& values)
       * or specified
       * - if none then the model is incomplete
       */
-      const Rule * r = m->getRule(sr->getId());
-      if (((r == NULL) || (r->getType() == RULE_TYPE_RATE))
-        && (m->getInitialAssignment(sr->getId()) == NULL))
+      if (shouldUseInitialValue(sr->getId(), m, isL3V2) &&
+         !sr->isSetStoichiometryMath())
       {
         /* not set by assignment */
         if (!(sr->isSetStoichiometry()))
@@ -452,11 +488,26 @@ SBMLTransforms::getComponentValuesForModel(const Model * m, IdValueMap& values)
       }
       else
       {
-        /* is set by assignment - need to work it out */
-        ValueSet v = make_pair(numeric_limits<double>::quiet_NaN(), true);
-        values.insert(pair<const std::string, ValueSet>(sr->getId(), v));
+        if (sr->isSetStoichiometryMath())
+        {
+          ValueSet v = make_pair(
+            evaluateASTNode(sr->getStoichiometryMath()->getMath(), values, m),
+            true);
+          values.insert(pair<const std::string, ValueSet>(sr->getId(), v));
+        }
+        else
+        {
+          /* is set by assignment - need to work it out */
+          ValueSet v = make_pair(numeric_limits<double>::quiet_NaN(), true);
+          values.insert(pair<const std::string, ValueSet>(sr->getId(), v));
+        }
       }
     }
+
+    // the id of a reaction might be used
+    ValueSet v = make_pair(numeric_limits<double>::quiet_NaN(), true);
+    values.insert(pair<const std::string, ValueSet>(rn->getId(), v));
+
   }
 
   /* returns a list of ids for which the model has no declared value
@@ -477,6 +528,10 @@ SBMLTransforms::clearComponentValues()
 double
 SBMLTransforms::evaluateASTNode(const ASTNode *node, const Model *m)
 {
+  if (mValues.size() == 0)
+  {
+    mapComponentValues(m);
+  }
   return evaluateASTNode(node, mValues, m);
 }
 
@@ -497,8 +552,13 @@ SBMLTransforms::evaluateASTNode(const ASTNode * node, const std::map<std::string
 double
 SBMLTransforms::evaluateASTNode(const ASTNode * node, const IdValueMap& values, const Model * m)
 {
+  if (node == NULL) {
+    return numeric_limits<double>::quiet_NaN();
+  }
   double result = 0;
   int i;
+  const ListOfFunctionDefinitions *lfd = NULL;
+  ASTNode *tempNode = NULL;
 
   switch (node->getType())
   {
@@ -533,6 +593,7 @@ SBMLTransforms::evaluateASTNode(const ASTNode * node, const IdValueMap& values, 
             const Rule *r = m->getRule(node->getName());
             const InitialAssignment *ia = 
                                 m->getInitialAssignment(node->getName());
+            const Reaction *rn = m->getReaction(node->getName()); 
             if (r != NULL)
             {
               result = evaluateASTNode(r->getMath(), values, m);
@@ -540,6 +601,10 @@ SBMLTransforms::evaluateASTNode(const ASTNode * node, const IdValueMap& values, 
             else if (ia != NULL)
             {
               result = evaluateASTNode(ia->getMath(), values, m);
+            }
+            else if (rn != NULL && rn->isSetKineticLaw())
+            {
+              result = evaluateASTNode(rn->getKineticLaw()->getMath(), values, m);
             }
           }
         }
@@ -580,11 +645,19 @@ SBMLTransforms::evaluateASTNode(const ASTNode * node, const IdValueMap& values, 
     break;
 
   case AST_LAMBDA:
-  case AST_FUNCTION:
     /* shouldnt get here */
     result = numeric_limits<double>::quiet_NaN();
     break;
 
+  case AST_FUNCTION:
+    /* shouldnt get here */
+    // but we do if math we are expanding uses a functionDefinition
+    lfd = m->getListOfFunctionDefinitions();
+    tempNode = node->deepCopy();
+    replaceFD(tempNode, lfd);
+    result = evaluateASTNode(tempNode, values, m);
+    delete tempNode;
+    break;
   case AST_PLUS:
     if (node->getNumChildren() == 0)
     {
@@ -992,14 +1065,91 @@ SBMLTransforms::evaluateASTNode(const ASTNode * node, const IdValueMap& values, 
     break;
 
   default:
-    result = numeric_limits<double>::quiet_NaN();
-    break;
+    if (node->getNumPlugins() == 0)
+    {
+      ((ASTNode*)(node))->loadASTPlugins(NULL);
+    }
+    for (unsigned int p = 0; p < node->getNumPlugins(); p++)
+    {
+      const ASTBasePlugin* baseplugin = node->getPlugin(p);
+      if (baseplugin->defines(node->getType()))
+      {
+        result = baseplugin->evaluateASTNode(node, m);
+      }
+    }
   }
 
 
   return result;
 }
 
+bool
+SBMLTransforms::expandIA(Model* m, const InitialAssignment* ia)
+{
+  bool removed = false;
+  std::string id = ia->getSymbol();
+  if (m->getCompartment(id) != NULL) 
+  {
+    if (expandInitialAssignment(m->getCompartment(id), 
+                                ia))
+    {
+      delete m->removeInitialAssignment(id);
+      removed = true;
+    }
+  }
+  else if (m->getParameter(id) != NULL)
+  {
+    if (expandInitialAssignment(m->getParameter(id), 
+                                ia))
+    {
+      delete m->removeInitialAssignment(id);
+      removed = true;
+    }
+  }
+  else if (m->getSpecies(id) != NULL)
+  {
+    if (expandInitialAssignment(m->getSpecies(id), 
+                                ia))
+    {
+      delete m->removeInitialAssignment(id);
+      removed = true;
+    }
+  }
+  else 
+  {
+    for (unsigned int j = 0; j < m->getNumReactions(); j++)
+    {
+      Reaction * r = m->getReaction(j);
+      unsigned int k;
+      for (k = 0; k < r->getNumProducts(); k++)
+      {
+        if (r->getProduct(k)->getId() == id)
+        {
+          if (expandInitialAssignment(r->getProduct(k), 
+                                      ia))
+          {
+            delete m->removeInitialAssignment(id);
+            removed = true;
+          }
+        }
+      }
+      for (k = 0; k < r->getNumReactants(); k++)
+      {
+        if (r->getReactant(k)->getId() == id)
+        {
+          if (expandInitialAssignment(r->getReactant(k), 
+                                      ia))
+          {
+            delete m->removeInitialAssignment(id);
+            removed = true;
+          }
+        }
+      }
+    }
+  }
+
+  return removed;
+}
 
 bool 
 SBMLTransforms::expandInitialAssignments(Model * m)
@@ -1009,12 +1159,13 @@ SBMLTransforms::expandInitialAssignments(Model * m)
 
   IdValueIter iter;
   bool needToBail = false;
+  unsigned int count;
 
   do
   {
     /* need a fail safe in case a value is just missing */
     unsigned int num = m->getNumInitialAssignments();
-    unsigned int count = num;
+    count = num;
     
     /* list ids that have a calculated/assigned value */
     idsWithValues.clear();
@@ -1026,78 +1177,27 @@ SBMLTransforms::expandInitialAssignments(Model * m)
       }
     }
 
-    for (unsigned int i = 0; i < m->getNumInitialAssignments(); i++)
+    for (int i = num-1; i >= 0; i--)
     {
-      if (!nodeContainsId(m->getInitialAssignment(i)->getMath(), idsNoValues))
+      if (m->getInitialAssignment(i)->isSetMath())
       {
-        if (!nodeContainsNameNotInList(m->getInitialAssignment(i)->getMath(), 
-                                                                 idsWithValues))
+        if (!nodeContainsId(m->getInitialAssignment(i)->getMath(), idsNoValues))
         {
-          std::string id = m->getInitialAssignment(i)->getSymbol();
-          if (m->getCompartment(id) != NULL) 
+          if (!nodeContainsNameNotInList(m->getInitialAssignment(i)->getMath(), 
+                                                                   idsWithValues))
           {
-            if (expandInitialAssignment(m->getCompartment(id), 
-                                        m->getInitialAssignment(i)))
-            {
-              delete m->removeInitialAssignment(id);
-              count--;
-            }
+            bool removed = expandIA(m, m->getInitialAssignment(i));
+            if (removed) count--;
           }
-          else if (m->getParameter(id) != NULL)
-          {
-            if (expandInitialAssignment(m->getParameter(id), 
-                                        m->getInitialAssignment(i)))
-            {
-              delete m->removeInitialAssignment(id);
-              count--;
-            }
-          }
-          else if (m->getSpecies(id) != NULL)
-          {
-            if (expandInitialAssignment(m->getSpecies(id), 
-                                        m->getInitialAssignment(i)))
-            {
-              delete m->removeInitialAssignment(id);
-              count--;
-            }
-          }
-          else 
-          {
-            for (unsigned int j = 0; j < m->getNumReactions(); j++)
-            {
-              Reaction * r = m->getReaction(j);
-              unsigned int k;
-              for (k = 0; k < r->getNumProducts(); k++)
-              {
-                if (r->getProduct(k)->getId() == id)
-                {
-                  if (expandInitialAssignment(r->getProduct(k), 
-                                              m->getInitialAssignment(i)))
-                  {
-                    delete m->removeInitialAssignment(id);
-                    count--;
-                  }
-                }
-              }
-              for (k = 0; k < r->getNumReactants(); k++)
-              {
-                if (r->getReactant(k)->getId() == id)
-                {
-                  if (expandInitialAssignment(r->getReactant(k), 
-                                              m->getInitialAssignment(i)))
-                  {
-                    delete m->removeInitialAssignment(id);
-                    count--;
-                  }
-                }
-              }
-            }
-          }
+        }
+        else
+        {
+          needToBail = true;
         }
       }
       else
       {
-        needToBail = true;
+        count--;
       }
     }
     /* if count is still same nothing changed so bail or endlessly loop */
@@ -1106,7 +1206,72 @@ SBMLTransforms::expandInitialAssignments(Model * m)
       needToBail = true;
     }
   }
-  while(m->getNumInitialAssignments() > 0 && needToBail == false);
+  while(count > 0 && needToBail == false);
+
+  // clear the internal map of values
+  mValues.clear();
+
+  return true;
+}
+
+
+bool 
+SBMLTransforms::expandL3V2InitialAssignments(Model * m)
+{
+  IdList idsNoValues = mapComponentValues(m);
+  IdList idsWithValues;
+
+  IdValueIter iter;
+  bool needToBail = false;
+  unsigned int count;
+
+  do
+  {
+    /* need a fail safe in case a value is just missing */
+    unsigned int num = m->getNumInitialAssignments();
+    count = num;
+    
+    /* list ids that have a calculated/assigned value */
+    idsWithValues.clear();
+    for (iter = mValues.begin(); iter != mValues.end(); ++iter)
+    {
+      if (((*iter).second).second)
+      {
+        idsWithValues.append((*iter).first);
+      }
+    }
+
+    for (int i = num-1; i >= 0; i--)
+    {
+      const InitialAssignment* ia = m->getInitialAssignment(i);
+      // we only want to do something if the initial assignment uses l3v2 math
+      if (ia->isSetMath() && ia->getMath()->usesL3V2MathConstructs() && !ia->getMath()->usesRateOf())
+      {
+        if (!nodeContainsId(ia->getMath(), idsNoValues))
+        {
+          if (!nodeContainsNameNotInList(ia->getMath(), idsWithValues))
+          {
+            bool removed = expandIA(m, ia);
+            if (removed) count--;
+          }
+        }
+        else
+        {
+          needToBail = true;
+        }
+      }
+      else
+      {
+        count--;
+      }
+    }
+    /* if count is still same nothing changed so bail or endlessly loop */
+    if (count == num)
+    {
+      needToBail = true;
+    }
+  }
+  while(count > 0 && needToBail == false);
 
   // clear the internal map of values
   mValues.clear();

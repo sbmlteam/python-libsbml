@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -583,7 +587,7 @@ SyntaxChecker::isCorrectHTMLNode(const XMLNode& node)
 
 /*
  * Checks if a character is part of the Unicode Letter set.
- * @return true if the character is a part of the set, false otherwise.
+ * @return @c true if the character is a part of the set, false otherwise.
  */
 bool 
 SyntaxChecker::isUnicodeLetter(std::string::iterator it, unsigned int numBytes)
@@ -1320,7 +1324,7 @@ case 3:
 /** @cond doxygenLibsbmlInternal */
 /*
   * Checks if a character is part of the Unicode Digit set.
-  * @return true if the character is a part of the set, false otherwise.
+  * @return @c true if the character is a part of the set, false otherwise.
   */
 bool 
 SyntaxChecker::isUnicodeDigit(std::string::iterator it, unsigned int numBytes)
@@ -1462,7 +1466,7 @@ SyntaxChecker::isUnicodeDigit(std::string::iterator it, unsigned int numBytes)
 /** @cond doxygenLibsbmlInternal */
 /**
   * Checks if a character is part of the Unicode CombiningChar set.
-  * @return true if the character is a part of the set, false otherwise.
+  * @return @c true if the character is a part of the set, false otherwise.
   */
 bool 
 SyntaxChecker::isCombiningChar(std::string::iterator it, unsigned int numBytes)
@@ -1950,7 +1954,7 @@ SyntaxChecker::isCombiningChar(std::string::iterator it, unsigned int numBytes)
 /** @cond doxygenLibsbmlInternal */
 /**
   * Checks if a character is part of the Unicode Extender set.
-  * @return true if the character is a part of the set, false otherwise.
+  * @return @c true if the character is a part of the set, false otherwise.
   */
 bool 
 SyntaxChecker::isExtender(std::string::iterator it, unsigned int numBytes)

@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -194,5 +198,70 @@ ListOfPorts::getElementBySId(const std::string& id)
   
 
 #endif /* __cplusplus */
+
+
+/*
+ * Get a Port_t from the ListOf_t.
+ */
+LIBSBML_EXTERN
+Port_t*
+ListOfPorts_getPort(ListOf_t* lo, unsigned int n)
+{
+  if (lo == NULL)
+  {
+    return NULL;
+  }
+
+  return static_cast <ListOfPorts*>(lo)->get(n);
+}
+
+
+/*
+ * Get a Port_t from the ListOf_t based on its identifier.
+ */
+LIBSBML_EXTERN
+Port_t*
+ListOfPorts_getById(ListOf_t* lo, const char *sid)
+{
+  if (lo == NULL)
+  {
+    return NULL;
+  }
+
+  return (sid != NULL) ? static_cast <ListOfPorts*>(lo)->get(sid) : NULL;
+}
+
+
+/*
+ * Removes the nth Port_t from this ListOf_t and returns a pointer to it.
+ */
+LIBSBML_EXTERN
+Port_t*
+ListOfPorts_remove(ListOf_t* lo, unsigned int n)
+{
+  if (lo == NULL)
+  {
+    return NULL;
+  }
+
+  return static_cast <ListOfPorts*>(lo)->remove(n);
+}
+
+
+/*
+ * Removes the Port_t from this ListOf_t based on its identifier and returns a
+ * pointer to it.
+ */
+LIBSBML_EXTERN
+Port_t*
+ListOfPorts_removeById(ListOf_t* lo, const char* sid)
+{
+  if (lo == NULL)
+  {
+    return NULL;
+  }
+
+  return (sid != NULL) ? static_cast <ListOfPorts*>(lo)->remove(sid) : NULL;
+}
 
 LIBSBML_CPP_NAMESPACE_END

@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -35,6 +39,16 @@
  *
  * @class QualPkgNamespaces
  * @sbmlbrief{qual} SBMLNamespaces extension for the package.
+ *
+ * There is currently one possible namespace defined for the Qualitative
+ * Modeling package: 
+ * "http://www.sbml.org/sbml/level3/version1/qual/version1".  Despite 
+ * referencing SBML Level&nbsp;3 Version&nbsp;1 explicitly, this package 
+ * (and all such packages) can be used without change in SBML 
+ * Level&nbsp;3 Version&nbsp;2 documents.  The only caveat is that features of 
+ * the SBML Level&nbsp;3 Version&nbsp;2 specification that were not present in 
+ * Level&nbsp;1 may not be used by constructs from the Qualitative Modeling
+ * package.
  */
 
 #ifndef QualExtension_h
@@ -138,6 +152,8 @@ public:
 
   /**
    * Copy constructor.
+   *
+   * @param orig the instance to copy.
    */
   QualExtension(const QualExtension& orig);
 
@@ -157,7 +173,7 @@ public:
   /**
    * Creates and returns a deep copy of this QualExtension object.
    * 
-   * @return a (deep) copy of this SBase object
+   * @return a (deep) copy of this SBase object.
    */
   virtual QualExtension* clone () const;
 
@@ -165,18 +181,24 @@ public:
   /**
    * Returns the name of this package ("qual")
    *
-   * @return a string representing the name of this package ("qual")
+   * @return a string representing the name of this package ("qual").
    */
   virtual const std::string& getName() const;
 
 
   /**
-   * Returns the namespace URI corresponding to the combination of the given
-   * SBML Level, Version, and package version.
+   * Returns a string representing the SBML XML namespace of this SBML
+   * Level&nbsp;3 package.
    *
-   * @param sbmlLevel the level of SBML
-   * @param sbmlVersion the version of SBML
-   * @param pkgVersion the version of package
+   * The namespace URI constructed by this method corresponds to the
+   * combination of the Level and Version of SBML, and the Version of the SBML
+   * Level&nbsp;3 package. (At the time of this writing, the only SBML Level
+   * that supports packages is Level&nbsp;3, so the value of @p sbmlLevel must
+   * necessarily always be <code>3</code>.)
+   *
+   * @param sbmlLevel the level of SBML.
+   * @param sbmlVersion the version of SBML.
+   * @param pkgVersion the version of the package.
    *
    * @return a string of the package URI, or an empty string if no
    * corresponding URI exists.
@@ -192,7 +214,7 @@ public:
    * @param uri a URI that represents a version of this package.
    *
    * @return the SBML Level for the given URI of this package, or @c 0 if the
-   * given URI is invalid.
+   * given URI is invalid, or for a different package.
    */
   virtual unsigned int getLevel(const std::string &uri) const;
 
@@ -204,7 +226,7 @@ public:
    * @param uri a URI that represents a version of this package.
    *
    * @return the SBML Version within the SBML Level for the given URI of this
-   * package, or @c 0 if the given URI is invalid.
+   * package, or @c 0 if the given URI is invalid, or for a different package.
    */
   virtual unsigned int getVersion(const std::string &uri) const;
 
@@ -217,18 +239,18 @@ public:
    * package.
    *
    * @return the version of the SBML Level&nbsp;3 package with the given URI,
-   * or @c 0 if the given URI is invalid.
+   * or @c 0 if the given URI is invalid, or for a different package.
    */
   virtual unsigned int getPackageVersion(const std::string &uri) const;
 
 
   /**
-   * Returns an QualPkgNamespaces object.
+   * Returns a QualPkgNamespaces object.
    *
    * @param uri a URI that represents one of the valid versions of the
-   * &ldquo;qual&rdquo; package
+   * &ldquo;qual&rdquo; package.
    *
-   * @return an QualPkgNamespace object corresponding to the given @p uri, or
+   * @return a QualPkgNamespaces object corresponding to the given @p uri, or
    * @c NULL if the URI is not defined in the Qual
    * package.
    */
@@ -263,7 +285,6 @@ public:
    *        static SBMLExtensionRegister<QualExtension> qualExtensionRegistry;
    *
    */
-
   static void init();
 
   /** @endcond */
@@ -273,7 +294,7 @@ public:
   /**
    * Return the entry in the error table at this index. 
    *
-   * @param index an unsigned intgere representing the index of the error in the QualSBMLErrorTable
+   * @param index an unsigned intgere representing the index of the error in the QualSBMLErrorTable.
    *
    * @return packageErrorTableEntry object in the QualSBMLErrorTable corresponding to the index given.
    */
@@ -287,7 +308,7 @@ public:
   /**
    * Return the index in the error table with the given errorId. 
    *
-   * @param errorId an unsigned intgere representing the errorId of the error in the QualSBMLErrorTable
+   * @param errorId an unsigned intgere representing the errorId of the error in the QualSBMLErrorTable.
    *
    * @return unsigned integer representing the index in the QualSBMLErrorTable corresponding to the errorId given.
    */

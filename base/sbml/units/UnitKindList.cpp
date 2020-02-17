@@ -12,7 +12,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -45,10 +49,10 @@ using std::vector;
 LIBSBML_CPP_NAMESPACE_BEGIN
 
 /**
- * @return true if UnitKind is already in this UnitKindList, false otherwise.
+ * @return @c true if UnitKind is already in this UnitKindList, false otherwise.
  */
 bool
-UnitKindList::contains (const std::string UnitKind) const
+UnitKindList::contains (const std::string& UnitKind) const
 {
   UnitKindList::const_iterator end = mKinds.end();
   
@@ -60,7 +64,7 @@ UnitKindList::contains (const std::string UnitKind) const
  * Removes the first occurence of this UnitKind in this UnitKindList.
  */
 void
-UnitKindList::removeUnitKind (const std::string UnitKind)
+UnitKindList::removeUnitKind (const std::string& UnitKind)
 {
   UnitKindList::iterator end = mKinds.end();
   UnitKindList::iterator pos = std::find(mKinds.begin(), end, UnitKind);

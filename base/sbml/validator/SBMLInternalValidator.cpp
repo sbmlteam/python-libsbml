@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -53,6 +57,7 @@
 #include <sbml/validator/L2v3CompatibilityValidator.h>
 #include <sbml/validator/L2v4CompatibilityValidator.h>
 #include <sbml/validator/L3v1CompatibilityValidator.h>
+#include <sbml/validator/L3v2CompatibilityValidator.h>
 #include <sbml/validator/InternalConsistencyValidator.h>
 #include <sbml/SBMLDocument.h>
 #include <sbml/SBMLWriter.h>
@@ -707,6 +712,30 @@ SBMLInternalValidator::checkL2v4Compatibility ()
 
 /*
  * Performs a set of semantic consistency checks on the document to establish
+ * whether it is compatible with L2v4 and can be converted.  Query
+ * the results by calling getNumErrors() and getError().
+ *
+ * @return the number of failed checks (errors) encountered.
+ */
+unsigned int
+SBMLInternalValidator::checkL2v5Compatibility ()
+{
+  if (getModel() == NULL) return 0;
+
+  // use the L2V4 validator as it is identical
+  L2v4CompatibilityValidator validator;
+  validator.init();
+
+  unsigned int nerrors = validator.validate(*getDocument());
+  if (nerrors > 0) getErrorLog()->add( validator.getFailures() );
+
+  return nerrors;
+}
+
+
+
+/*
+ * Performs a set of semantic consistency checks on the document to establish
  * whether it is compatible with L2v1 and can be converted.  Query
  * the results by calling getNumErrors() and getError().
  *
@@ -722,6 +751,28 @@ SBMLInternalValidator::checkL3v1Compatibility ()
 
   unsigned int nerrors = validator.validate(*getDocument());
   if (nerrors > 0) getErrorLog()->add( validator.getFailures() );
+
+  return nerrors;
+}
+
+
+/*
+ * Performs a set of semantic consistency checks on the document to establish
+ * whether it is compatible with L3v2 and can be converted.  Query
+ * the results by calling getNumErrors() and getError().
+ *
+ * @return the number of failed checks (errors) encountered.
+ */
+unsigned int
+SBMLInternalValidator::checkL3v2Compatibility()
+{
+  if (getModel() == NULL) return 0;
+
+  L3v2CompatibilityValidator validator;
+  validator.init();
+
+  unsigned int nerrors = validator.validate(*getDocument());
+  if (nerrors > 0) getErrorLog()->add(validator.getFailures());
 
   return nerrors;
 }

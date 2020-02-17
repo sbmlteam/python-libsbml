@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -100,9 +104,10 @@ public:
             string locationURI = doc->getLocationURI();
             string uri = emd->getSource();
 
-            const SBMLResolverRegistry& registry = 
-                                 SBMLResolverRegistry::getInstance();
-            mReferencedDocument = registry.resolve(uri, locationURI);
+            //const SBMLResolverRegistry& registry = 
+            //                     SBMLResolverRegistry::getInstance();
+//            mReferencedDocument = registry.resolve(uri, locationURI);
+            mReferencedDocument = docPlug->getSBMLDocumentFromURI(uri);
             if (mReferencedDocument != NULL)
             {
               if (emd->isSetModelRef() == false)
@@ -121,6 +126,9 @@ public:
               {
                 modelId = emd->getModelRef();
               }
+            }
+            else{
+                break;
             }
           }
           else
@@ -172,12 +180,13 @@ public:
             string locationURI = doc->getLocationURI();
             string uri = emd->getSource();
 
-            SBMLResolverRegistry& registry = 
-                                 SBMLResolverRegistry::getInstance();
-            doc = registry.resolve(uri, locationURI);
+            //SBMLResolverRegistry& registry = 
+            //                     SBMLResolverRegistry::getInstance();
+            //doc = registry.resolve(uri, locationURI);
+            doc = docPlug->getSBMLDocumentFromURI(uri);
             if (doc != NULL)
             {
-              registry.addOwnedSBMLDocument(doc);
+//              registry.addOwnedSBMLDocument(doc);
               if (emd->isSetModelRef() == false)
               {
                 mReferencedModel = doc->getModel();
@@ -245,24 +254,23 @@ public:
             string locationURI = doc->getLocationURI();
             string uri = emd->getSource();
 
-            const SBMLResolverRegistry& registry = 
-                                 SBMLResolverRegistry::getInstance();
-            mReferencedDocument = registry.resolve(uri, locationURI);
-
-            pre(mReferencedDocument != NULL);
-
-            if (mReferencedDocument != NULL)
+            //SBMLResolverRegistry& registry = 
+            //                     SBMLResolverRegistry::getInstance();
+            //doc = registry.resolve(uri, locationURI);
+            doc = docPlug->getSBMLDocumentFromURI(uri);
+            if (doc != NULL)
             {
+//              registry.addOwnedSBMLDocument(doc);
               if (emd->isSetModelRef() == false)
               {
-                mReferencedModel = mReferencedDocument->getModel();
+                mReferencedModel = doc->getModel();
                 found = true;
               }
-              else if (mReferencedDocument->getModel() != NULL &&
-                mReferencedDocument->getModel()->isSetId() == true &&
-                emd->getModelRef() == mReferencedDocument->getModel()->getId())
+              else if (doc->getModel() != NULL &&
+                doc->getModel()->isSetId() == true &&
+                emd->getModelRef() == doc->getModel()->getId())
               {
-                mReferencedModel = mReferencedDocument->getModel();
+                mReferencedModel = doc->getModel();
                 found = true;
               }
               else
@@ -452,9 +460,11 @@ public:
             string locationURI = doc->getLocationURI();
             string uri = emd->getSource();
 
-            const SBMLResolverRegistry& registry = 
-                                  SBMLResolverRegistry::getInstance();
-            mReferencedDocument = registry.resolve(uri, locationURI);
+            //const SBMLResolverRegistry& registry = 
+            //                      SBMLResolverRegistry::getInstance();
+            //mReferencedDocument = registry.resolve(uri, locationURI);
+            mReferencedDocument = docPlug->getSBMLDocumentFromURI(uri);
+
             pre(mReferencedDocument != NULL);
             mReferencedModel = mReferencedDocument->getModel();
           }
@@ -506,9 +516,10 @@ public:
                 string locationURI = doc->getLocationURI();
                 string uri = emd->getSource();
 
-                const SBMLResolverRegistry& registry = 
-                                      SBMLResolverRegistry::getInstance();
-                SBMLDocument *newDoc = registry.resolve(uri, locationURI);
+                //const SBMLResolverRegistry& registry = 
+                //                      SBMLResolverRegistry::getInstance();
+                //SBMLDocument *newDoc = registry.resolve(uri, locationURI);
+                SBMLDocument *newDoc = docPlug->getSBMLDocumentFromURI(uri);
                 pre(newDoc != NULL);
                 mReferencedModel = newDoc->getModel();
               }
@@ -522,7 +533,8 @@ public:
 
   ~ReferencedModel()
   {
-    delete mReferencedDocument;
+    // dont delete as we now keep one and only one copy in memory
+//    delete mReferencedDocument;
   }
 
 
@@ -586,22 +598,24 @@ START_CONSTRAINT (CompReferenceMustBeL3, ExternalModelDefinition, emd)
   msg += emd.getSource();
   msg += "' which is not an SBML Level 3 document.";
 
-  const SBMLResolverRegistry& registry = SBMLResolverRegistry::getInstance();
+  //const SBMLResolverRegistry& registry = SBMLResolverRegistry::getInstance();
   const SBMLDocument* doc = emd.getSBMLDocument();
   pre(doc != NULL);
   string locationURI = doc->getLocationURI();
   string uri = emd.getSource();
-  doc = NULL;
 
-  doc = registry.resolve(uri, locationURI);
-  pre (doc != NULL);
+  CompSBMLDocumentPlugin* docPlug = (CompSBMLDocumentPlugin*)(doc->getPlugin("comp"));
+  pre(docPlug != NULL);
+  const SBMLDocument* doc1 = docPlug->getSBMLDocumentFromURI(uri);
+//  doc = registry.resolve(uri, locationURI);
+  pre (doc1 != NULL);
 
-  if (doc->getLevel() != 3) 
+  if (doc1->getLevel() != 3) 
   {
     fail = true;
   }
 
-  delete doc;
+//  delete doc;
   
   inv(fail == false);
 }
@@ -622,7 +636,7 @@ START_CONSTRAINT (CompModReferenceMustIdOfModel, ExternalModelDefinition, emd)
   msg += emd.getModelRef();
   msg += "' that does not exist in the referenced document.";
 
-  const SBMLResolverRegistry& registry = SBMLResolverRegistry::getInstance();
+  //const SBMLResolverRegistry& registry = SBMLResolverRegistry::getInstance();
   const SBMLDocument* doc = emd.getSBMLDocument();
   pre(doc != NULL);
   string locationURI = doc->getLocationURI();
@@ -632,19 +646,22 @@ START_CONSTRAINT (CompModReferenceMustIdOfModel, ExternalModelDefinition, emd)
   //pre(resolved != NULL )
   //string resolvedURI = resolved->getUri();
   //delete resolved;
-  doc = registry.resolve(uri, locationURI);
-  pre(doc != NULL);
-  if(doc->getLevel() != 3) {
-    delete doc;
+  CompSBMLDocumentPlugin* docPlug = (CompSBMLDocumentPlugin*)(doc->getPlugin("comp"));
+  pre(docPlug != NULL);
+  const SBMLDocument* doc1 = docPlug->getSBMLDocumentFromURI(uri);
+//  doc = registry.resolve(uri, locationURI);
+  pre(doc1 != NULL);
+  if(doc1->getLevel() != 3) {
+//    delete doc;
     pre(false);
   }
   //pre(doc->getLevel() == 3);
 
   const CompSBMLDocumentPlugin* csdp = 
-    static_cast<const CompSBMLDocumentPlugin*>(doc->getPlugin("comp"));
+    static_cast<const CompSBMLDocumentPlugin*>(doc1->getPlugin("comp"));
   if (csdp == NULL) 
   {
-    const Model* model = doc->getModel();
+    const Model* model = doc1->getModel();
     if (model==NULL || (model->getId() != emd.getModelRef())) {
       fail = true;
     }
@@ -658,7 +675,7 @@ START_CONSTRAINT (CompModReferenceMustIdOfModel, ExternalModelDefinition, emd)
     }
   }
 
-  delete doc;
+//  delete doc;
   inv(fail == false);
 }
 END_CONSTRAINT
@@ -1182,10 +1199,10 @@ START_CONSTRAINT (CompIdRefMustReferenceObject, Port, p)
   msg += p.getIdRef();
   msg += "' which is not an element within the <model>.";
 
-  IdList mIds;
+  IdList  mIds;
 
   // create the filter we want to use
-  IdFilter filter;
+  //IdFilter filter;
 
   ReferencedModel ref(m, p);
   const Model* mod = ref.getReferencedModel();
@@ -1203,15 +1220,19 @@ START_CONSTRAINT (CompIdRefMustReferenceObject, Port, p)
     unknownPackagePresent = true;
   }
   pre ( unknownPackagePresent == false);
-  
-  List* allElements = const_cast<Model*>(mod)->getAllElements(&filter);
 
-  for (unsigned int i = 0; i < allElements->getSize(); i++)
+  if (!const_cast<Model*>(mod)->isPopulatedAllElementIdList())
   {
-    mIds.append(static_cast<SBase*>(allElements->get(i))->getId());
+    const_cast<Model*>(mod)-> populateAllElementIdList();
   }
+  mIds = const_cast<Model*>(mod)->getAllElementIdList();
+  
+  //List* allElements = const_cast<Model*>(mod)->getAllElements(&filter);
 
-  delete allElements;
+  //for (unsigned int i = 0; i < allElements->getSize(); i++)
+  //{
+  //  mIds.append(static_cast<SBase*>(allElements->get(i))->getId());
+  //}
 
   if (mIds.contains(p.getIdRef()) == false)
   {
@@ -1284,19 +1305,24 @@ START_CONSTRAINT (CompIdRefMustReferenceObject, Deletion, d)
 
   IdList mIds;
 
-  // create the filter we want to use
-  IdFilter filter;
-
-  //  get a list of all elements with an id
-  List* allElements = const_cast<Model*>
-                                (referencedModel)->getAllElements(&filter);
-
-  for (unsigned int i = 0; i < allElements->getSize(); i++)
+  if (!const_cast<Model*>(referencedModel)->isPopulatedAllElementIdList())
   {
-    mIds.append(static_cast<SBase*>(allElements->get(i))->getId());
+    const_cast<Model*>(referencedModel)-> populateAllElementIdList();
   }
+  mIds = const_cast<Model*>(referencedModel)->getAllElementIdList();
+  //// create the filter we want to use
+  //IdFilter filter;
 
-  delete allElements;
+  ////  get a list of all elements with an id
+  //List* allElements = const_cast<Model*>
+  //                              (referencedModel)->getAllElements(&filter);
+
+  //for (unsigned int i = 0; i < allElements->getSize(); i++)
+  //{
+  //  mIds.append(static_cast<SBase*>(allElements->get(i))->getId());
+  //}
+
+  //delete allElements;
 
   if (mIds.contains(d.getIdRef()) == false)
   {
@@ -1367,20 +1393,25 @@ START_CONSTRAINT (CompIdRefMustReferenceObject, ReplacedElement, repE)
 
 
   IdList mIds;
+  if (!const_cast<Model*>(referencedModel)->isPopulatedAllElementIdList())
+  {
+    const_cast<Model*>(referencedModel)-> populateAllElementIdList();
+  }
+  mIds = const_cast<Model*>(referencedModel)->getAllElementIdList();
 
   // create the filter we want to use
-  IdFilter filter;
+  //IdFilter filter;
 
-  //  get a list of all elements with an id
-  List* allElements = const_cast<Model*>
-                               (referencedModel)->getAllElements(&filter);
+  ////  get a list of all elements with an id
+  //List* allElements = const_cast<Model*>
+  //                             (referencedModel)->getAllElements(&filter);
 
-  for (unsigned int i = 0; i < allElements->getSize(); i++)
-  {
-    mIds.append(static_cast<SBase*>(allElements->get(i))->getId());
-  }
+  //for (unsigned int i = 0; i < allElements->getSize(); i++)
+  //{
+  //  mIds.append(static_cast<SBase*>(allElements->get(i))->getId());
+  //}
 
-  delete allElements;
+  //delete allElements;
 
   if (mIds.contains(repE.getIdRef()) == false)
   {
@@ -1439,20 +1470,25 @@ START_CONSTRAINT (CompIdRefMustReferenceObject, ReplacedBy, repBy)
   pre ( unknownPackagePresent == false);
 
   IdList mIds;
-
-  // create the filter we want to use
-  IdFilter filter;
-
-  //  get a list of all elements with an id
-  List* allElements = const_cast<Model*>
-                               (referencedModel)->getAllElements(&filter);
-
-  for (unsigned int i = 0; i < allElements->getSize(); i++)
+  if (!const_cast<Model*>(referencedModel)->isPopulatedAllElementIdList())
   {
-    mIds.append(static_cast<SBase*>(allElements->get(i))->getId());
+    const_cast<Model*>(referencedModel)-> populateAllElementIdList();
   }
+  mIds = const_cast<Model*>(referencedModel)->getAllElementIdList();
 
-  delete allElements;
+  //// create the filter we want to use
+  //IdFilter filter;
+
+  ////  get a list of all elements with an id
+  //List* allElements = const_cast<Model*>
+  //                             (referencedModel)->getAllElements(&filter);
+
+  //for (unsigned int i = 0; i < allElements->getSize(); i++)
+  //{
+  //  mIds.append(static_cast<SBase*>(allElements->get(i))->getId());
+  //}
+
+  //delete allElements;
 
   if (mIds.contains(repBy.getIdRef()) == false)
   {
@@ -1559,19 +1595,25 @@ START_CONSTRAINT (CompIdRefMustReferenceObject, SBaseRef, sbRef)
 
   IdList mIds;
 
-  // create the filter we want to use
-  IdFilter filter;
-
-  //  get a list of all elements with an id
-  List* allElements = const_cast<Model*>
-                                (referencedModel)->getAllElements(&filter);
-
-  for (unsigned int i = 0; i < allElements->getSize(); i++)
+  if (!const_cast<Model*>(referencedModel)->isPopulatedAllElementIdList())
   {
-    mIds.append(static_cast<SBase*>(allElements->get(i))->getId());
+    const_cast<Model*>(referencedModel)-> populateAllElementIdList();
   }
+  mIds = const_cast<Model*>(referencedModel)->getAllElementIdList();
 
-  delete allElements;
+  //// create the filter we want to use
+  //IdFilter filter;
+
+  ////  get a list of all elements with an id
+  //List* allElements = const_cast<Model*>
+  //                              (referencedModel)->getAllElements(&filter);
+
+  //for (unsigned int i = 0; i < allElements->getSize(); i++)
+  //{
+  //  mIds.append(static_cast<SBase*>(allElements->get(i))->getId());
+  //}
+
+  //delete allElements;
 
 
   if (mIds.contains(sbRef.getIdRef()) == false)
@@ -1883,9 +1925,9 @@ START_CONSTRAINT (CompMetaIdRefMustReferenceObject, Port, p)
   
   List* allElements = const_cast<Model*>(mod)->getAllElements(&filter);
 
-  for (unsigned int i = 0; i < allElements->getSize(); i++)
+  for (ListIterator iter = allElements->begin(); iter != allElements->end(); ++iter)
   {
-    mIds.append(static_cast<SBase*>(allElements->get(i))->getMetaId());
+    mIds.append(static_cast<SBase*>(*iter)->getMetaId());
   }
   delete allElements;
 
@@ -1956,9 +1998,9 @@ START_CONSTRAINT (CompMetaIdRefMustReferenceObject, Deletion, d)
   List* allElements = const_cast<Model*>
                                 (referencedModel)->getAllElements(&filter);
 
-  for (unsigned int i = 0; i < allElements->getSize(); i++)
+  for (ListIterator iter = allElements->begin(); iter != allElements->end(); ++iter)
   {
-    mIds.append(static_cast<SBase*>(allElements->get(i))->getMetaId());
+    mIds.append(static_cast<SBase*>(*iter)->getMetaId());
   }
 
   delete allElements;
@@ -2027,9 +2069,9 @@ START_CONSTRAINT (CompMetaIdRefMustReferenceObject, ReplacedElement, repE)
   List* allElements = const_cast<Model*>
                                (referencedModel)->getAllElements(&filter);
 
-  for (unsigned int i = 0; i < allElements->getSize(); i++)
+  for (ListIterator iter = allElements->begin(); iter != allElements->end(); ++iter)
   {
-    mIds.append(static_cast<SBase*>(allElements->get(i))->getMetaId());
+    mIds.append(static_cast<SBase*>(*iter)->getMetaId());
   }
 
   delete allElements;
@@ -2087,9 +2129,9 @@ START_CONSTRAINT (CompMetaIdRefMustReferenceObject, ReplacedBy, repBy)
   List* allElements = const_cast<Model*>
                                 (referencedModel)->getAllElements(&filter);
 
-  for (unsigned int i = 0; i < allElements->getSize(); i++)
+  for (ListIterator iter = allElements->begin(); iter != allElements->end(); ++iter)
   {
-    mIds.append(static_cast<SBase*>(allElements->get(i))->getMetaId());
+    mIds.append(static_cast<SBase*>(*iter)->getMetaId());
   }
 
   delete allElements;
@@ -2194,9 +2236,9 @@ START_CONSTRAINT (CompMetaIdRefMustReferenceObject, SBaseRef, sbRef)
   List* allElements = const_cast<Model*>
                                 (referencedModel)->getAllElements(&filter);
 
-  for (unsigned int i = 0; i < allElements->getSize(); i++)
+  for (ListIterator iter = allElements->begin(); iter != allElements->end(); ++iter)
   {
-    mIds.append(static_cast<SBase*>(allElements->get(i))->getMetaId());
+    mIds.append(static_cast<SBase*>(*iter)->getMetaId());
   }
 
   delete allElements;
@@ -2510,12 +2552,12 @@ START_CONSTRAINT (CompParentOfSBRefChildMustBeSubmodel, ReplacedElement, repE)
     else
     {
       // must be a metaidref
-      std::string ref = repE.getMetaIdRef();
+      std::string strref = repE.getMetaIdRef();
       bool found = false;
       unsigned int i = 0;
       while (found == false &&  i < plug1->getNumSubmodels())
       {
-        if (ref == plug1->getSubmodel(i)->getMetaId())
+        if (strref == plug1->getSubmodel(i)->getMetaId())
         {
           found = true;
         }
@@ -2629,12 +2671,12 @@ START_CONSTRAINT (CompParentOfSBRefChildMustBeSubmodel, ReplacedBy, repE)
     else
     {
       // must be a metaidref
-      std::string ref = repE.getMetaIdRef();
+      std::string strref = repE.getMetaIdRef();
       bool found = false;
       unsigned int i = 0;
       while (found == false &&  i < plug1->getNumSubmodels())
       {
-        if (ref == plug1->getSubmodel(i)->getMetaId())
+        if (strref == plug1->getSubmodel(i)->getMetaId())
         {
           found = true;
         }
@@ -2747,12 +2789,12 @@ START_CONSTRAINT (CompParentOfSBRefChildMustBeSubmodel, SBaseRef, sbRef)
     else
     {
       // must be a metaidref
-      std::string ref = sbRef.getMetaIdRef();
+      std::string strref = sbRef.getMetaIdRef();
       bool found = false;
       unsigned int i = 0;
       while (found == false &&  i < plug->getNumSubmodels())
       {
-        if (ref == plug->getSubmodel(i)->getMetaId())
+        if (strref == plug->getSubmodel(i)->getMetaId())
         {
           found = true;
         }
@@ -3949,21 +3991,27 @@ START_CONSTRAINT (CompIdRefMayReferenceUnknownPackage, Port, p)
   IdList mIds;
 
   // create the filter we want to use
-  IdFilter filter;
+  //IdFilter filter;
 
   ReferencedModel ref(m, p);
   const Model* mod = ref.getReferencedModel();
   
   pre (mod != NULL);
   
-  List* allElements = const_cast<Model*>(mod)->getAllElements(&filter);
-
-  for (unsigned int i = 0; i < allElements->getSize(); i++)
+  if (!const_cast<Model*>(mod)->isPopulatedAllElementIdList())
   {
-    mIds.append(static_cast<SBase*>(allElements->get(i))->getId());
+    const_cast<Model*>(mod)-> populateAllElementIdList();
   }
+  mIds = const_cast<Model*>(mod)->getAllElementIdList();
 
-  delete allElements;
+  //List* allElements = const_cast<Model*>(mod)->getAllElements(&filter);
+
+  //for (unsigned int i = 0; i < allElements->getSize(); i++)
+  //{
+  //  mIds.append(static_cast<SBase*>(allElements->get(i))->getId());
+  //}
+
+  //delete allElements;
 
   inv(mIds.contains(p.getIdRef()))
 }
@@ -4001,21 +4049,26 @@ START_CONSTRAINT (CompIdRefMayReferenceUnknownPackage, Deletion, d)
   IdList mIds;
 
   // create the filter we want to use
-  IdFilter filter;
+  //IdFilter filter;
 
   ReferencedModel ref(m, d);
   const Model* mod = ref.getReferencedModel();
   
   pre (mod != NULL);
-  
-  List* allElements = const_cast<Model*>(mod)->getAllElements(&filter);
-
-  for (unsigned int i = 0; i < allElements->getSize(); i++)
+   if (!const_cast<Model*>(mod)->isPopulatedAllElementIdList())
   {
-    mIds.append(static_cast<SBase*>(allElements->get(i))->getId());
+    const_cast<Model*>(mod)-> populateAllElementIdList();
   }
+  mIds = const_cast<Model*>(mod)->getAllElementIdList();
+ 
+  //List* allElements = const_cast<Model*>(mod)->getAllElements(&filter);
 
-  delete allElements;
+  //for (unsigned int i = 0; i < allElements->getSize(); i++)
+  //{
+  //  mIds.append(static_cast<SBase*>(allElements->get(i))->getId());
+  //}
+
+  //delete allElements;
 
   inv(mIds.contains(d.getIdRef()))
 }
@@ -4051,21 +4104,26 @@ START_CONSTRAINT (CompIdRefMayReferenceUnknownPackage, ReplacedElement, repE)
   IdList mIds;
 
   // create the filter we want to use
-  IdFilter filter;
+  //IdFilter filter;
 
   ReferencedModel ref(m, repE);
   const Model* mod = ref.getReferencedModel();
   
   pre (mod != NULL);
-  
-  List* allElements = const_cast<Model*>(mod)->getAllElements(&filter);
-
-  for (unsigned int i = 0; i < allElements->getSize(); i++)
+  if (!const_cast<Model*>(mod)->isPopulatedAllElementIdList())
   {
-    mIds.append(static_cast<SBase*>(allElements->get(i))->getId());
+    const_cast<Model*>(mod)-> populateAllElementIdList();
   }
+  mIds = const_cast<Model*>(mod)->getAllElementIdList();
+  
+  //List* allElements = const_cast<Model*>(mod)->getAllElements(&filter);
 
-  delete allElements;
+  //for (unsigned int i = 0; i < allElements->getSize(); i++)
+  //{
+  //  mIds.append(static_cast<SBase*>(allElements->get(i))->getId());
+  //}
+
+  //delete allElements;
 
   inv(mIds.contains(repE.getIdRef()))
 }
@@ -4138,21 +4196,26 @@ START_CONSTRAINT (CompIdRefMayReferenceUnknownPackage, SBaseRef, sbRef)
   IdList mIds;
 
   // create the filter we want to use
-  IdFilter filter;
+  //IdFilter filter;
 
   ReferencedModel ref(m, sbRef);
   const Model* mod = ref.getReferencedModel();
   
   pre (mod != NULL);
   
-  List* allElements = const_cast<Model*>(mod)->getAllElements(&filter);
-
-  for (unsigned int i = 0; i < allElements->getSize(); i++)
+  if (!const_cast<Model*>(mod)->isPopulatedAllElementIdList())
   {
-    mIds.append(static_cast<SBase*>(allElements->get(i))->getId());
+    const_cast<Model*>(mod)-> populateAllElementIdList();
   }
+  mIds = const_cast<Model*>(mod)->getAllElementIdList();
+  //List* allElements = const_cast<Model*>(mod)->getAllElements(&filter);
 
-  delete allElements;
+  //for (unsigned int i = 0; i < allElements->getSize(); i++)
+  //{
+  //  mIds.append(static_cast<SBase*>(allElements->get(i))->getId());
+  //}
+
+  //delete allElements;
 
   inv(mIds.contains(sbRef.getIdRef()))
 }
@@ -4186,7 +4249,7 @@ START_CONSTRAINT (CompMetaIdRefMayReferenceUnknownPkg, Port, p)
   IdList mIds;
 
   // create the filter we want to use
-  MetaIdFilter filter;
+  //MetaIdFilter filter;
 
   //  get a list of all elements with an id
   ReferencedModel ref(m, p);
@@ -4194,14 +4257,20 @@ START_CONSTRAINT (CompMetaIdRefMayReferenceUnknownPkg, Port, p)
 
   pre (mod != NULL);
   
-  List* allElements = const_cast<Model*>(mod)->getAllElements(&filter);
-
-  for (unsigned int i = 0; i < allElements->getSize(); i++)
+  if (!const_cast<Model*>(mod)->isPopulatedAllElementMetaIdList())
   {
-    mIds.append(static_cast<SBase*>(allElements->get(i))->getMetaId());
+    const_cast<Model*>(mod)-> populateAllElementMetaIdList();
   }
+  mIds = const_cast<Model*>(mod)->getAllElementMetaIdList();
+  
+  //List* allElements = const_cast<Model*>(mod)->getAllElements(&filter);
 
-  delete allElements;
+  //for (unsigned int i = 0; i < allElements->getSize(); i++)
+  //{
+  //  mIds.append(static_cast<SBase*>(allElements->get(i))->getMetaId());
+  //}
+
+  //delete allElements;
 
   inv(mIds.contains(p.getMetaIdRef()))
 }
@@ -4240,7 +4309,7 @@ START_CONSTRAINT (CompMetaIdRefMayReferenceUnknownPkg, Deletion, d)
   IdList mIds;
 
   // create the filter we want to use
-  MetaIdFilter filter;
+  //MetaIdFilter filter;
 
   //  get a list of all elements with an id
   ReferencedModel ref(m, d);
@@ -4248,14 +4317,20 @@ START_CONSTRAINT (CompMetaIdRefMayReferenceUnknownPkg, Deletion, d)
 
   pre (mod != NULL);
   
-  List* allElements = const_cast<Model*>(mod)->getAllElements(&filter);
-
-  for (unsigned int i = 0; i < allElements->getSize(); i++)
+  if (!const_cast<Model*>(mod)->isPopulatedAllElementMetaIdList())
   {
-    mIds.append(static_cast<SBase*>(allElements->get(i))->getMetaId());
+    const_cast<Model*>(mod)-> populateAllElementMetaIdList();
   }
+  mIds = const_cast<Model*>(mod)->getAllElementMetaIdList();
+  
+  //List* allElements = const_cast<Model*>(mod)->getAllElements(&filter);
 
-  delete allElements;
+  //for (unsigned int i = 0; i < allElements->getSize(); i++)
+  //{
+  //  mIds.append(static_cast<SBase*>(allElements->get(i))->getMetaId());
+  //}
+
+  //delete allElements;
 
   inv(mIds.contains(d.getMetaIdRef()))
 }
@@ -4291,7 +4366,7 @@ START_CONSTRAINT (CompMetaIdRefMayReferenceUnknownPkg, ReplacedElement, repE)
   IdList mIds;
 
   // create the filter we want to use
-  MetaIdFilter filter;
+  //MetaIdFilter filter;
 
   //  get a list of all elements with an id
   ReferencedModel ref(m, repE);
@@ -4299,14 +4374,20 @@ START_CONSTRAINT (CompMetaIdRefMayReferenceUnknownPkg, ReplacedElement, repE)
 
   pre (mod != NULL);
   
-  List* allElements = const_cast<Model*>(mod)->getAllElements(&filter);
-
-  for (unsigned int i = 0; i < allElements->getSize(); i++)
+  if (!const_cast<Model*>(mod)->isPopulatedAllElementMetaIdList())
   {
-    mIds.append(static_cast<SBase*>(allElements->get(i))->getMetaId());
+    const_cast<Model*>(mod)-> populateAllElementMetaIdList();
   }
+  mIds = const_cast<Model*>(mod)->getAllElementMetaIdList();
+  
+  //List* allElements = const_cast<Model*>(mod)->getAllElements(&filter);
 
-  delete allElements;
+  //for (unsigned int i = 0; i < allElements->getSize(); i++)
+  //{
+  //  mIds.append(static_cast<SBase*>(allElements->get(i))->getMetaId());
+  //}
+
+  //delete allElements;
 
   inv(mIds.contains(repE.getMetaIdRef()))
 }
@@ -4378,7 +4459,7 @@ START_CONSTRAINT (CompMetaIdRefMayReferenceUnknownPkg, SBaseRef, sbRef)
   IdList mIds;
 
   // create the filter we want to use
-  MetaIdFilter filter;
+  //MetaIdFilter filter;
 
   //  get a list of all elements with an id
   ReferencedModel ref(m, sbRef);
@@ -4386,14 +4467,20 @@ START_CONSTRAINT (CompMetaIdRefMayReferenceUnknownPkg, SBaseRef, sbRef)
 
   pre (mod != NULL);
   
-  List* allElements = const_cast<Model*>(mod)->getAllElements(&filter);
-
-  for (unsigned int i = 0; i < allElements->getSize(); i++)
+  if (!const_cast<Model*>(mod)->isPopulatedAllElementMetaIdList())
   {
-    mIds.append(static_cast<SBase*>(allElements->get(i))->getMetaId());
+    const_cast<Model*>(mod)-> populateAllElementMetaIdList();
   }
+  mIds = const_cast<Model*>(mod)->getAllElementMetaIdList();
+  
+  //List* allElements = const_cast<Model*>(mod)->getAllElements(&filter);
 
-  delete allElements;
+  //for (unsigned int i = 0; i < allElements->getSize(); i++)
+  //{
+  //  mIds.append(static_cast<SBase*>(allElements->get(i))->getMetaId());
+  //}
+
+  //delete allElements;
 
   inv(mIds.contains(sbRef.getMetaIdRef()))
 }

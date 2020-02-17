@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -34,9 +38,9 @@
  * @sbmlbrief{fbc} Extension of SBMLDocument for the &ldquo;fbc&rdquo; package.
  *
  * The FbcSBMLDocumentPlugin class inherits from the SBMLDocumentPlugin
- * class, and codifies the extentions to the SBMLDocument class defined in
+ * class, and codifies the extensions to the SBMLDocument class defined in
  * the SBML Level&nbsp;3 @ref fbc (&ldquo;fbc&rdquo;) package.  This
- * extention defines a required flag named "required", which indicates
+ * extension defines a required flag named "required", which indicates
  * whether &ldquo;fbc&rdquo; constructs can be used to change the core
  * mathematical interpretation of the Model defined in the SBML input.  Since
  * &ldquo;fbc&rdquo; constructs cannot, this attribute must be set to the
@@ -66,7 +70,18 @@ class LIBSBML_EXTERN FbcSBMLDocumentPlugin : public SBMLDocumentPlugin
 public:
 
   /**
-   * Creates a new FbcSBMLDocumentPlugin
+   * Creates a new FbcSBMLDocumentPlugin object using the given parameters.
+   *
+   * @copydetails doc_what_are_xmlnamespaces
+   *
+   * @copydetails doc_what_are_sbmlnamespaces
+   *
+   * @param uri the URI of the SBML Level&nbsp;3 package implemented by
+   * this libSBML package extension.
+   *
+   * @param prefix the XML namespace prefix being used for the package.
+   *
+   * @param fbcns the namespaces object for the package.
    */
   FbcSBMLDocumentPlugin(const std::string& uri, const std::string& prefix, 
                                  FbcPkgNamespaces* fbcns);
@@ -75,7 +90,7 @@ public:
   /**
    * Copy constructor for FbcSBMLDocumentPlugin.
    *
-   * @param orig; the FbcSBMLDocumentPlugin instance to copy.
+   * @param orig the FbcSBMLDocumentPlugin instance to copy.
    */
   FbcSBMLDocumentPlugin(const FbcSBMLDocumentPlugin& orig);
 
@@ -83,8 +98,8 @@ public:
    /**
    * Assignment operator for FbcSBMLDocumentPlugin.
    *
-   * @param rhs; the object whose values are used as the basis
-   * of the assignment
+   * @param rhs the object whose values are used as the basis
+   * of the assignment.
    */
   FbcSBMLDocumentPlugin& operator=(const FbcSBMLDocumentPlugin& rhs);
 
@@ -114,7 +129,7 @@ public:
                                const ExpectedAttributes& expectedAttributes);
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
 #endif // SWIG
@@ -130,7 +145,7 @@ public:
   virtual bool isCompFlatteningImplemented() const;
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -141,7 +156,7 @@ public:
   virtual unsigned int checkConsistency();
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
   /** @cond doxygenLibsbmlInternal */
   virtual bool accept(SBMLVisitor& v) const;
@@ -152,7 +167,7 @@ protected:
 
   /** @cond doxygenLibsbmlInternal */
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
 };

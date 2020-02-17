@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -47,6 +51,7 @@
 #include <sbml/AssignmentRule.h>
 #include <sbml/AlgebraicRule.h>
 #include <sbml/RateRule.h>
+#include <sbml/ModifierSpeciesReference.h>
 
 #include <sbml/util/List.h>
 
@@ -92,6 +97,10 @@
 #include "OverDeterminedCheck.h"
 
 #include "FunctionDefinitionRecursion.h"
+
+#include "RateOfCycles.h"
+
+#include <sbml/math/L3FormulaFormatter.h>
 
 #endif
 
@@ -294,7 +303,7 @@ START_CONSTRAINT (20305, FunctionDefinition, fd)
   pre( fd.isSetBody() == true      );
 
   msg = "The <functionDefinition> with id '" + fd.getId() + "' returns "
-    "a value that is neither boolean nor numeric.";
+    "a value that is neither Boolean nor numeric.";
 
   /*
    * need to look at the special case where the body of the lambda function
@@ -344,6 +353,7 @@ START_CONSTRAINT (20305, FunctionDefinition, fd)
 
   inv_or( fd.getBody()->isBoolean() );
   inv_or( fd.getBody()->isNumber()  );
+  inv_or(fd.getBody()->isConstantNumber());
   inv_or( fd.getBody()->isFunction());
   inv_or( fd.getBody()->isOperator());
   inv_or( specialCase);
@@ -410,6 +420,36 @@ START_CONSTRAINT (99302, FunctionDefinition, fd)
   pre( fd.getMath()->isLambda() );
   
   inv( fd.isSetBody() == true      );
+}
+END_CONSTRAINT
+
+
+START_CONSTRAINT(99304, FunctionDefinition, fd)
+{
+
+  pre(fd.getLevel() > 1);
+  pre(fd.isSetMath());
+  pre(fd.getMath()->isLambda());
+  const ASTNode* math = fd.getMath();
+  unsigned int n = math->getNumBvars();
+
+  bool fail = false;
+
+  unsigned int i = 0;
+  while (i < n && fail == false)
+  {
+    const ASTNode * child = math->getChild(i);
+    if (child->getType() != AST_NAME)
+    {
+      msg = "The <functionDefinition> with id '" + fd.getId() + "' contains"
+        " a <bvar> element " + SBML_formulaToL3String(child) + " that is not a <ci> element.";
+      fail = true;
+    }
+
+    i++;
+  }
+
+  inv(fail == false);
 }
 END_CONSTRAINT
 
@@ -970,139 +1010,6 @@ START_CONSTRAINT (20506, Compartment, c)
 
 
   inv( m.getCompartment( c.getOutside() )->getSpatialDimensions() == 0 );
-}
-END_CONSTRAINT
-
-
-START_CONSTRAINT (20507, Compartment, c)
-{
-  pre (c.getLevel() > 1);
-  pre( c.getSpatialDimensions() == 1 );
-  pre( c.isSetUnits()                );
-
-  if (c.getLevel() == 2)
-  {
-    if (c.getVersion() == 1)
-    {
-      msg =
-        "The value of the 'units' attribute on a <compartment> having "
-        "'spatialDimensions' of '1' must be either 'length' or 'metre', "
-        "or the identifier of a <unitDefinition> based on "
-        "either 'metre' (with 'exponent' equal to '1').";
-    }
-    else
-    {
-      msg =
-        "The value of the 'units' attribute on a <compartment> having "
-        "'spatialDimensions' of '1' must be either 'length', 'metre', "
-        "'dimensionless', or the identifier of a <unitDefinition> based on "
-        "either 'metre' (with 'exponent' equal to '1') or 'dimensionless'.";
-    }
-  }
-  else
-  {
-    msg =
-      "The value of the 'units' attribute on a <compartment> having "
-      "'spatialDimensions' of '1' must be either 'metre', "
-      "'dimensionless', or the identifier of a <unitDefinition> based on "
-      "either 'metre' (with 'exponent' equal to '1') or 'dimensionless'.";
-  }
-
-  msg += " The <compartment> with id '" + c.getId() + "' does not comply.";
-
-  const string&         units = c.getUnits();
-  const UnitDefinition* defn  = m.getUnitDefinition(units);
-
-  /* dimensionless is allowable in L2V2 */
-  if (c.getLevel() == 2)
-  {
-    if (c.getVersion() == 1)
-    {
-      inv_or( units == "length" );
-      inv_or( units == "metre"  );
-      inv_or( defn  != NULL && defn->isVariantOfLength() );
-    }
-    else
-    {
-      inv_or( units == "length" );
-      inv_or( units == "metre"  );
-      inv_or( units == "dimensionless"  );
-      inv_or( defn  != NULL && defn->isVariantOfLength() );
-      inv_or( defn  != NULL && defn->isVariantOfDimensionless() );
-    }
-  }
-  else
-  {
-    inv_or( units == "metre"  );
-    inv_or( units == "dimensionless"  );
-    inv_or( defn  != NULL && defn->isVariantOfLength() );
-    inv_or( defn  != NULL && defn->isVariantOfDimensionless() );
-  }
-}
-END_CONSTRAINT
-
-
-START_CONSTRAINT (20508, Compartment, c)
-{
-  pre (c.getLevel() > 1);
-  pre( c.getSpatialDimensions() == 2 );
-  pre( c.isSetUnits()                );
-
-  if (c.getLevel() == 2)
-  {
-    if (c.getVersion() == 1)
-    {
-      msg =
-        "The value of the 'units' attribute on a <compartment> having "
-        "'spatialDimensions' of '2' must be either 'area' or "
-        "the identifier of a <unitDefinition> based on 'metre' (with "
-        "'exponent' equal to '2').";
-    }
-    else
-    {
-      msg =
-        "The value of the 'units' attribute on a <compartment> having "
-        "'spatialDimensions' of '2' must be either 'area', 'dimensionless', or "
-        "the identifier of a <unitDefinition> based on either 'metre' (with "
-        "'exponent' equal to '2') or 'dimensionless'.";
-    }
-  }
-  else
-  {
-    msg =
-      "The value of the 'units' attribute on a <compartment> having "
-      "'spatialDimensions' of '2' must be either 'dimensionless', or "
-      "the identifier of a <unitDefinition> based on either 'metre' (with "
-      "'exponent' equal to '2') or 'dimensionless'.";
-  }
-
-  msg += " The <compartment> with id '" + c.getId() + "' does not comply.";
-
-  const string&         units = c.getUnits();
-  const UnitDefinition* defn  = m.getUnitDefinition(units);
-
-  /* dimensionless is allowable in L2V2 */
-  if (c.getLevel() == 2)
-  {
-    if (c.getVersion() == 1)
-    {
-      inv_or( units == "area" );
-      inv_or( defn  != NULL && defn->isVariantOfArea() );
-    }
-    else
-    {
-      inv_or( units == "area" );
-      inv_or( units == "dimensionless"  );
-      inv_or( defn  != NULL && defn->isVariantOfArea() );
-      inv_or( defn  != NULL && defn->isVariantOfDimensionless() );
-    }
-  }
-  else
-  {
-    inv_or( units == "dimensionless"  );
-    inv_or( defn  != NULL && defn->isVariantOfArea() );
-    inv_or( defn  != NULL && defn->isVariantOfDimensionless() );
-  }
 }
 END_CONSTRAINT
 
@@ -1831,7 +1738,7 @@ START_CONSTRAINT (20911, RateRule, r)
 }
 END_CONSTRAINT
 
-
+EXTERN_CONSTRAINT(20912, RateOfCycles);
 
 // Constraint validation
 
@@ -1847,7 +1754,7 @@ START_CONSTRAINT (21001, Constraint, c)
   char* formula = SBML_formulaToString(c.getMath());
   msg = "The <constraint> with the formula '";
   msg += formula;
-  msg += "' returns a value that is not boolean.";
+  msg += "' returns a value that is not Boolean.";
   safe_free(formula);
 
   inv( m.isBoolean( c.getMath() ) );
@@ -1948,6 +1855,26 @@ START_CONSTRAINT (21113, SpeciesReference, sr)
 END_CONSTRAINT
 
 
+START_CONSTRAINT(99131, SpeciesReference, sr)
+{
+  pre(sr.getLevel() == 2);
+
+  /* doesnt apply if the SpeciesReference is a modifier */
+  pre(!sr.isModifier());
+  pre(sr.isSetStoichiometryMath());
+
+  std::string rnId = (sr.getAncestorOfType(SBML_REACTION) != NULL) ?
+    sr.getAncestorOfType(SBML_REACTION)->getId() : std::string("");
+
+  msg = "In <reaction> with id '" + rnId + "' the <speciesReference> "
+    "with species '" + sr.getSpecies() + "' has a <stoichiometryMath> element "
+    "with no <math> element.";
+
+  inv(sr.getStoichiometryMath()->isSetMath());
+}
+END_CONSTRAINT
+
+
 // KineticLaw validation
 
 EXTERN_CONSTRAINT(21121, KineticLawVars)
@@ -2034,58 +1961,59 @@ START_CONSTRAINT (21130, KineticLaw, kl)
 END_CONSTRAINT
 
 
+// moved to units validator
 
-START_CONSTRAINT (99127, KineticLaw, kl)
-{
-  pre( kl.getLevel() == 1 || (kl.getLevel() == 2 && kl.getVersion() == 1));
-  pre( kl.isSetSubstanceUnits() );
-  
-  //msg =
-  //  "A KineticLaw's substanceUnits must be 'substance', 'item', 'mole', or "
-  //  "the id of a UnitDefinition that defines a variant of 'item' or 'mole' "
-  //  "(L2v1 Section 4.9.7).";
-
-
-  const string&         units = kl.getSubstanceUnits();
-  const UnitDefinition* defn  = m.getUnitDefinition(units);
-
-  std::string rnId = (kl.getAncestorOfType(SBML_REACTION) != NULL) ?
-    kl.getAncestorOfType(SBML_REACTION)->getId() : std::string("");
-  msg = "The substanceUnits of the <kineticLaw> in the <reaction> '" + rnId;
-  msg += "' are '" + units + "', which are not a variant of 'item' or 'mole'.";
-
-  inv_or( units == "substance" );
-  inv_or( units == "item"      );
-  inv_or( units == "mole"      );
-  inv_or( defn  != NULL && defn->isVariantOfSubstance() );
-}
-END_CONSTRAINT
-
-
-START_CONSTRAINT (99128, KineticLaw, kl)
-{
-  pre( kl.getLevel() == 1 || (kl.getLevel() == 2 && kl.getVersion() == 1));
-  pre( kl.isSetTimeUnits() );
-
-  //msg =
-  //  "A KineticLaw's timeUnits must be 'time', 'second', or the id of a "
-  //  "UnitDefnition that defines a variant of 'second' with exponent='1' "
-  //  "(L2v1 Section 4.9.7).";
-
-
-  const string&         units = kl.getTimeUnits();
-  const UnitDefinition* defn  = m.getUnitDefinition(units);
-
-  std::string rnId = (kl.getAncestorOfType(SBML_REACTION) != NULL) ?
-    kl.getAncestorOfType(SBML_REACTION)->getId() : std::string("");
-  msg = "The timeUnits of the <kineticLaw> in the <reaction> '" + rnId;
-  msg += "' are '" + units + "', which are not a variant of 'second'.";
-
-  inv_or( units == "time"   );
-  inv_or( units == "second" );
-  inv_or( defn  != NULL && defn->isVariantOfTime() );
-}
-END_CONSTRAINT
+//START_CONSTRAINT (99127, KineticLaw, kl)
+//{
+//  pre( kl.getLevel() == 1 || (kl.getLevel() == 2 && kl.getVersion() == 1));
+//  pre( kl.isSetSubstanceUnits() );
+//  
+//  //msg =
+//  //  "A KineticLaw's substanceUnits must be 'substance', 'item', 'mole', or "
+//  //  "the id of a UnitDefinition that defines a variant of 'item' or 'mole' "
+//  //  "(L2v1 Section 4.9.7).";
+//
+//
+//  const string&         units = kl.getSubstanceUnits();
+//  const UnitDefinition* defn  = m.getUnitDefinition(units);
+//
+//  std::string rnId = (kl.getAncestorOfType(SBML_REACTION) != NULL) ?
+//    kl.getAncestorOfType(SBML_REACTION)->getId() : std::string("");
+//  msg = "The substanceUnits of the <kineticLaw> in the <reaction> '" + rnId;
+//  msg += "' are '" + units + "', which are not a variant of 'item' or 'mole'.";
+//
+//  inv_or( units == "substance" );
+//  inv_or( units == "item"      );
+//  inv_or( units == "mole"      );
+//  inv_or( defn  != NULL && defn->isVariantOfSubstance() );
+//}
+//END_CONSTRAINT
+//
+//
+//START_CONSTRAINT (99128, KineticLaw, kl)
+//{
+//  pre( kl.getLevel() == 1 || (kl.getLevel() == 2 && kl.getVersion() == 1));
+//  pre( kl.isSetTimeUnits() );
+//
+//  //msg =
+//  //  "A KineticLaw's timeUnits must be 'time', 'second', or the id of a "
+//  //  "UnitDefnition that defines a variant of 'second' with exponent='1' "
+//  //  "(L2v1 Section 4.9.7).";
+//
+//
+//  const string&         units = kl.getTimeUnits();
+//  const UnitDefinition* defn  = m.getUnitDefinition(units);
+//
+//  std::string rnId = (kl.getAncestorOfType(SBML_REACTION) != NULL) ?
+//    kl.getAncestorOfType(SBML_REACTION)->getId() : std::string("");
+//  msg = "The timeUnits of the <kineticLaw> in the <reaction> '" + rnId;
+//  msg += "' are '" + units + "', which are not a variant of 'second'.";
+//
+//  inv_or( units == "time"   );
+//  inv_or( units == "second" );
+//  inv_or( defn  != NULL && defn->isVariantOfTime() );
+//}
+//END_CONSTRAINT
 
 START_CONSTRAINT (99129, KineticLaw, kl)
 {
@@ -2110,7 +2038,29 @@ START_CONSTRAINT (99129, KineticLaw, kl)
    */
   bool fail = false;
   bool logFailure = false;
-  while (t->type != TT_END)
+
+  /* okay so we hit an example where the model used a formula where
+  *  the name of the formula mirrored a comp/species/parameter
+  * so the type code checking below just accepted it
+  */
+  const ASTNode* math = kl.getMath();
+  if (math != NULL)
+  {
+    const char* name = math->getName();
+    if (name != NULL) {
+      if (math->isCSymbolFunction() ||
+        (math->isUserFunction() &&
+          (m.getCompartment(name) != NULL ||
+            m.getSpecies(name) != NULL ||
+            m.getParameter(name) != NULL)))
+      {
+        fail = true;
+        logFailure = true;
+      }
+    }
+  }
+
+  while (!logFailure && t->type != TT_END)
   {
     if (t->type == TT_NAME)
     {
@@ -2211,9 +2161,32 @@ START_CONSTRAINT (99129, AssignmentRule, ar)
    * of the model or the name of a function in which case 
    * need to check whether it is defined
    */
+
   bool fail = false;
   bool logFailure = false;
-  while (t->type != TT_END)
+
+  /* okay so we hit an example where the model used a formula where
+  *  the name of the formula mirrored a comp/species/parameter
+  * so the type code checking below just accepted it
+  */
+  const ASTNode* math = ar.getMath();
+  if (math != NULL)
+  {
+    const char* name = math->getName();
+    if (name != NULL) {
+      if (math->isCSymbolFunction() ||
+        (math->isUserFunction() &&
+          (m.getCompartment(name) != NULL ||
+            m.getSpecies(name) != NULL ||
+            m.getParameter(name) != NULL)))
+      {
+        fail = true;
+        logFailure = true;
+      }
+    }
+  }
+
+  while (!logFailure && t->type != TT_END)
   {
     if (t->type == TT_NAME)
     {
@@ -2314,7 +2287,29 @@ START_CONSTRAINT (99129, RateRule, rr)
    */
   bool fail = false;
   bool logFailure = false;
-  while (t->type != TT_END)
+
+  /* okay so we hit an example where the model used a formula where
+  *  the name of the formula mirrored a comp/species/parameter
+  * so the type code checking below just accepted it
+  */
+  const ASTNode* math = rr.getMath();
+  if (math != NULL)
+  {
+    const char* name = math->getName();
+    if (name != NULL) {
+      if (math->isCSymbolFunction() ||
+        (math->isUserFunction() &&
+          (m.getCompartment(name) != NULL ||
+            m.getSpecies(name) != NULL ||
+            m.getParameter(name) != NULL)))
+      {
+        fail = true;
+        logFailure = true;
+      }
+    }
+  }
+
+  while (!logFailure && t->type != TT_END)
   {
     if (t->type == TT_NAME)
     {
@@ -2400,10 +2395,76 @@ END_CONSTRAINT
 EXTERN_CONSTRAINT(21131, StoichiometryMathVars)
 
 
+START_CONSTRAINT (21152, Reaction, r)
+{
+  pre(r.isSetFast() == true);
+
+  inv( r.getFast() != true );
+}
+END_CONSTRAINT
+
+
+START_CONSTRAINT (21173, LocalParameter, p)
+{
+  pre (p.getLevel() > 2);
+  pre (p.isSetId());
+
+  std::string id  = p.getId();
+
+  bool fail = false;
+
+  const Reaction *r = static_cast<const Reaction *>
+                                        (p.getAncestorOfType(SBML_REACTION));
+  std::string conflictType;
+
+  std::string rnId;
+  if (r != NULL)
+  {
+    rnId = r->getId();
+    const SpeciesReference *sr = r->getReactant(id);
+    if (sr != NULL && sr->getSpecies() == id)
+    {
+      fail = true;
+      conflictType = "reactant";
+    }
+    else
+    {
+      sr = r->getProduct(id);
+      if (sr != NULL && sr->getSpecies() == id)
+      {
+        fail = true;
+        conflictType = "product";
+      }
+      else
+      {
+        const ModifierSpeciesReference *msr = r->getModifier(id);
+        if(msr != NULL && msr->getSpecies() == id)
+        {
+          fail = true;
+          conflictType = "modifier";
+        }
+      }
+    }
+  }
+  
+  msg = "The <localParameter> with id '" + id + "' in the <reaction> with id '"
+    + rnId + "' conflicts with the " + conflictType + " referring to "
+    "the <species> '" + id + "'.";
+
+  inv (fail == false);
+}
+END_CONSTRAINT
+
 // Event validation
 
 START_CONSTRAINT (21201, Event, e)
 {
+  // does not apply to l3v2
+  if (e.getLevel() == 3)
+  {
+    pre(e.getVersion() == 1);
+  }
+
   msg = "The <event> with id '" + e.getId() + "' does not contain a"
     " <trigger> element. ";
 
@@ -2421,7 +2482,7 @@ START_CONSTRAINT (21202, Trigger, t)
     t.getAncestorOfType(SBML_EVENT)->getId() : std::string("");
 
   msg = "The <trigger> element of the <event> with id '" + id + "' "
-    "returns a value that is not boolean. ";
+    "returns a value that is not Boolean. ";
 
   inv( m.isBoolean( t.getMath() ) );
 }
@@ -2609,19 +2670,22 @@ START_CONSTRAINT (21212, EventAssignment, ea)
   const Compartment* c = m.getCompartment(id);
   const Species*     s = m.getSpecies    (id);
   const Parameter*   p = m.getParameter  (id);
+  const SpeciesReference * sr = m.getSpeciesReference(id);
 
-  pre( c || s || p );
+  pre( c || s || p || sr);
 
   msg = "The";
   if (c) msg += " compartment with id '";
   else if (s) msg += " species with id '";
   else if (p) msg += " parameter with id '";
+  else if (sr) msg += " speciesReference with id '";
   msg += id;
   msg += "' should have a constant value of 'false'.";
 
   inv_or( c && c->getConstant() == false );
   inv_or( s && s->getConstant() == false );
   inv_or( p && p->getConstant() == false );
+  inv_or( sr && sr->getConstant() == false);
 }
 END_CONSTRAINT
 

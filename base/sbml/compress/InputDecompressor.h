@@ -11,7 +11,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -56,7 +60,7 @@ public:
   *
   * @note ZlibNotLinked will be thrown if zlib is not linked with libSBML at compile time.
   *
-  * @return a istream* object bound to the given gzip file or NULL if the initialization
+  * @return a istream* object bound to the given gzip file or @c NULL if the initialization
   * for the object failed.
   */
   static std::istream* openGzipIStream (const std::string& filename);
@@ -70,7 +74,7 @@ public:
   *
   * @note Bzip2NotLinked will be thrown if zlib is not linked with libSBML at compile time.  
   *
-  * @return a istream* object bound to the given bzip2 file or NULL if the initialization
+  * @return a istream* object bound to the given bzip2 file or @c NULL if the initialization
   * for the object failed.
   */
   static std::istream* openBzip2IStream (const std::string& filename);
@@ -82,7 +86,7 @@ public:
   *
   * @param filename a string, the zip file name to be read.
   *
-  * @return a istream* object bound to the given zip file or NULL if the initialization
+  * @return a istream* object bound to the given zip file or @c NULL if the initialization
   * for the object failed.
   *
   * @note The first file in the given zip archive file will be opened if the zip archive

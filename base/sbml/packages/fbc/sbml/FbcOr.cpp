@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -44,6 +48,8 @@
 
 using namespace std;
 
+
+#ifdef __cplusplus
 
 LIBSBML_CPP_NAMESPACE_BEGIN
 
@@ -221,6 +227,7 @@ FbcOr::getAssociation(const std::string& sid) const
  * returned by this function are:
  * @li LIBSBML_OPERATION_SUCCESS
  * @li LIBSBML_INVALID_ATTRIBUTE_VALUE
+ * Adds a copy the given FbcAssociation to this FbcOr.
  */
 int
 FbcOr::addAssociation(const FbcAssociation* fa)
@@ -241,14 +248,17 @@ FbcOr::addAssociation(const FbcAssociation* fa)
   {
     return LIBSBML_VERSION_MISMATCH;
   }
+  else if (getPackageVersion() != fa->getPackageVersion())
+  {
+    return LIBSBML_PKG_VERSION_MISMATCH;
+  }
   else if (matchesRequiredSBMLNamespacesForAddition(static_cast<const SBase *>(fa)) == false)
   {
     return LIBSBML_NAMESPACES_MISMATCH;
   }
   else
   {
-    mAssociations.append(fa);
-    return LIBSBML_OPERATION_SUCCESS;
+    return mAssociations.append(fa);
   }
 }
 
@@ -266,17 +276,17 @@ FbcOr::getNumAssociations() const
 
 
 std::string 
-FbcOr::toInfix() const
+FbcOr::toInfix(bool usingId) const
 {
   if (mAssociations.size() == 0) return "";
 
   stringstream str;
   str << "(";
-  str << mAssociations.get(0)->toInfix();
+  str << mAssociations.get(0)->toInfix(usingId);
   for (size_t pos = 1; pos < mAssociations.size(); ++pos)
   {
     str << " or ";
-    str << mAssociations.get((unsigned int)pos)->toInfix();
+    str << mAssociations.get((unsigned int)pos)->toInfix(usingId);
   }
   str << ")";
   return str.str();
@@ -285,7 +295,7 @@ FbcOr::toInfix() const
 
 
 /*
- * Creates a new FbcAnd object, adds it to this FbcOrs
+ * Creates a new FbcAnd object, adds it to this FbcOr's
  * ListOfFbcAssociations and returns the FbcAnd object created. 
  *
  * @return a new FbcAnd object instance
@@ -322,7 +332,7 @@ FbcOr::createAnd()
 
 
 /*
- * Creates a new FbcOr object, adds it to this FbcOrs
+ * Creates a new FbcOr object, adds it to this FbcOr's
  * ListOfFbcAssociations and returns the FbcOr object created. 
  *
  * @return a new FbcOr object instance
@@ -359,7 +369,7 @@ FbcOr::createOr()
 
 
 /*
- * Creates a new GeneProductRef object, adds it to this FbcOrs
+ * Creates a new GeneProductRef object, adds it to this FbcOr's
  * ListOfFbcAssociations and returns the GeneProductRef object created. 
  *
  * @return a new GeneProductRef object instance
@@ -448,9 +458,7 @@ FbcOr::hasRequiredAttributes () const
 bool
 FbcOr::hasRequiredElements () const
 {
-  bool allPresent = FbcAssociation::hasRequiredElements();
-
-  return allPresent;
+  return getNumAssociations() >= 2;
 }
 
 
@@ -472,7 +480,7 @@ FbcOr::writeElements (XMLOutputStream& stream) const
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -494,7 +502,7 @@ FbcOr::accept (SBMLVisitor& v) const
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -510,7 +518,7 @@ FbcOr::setSBMLDocument (SBMLDocument* d)
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -527,7 +535,7 @@ FbcOr::connectToChild()
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -544,9 +552,290 @@ FbcOr::enablePackageInternal(const std::string& pkgURI,
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FbcOr.
+ */
+int
+FbcOr::getAttribute(const std::string& attributeName, bool& value) const
+{
+  int return_value = FbcAssociation::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FbcOr.
+ */
+int
+FbcOr::getAttribute(const std::string& attributeName, int& value) const
+{
+  int return_value = FbcAssociation::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FbcOr.
+ */
+int
+FbcOr::getAttribute(const std::string& attributeName, double& value) const
+{
+  int return_value = FbcAssociation::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FbcOr.
+ */
+int
+FbcOr::getAttribute(const std::string& attributeName,
+                    unsigned int& value) const
+{
+  int return_value = FbcAssociation::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FbcOr.
+ */
+int
+FbcOr::getAttribute(const std::string& attributeName,
+                    std::string& value) const
+{
+  int return_value = FbcAssociation::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Predicate returning @c true if this FbcOr's attribute "attributeName" is
+ * set.
+ */
+bool
+FbcOr::isSetAttribute(const std::string& attributeName) const
+{
+  bool value = FbcAssociation::isSetAttribute(attributeName);
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FbcOr.
+ */
+int
+FbcOr::setAttribute(const std::string& attributeName, bool value)
+{
+  int return_value = FbcAssociation::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FbcOr.
+ */
+int
+FbcOr::setAttribute(const std::string& attributeName, int value)
+{
+  int return_value = FbcAssociation::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FbcOr.
+ */
+int
+FbcOr::setAttribute(const std::string& attributeName, double value)
+{
+  int return_value = FbcAssociation::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FbcOr.
+ */
+int
+FbcOr::setAttribute(const std::string& attributeName, unsigned int value)
+{
+  int return_value = FbcAssociation::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FbcOr.
+ */
+int
+FbcOr::setAttribute(const std::string& attributeName,
+                    const std::string& value)
+{
+  int return_value = FbcAssociation::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Unsets the value of the "attributeName" attribute of this FbcOr.
+ */
+int
+FbcOr::unsetAttribute(const std::string& attributeName)
+{
+  int value = FbcAssociation::unsetAttribute(attributeName);
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Creates and returns an new "elementName" object in this FbcOr.
+ */
+SBase*
+FbcOr::createChildObject(const std::string& elementName)
+{
+  FbcAssociation* obj = NULL;
+
+  if (elementName == "and")
+  {
+    return createAnd();
+  }
+  else if (elementName == "or")
+  {
+    return createOr();
+  }
+  else if (elementName == "geneProductRef")
+  {
+    return createGeneProductRef();
+  }
+
+  return obj;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Returns the number of "elementName" in this FbcOr.
+ */
+unsigned int
+FbcOr::getNumObjects(const std::string& elementName)
+{
+  unsigned int n = 0;
+
+  if (elementName == "association" || elementName == "and"
+    || elementName == "or" || elementName == "geneProductRef")
+  {
+    return getNumAssociations();
+  }
+
+  return n;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Returns the nth object of "objectName" in this FbcOr.
+ */
+SBase*
+FbcOr::getObject(const std::string& elementName, unsigned int index)
+{
+  FbcAssociation* obj = NULL;
+
+  if (elementName == "association" || elementName == "and"
+    || elementName == "or" || elementName == "geneProductRef")
+  {
+    return getAssociation(index);
+  }
+
+  return obj;
+}
+
+/** @endcond */
   /** @cond doxygenLibsbmlInternal */
 
 /*
@@ -567,7 +856,7 @@ FbcOr::createObject(XMLInputStream& stream)
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -583,7 +872,7 @@ FbcOr::addExpectedAttributes(ExpectedAttributes& attributes)
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -630,7 +919,7 @@ FbcOr::readAttributes (const XMLAttributes& attributes,
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -646,7 +935,7 @@ FbcOr::writeAttributes (XMLOutputStream& stream) const
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
 LIBSBML_EXTERN
@@ -771,5 +1060,8 @@ FbcOr_hasRequiredElements(const FbcOr_t * fo)
 
 
 LIBSBML_CPP_NAMESPACE_END
+
+#endif /* __cplusplus */
+
 
 

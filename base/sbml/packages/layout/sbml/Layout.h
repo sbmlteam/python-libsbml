@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -90,7 +94,13 @@ public:
 
 
   /**
-   * Ctor.
+   * Constructor.
+   *
+   * @param level the SBML Level.
+   * @param version the Version within the SBML Level.
+   * @param pkgVersion the version of the package.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
    ListOfCompartmentGlyphs(unsigned int level      = LayoutExtension::getDefaultLevel(),
                            unsigned int version    = LayoutExtension::getDefaultVersion(),
@@ -98,7 +108,13 @@ public:
 
 
   /**
-   * Ctor.
+   * Constructor.
+   *
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param layoutns the LayoutPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
    ListOfCompartmentGlyphs(LayoutPkgNamespaces* layoutns);
 
@@ -122,7 +138,7 @@ public:
    * Returns the XML element name of
    * this SBML object.
    *
-   * @return the string of the name of this element
+   * @return the string of the name of this element.
    */
   virtual const std::string& getElementName () const;
 
@@ -139,6 +155,7 @@ public:
    * @param n the index number of the CompartmentGlyph to get.
    * 
    * @return the nth CompartmentGlyph in this ListOfCompartmentGlyphs.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -151,6 +168,7 @@ public:
    * @param n the index number of the CompartmentGlyph to get.
    * 
    * @return the nth CompartmentGlyph in this ListOfCompartmentGlyphs.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -196,7 +214,7 @@ public:
    *
    * The caller owns the returned item and is responsible for deleting it.
    *
-   * @param n the index of the item to remove
+   * @param n the index of the item to remove.
    *
    * @see size()
    */
@@ -207,10 +225,10 @@ public:
    * Removes item in this ListOfCompartmentGlyphs items with the given identifier.
    *
    * The caller owns the returned item and is responsible for deleting it.
-   * If none of the items in this list have the identifier @p sid, then @c
-   * NULL is returned.
+   * If none of the items in this list have the identifier @p sid, then
+   * @c NULL is returned.
    *
-   * @param sid the identifier of the item to remove
+   * @param sid the identifier of the item to remove.
    *
    * @return the item removed.  As mentioned above, the caller owns the
    * returned item.
@@ -225,7 +243,7 @@ protected:
    * Create and return an SBML object of this class, if present.
    *
    * @return the SBML object corresponding to next XMLToken in the
-   * XMLInputStream or NULL if the token was not recognized.
+   * XMLInputStream or @c NULL if the token was not recognized.
    */
   virtual SBase* createObject (XMLInputStream& stream);
   /** @endcond */
@@ -254,7 +272,13 @@ public:
 
 
   /**
-   * Ctor.
+   * Constructor.
+   *
+   * @param level the SBML Level.
+   * @param version the Version within the SBML Level.
+   * @param pkgVersion the version of the package.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
    ListOfSpeciesGlyphs(unsigned int level      = LayoutExtension::getDefaultLevel(),
                        unsigned int version    = LayoutExtension::getDefaultVersion(),
@@ -262,7 +286,13 @@ public:
 
 
   /**
-   * Ctor.
+   * Constructor.
+   *
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param layoutns the LayoutPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
    ListOfSpeciesGlyphs(LayoutPkgNamespaces* layoutns);
 
@@ -286,7 +316,7 @@ public:
    * Returns the XML element name of
    * this SBML object.
    *
-   * @return the string of the name of this element
+   * @return the string of the name of this element.
    */
   virtual const std::string& getElementName () const;
 
@@ -297,6 +327,7 @@ public:
    * @param n the index number of the SpeciesGlyph to get.
    * 
    * @return the nth SpeciesGlyph in this ListOfSpeciesGlyphs.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -309,6 +340,7 @@ public:
    * @param n the index number of the SpeciesGlyph to get.
    * 
    * @return the nth SpeciesGlyph in this ListOfSpeciesGlyphs.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -354,7 +386,7 @@ public:
    *
    * The caller owns the returned item and is responsible for deleting it.
    *
-   * @param n the index of the item to remove
+   * @param n the index of the item to remove.
    *
    * @see size()
    */
@@ -365,10 +397,10 @@ public:
    * Removes item in this ListOfSpeciesGlyphs items with the given identifier.
    *
    * The caller owns the returned item and is responsible for deleting it.
-   * If none of the items in this list have the identifier @p sid, then @c
-   * NULL is returned.
+   * If none of the items in this list have the identifier @p sid, then
+   * @c NULL is returned.
    *
-   * @param sid the identifier of the item to remove
+   * @param sid the identifier of the item to remove.
    *
    * @return the item removed.  As mentioned above, the caller owns the
    * returned item.
@@ -388,7 +420,7 @@ protected:
    * Create and return an SBML object of this class, if present.
    *
    * @return the SBML object corresponding to next XMLToken in the
-   * XMLInputStream or NULL if the token was not recognized.
+   * XMLInputStream or @c NULL if the token was not recognized.
    */
   virtual SBase* createObject (XMLInputStream& stream);
   /** @endcond */
@@ -417,7 +449,13 @@ public:
 
 
   /**
-   * Ctor.
+   * Constructor.
+   *
+   * @param level the SBML Level.
+   * @param version the Version within the SBML Level.
+   * @param pkgVersion the version of the package.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
    ListOfReactionGlyphs(unsigned int level      = LayoutExtension::getDefaultLevel(),
                         unsigned int version    = LayoutExtension::getDefaultVersion(),
@@ -425,7 +463,13 @@ public:
 
 
   /**
-   * Ctor.
+   * Constructor.
+   *
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param layoutns the LayoutPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
    ListOfReactionGlyphs(LayoutPkgNamespaces* layoutns);
 
@@ -449,7 +493,7 @@ public:
    * Returns the XML element name of
    * this SBML object.
    *
-   * @return the string of the name of this element
+   * @return the string of the name of this element.
    */
   virtual const std::string& getElementName () const;
 
@@ -460,6 +504,7 @@ public:
    * @param n the index number of the ReactionGlyph to get.
    * 
    * @return the nth ReactionGlyph in this ListOfReactionGlyphs.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -472,6 +517,7 @@ public:
    * @param n the index number of the ReactionGlyph to get.
    * 
    * @return the nth ReactionGlyph in this ListOfReactionGlyphs.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -517,7 +563,7 @@ public:
    *
    * The caller owns the returned item and is responsible for deleting it.
    *
-   * @param n the index of the item to remove
+   * @param n the index of the item to remove.
    *
    * @see size()
    */
@@ -528,10 +574,10 @@ public:
    * Removes item in this ListOfReactionGlyphs items with the given identifier.
    *
    * The caller owns the returned item and is responsible for deleting it.
-   * If none of the items in this list have the identifier @p sid, then @c
-   * NULL is returned.
+   * If none of the items in this list have the identifier @p sid, then
+   * @c NULL is returned.
    *
-   * @param sid the identifier of the item to remove
+   * @param sid the identifier of the item to remove.
    *
    * @return the item removed.  As mentioned above, the caller owns the
    * returned item.
@@ -551,7 +597,7 @@ protected:
    * Create and return an SBML object of this class, if present.
    *
    * @return the SBML object corresponding to next XMLToken in the
-   * XMLInputStream or NULL if the token was not recognized.
+   * XMLInputStream or @c NULL if the token was not recognized.
    */
   virtual SBase* createObject (XMLInputStream& stream);
   /** @endcond */
@@ -580,7 +626,13 @@ public:
 
 
   /**
-   * Ctor.
+   * Constructor.
+   *
+   * @param level the SBML Level.
+   * @param version the Version within the SBML Level.
+   * @param pkgVersion the version of the package.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
    ListOfTextGlyphs(unsigned int level      = LayoutExtension::getDefaultLevel(),
                     unsigned int version    = LayoutExtension::getDefaultVersion(),
@@ -588,7 +640,13 @@ public:
 
 
   /**
-   * Ctor.
+   * Constructor.
+   *
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param layoutns the LayoutPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
    ListOfTextGlyphs(LayoutPkgNamespaces* layoutns);
 
@@ -612,7 +670,7 @@ public:
    * Returns the XML element name of
    * this SBML object.
    *
-   * @return the string of the name of this element
+   * @return the string of the name of this element.
    */
   virtual const std::string& getElementName () const;
 
@@ -623,6 +681,7 @@ public:
    * @param n the index number of the TextGlyph to get.
    * 
    * @return the nth TextGlyph in this ListOfTextGlyphs.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -635,6 +694,7 @@ public:
    * @param n the index number of the TextGlyph to get.
    * 
    * @return the nth TextGlyph in this ListOfTextGlyphs.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -680,7 +740,7 @@ public:
    *
    * The caller owns the returned item and is responsible for deleting it.
    *
-   * @param n the index of the item to remove
+   * @param n the index of the item to remove.
    *
    * @see size()
    */
@@ -691,10 +751,10 @@ public:
    * Removes item in this ListOfTextGlyphs items with the given identifier.
    *
    * The caller owns the returned item and is responsible for deleting it.
-   * If none of the items in this list have the identifier @p sid, then @c
-   * NULL is returned.
+   * If none of the items in this list have the identifier @p sid, then
+   * @c NULL is returned.
    *
-   * @param sid the identifier of the item to remove
+   * @param sid the identifier of the item to remove.
    *
    * @return the item removed.  As mentioned above, the caller owns the
    * returned item.
@@ -714,7 +774,7 @@ protected:
    * Create and return an SBML object of this class, if present.
    *
    * @return the SBML object corresponding to next XMLToken in the
-   * XMLInputStream or NULL if the token was not recognized.
+   * XMLInputStream or @c NULL if the token was not recognized.
    */
   virtual SBase* createObject (XMLInputStream& stream);
   /** @endcond */
@@ -724,8 +784,8 @@ class LIBSBML_EXTERN Layout : public SBase
 {
 protected:
   /** @cond doxygenLibsbmlInternal */
-  std::string mId;
-  std::string mName;
+//  std::string mId;
+//  std::string mName;
   Dimensions mDimensions;
   ListOfCompartmentGlyphs mCompartmentGlyphs;
   ListOfSpeciesGlyphs mSpeciesGlyphs;
@@ -755,6 +815,12 @@ public:
 
   /**
    * Creates a new Layout with the given level, version, and package version.
+   *
+   * @param level the SBML Level.
+   * @param version the Version within the SBML Level.
+   * @param pkgVersion the version of the package.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
    Layout(unsigned int level      = LayoutExtension::getDefaultLevel(),
           unsigned int version    = LayoutExtension::getDefaultVersion(),
@@ -763,6 +829,12 @@ public:
 
   /**
    * Creates a new Layout with the given LayoutPkgNamespaces object.
+   *
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param layoutns the LayoutPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
    Layout(LayoutPkgNamespaces* layoutns);
 
@@ -787,11 +859,16 @@ public:
 
   /**
    * Copy constructor.
+   *
+   * @param source the instance to copy.
    */
    Layout(const Layout& source);
 
   /**
    * Assignment operator.
+   *
+   * @param source the object whose values are used as the basis of the
+   * assignment.
    */
    Layout& operator=(const Layout& source);
 
@@ -799,20 +876,31 @@ public:
 
   /**
    * Destructor.
-   */ 
-  
+   */
   virtual ~Layout ();
 
 
   /**
    * Does nothing since no defaults are defined for Layout.
-   */ 
-  
+   */
   void initDefaults ();    
 
         
   /**
    * Returns the value of the "id" attribute of this Layout.
+   *
+   * @copydetails doc_id_attribute
+   *
+   * @return the id of this Layout.
+   *
+   * @note Because of the inconsistent behavior of this function with 
+   * respect to assignments and rules, it is now recommended to
+   * use the getIdAttribute() function instead.
+   *
+   * @see getIdAttribute()
+   * @see setIdAttribute(const std::string& sid)
+   * @see isSetIdAttribute()
+   * @see unsetIdAttribute()
    */
   virtual const std::string& getId () const;
 
@@ -820,24 +908,32 @@ public:
   /**
    * Predicate returning @c true or @c false depending on whether this
    * Layout's "id" attribute has been set.
+   *
+   * @copydetails doc_isset_id
    */
   virtual bool isSetId () const;
 
   
   /**
    * Sets the value of the "id" attribute of this Layout.
+   *
+   * @copydetails doc_set_id
    */
-  virtual int setId (const std::string& id);
+  virtual int setId(const std::string& sid);
 
 
   /**
    * Unsets the value of the "id" attribute of this Layout.
+   *
+   * @copydetails doc_unset_id
    */
   virtual int unsetId ();
 
 
   /**
-   * Returns the value of the "name" attribute of this Layout.
+   * Returns the value of the "name" attribute of this Layout object.
+   *
+   * @copydetails doc_get_name
    */
   virtual const std::string& getName () const;
 
@@ -845,38 +941,41 @@ public:
   /**
    * Predicate returning @c true or @c false depending on whether this
    * Layout's "name" attribute has been set.
+   *
+   * @copydetails doc_isset_name
    */
   virtual bool isSetName () const;
 
   
   /**
    * Sets the value of the "name" attribute of this Layout.
+   *
+   * @copydetails doc_set_name
    */
   virtual int setName (const std::string& name);
 
 
   /**
    * Unsets the value of the "name" attribute of this Layout.
+   *
+   * @copydetails doc_unset_name
    */
   virtual int unsetName ();
 
 
   /**
    * Returns the dimensions of the layout.
-   */ 
-  
+   */
   const Dimensions* getDimensions () const;
 
   /**
    * Returns the dimensions of the layout.
-   */ 
-  
+   */
   Dimensions* getDimensions ();
 
   /**
    * Sets the dimensions of the layout.
-   */ 
-    
+   */
   void setDimensions (const Dimensions* dimensions);
 
   /**
@@ -886,62 +985,52 @@ public:
 
   /**
    * Returns the ListOf object that holds all compartment glyphs.
-   */ 
-  
+   */
   const ListOfCompartmentGlyphs* getListOfCompartmentGlyphs () const;
 
   /**
    * Returns the ListOf object that holds all species glyphs.
-   */ 
-   
+   */
   const ListOfSpeciesGlyphs* getListOfSpeciesGlyphs () const;
 
   /**
    * Returns the ListOf object that holds all reaction glyphs.
-   */ 
-   
+   */
   const ListOfReactionGlyphs* getListOfReactionGlyphs () const;
 
   /**
    * Returns the ListOf object that holds all text glyphs.
-   */ 
-   
+   */
   const ListOfTextGlyphs* getListOfTextGlyphs () const;
 
   /**
    * Returns the ListOf object that holds all additonal graphical objects.
-   */ 
-   
+   */
   const ListOfGraphicalObjects* getListOfAdditionalGraphicalObjects () const;
   
   /**
    * Returns the ListOf object that holds all compartment glyphs.
-   */ 
-  
+   */
   ListOfCompartmentGlyphs* getListOfCompartmentGlyphs ();
 
   /**
    * Returns the ListOf object that holds all species glyphs.
-   */ 
-   
+   */
   ListOfSpeciesGlyphs* getListOfSpeciesGlyphs ();
 
   /**
    * Returns the ListOf object that holds all reaction glyphs.
-   */ 
-   
+   */
   ListOfReactionGlyphs* getListOfReactionGlyphs ();
 
   /**
    * Returns the ListOf object that holds all text glyphs.
-   */ 
-   
+   */
   ListOfTextGlyphs* getListOfTextGlyphs ();
 
   /**
    * Returns the ListOf object that holds all additional graphical objects.
-   */ 
-   
+   */
   ListOfGraphicalObjects* getListOfAdditionalGraphicalObjects ();
 
   
@@ -949,68 +1038,72 @@ public:
    * Returns a List of all child SBase objects, including those nested to an
    * arbitrary depth
    *
-   * @return a List* of pointers to all children objects.
+   * @param filter a pointer to an ElementFilter, which causes the function 
+   * to return only elements that match a particular set of constraints.  
+   * If NULL (the default), the function will return all child objects.
+   *
+   * @return a List of pointers to all children objects.
    */
   virtual List* getAllElements(ElementFilter* filter=NULL);
 
   /**
    * Returns the compartment glyph with the given index.
    * If the index is invalid, @c NULL is returned.
-   */ 
+   */
   const CompartmentGlyph* getCompartmentGlyph (unsigned int index) const;
 
   /**
    * Returns the compartment glyph with the given index.
    * If the index is invalid, @c NULL is returned.
-   */ 
+   */
   CompartmentGlyph* getCompartmentGlyph (unsigned int index) ;
 
   /**
    * Returns the species glyph with the given index.
    * If the index is invalid, @c NULL is returned.
-   */ 
+   */
   SpeciesGlyph* getSpeciesGlyph (unsigned int index) ;
 
   /**
    * Returns the species glyph with the given index.
    * If the index is invalid, @c NULL is returned.
-   */ 
+   */
   const SpeciesGlyph* getSpeciesGlyph (unsigned int index) const;
 
   /**
    * Returns the reaction glyph with the given index.
    * If the index is invalid, @c NULL is returned.
-   */ 
+   */
   const ReactionGlyph* getReactionGlyph (unsigned int index) const;
 
   /**
    * Returns the reaction glyph with the given index.
    * If the index is invalid, @c NULL is returned.
-   */ 
+   */
   ReactionGlyph* getReactionGlyph (unsigned int index) ;
 
   /**
    * Returns the text glyph with the given index.
    * If the index is invalid, @c NULL is returned.
-   */ 
+   */
   const TextGlyph* getTextGlyph (unsigned int index) const;
 
   /**
    * Returns the text glyph with the given index.
    * If the index is invalid, @c NULL is returned.
-   */ 
+   */
   TextGlyph* getTextGlyph (unsigned int index) ;
 
   /**
    * Returns the additional graphical object with the given index.
    * If the index is invalid, @c NULL is returned.
-   */ 
+   */
   const GraphicalObject* getAdditionalGraphicalObject (unsigned int index) const;
 
   /**
    * Returns the additional graphical object with the given index.
    * If the index is invalid, @c NULL is returned.
-   */ 
+   */
   GraphicalObject* getAdditionalGraphicalObject (unsigned int index) ;
 
   /**
@@ -1030,42 +1123,36 @@ public:
    * Returns the compartment glyph that has the given @p id, or @c NULL if no
    * compartment glyph has the id.
    */
-  
   const CompartmentGlyph* getCompartmentGlyph (const std::string& id) const;
 
   /**
    * Returns the species glyph that has the given @p id, or @c NULL if no species
    * glyph has the id.
    */
-  
   const SpeciesGlyph* getSpeciesGlyph (const std::string& id) const;
         
   /**
    * Returns the reaction glyph that has the given @p id, or @c NULL if no
    * reaction glyph has the id.
    */
-  
   const ReactionGlyph* getReactionGlyph (const std::string& id) const;
 
   /**
    * Returns the text glyph that has the given @p id, or @c NULL if no text glyph
    * has the id.
    */
-  
   const TextGlyph* getTextGlyph (const std::string& id) const;
 
   /**
    * Returns the additional graphical object that has the given @p id, or @c NULL
    * if no graphical object has the id.
    */
-  
   const GraphicalObject* getAdditionalGraphicalObject (const std::string& id) const;
 
   /**
    * Returns the general glyph that has the given @p id, or @c NULL
    * if no graphical object has the id.
    */
-  
   const GeneralGlyph* getGeneralGlyph (const std::string& id) const;
 
 
@@ -1073,35 +1160,30 @@ public:
    * Returns the compartment glyph that has the given @p id, or @c NULL if no
    * compartment glyph has the id.
    */
-  
   CompartmentGlyph* getCompartmentGlyph (const std::string& id) ;
 
   /**
    * Returns the species glyph that has the given @p id, or @c NULL if no species
    * glyph has the id.
    */
-  
   SpeciesGlyph* getSpeciesGlyph (const std::string& id) ;
         
   /**
    * Returns the reaction glyph that has the given @p id, or @c NULL if no
    * reaction glyph has the id.
    */
-  
   ReactionGlyph* getReactionGlyph (const std::string& id) ;
 
   /**
    * Returns the text glyph that has the given @p id, or @c NULL if no text glyph
    * has the id.
    */
-  
   TextGlyph* getTextGlyph (const std::string& id) ;
 
   /**
    * Returns the additional graphical object that has the given @p id, or @c NULL
    * if no graphical object has the id.
    */
-  
   GraphicalObject* getAdditionalGraphicalObject (const std::string& id) ;
 
   /**
@@ -1113,61 +1195,52 @@ public:
   /**
    * Adds a new compartment glyph.
    */
-  
-  void addCompartmentGlyph (const CompartmentGlyph* glyph);
+  int addCompartmentGlyph (const CompartmentGlyph* glyph);
 
   /**
    * Adds a new species glyph.
    */
-  
-  void addSpeciesGlyph (const SpeciesGlyph* glyph);
+  int addSpeciesGlyph (const SpeciesGlyph* glyph);
 
   /**
    * Adds a new reaction glyph.
    */
-  
-  void addReactionGlyph (const ReactionGlyph* glyph);
+  int addReactionGlyph (const ReactionGlyph* glyph);
 
   /**
    * Adds a new text glyph.
    */
-  
-  void addTextGlyph (const TextGlyph* glyph);
+  int addTextGlyph (const TextGlyph* glyph);
 
   /**
    * Adds a new additional graphical object glyph.
    */
-  
-  void addAdditionalGraphicalObject (const GraphicalObject* glyph);
+  int addAdditionalGraphicalObject (const GraphicalObject* glyph);
 
   /**
    * Adds a new general glyph.
    */
-  void addGeneralGlyph (const GeneralGlyph* glyph);
+  int addGeneralGlyph (const GeneralGlyph* glyph);
 
 
   /**
    * Returns the number of compartment glyphs for the layout.
    */
-  
   unsigned int getNumCompartmentGlyphs () const;
 
   /**
    * Returns the number of species glyphs for the layout.
    */
-   
   unsigned int getNumSpeciesGlyphs () const;
 
   /**
    * Returns the number of reaction glyphs for the layout.
    */
-  
   unsigned int getNumReactionGlyphs () const;
 
   /**
    * Returns the number of text glyphs for the layout.
    */
-   
   unsigned int getNumTextGlyphs () const;
 
   /**
@@ -1186,14 +1259,12 @@ public:
    * compartment glyph objects list and returns a pointer to the newly
    * created object.
    */
-  
   CompartmentGlyph* createCompartmentGlyph ();
 
   /**
    * Creates a SpeciesGlyph object, adds it to the end of the species glyph
    * objects list and returns a pointer to the newly created object.
    */
-  
   SpeciesGlyph* createSpeciesGlyph ();
 
   /**
@@ -1201,7 +1272,6 @@ public:
    * glyph objects list and returns a pointer to the newly created
    * object.
    */
-  
   ReactionGlyph* createReactionGlyph ();
 
   /**
@@ -1214,7 +1284,6 @@ public:
    * Creates a TextGlyph object, adds it to the end of the text glyph
    * objects list and returns a pointer to the newly created object.
    */
-  
   TextGlyph* createTextGlyph ();
 
   /**
@@ -1222,7 +1291,6 @@ public:
    * graphical objects list and returns a pointer to the newly created
    * object.
    */
-  
   GraphicalObject* createAdditionalGraphicalObject ();
 
   /**
@@ -1230,7 +1298,6 @@ public:
    * adds it to its list of SpeciesReferenceGlyph objects.  A pointer to
    * the newly created object is returned.
    */
-  
   SpeciesReferenceGlyph* createSpeciesReferenceGlyph();
 
 
@@ -1240,7 +1307,6 @@ public:
    * ReactionGlyph and adds it to its list of SpeciesReferenceGlyph
    * objects.  A pointer to the newly created object is returned.
    */
-  
   LineSegment* createLineSegment ();
 
   /**
@@ -1249,7 +1315,6 @@ public:
    * ReactionGlyph and adds it to its list of SpeciesReferenceGlyph
    * objects.  A pointer to the newly created object is returned.
    */
-  
   CubicBezier* createCubicBezier ();
 
   /**
@@ -1257,7 +1322,6 @@ public:
    * A pointer to the compartment glyph that was removed is returned.
    * If no compartment glyph has been removed, @c NULL is returned.
    */
-  
   CompartmentGlyph* removeCompartmentGlyph(unsigned int index);
 
   /**
@@ -1265,7 +1329,6 @@ public:
    * A pointer to the species glyph that was removed is returned.
    * If no species glyph has been removed, @c NULL is returned.
    */
-  
   SpeciesGlyph* removeSpeciesGlyph(unsigned int index);
   
   /**
@@ -1273,7 +1336,6 @@ public:
    * A pointer to the reaction glyph that was removed is returned.
    * If no reaction glyph has been removed, @c NULL is returned.
    */
-  
   ReactionGlyph* removeReactionGlyph(unsigned int index);
   
   /**
@@ -1281,7 +1343,6 @@ public:
    * A pointer to the text glyph that was removed is returned.
    * If no text glyph has been removed, @c NULL is returned.
    */
-  
   TextGlyph* removeTextGlyph(unsigned int index);
   
   /**
@@ -1289,7 +1350,6 @@ public:
    * A pointer to the graphical object that was removed is returned.
    * If no graphical object has been removed, @c NULL is returned.
    */
-  
   GraphicalObject* removeAdditionalGraphicalObject(unsigned int index);
 
   /**
@@ -1297,9 +1357,8 @@ public:
    * A pointer to the removed compartment glyph is returned.
    * If no compartment glyph has been removed, @c NULL is returned.
    */
-  
   CompartmentGlyph*
-  removeCompartmentGlyph(const std::string id);
+  removeCompartmentGlyph(const std::string& id);
 
 
   /**
@@ -1307,9 +1366,8 @@ public:
    * A pointer to the removed species glyph is returned.
    * If no species glyph has been removed, @c NULL is returned.
    */
-  
   SpeciesGlyph*
-  removeSpeciesGlyph(const std::string id);
+  removeSpeciesGlyph(const std::string& id);
 
 
   /**
@@ -1317,9 +1375,8 @@ public:
    * A pointer to the removed reaction glyph is returned.
    * If no reaction glyph has been removed, @c NULL is returned.
    */
-  
   ReactionGlyph*
-  removeReactionGlyph(const std::string id);
+  removeReactionGlyph(const std::string& id);
 
 
   /**
@@ -1327,9 +1384,8 @@ public:
    * A pointer to the removed species reference glyph is returned.
    * If no species reference glyph has been removed, @c NULL is returned.
    */
-  
   SpeciesReferenceGlyph*
-  removeSpeciesReferenceGlyph(const std::string id);
+  removeSpeciesReferenceGlyph(const std::string& id);
 
 
   /**
@@ -1337,9 +1393,8 @@ public:
    * A pointer to the removed text glyph is returned.
    * If no text glyph has been removed, @c NULL is returned.
    */
-  
   TextGlyph*
-  removeTextGlyph(const std::string id);
+  removeTextGlyph(const std::string& id);
 
 
   /**
@@ -1347,14 +1402,13 @@ public:
    * A pointer to the removed graphical object is returned.
    * If no graphical object has been removed, @c NULL is returned.
    */
-  
   GraphicalObject*
-  removeAdditionalGraphicalObject(const std::string id);
+  removeAdditionalGraphicalObject(const std::string& id);
 
   /** @cond doxygenLibsbmlInternal */
   /**
    * Subclasses should override this method to write out their contained
-   * SBML objects as XML elements.  Be sure to call your parents
+   * SBML objects as XML elements.  Be sure to call your parent's
    * implementation of this method as well.  For example:
    *
    *   SBase::writeElements(stream);
@@ -1369,7 +1423,7 @@ public:
    * Returns the XML element name of
    * this SBML object.
    *
-   * @return the string of the name of this element
+   * @return the string of the name of this element.
    */
   virtual const std::string& getElementName () const ;
 
@@ -1388,7 +1442,7 @@ public:
    * @copydetails doc_what_are_typecodes
    *
    * @return the SBML type code for this object:
-   * @sbmlconstant{SBML_LAYOUT_LAYOUT, SBMLLayoutTypeCode_t}
+   * @sbmlconstant{SBML_LAYOUT_LAYOUT, SBMLLayoutTypeCode_t}.
    *
    * @copydetails doc_warning_typecodes_not_unique
    *
@@ -1420,7 +1474,7 @@ public:
   /**
    * Sets the parent SBMLDocument of this SBML object.
    *
-   * @param d the SBMLDocument object to use
+   * @param d the SBMLDocument object to use.
    */
   virtual void setSBMLDocument (SBMLDocument* d);
   /** @endcond */
@@ -1463,7 +1517,7 @@ protected:
    * Create and return an SBML object of this class, if present.
    *
    * @return the SBML object corresponding to next XMLToken in the
-   * XMLInputStream or NULL if the token was not recognized.
+   * XMLInputStream or @c NULL if the token was not recognized.
    */
   virtual SBase*
   createObject (XMLInputStream& stream);
@@ -1485,7 +1539,7 @@ protected:
   /**
    * Subclasses should override this method to read values from the given
    * XMLAttributes set into their specific fields.  Be sure to call your
-   * parents implementation of this method as well.
+   * parent's implementation of this method as well.
    */
   virtual void readAttributes (const XMLAttributes& attributes, 
                                const ExpectedAttributes& expectedAttributes);
@@ -1495,7 +1549,7 @@ protected:
   /** @cond doxygenLibsbmlInternal */
   /**
    * Subclasses should override this method to write their XML attributes
-   * to the XMLOutputStream.  Be sure to call your parents implementation
+   * to the XMLOutputStream.  Be sure to call your parent's implementation
    * of this method as well.  For example:
    *
    *   SBase::writeAttributes(stream);
@@ -1532,7 +1586,13 @@ public:
 
 
   /**
-   * Ctor.
+   * Constructor.
+   *
+   * @param level the SBML Level.
+   * @param version the Version within the SBML Level.
+   * @param pkgVersion the version of the package.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
    ListOfLayouts(unsigned int level      = LayoutExtension::getDefaultLevel(), 
                  unsigned int version    = LayoutExtension::getDefaultVersion(), 
@@ -1540,7 +1600,13 @@ public:
 
 
   /**
-   * Ctor.
+   * Constructor.
+   *
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param layoutns the LayoutPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
    ListOfLayouts(LayoutPkgNamespaces* layoutns);
 
@@ -1564,7 +1630,7 @@ public:
    * Returns the XML element name of
    * this SBML object.
    *
-   * @return the string of the name of this element
+   * @return the string of the name of this element.
    */
   virtual const std::string& getElementName () const;
 
@@ -1575,6 +1641,7 @@ public:
    * @param n the index number of the Layout to get.
    * 
    * @return the nth Layout in this ListOfLayouts.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -1587,6 +1654,7 @@ public:
    * @param n the index number of the Layout to get.
    * 
    * @return the nth Layout in this ListOfLayouts.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -1632,7 +1700,7 @@ public:
    *
    * The caller owns the returned item and is responsible for deleting it.
    *
-   * @param n the index of the item to remove
+   * @param n the index of the item to remove.
    *
    * @see size()
    */
@@ -1643,10 +1711,10 @@ public:
    * Removes item in this ListOfLayouts items with the given identifier.
    *
    * The caller owns the returned item and is responsible for deleting it.
-   * If none of the items in this list have the identifier @p sid, then @c
-   * NULL is returned.
+   * If none of the items in this list have the identifier @p sid, then
+   * @c NULL is returned.
    *
-   * @param sid the identifier of the item to remove
+   * @param sid the identifier of the item to remove.
    *
    * @return the item removed.  As mentioned above, the caller owns the
    * returned item.
@@ -1669,7 +1737,7 @@ protected:
    * Create and return an SBML object of this class, if present.
    *
    * @return the SBML object corresponding to next XMLToken in the
-   * XMLInputStream or NULL if the token was not recognized.
+   * XMLInputStream or @c NULL if the token was not recognized.
    */
   virtual SBase* createObject (XMLInputStream& stream);
 
@@ -1690,7 +1758,10 @@ BEGIN_C_DECLS
 
 
 /**
- * Creates a new Layout_t and returns a pointer to it.
+ * Creates a new Layout_t with the default SBML level, version, and package 
+ * version, and returns a pointer to it.
+ *
+ * @copydetails doc_warning_returns_owned_pointer
  *
  * @memberof Layout_t
  */
@@ -1699,9 +1770,10 @@ Layout_t *
 Layout_create (void);
 
 /**
- * Creates a new Layout_t with the given @p id and returns a pointer to it.
+ * Creates a new Layout_t with the default SBML level, version, and package 
+ * version, and with the given @p id and returns a pointer to it.
  *
- * @param sid The id of the created Layout_t
+ * @param sid the id of the created Layout_t.
  *
  * @memberof Layout_t
  */
@@ -1710,9 +1782,12 @@ Layout_t *
 Layout_createWith (const char *sid);
 
 /**
- * Creates a Layout_t structure from a template.
+ * Creates a clone of @p temp, or an empty Layout_t structure 
+ * if @p temp is @c NULL.
  *
- * @param temp The Layout_t structure to copy
+ * @param temp the Layout_t structure to copy.
+ *
+ * @copydetails doc_warning_returns_owned_pointer
  *
  * @memberof Layout_t
  */
@@ -1721,13 +1796,14 @@ Layout_t *
 Layout_createFrom (const Layout_t *temp);
 
 /**
- * Creates a new Layout_t with the given width, height and depth and returns
- * a pointer to it.  The depth value defaults to 0.0.
+ * Creates a new Layout_t with the default SBML level, version, and package 
+ * version, and with the given width, height and depth and returns
+ * a pointer to it.
  *
- * @param sid    The id of the created Layout_t
- * @param width  The value of the width.
- * @param height The value of the height.
- * @param depth  The value of the depth.
+ * @param sid    the id of the created Layout_t.
+ * @param width  the value of the width.
+ * @param height the value of the height.
+ * @param depth  the value of the depth.
  *
  * @memberof Layout_t
  */
@@ -1737,11 +1813,12 @@ Layout_createWithSize (const char *sid,
                        double width, double height, double depth);
 
 /**
- * Creates a new Layout_t with the given Dimensions_t and returns a pointer to
+ * Creates a new Layout_t with the default SBML level, version, and package 
+ * version, and with the given Dimensions_t and returns a pointer to
  * it.
  *
- * @param sid        The id of the created Layout_t
- * @param dimensions The dimensions of the created Layout_t structure.
+ * @param sid        the id of the created Layout_t.
+ * @param dimensions the dimensions of the created Layout_t structure.
  *
  * @memberof Layout_t
  */
@@ -1752,7 +1829,7 @@ Layout_createWithDimensions (const char *sid, const Dimensions_t *dimensions);
 /** 
  * Frees the memory for the given layout.
  *
- * @param l The Layout_t structure
+ * @param l the Layout_t structure.
  *
  * @memberof Layout_t
  */
@@ -1762,10 +1839,11 @@ Layout_free (Layout_t *l);
 
 
 /**
- * Sets the dimensions of the given Layout_t structure
+ * Sets the dimensions of the given Layout_t structure to a copy
+ * of @p dimensions.
  *
- * @param l The Layout_t structure
- * @param dimensions The dimensions to use for the Layout_t structure.
+ * @param l the Layout_t structure.
+ * @param dimensions the dimensions to use for the Layout_t structure.
  *
  * @memberof Layout_t
  */
@@ -1774,10 +1852,10 @@ void
 Layout_setDimensions (Layout_t *l, const Dimensions_t *dimensions);
 
 /**
- * Adds a new compartment glyph to the list of compartment glyphs.
+ * Adds a new copy of @p cg to the list of compartment glyphs.
  *
- * @param l The Layout_t structure
- * @param cg The CompartmentGlyph_t to add to the Layout_t structure.
+ * @param l the Layout_t structure.
+ * @param cg the CompartmentGlyph_t to add to the Layout_t structure.
  *
  * @memberof Layout_t
  */
@@ -1786,10 +1864,10 @@ void
 Layout_addCompartmentGlyph (Layout_t *l, CompartmentGlyph_t *cg);
 
 /**
- * Adds a new species glyph to the list of species glyphs.
+ * Adds a new copy of @p sg to the list of species glyphs.
  *
- * @param l The Layout_t structure
- * @param sg The SpeciesGlyph_t to add to the Layout_t structure.
+ * @param l the Layout_t structure.
+ * @param sg the SpeciesGlyph_t to add to the Layout_t structure.
  *
  * @memberof Layout_t
  */
@@ -1798,10 +1876,10 @@ void
 Layout_addSpeciesGlyph (Layout_t *l, SpeciesGlyph_t *sg);
 
 /**
- * Adds a new reaction glyph to the list of reaction glyphs.
+ * Adds a new copy of @p rg to the list of reaction glyphs.
  *
- * @param l The Layout_t structure
- * @param rg The ReactionGlyph_t to add to the Layout_t structure.
+ * @param l the Layout_t structure.
+ * @param rg the ReactionGlyph_t to add to the Layout_t structure.
  *
  * @memberof Layout_t
  */
@@ -1810,10 +1888,10 @@ void
 Layout_addReactionGlyph (Layout_t *l, ReactionGlyph_t *rg);
 
 /**
- * Adds a new GraphicalObject to the list of additional graphical objects.
+ * Adds a new copy of @p go to the list of additional graphical objects.
  *
- * @param l The Layout_t structure
- * @param go The GraphicalObject_t to add to the Layout_t structure.
+ * @param l the Layout_t structure.
+ * @param go the GraphicalObject_t to add to the Layout_t structure.
  *
  * @memberof Layout_t
  */
@@ -1822,10 +1900,10 @@ void
 Layout_addAdditionalGraphicalObject (Layout_t *l, GraphicalObject_t *go);
 
 /**
- * Adds a new TextGlyph to the list of text glyphs.
+ * Adds a new copy of @p tg to the list of text glyphs.
  *
- * @param l The Layout_t structure
- * @param tg The TextGlyph_t to add to the Layout_t structure.
+ * @param l the Layout_t structure.
+ * @param tg the TextGlyph_t to add to the Layout_t structure.
  *
  * @memberof Layout_t
  */
@@ -1837,8 +1915,10 @@ Layout_addTextGlyph (Layout_t *l, TextGlyph_t *tg);
 /**
  * Returns a pointer to the CompartmentGlyph_t with the given index.
  *
- * @param l The Layout_t structure
- * @param index The index of the desired CompartmentGlyph_t.
+ * @param l the Layout_t structure.
+ * @param index the index of the desired CompartmentGlyph_t.
+ *
+ * @copydetails doc_returned_unowned_pointer
  *
  * @memberof Layout_t
  */
@@ -1849,8 +1929,10 @@ Layout_getCompartmentGlyph (Layout_t *l, unsigned int index);
 /**
  * Returns a pointer to the SpeciesGlyph_t with the given index.
  *
- * @param l The Layout_t structure
- * @param index The index of the desired SpeciesGlyph_t.
+ * @param l the Layout_t structure.
+ * @param index the index of the desired SpeciesGlyph_t.
+ *
+ * @copydetails doc_returned_unowned_pointer
  *
  * @memberof Layout_t
  */
@@ -1862,8 +1944,10 @@ Layout_getSpeciesGlyph (Layout_t *l, unsigned int index);
 /**
  * Returns a pointer to the ReactionGlyph_t with the given index.
  *
- * @param l The Layout_t structure
- * @param index The index of the desired ReactionGlyph_t.
+ * @param l the Layout_t structure.
+ * @param index the index of the desired ReactionGlyph_t.
+ *
+ * @copydetails doc_returned_unowned_pointer
  *
  * @memberof Layout_t
  */
@@ -1875,8 +1959,10 @@ Layout_getReactionGlyph (Layout_t *l, unsigned int index);
 /**
  * Returns a pointer to the AdditionalGraphicalObject_t with the given index.
  *
- * @param l The Layout_t structure
- * @param index The index of the desired GraphicalObject_t.
+ * @param l the Layout_t structure.
+ * @param index the index of the desired GraphicalObject_t.
+ *
+ * @copydetails doc_returned_unowned_pointer
  *
  * @memberof Layout_t
  */
@@ -1887,8 +1973,10 @@ Layout_getAdditionalGraphicalObject (Layout_t *l, unsigned int index);
 /**
  * Returns a pointer to the GraphicalObject_t with the given index.
  *
- * @param l The Layout_t structure
- * @param index The index of the desired TextGlyph_t.
+ * @param l the Layout_t structure.
+ * @param index the index of the desired TextGlyph_t.
+ *
+ * @copydetails doc_returned_unowned_pointer
  *
  * @memberof Layout_t
  */
@@ -1900,7 +1988,9 @@ Layout_getTextGlyph (Layout_t *l, unsigned int index);
 /**
  * Returns a pointer to the list of CompartmentGlyph_t's.
  *
- * @param l The Layout_t structure
+ * @param l the Layout_t structure.
+ *
+ * @copydetails doc_returned_unowned_pointer
  *
  * @memberof Layout_t
  */
@@ -1911,7 +2001,9 @@ Layout_getListOfCompartmentGlyphs (Layout_t *l);
 /**
  * Returns a pointer to the list of SpeciesGlyphs.
  *
- * @param l The Layout_t structure
+ * @param l the Layout_t structure.
+ *
+ * @copydetails doc_returned_unowned_pointer
  *
  * @memberof Layout_t
  */
@@ -1923,7 +2015,9 @@ Layout_getListOfSpeciesGlyphs (Layout_t *l);
 /**
  * Returns a pointer to the list of ReactionGlyphs.
  *
- * @param l The Layout_t structure
+ * @param l the Layout_t structure.
+ *
+ * @copydetails doc_returned_unowned_pointer
  *
  * @memberof Layout_t
  */
@@ -1935,7 +2029,9 @@ Layout_getListOfReactionGlyphs (Layout_t *l);
 /**
  * Returns a pointer to the list of additional GraphicalObjects.
  *
- * @param l The Layout_t structure
+ * @param l the Layout_t structure.
+ *
+ * @copydetails doc_returned_unowned_pointer
  *
  * @memberof Layout_t
  */
@@ -1946,7 +2042,9 @@ Layout_getListOfAdditionalGraphicalObjects (Layout_t *l);
 /**
  * Returns a pointer to the list of TextGlyphs.
  *
- * @param l The Layout_t structure
+ * @param l the Layout_t structure.
+ *
+ * @copydetails doc_returned_unowned_pointer
  *
  * @memberof Layout_t
  */
@@ -1958,7 +2056,9 @@ Layout_getListOfTextGlyphs (Layout_t *l);
 /**
  * Returns a Dimensions_t pointer from the layout.
  *
- * @param l The Layout_t structure
+ * @param l the Layout_t structure.
+ *
+ * @copydetails doc_returned_unowned_pointer
  *
  * @memberof Layout_t
  */
@@ -1969,7 +2069,7 @@ Layout_getDimensions(Layout_t *l);
 /**
  * Returns the number of CompartmentGlyphs.
  *
- * @param l The Layout_t structure
+ * @param l the Layout_t structure.
  *
  * @memberof Layout_t
  */
@@ -1980,7 +2080,7 @@ Layout_getNumCompartmentGlyphs (const Layout_t *l);
 /**
  * Returns the number of SpeciesGlyphs.
  *
- * @param l The Layout_t structure
+ * @param l the Layout_t structure.
  *
  * @memberof Layout_t
  */
@@ -1992,7 +2092,7 @@ Layout_getNumSpeciesGlyphs (const Layout_t *l);
 /**
  * Returns the number of ReactionGlyphs.
  *
- * @param l The Layout_t structure
+ * @param l the Layout_t structure.
  *
  * @memberof Layout_t
  */
@@ -2003,7 +2103,7 @@ Layout_getNumReactionGlyphs (const Layout_t *l);
 /**
  * Returns the number of additional GraphicalObjects.
  *
- * @param l The Layout_t structure
+ * @param l the Layout_t structure.
  *
  * @memberof Layout_t
  */
@@ -2014,7 +2114,7 @@ Layout_getNumAdditionalGraphicalObjects (const Layout_t *l);
 /**
  * Returns the number of TextGlyphs.
  *
- * @param l The Layout_t structure
+ * @param l the Layout_t structure.
  *
  * @memberof Layout_t
  */
@@ -2024,143 +2124,165 @@ Layout_getNumTextGlyphs (const Layout_t *l);
 
 /**
  * Removes the compartment glyph with the given index.  If the index is
- * invalid, nothing is deleted.
+ * invalid, nothing is removed, and @c NULL is returned.
  *
- * @param l The Layout_t structure
- * @param index The index of the CompartmentGlyph_t to remove.
+ * @param l the Layout_t structure.
+ * @param index the index of the CompartmentGlyph_t to remove.
+ *
+ * @copydetails doc_warning_returns_owned_pointer
  *
  * @memberof Layout_t
- */ 
+ */
 LIBSBML_EXTERN
 CompartmentGlyph_t *
 Layout_removeCompartmentGlyph (Layout_t *l, unsigned int index);
 
 /**
  * Removes the species glyph with the given index.  If the index is
- * invalid, nothing is deleted.
+ * invalid, nothing is removed, and @c NULL is returned.
  *
- * @param l The Layout_t structure
- * @param index The index of the SpeciesGlyph_t to remove.
+ * @param l the Layout_t structure.
+ * @param index the index of the SpeciesGlyph_t to remove.
+ *
+ * @copydetails doc_warning_returns_owned_pointer
  *
  * @memberof Layout_t
- */ 
+ */
 LIBSBML_EXTERN
 SpeciesGlyph_t *
 Layout_removeSpeciesGlyph (Layout_t *l, unsigned int index);
 
 /**
  * Removes the reaction glyph with the given index.  If the index is
- * invalid, nothing is deleted.
+ * invalid, nothing is removed, and @c NULL is returned.
  *
- * @param l The Layout_t structure
- * @param index The index of the ReactionGlyph_t to remove.
+ * @param l the Layout_t structure.
+ * @param index the index of the ReactionGlyph_t to remove.
+ *
+ * @copydetails doc_warning_returns_owned_pointer
  *
  * @memberof Layout_t
- */ 
+ */
 LIBSBML_EXTERN
 ReactionGlyph_t *
 Layout_removeReactionGlyph (Layout_t *l, unsigned int index);
  
 /**
  * Removes the text glyph with the given index.  If the index is invalid,
- * nothing is deleted.
+ * nothing is removed, and @c NULL is returned.
  *
- * @param l The Layout_t structure
- * @param index The index of the TextGlyph_t to remove.
+ * @param l the Layout_t structure.
+ * @param index the index of the TextGlyph_t to remove.
+ *
+ * @copydetails doc_warning_returns_owned_pointer
  *
  * @memberof Layout_t
- */ 
+ */
 LIBSBML_EXTERN
 TextGlyph_t *
 Layout_removeTextGlyph (Layout_t *l, unsigned int index);
  
 /**
  * Removes the graphical object with the given index.  If the index is
- * invalid, nothing is deleted.
+ * invalid, nothing is removed, and @c NULL is returned.
  *
- * @param l The Layout_t structure
- * @param index The index of the GraphicalObject_t to remove.
+ * @param l the Layout_t structure.
+ * @param index the index of the GraphicalObject_t to remove.
+ *
+ * @copydetails doc_warning_returns_owned_pointer
  *
  * @memberof Layout_t
- */ 
+ */
 LIBSBML_EXTERN
 GraphicalObject_t *
 Layout_removeAdditionalGraphicalObject (Layout_t *l, unsigned int index);
 
 /**
  * Removes the compartment glyph with the given @p id.  If the id is
- * not found, nothing is deleted.
+ * not found, nothing is removed, and @c NULL is returned.
  *
- * @param l The Layout_t structure
- * @param id The id of the CompartmentGlyph_t to remove.
+ * @param l the Layout_t structure.
+ * @param id the id of the CompartmentGlyph_t to remove.
+ *
+ * @copydetails doc_warning_returns_owned_pointer
  *
  * @memberof Layout_t
- */ 
+ */
 LIBSBML_EXTERN
 CompartmentGlyph_t *
 Layout_removeCompartmentGlyphWithId (Layout_t *l, const char* id);
 
 /**
  * Removes the species glyph with the given @p id.  If the id is
- * not found, nothing is deleted.
+ * not found, nothing is removed, and @c NULL is returned.
  *
- * @param l The Layout_t structure
- * @param id The id of the SpeciesGlyph_t to remove.
+ * @param l the Layout_t structure.
+ * @param id the id of the SpeciesGlyph_t to remove.
+ *
+ * @copydetails doc_warning_returns_owned_pointer
  *
  * @memberof Layout_t
- */ 
+ */
 LIBSBML_EXTERN
 SpeciesGlyph_t *
 Layout_removeSpeciesGlyphWithId (Layout_t *l, const char* id);
 
 /**
  * Removes the species reference glyph with the given @p id.  If the id is
- * not found, nothing is deleted.
+ * not found, nothing is removed, and @c NULL is returned.
  *
- * @param l The Layout_t structure
- * @param id The id of the SpeciesReferenceGlyph_t to remove.
+ * @param l the Layout_t structure.
+ * @param id the id of the SpeciesReferenceGlyph_t to remove.
+ *
+ * @copydetails doc_warning_returns_owned_pointer
  *
  * @memberof Layout_t
- */ 
+ */
 LIBSBML_EXTERN
 SpeciesReferenceGlyph_t *
 Layout_removeSpeciesReferenceGlyphWithId (Layout_t *l, const char* id);
 
 /**
  * Removes the reaction glyph with the given @p id.  If the id is
- * not found, nothing is deleted.
+ * not found, nothing is removed, and @c NULL is returned.
  *
- * @param l The Layout_t structure
- * @param id The id of the ReactionGlyph_t to remove.
+ * @param l the Layout_t structure.
+ * @param id the id of the ReactionGlyph_t to remove.
+ *
+ * @copydetails doc_warning_returns_owned_pointer
  *
  * @memberof Layout_t
- */ 
+ */
 LIBSBML_EXTERN
 ReactionGlyph_t *
 Layout_removeReactionGlyphWithId (Layout_t *l, const char* id);
  
 /**
  * Removes the text glyph with the given @p id.  If the id is not found,
- * nothing is deleted.
+ * nothing is removed, and @c NULL is returned.
  *
- * @param l The Layout_t structure
- * @param id The id of the TextGlyph_t to remove.
+ * @param l the Layout_t structure.
+ * @param id the id of the TextGlyph_t to remove.
+ *
+ * @copydetails doc_warning_returns_owned_pointer
  *
  * @memberof Layout_t
- */ 
+ */
 LIBSBML_EXTERN
 TextGlyph_t *
 Layout_removeTextGlyphWithId (Layout_t *l, const char* id);
  
 /**
  * Removes the graphical object with the given @p id.  If the id is
- * not found, nothing is deleted.
+ * not found, nothing is removed, and @c NULL is returned.
  *
- * @param l The Layout_t structure
- * @param id The id of the GraphicalObject_t to remove.
+ * @param l the Layout_t structure.
+ * @param id the id of the GraphicalObject_t to remove.
+ *
+ * @copydetails doc_warning_returns_owned_pointer
  *
  * @memberof Layout_t
- */ 
+ */
 LIBSBML_EXTERN
 GraphicalObject_t *
 Layout_removeAdditionalGraphicalObjectWithId (Layout_t *l, const char* id);
@@ -2168,10 +2290,10 @@ Layout_removeAdditionalGraphicalObjectWithId (Layout_t *l, const char* id);
 /**
  * Does nothing since no defaults are defined for Layout_t.
  *
- * @param l The Layout_t structure
+ * @param l the Layout_t structure.
  *
  * @memberof Layout_t
- */ 
+ */
 LIBSBML_EXTERN
 void
 Layout_initDefaults (Layout_t *l);
@@ -2182,7 +2304,9 @@ Layout_initDefaults (Layout_t *l);
  * compartment glyphs list and returns a pointer to the newly
  * created structure.
  *
- * @param l The Layout_t structure
+ * @param l the Layout_t structure.
+ *
+ * @copydetails doc_returned_unowned_pointer
  *
  * @memberof Layout_t
  */
@@ -2194,7 +2318,9 @@ Layout_createCompartmentGlyph (Layout_t *l);
  * Creates a SpeciesGlyph_t structure, adds it to the end of the species glyphs
  * list and returns a pointer to the newly created structure.
  *
- * @param l The Layout_t structure
+ * @param l the Layout_t structure.
+ *
+ * @copydetails doc_returned_unowned_pointer
  *
  * @memberof Layout_t
  */
@@ -2207,7 +2333,9 @@ Layout_createSpeciesGlyph (Layout_t *l);
  * Creates a ReactionGlyph_t structure, adds it to the end of the reaction
  * glyphs list and returns a pointer to the newly created structure.
  *
- * @param l The Layout_t structure
+ * @param l the Layout_t structure.
+ *
+ * @copydetails doc_returned_unowned_pointer
  *
  * @memberof Layout_t
  */
@@ -2219,7 +2347,9 @@ Layout_createReactionGlyph (Layout_t *l);
  * Creates a GeneralGlyph_t structure, adds it to the end of the additional
  * objects list and returns a pointer to the newly created structure.
  *
- * @param l The Layout_t structure
+ * @param l the Layout_t structure.
+ *
+ * @copydetails doc_returned_unowned_pointer
  *
  * @memberof Layout_t
  */
@@ -2232,7 +2362,9 @@ Layout_createGeneralGlyph (Layout_t *l);
  * Creates a TextGlyph_t structure, adds it to the end of the text glyphs
  * list and returns a pointer to the newly created structure.
  *
- * @param l The Layout_t structure
+ * @param l the Layout_t structure.
+ *
+ * @copydetails doc_returned_unowned_pointer
  *
  * @memberof Layout_t
  */
@@ -2246,7 +2378,9 @@ Layout_createTextGlyph (Layout_t *l);
  * graphical objects list and returns a pointer to the newly created
  * structure.
  *
- * @param l The Layout_t structure
+ * @param l the Layout_t structure.
+ *
+ * @copydetails doc_returned_unowned_pointer
  *
  * @memberof Layout_t
  */
@@ -2257,7 +2391,9 @@ Layout_createAdditionalGraphicalObject (Layout_t *l);
 /**
  * @return a (deep) copy of this Layout_t.
  *
- * @param l The Layout_t structure
+ * @param l the Layout_t structure.
+ *
+ * @copydetails doc_warning_returns_owned_pointer
  *
  * @memberof Layout_t
  */
@@ -2267,9 +2403,9 @@ Layout_clone (const Layout_t *l);
 
 
 /**
- * Returns non-zero if the id is set
+ * Returns @c 1 (true) if the id is set
  *
- * @param l The Layout_t structure
+ * @param l the Layout_t structure.
  *
  * @memberof Layout_t
  */
@@ -2281,7 +2417,9 @@ Layout_isSetId (const Layout_t *l);
 /**
  * Returns the id
  *
- * @param l The Layout_t structure
+ * @param l the Layout_t structure.
+ *
+ * @copydetails doc_warning_returns_owned_char
  *
  * @memberof Layout_t
  */
@@ -2293,8 +2431,8 @@ Layout_getId (const Layout_t *l);
 /**
  * Sets the id
  *
- * @param l The Layout_t structure
- * @param sid The string to use as the ID of the Layout_t
+ * @param l the Layout_t structure.
+ * @param sid the string to use as the ID of the Layout_t.
  *
  * @memberof Layout_t
  */
@@ -2306,7 +2444,7 @@ Layout_setId (Layout_t *l, const char *sid);
 /**
  * Unsets the id
  *
- * @param l The Layout_t structure
+ * @param l the Layout_t structure.
  *
  * @memberof Layout_t
  */

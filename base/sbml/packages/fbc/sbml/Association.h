@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -93,28 +97,66 @@ public:
   /**
    * Creates a new Association objet with the given SBML Level, Version, and
    * &ldquo;fbc&rdquo; package version.
+   *
+   * @param level the SBML Level.
+   * @param version the Version within the SBML Level.
+   * @param pkgVersion the version of the package.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
    Association(unsigned int level      = FbcExtension::getDefaultLevel(),
                unsigned int version    = FbcExtension::getDefaultVersion(),
                unsigned int pkgVersion = FbcExtension::getDefaultPackageVersion());
 
+  /**
+   * Creates a new Association with the given FbcPkgNamespaces object,
+   * and constructed to mimic the XMLNode: a '&lt;gene&gt;' node 
+   * argument will result in a  
+   * @sbmlconstant{GENE_ASSOCIATION, AssociationTypeCode_t} node; an
+   * &lt;and&gt; node argument will result in a
+   * @sbmlconstant{AND_ASSOCIATION, AssociationTypeCode_t} node; an
+   * &lt;or&gt; node argument will result in a
+   * @sbmlconstant{OR_ASSOCIATION, AssociationTypeCode_t} node.  Any
+   * other node will result in a
+   * @sbmlconstant{UNKNOWN_ASSOCIATION, AssociationTypeCode_t} node.
+   * 'And' and 'or' nodes will have Association children that again 
+   * parallel the children of the given XMLNode.
+   *
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param fbcns the FbcPkgNamespaces object.
+   * @param node the XMLNode to copy.
+   *
+   * @copydetails doc_note_setting_lv_pkg
+   */
    Association(const XMLNode& node, FbcPkgNamespaces* fbcns);
 
 
   /**
    * Creates a new Association with the given FbcPkgNamespaces object.
+   *
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param fbcns the FbcPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
    Association(FbcPkgNamespaces* fbcns);
 
 
   /**
    * Copy constructor.
+   *
+   * @param source the instance to copy.
    */
    Association(const Association& source);
 
 
   /**
    * Assignment operator.
+   *
+   * @param source the object whose values are used as the basis of the
+   * assignment.
    */
    Association& operator=(const Association& source);
 
@@ -123,6 +165,36 @@ public:
    * Destructor.
    */
   virtual ~Association ();
+
+
+  /**
+   * Predicate returning @c true if this abstract Association is of type
+   * FbcAnd
+   *
+   * @return @c true if this abstract Association is of type FbcAnd, @c false
+   * otherwise
+   */
+  virtual bool isFbcAnd() const;
+
+
+  /**
+   * Predicate returning @c true if this abstract Association is of type
+   * FbcOr
+   *
+   * @return @c true if this abstract Association is of type FbcOr, @c false
+   * otherwise
+   */
+  virtual bool isFbcOr() const;
+
+
+  /**
+   * Predicate returning @c true if this abstract Association is of type
+   * GeneProductRef
+   *
+   * @return @c true if this abstract Association is of type GeneProductRef,
+   * @c false otherwise
+   */
+  virtual bool isGeneProductRef() const;
 
 
   /**
@@ -228,7 +300,7 @@ public:
   /**
    * Adds a child Association to this Association object.
    *
-   * @param association the Association object to add. 
+   * @param association the Association object to add.
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -241,7 +313,7 @@ public:
    * Removes the child Associations with the given @p index from this
    * Association object.
    *
-   * @param index the index number of the item to remove
+   * @param index the index number of the item to remove.
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -291,7 +363,7 @@ public:
    * this Association object or do anything else with it&mdash;the returning
    * pointer is now owned by the caller.
    *
-   * @param reference the gene reference, as a string
+   * @param reference the gene reference, as a string.
    *
    * @return a new Association object.
    */
@@ -326,7 +398,7 @@ public:
    * @copydetails doc_what_are_typecodes
    *
    * @return the SBML type code for this object:
-   * @sbmlconstant{SBML_FBC_ASSOCIATION, SBMLFbcTypeCode_t}
+   * @sbmlconstant{SBML_FBC_ASSOCIATION, SBMLFbcTypeCode_t}.
    *
    * @copydetails doc_warning_typecodes_not_unique
    *
@@ -339,7 +411,7 @@ public:
   /** @cond doxygenLibsbmlInternal */
   /**
    * Subclasses should override this method to write out their contained
-   * SBML objects as XML elements.  Be sure to call your parents
+   * SBML objects as XML elements.  Be sure to call your parent's
    * implementation of this method as well.  For example:
    *
    *   SBase::writeElements(stream);
@@ -380,17 +452,258 @@ public:
    * @return the parsed association, or @c NULL in case of an error.
    *
    * @copydetails doc_note_static_methods
+   *
+   * @see toInfix()
    */
   static Association* parseInfixAssociation(const std::string& association);
 
 
   /**
    * Converts this Association object into an infix string representation.
+   * The format is the same as is found in parseInfixAssociation().
    *
    * @return the association as infix string.
+   *
+   * @see parseInfixAssociation(const std::string& association)
    */
   std::string toInfix() const;
 
+  #ifndef SWIG
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Association.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, bool& value)
+    const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Association.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Association.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           double& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Association.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           unsigned int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Association.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           std::string& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Predicate returning @c true if this Association's attribute
+   * "attributeName" is set.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @return @c true if this Association's attribute "attributeName" has been
+   * set, otherwise @c false is returned.
+   */
+  virtual bool isSetAttribute(const std::string& attributeName) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Association.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, bool value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Association.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Association.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, double value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Association.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           unsigned int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Association.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           const std::string& value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Unsets the value of the "attributeName" attribute of this Association.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int unsetAttribute(const std::string& attributeName);
+
+  /** @endcond */
+
+
+
+
+  #endif /* !SWIG */
 
 protected:
   /** @cond doxygenLibsbmlInternal */
@@ -398,7 +711,7 @@ protected:
    * Create and return an SBML object of this class, if present.
    *
    * @return the SBML object corresponding to next XMLToken in the
-   * XMLInputStream or NULL if the token was not recognized.
+   * XMLInputStream or @c NULL if the token was not recognized.
    */
   virtual SBase*
   createObject (XMLInputStream& stream);
@@ -420,7 +733,7 @@ protected:
   /**
    * Subclasses should override this method to read values from the given
    * XMLAttributes set into their specific fields.  Be sure to call your
-   * parents implementation of this method as well.
+   * parent's implementation of this method as well.
    */
   virtual void readAttributes (const XMLAttributes& attributes,
                                const ExpectedAttributes& expectedAttributes);
@@ -429,7 +742,7 @@ protected:
   /** @cond doxygenLibsbmlInternal */
   /**
    * Subclasses should override this method to write their XML attributes
-   * to the XMLOutputStream.  Be sure to call your parents implementation
+   * to the XMLOutputStream.  Be sure to call your parent's implementation
    * of this method as well.  For example:
    *
    *   SBase::writeAttributes(stream);
@@ -444,21 +757,191 @@ protected:
 
 LIBSBML_CPP_NAMESPACE_END
 
+
+
+
 #endif /* __cplusplus */
+
+
 
 
 #ifndef SWIG
 
+
+
+
 LIBSBML_CPP_NAMESPACE_BEGIN
+
+
+
+
 BEGIN_C_DECLS
 
-/*
- * C API will be added here.
+
+/**
+ * Creates a new FbcAnd (Association_t) using the given SBML Level, Version and
+ * &ldquo;fbc&rdquo; package version.
+ *
+ * @param level an unsigned int, the SBML Level to assign to this
+ * Association_t.
+ *
+ * @param version an unsigned int, the SBML Version to assign to this
+ * Association_t.
+ *
+ * @param pkgVersion an unsigned int, the SBML Fbc Version to assign to this
+ * Association_t.
+ *
+ * @copydetails doc_note_setting_lv_pkg
+ *
+ * @copydetails doc_warning_returns_owned_pointer
+ *
+ * @memberof Association_t
  */
+LIBSBML_EXTERN
+FbcAnd_t *
+Association_createFbcAnd(unsigned int level,
+                         unsigned int version,
+                         unsigned int pkgVersion);
+
+
+/**
+ * Creates a new FbcOr (Association_t) using the given SBML Level, Version and
+ * &ldquo;fbc&rdquo; package version.
+ *
+ * @param level an unsigned int, the SBML Level to assign to this
+ * Association_t.
+ *
+ * @param version an unsigned int, the SBML Version to assign to this
+ * Association_t.
+ *
+ * @param pkgVersion an unsigned int, the SBML Fbc Version to assign to this
+ * Association_t.
+ *
+ * @copydetails doc_note_setting_lv_pkg
+ *
+ * @copydetails doc_warning_returns_owned_pointer
+ *
+ * @memberof Association_t
+ */
+LIBSBML_EXTERN
+FbcOr_t *
+Association_createFbcOr(unsigned int level,
+                        unsigned int version,
+                        unsigned int pkgVersion);
+
+
+/**
+ * Creates a new GeneProductRef (Association_t) using the given SBML Level,
+ * Version and &ldquo;fbc&rdquo; package version.
+ *
+ * @param level an unsigned int, the SBML Level to assign to this
+ * Association_t.
+ *
+ * @param version an unsigned int, the SBML Version to assign to this
+ * Association_t.
+ *
+ * @param pkgVersion an unsigned int, the SBML Fbc Version to assign to this
+ * Association_t.
+ *
+ * @copydetails doc_note_setting_lv_pkg
+ *
+ * @copydetails doc_warning_returns_owned_pointer
+ *
+ * @memberof Association_t
+ */
+LIBSBML_EXTERN
+GeneProductRef_t *
+Association_createGeneProductRef(unsigned int level,
+                                 unsigned int version,
+                                 unsigned int pkgVersion);
+
+
+/**
+ * Creates and returns a deep copy of this Association_t object.
+ *
+ * @param a the Association_t structure.
+ *
+ * @return a (deep) copy of this Association_t object.
+ *
+ * @copydetails doc_warning_returns_owned_pointer
+ *
+ * @memberof Association_t
+ */
+LIBSBML_EXTERN
+Association_t*
+Association_clone(const Association_t* a);
+
+
+/**
+ * Frees this Association_t object.
+ *
+ * @param a the Association_t structure.
+ *
+ * @memberof Association_t
+ */
+LIBSBML_EXTERN
+void
+Association_free(Association_t* a);
+
+
+/**
+ * Predicate returning @c 1 if this Association_t is of type FbcAnd_t
+ *
+ * @param a the Association_t structure.
+ *
+ * @return @c 1 if this Association_t is of type FbcAnd_t, @c 0 otherwise
+ *
+ * @memberof Association_t
+ */
+LIBSBML_EXTERN
+int
+Association_isFbcAnd(const Association_t * a);
+
+
+/**
+ * Predicate returning @c 1 if this Association_t is of type FbcOr_t
+ *
+ * @param a the Association_t structure.
+ *
+ * @return @c 1 if this Association_t is of type FbcOr_t, @c 0 otherwise
+ *
+ * @memberof Association_t
+ */
+LIBSBML_EXTERN
+int
+Association_isFbcOr(const Association_t * a);
+
+
+/**
+ * Predicate returning @c 1 if this Association_t is of type GeneProductRef_t
+ *
+ * @param a the Association_t structure.
+ *
+ * @return @c 1 if this Association_t is of type GeneProductRef_t, @c 0
+ * otherwise
+ *
+ * @memberof Association_t
+ */
+LIBSBML_EXTERN
+int
+Association_isGeneProductRef(const Association_t * a);
+
+
+
 
 END_C_DECLS
+
+
+
+
 LIBSBML_CPP_NAMESPACE_END
 
 
-#endif  /* !SWIG */
-#endif  /* Association_H__ */
+
+
+#endif /* !SWIG */
+
+
+
+
+#endif /* !Association_H__ */

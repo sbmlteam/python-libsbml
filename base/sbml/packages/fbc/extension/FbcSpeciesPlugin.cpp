@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -39,10 +43,61 @@ using namespace std;
 LIBSBML_CPP_NAMESPACE_BEGIN
 #ifdef __cplusplus
 
+
+bool
+isWellFormedChemicalFormula(const std::string& chemicalFormula)
+{
+  size_t index = 0;
+  size_t sizeStr = chemicalFormula.size();
+  char c = chemicalFormula[index];
+  bool valid = true;
+
+  // first must be a capital letter
+  if (isupper(c) == 0)
+  {
+    valid = false;
+    return valid;
+  }
+  
+  if (sizeStr == 1)
+  { 
+    return valid;
+  }
+
+  index++;
+  bool prevNum = false;
+  while (valid && index < sizeStr)
+  {
+    c = chemicalFormula[index];
+
+    // if it is a letter it should be
+    // upper if it follows a nume
+    if (isalpha(c) != 0)
+    {
+      if (prevNum)
+      {
+        if (isupper(c) == 0)
+        { 
+          valid = false;
+        }
+      }
+      prevNum = false;
+    }
+    else
+    {
+      prevNum = true;
+    }
+
+    index++;
+  }
+  return valid;
+}
 static void
 parseChemicalFormula(std::string& chemicalFormula, 
                      SBMLErrorLog& errLog, unsigned int packageVersion, 
-                     unsigned int level, unsigned int version)
+                     unsigned int level, unsigned int version, 
+                     unsigned int line=0, unsigned int col=0,
+                     Species* species = NULL)
 {
   std::vector< std::pair< std::string, int > > chemicalSymbols;
 
@@ -64,11 +119,22 @@ parseChemicalFormula(std::string& chemicalFormula,
       std::string message = "Encountered '";
       message += c;
       message += "' when expecting a capital letter.";
+      if (species)
+      {
+        message += "The chemicalFormula '";
+        message += chemicalFormula;
+        if (species->isSetId())
+        {
+          message += "' for the species with id '";
+          message += species->getId();
+        }
+        message += "' has incorrect syntax.";
+      }
       errLog.logPackageError("fbc", FbcSpeciesFormulaMustBeString, 
-        packageVersion, level, version, message);
+        packageVersion, level, version, message, line, col);
 
       // at this point we already *know* the formula is bad, at this point
-      // the map generated woudl be invalid in any case, so we quit here.
+      // the map generated would be invalid in any case, so we quit here.
       return;
 
     }
@@ -224,21 +290,7 @@ FbcSpeciesPlugin::writeElements (XMLOutputStream&) const
 /** @endcond */
 
 
-/*
- * Checks if this plugin object has all the required elements.
- */
-bool
-FbcSpeciesPlugin::hasRequiredElements () const
-{
-  bool allPresent = true; 
-
-  // TO DO 
-
-  return allPresent; 
-}
-
-
-  /** @cond doxygenLibsbmlInternal */
+/** @cond doxygenLibsbmlInternal */
 
 /*
  * Get the list of expected attributes for this element.
@@ -253,7 +305,7 @@ FbcSpeciesPlugin::addExpectedAttributes(ExpectedAttributes& attributes)
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -277,7 +329,7 @@ FbcSpeciesPlugin::readAttributes (const XMLAttributes& attributes,
     if (!expectedAttributes.hasAttribute(name))
     {  
       getErrorLog()->logPackageError("fbc", FbcSpeciesAllowedL3Attributes,
-        getPackageVersion(), getLevel(), getVersion());
+        getPackageVersion(), getLevel(), getVersion(), "", getLine(), getColumn());
     }      
   }
   
@@ -294,23 +346,26 @@ FbcSpeciesPlugin::readAttributes (const XMLAttributes& attributes,
       {
         getErrorLog()->remove(XMLAttributeTypeMismatch);
         getErrorLog()->logPackageError("fbc", FbcSpeciesChargeMustBeInteger,
-          getPackageVersion(), getLevel(), getVersion());
+          getPackageVersion(), getLevel(), getVersion(), "", getLine(), getColumn());
       }
     }
+
+    
 
     XMLTriple tripleChemicalFormula("chemicalFormula", mURI, mPrefix);
     bool assigned = attributes.readInto(tripleChemicalFormula, mChemicalFormula);
     if (assigned == true)
     {
+      Species * s = static_cast<Species*>(getParentSBMLObject());
       parseChemicalFormula(mChemicalFormula, *(getErrorLog()), getPackageVersion(),
-        getLevel(), getVersion());
+        getLevel(), getVersion(), getLine(), getColumn(), s);
     }
 
   }
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -332,7 +387,7 @@ FbcSpeciesPlugin::writeAttributes (XMLOutputStream& stream) const
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
 //---------------------------------------------------------------
@@ -340,15 +395,6 @@ FbcSpeciesPlugin::writeAttributes (XMLOutputStream& stream) const
 // Functions for interacting with the members of the plugin
 //
 //---------------------------------------------------------------
-
-List*
-FbcSpeciesPlugin::getAllElements(ElementFilter*)
-{
-  List* ret = new List();
-
-  return ret;
-}
-
 
 /*
  * Returns the value of the "charge" attribute of this FbcSpeciesPlugin.
@@ -408,9 +454,17 @@ FbcSpeciesPlugin::setCharge(int charge)
 int
 FbcSpeciesPlugin::setChemicalFormula(const std::string& chemicalFormula)
 {
+  if (isWellFormedChemicalFormula(chemicalFormula))
   {
     mChemicalFormula = chemicalFormula;
     return LIBSBML_OPERATION_SUCCESS;
+  }
+  else
+  {
+    // since not setting an invalid formula would be a change 
+    // in behaviour I set it anyway
+    mChemicalFormula = chemicalFormula;
+    return LIBSBML_INVALID_ATTRIBUTE_VALUE;
   }
 }
 
@@ -505,6 +559,267 @@ FbcSpeciesPlugin::accept(SBMLVisitor&) const
 
   return true;
 }
+/** @endcond */
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FbcSpeciesPlugin.
+ */
+int
+FbcSpeciesPlugin::getAttribute(const std::string& attributeName,
+                               bool& value) const
+{
+  int return_value = SBasePlugin::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FbcSpeciesPlugin.
+ */
+int
+FbcSpeciesPlugin::getAttribute(const std::string& attributeName,
+                               int& value) const
+{
+  int return_value = SBasePlugin::getAttribute(attributeName, value);
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "charge")
+  {
+    value = getCharge();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FbcSpeciesPlugin.
+ */
+int
+FbcSpeciesPlugin::getAttribute(const std::string& attributeName,
+                               double& value) const
+{
+  int return_value = SBasePlugin::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FbcSpeciesPlugin.
+ */
+int
+FbcSpeciesPlugin::getAttribute(const std::string& attributeName,
+                               unsigned int& value) const
+{
+  int return_value = SBasePlugin::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this FbcSpeciesPlugin.
+ */
+int
+FbcSpeciesPlugin::getAttribute(const std::string& attributeName,
+                               std::string& value) const
+{
+  int return_value = SBasePlugin::getAttribute(attributeName, value);
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "chemicalFormula")
+  {
+    value = getChemicalFormula();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Predicate returning @c true if this FbcSpeciesPlugin's attribute
+ * "attributeName" is set.
+ */
+bool
+FbcSpeciesPlugin::isSetAttribute(const std::string& attributeName) const
+{
+  bool value = SBasePlugin::isSetAttribute(attributeName);
+
+  if (attributeName == "charge")
+  {
+    value = isSetCharge();
+  }
+  else if (attributeName == "chemicalFormula")
+  {
+    value = isSetChemicalFormula();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FbcSpeciesPlugin.
+ */
+int
+FbcSpeciesPlugin::setAttribute(const std::string& attributeName, bool value)
+{
+  int return_value = SBasePlugin::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FbcSpeciesPlugin.
+ */
+int
+FbcSpeciesPlugin::setAttribute(const std::string& attributeName, int value)
+{
+  int return_value = SBasePlugin::setAttribute(attributeName, value);
+
+  if (attributeName == "charge")
+  {
+    return_value = setCharge(value);
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FbcSpeciesPlugin.
+ */
+int
+FbcSpeciesPlugin::setAttribute(const std::string& attributeName, double value)
+{
+  int return_value = SBasePlugin::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FbcSpeciesPlugin.
+ */
+int
+FbcSpeciesPlugin::setAttribute(const std::string& attributeName,
+                               unsigned int value)
+{
+  int return_value = SBasePlugin::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this FbcSpeciesPlugin.
+ */
+int
+FbcSpeciesPlugin::setAttribute(const std::string& attributeName,
+                               const std::string& value)
+{
+  int return_value = SBasePlugin::setAttribute(attributeName, value);
+
+  if (attributeName == "chemicalFormula")
+  {
+    return_value = setChemicalFormula(value);
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Unsets the value of the "attributeName" attribute of this FbcSpeciesPlugin.
+ */
+int
+FbcSpeciesPlugin::unsetAttribute(const std::string& attributeName)
+{
+  int value = SBasePlugin::unsetAttribute(attributeName);
+
+  if (attributeName == "charge")
+  {
+    value = unsetCharge();
+  }
+  else if (attributeName == "chemicalFormula")
+  {
+    value = unsetChemicalFormula();
+  }
+
+  return value;
+}
+
 /** @endcond */
 
 

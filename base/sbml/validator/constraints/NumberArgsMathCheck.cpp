@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -130,78 +134,79 @@ NumberArgsMathCheck::checkMath (const Model& m, const ASTNode& node, const SBase
   case AST_FUNCTION_TAN:
   case AST_FUNCTION_TANH:
   case AST_LOGICAL_NOT:
+  case AST_FUNCTION_RATE_OF:
 
     checkUnary(m, node, sb);
       break;
 
-    case AST_DIVIDE:
-    case AST_POWER:
-    case AST_RELATIONAL_NEQ:
-    case AST_FUNCTION_DELAY:
-    case AST_FUNCTION_POWER:
-    case AST_FUNCTION_LOG:       // a log ASTNode has a child for base
+  case AST_DIVIDE:
+  case AST_POWER:
+  case AST_RELATIONAL_NEQ:
+  case AST_FUNCTION_DELAY:
+  case AST_FUNCTION_POWER:
+  case AST_FUNCTION_LOG:       // a log ASTNode has a child for base
 
     checkBinary(m, node, sb);
-      break;
+    break;
 
-      //n-ary 0 or more arguments
-    case AST_TIMES:
-    case AST_PLUS:
-    case AST_LOGICAL_AND:
-    case AST_LOGICAL_OR:
-    case AST_LOGICAL_XOR:
-      checkChildren(m, node, sb);
-      break;
+    //n-ary 0 or more arguments
+  case AST_TIMES:
+  case AST_PLUS:
+  case AST_LOGICAL_AND:
+  case AST_LOGICAL_OR:
+  case AST_LOGICAL_XOR:
+    checkChildren(m, node, sb);
+    break;
 
-    case AST_RELATIONAL_EQ:
-    case AST_RELATIONAL_GEQ:
-    case AST_RELATIONAL_GT:
-    case AST_RELATIONAL_LEQ:
-    case AST_RELATIONAL_LT:
-      checkAtLeast2Args(m, node, sb);
-      break;
+  case AST_RELATIONAL_EQ:
+  case AST_RELATIONAL_GEQ:
+  case AST_RELATIONAL_GT:
+  case AST_RELATIONAL_LEQ:
+  case AST_RELATIONAL_LT:
+    checkAtLeast2Args(m, node, sb);
+    break;
 
-    case AST_FUNCTION_PIECEWISE:
-      checkPiecewise(m, node, sb);
-      break;
+  case AST_FUNCTION_PIECEWISE:
+    checkPiecewise(m, node, sb);
+    break;
 
 
-    case AST_FUNCTION_ROOT:
-    case AST_MINUS:
-      
-      checkSpecialCases(m, node, sb);
-      break;
+  case AST_FUNCTION_ROOT:
+  case AST_MINUS:
 
-      
-    case AST_FUNCTION:
-      /* the case for a functionDefinition has its own rule
-         from l2v4*/
+    checkSpecialCases(m, node, sb);
+    break;
 
-      if (m.getLevel() < 3 && m.getVersion() < 4)
+
+  case AST_FUNCTION:
+    /* the case for a functionDefinition has its own rule
+       from l2v4*/
+
+    if (m.getLevel() < 3 && m.getVersion() < 4)
+    {
+      if (m.getFunctionDefinition(node.getName()) != NULL)
       {
-        if (m.getFunctionDefinition(node.getName()) != NULL)
+        /* functiondefinition math */
+        const ASTNode * fdMath = m.getFunctionDefinition(node.getName())->getMath();
+        if (fdMath != NULL)
         {
-          /* functiondefinition math */
-          const ASTNode * fdMath = m.getFunctionDefinition(node.getName())->getMath();
-          if (fdMath != NULL)
+        /* We have a definition for this function.  Does the defined number
+              of arguments equal the number used here? */
+
+          if (node.getNumChildren() + 1 != fdMath->getNumChildren())
           {
-          /* We have a definition for this function.  Does the defined number
-	            of arguments equal the number used here? */
-
-            if (node.getNumChildren() + 1 != fdMath->getNumChildren())
-	          {
-              logMathConflict(node, sb);
-	          }
+            logMathConflict(node, sb);
           }
-
         }
+
       }
-      break;
+    }
+    break;
 
-    default:
+  default:
 
-      checkChildren(m, node, sb);
-      break;
+    checkChildren(m, node, sb);
+    break;
 
   }
 
@@ -283,6 +288,12 @@ void NumberArgsMathCheck::checkPiecewise(const Model&,
     logMathConflict(node, sb);
   }
 
+  // Jason Zwolak reports that we do not correctly catch a piece with only
+  // one argument; which will be difficult in legacy math as it throws 
+  // the information away when reading
+
+
+
 }
 /*
  * @return the error message to use when logging constraint violations.
@@ -295,14 +306,14 @@ const string
 NumberArgsMathCheck::getMessage (const ASTNode& node, const SBase& object)
 {
 
-  ostringstream msg;
+  ostringstream oss_msg;
 
-  //msg << getPreamble();
+  //oss_msg << getPreamble();
 
   char * formula = SBML_formulaToString(&node);
-  msg << "The formula '" << formula;
-  msg << "' in the " << getFieldname() << " element of the <" << object.getElementName();
-  msg << "> ";
+  oss_msg << "The formula '" << formula;
+  oss_msg << "' in the " << getFieldname() << " element of the <" << object.getElementName();
+  oss_msg << "> ";
   switch(object.getTypeCode()) {
   case SBML_INITIAL_ASSIGNMENT:
   case SBML_EVENT_ASSIGNMENT:
@@ -311,15 +322,15 @@ NumberArgsMathCheck::getMessage (const ASTNode& node, const SBase& object)
     //LS DEBUG:  could use other attribute values, or 'isSetActualId'.
     break;
   default:
-    if (object.isSetId()) {
-      msg << "with id '" << object.getId() << "' ";
+    if (object.isSetIdAttribute()) {
+      oss_msg << "with id '" << object.getIdAttribute() << "' ";
     }
     break;
   }
-  msg << "has an inappropriate number of arguments.";
+  oss_msg << "has an inappropriate number of arguments.";
   safe_free(formula);
 
-  return msg.str();
+  return oss_msg.str();
 }
 
 LIBSBML_CPP_NAMESPACE_END

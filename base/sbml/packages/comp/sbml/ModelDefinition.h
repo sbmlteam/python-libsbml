@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -66,9 +70,11 @@ public:
    * Creates a new ModelDefinition with the given level, version, and package
    * version.
    *
-   * @param level the SBML Level
-   * @param version the Version within the SBML Level
-   * @param pkgVersion the version of the package
+   * @param level the SBML Level.
+   * @param version the Version within the SBML Level.
+   * @param pkgVersion the version of the package.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   ModelDefinition(unsigned int level      = CompExtension::getDefaultLevel(),
                   unsigned int version    = CompExtension::getDefaultVersion(),
@@ -78,19 +84,28 @@ public:
   /**
    * Creates a new ModelDefinition with the given CompPkgNamespaces object.
    *
-   * @param compns the namespace to use
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param compns the CompPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   ModelDefinition(CompPkgNamespaces* compns);
 
 
   /**
    * Copy constructor from base Model object.
+   *
+   * @param source the instance to copy.
    */
   ModelDefinition(const Model& source);
 
 
   /**
    * Assignment operator.
+   *
+   * @param source the object whose values are used as the basis of the
+   * assignment.
    */
   ModelDefinition& operator=(const Model& source);
 
@@ -98,14 +113,14 @@ public:
   /**
    * Creates and returns a deep copy of this ModelDefinition object.
    * 
-   * @return a (deep) copy of this ModelDefinition object
+   * @return a (deep) copy of this ModelDefinition object.
    */
   virtual ModelDefinition* clone () const;
 
 
   /**
    * Destructor.
-   */ 
+   */
   virtual ~ModelDefinition ();
 
 
@@ -179,10 +194,23 @@ protected:
   /**
    * Subclasses should override this method to read values from the given
    * XMLAttributes set into their specific fields.  Be sure to call your
-   * parents implementation of this method as well.
+   * parent's implementation of this method as well.
    */
   virtual void readAttributes (const XMLAttributes& attributes, 
                                const ExpectedAttributes& expectedAttributes);
+  /** @endcond */
+
+  /** @cond doxygenLibsbmlInternal */
+  /**
+  * Subclasses should override this method to write their XML attributes
+  * to the XMLOutputStream.  Be sure to call your parent's implementation
+  * of this method as well.  For example:
+  *
+  *   SBase::writeAttributes(stream);
+  *   stream.writeAttribute( "submodel" , mSubmodel );
+  *   ...
+  */
+  virtual void writeAttributes(XMLOutputStream& stream) const;
   /** @endcond */
 
 
@@ -202,14 +230,14 @@ BEGIN_C_DECLS
 
 /**
  * Creates a new ModelDefinition_t structure using the given SBML @p level
- * and @p version values.
+ * and @p version, and the @p pkgVersion package version.
  *
  * @param level an unsigned int, the SBML Level to assign to this
- * ModelDefinition_t
+ * ModelDefinition_t.
  * @param version an unsigned int, the SBML Version to assign to this
- * ModelDefinition_t
+ * ModelDefinition_t.
  * @param pkgVersion an unsigned int, the SBML 'comp' package Version to assign to this
- * ModelDefinition_t
+ * ModelDefinition_t.
  *
  * @return a pointer to the newly created ModelDefinition_t structure.
  *

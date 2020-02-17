@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -56,9 +60,7 @@
 LIBSBML_CPP_NAMESPACE_BEGIN
 
 /**
- * ListItemComparator
- *
- * This is a typedef for a pointer to a function that compares two list
+ * A @sbmlconstant{ListItemComparator,} is a typedef for a pointer to a function that compares two list
  * items.  The return value semantics are the same as for the C library
  * function @c strcmp:
  * <ul>
@@ -75,10 +77,8 @@ LIBSBML_CPP_NAMESPACE_BEGIN
 typedef int (*ListItemComparator) (const void *item1, const void *item2);
 
 /**
- * ListItemPredicate
- *
- * This is a typedef for a pointer to a function that takes a List item and
- * returns nonzero (for true) or zero (for false).
+ * A @sbmlconstant{ListItemPredicate,} is a typedef for a pointer to a function that takes a List item and
+ * returns @c 1 (true) or @c 0 (false).
  *
  * @see List_countIf()
  *
@@ -88,10 +88,9 @@ typedef int (*ListItemComparator) (const void *item1, const void *item2);
  */
 typedef int (*ListItemPredicate) (const void *item);
 
+/** @cond doxygenLibsbmlInternal */
 /**
- * ListDeleteItemFunc
- *
- * This is a typedef for a pointer to a function that takes a List item and
+ * A @sbmlconstant{ListDeleteItemFunc,} is a typedef for a pointer to a function that takes a List item and
  * deletes / frees it as apropriate. 
  *
  * @if conly
@@ -99,10 +98,17 @@ typedef int (*ListItemPredicate) (const void *item);
  * @endif
  */
 typedef void (*ListDeleteItemFunc) (void *item);
+/** @endcond */
 
 #ifdef __cplusplus
 
+class List;
+class ListNode;
+class ListIterator;
+
 #ifndef SWIG
+
+
 
 /**
  * @cond doxygenLibsbmlInternal
@@ -116,17 +122,48 @@ typedef void (*ListDeleteItemFunc) (void *item);
  * This class implements the children of the List class, storing the 
  * item itself, and a pointer to the next item in the list.
  */
-class ListNode
+class LIBSBML_EXTERN ListNode
 {
 public:
   ListNode (void* x): item(x), next(NULL) { }
 
   void*      item;
   ListNode*  next;
+
+
+  friend class List;
+  friend class ListIterator;
+
+  void * getItem() { return item;} ;
+};
+
+class LIBSBML_EXTERN ListIterator
+{
+	/* Helper class to provide pointer like facilities around a node */
+	friend class List;
+
+  ListNode* position; //The node oriented with this instance of ListIterator.
+	
+	ListIterator(ListNode* _pNode) : position(_pNode) {}
+
+public:
+	
+  void operator++(){ position = position->next; }
+	
+  void operator++(int){ position = position->next; }
+
+	bool operator!=(ListIterator rval){ return !(position == rval.position); }
+	
+  bool operator==(ListIterator rval){ return (position == rval.position); }
+
+	void * operator*(){	return position->getItem(); }
+
 };
 /** @endcond */
 
+
 #endif  /* !SWIG */
+
 
 class LIBSBML_EXTERN List
 {
@@ -164,17 +201,17 @@ public:
    * Return the count of items in this list satisfying a given predicate
    * function.
    *
-   * The typedef for ListItemPredicate is:
+   * The typedef for @sbmlconstant{ListItemPredicate,} is:
    * @code
    *   int (*ListItemPredicate) (const void *item);
    * @endcode
-   * where a return value of nonzero represents true and zero represents
+   * where a return value of @c 1 represents true and @c 0 represents
    * false.
    *
    * @param predicate the function applied to each item in this list.
    * 
    * @return the number of items in this List for which
-   * <code>predicate(item)</code> returns nonzero (true).
+   * <code>predicate(item)</code> returns @c 1 (true).
    */
   unsigned int countIf (ListItemPredicate  predicate) const;
 
@@ -183,7 +220,7 @@ public:
    * Find the first occurrence of an item in a list according to a given
    * comparator function.
    *
-   * The typedef for ListItemComparator is:
+   * The typedef for @sbmlconstant{ListItemComparator,} is:
    * @code
    *   int (*ListItemComparator) (void *item1, void *item2);
    * @endcode
@@ -195,9 +232,9 @@ public:
    * <li> 1:  @p item1 >  @p item2
    * </ul>
    * 
-   * @param item1 a pointer to the item being sought
+   * @param item1 a pointer to the item being sought.
    *
-   * @param comparator a pointer to a ListItemComparator function used to
+   * @param comparator a pointer to a @sbmlconstant{ListItemComparator,} function used to
    * find the item of interest in this list.
    *
    * @return the first occurrence of @p item1 in this List or @c NULL if
@@ -209,11 +246,11 @@ public:
   /**
    * Find all items in this list satisfying a given predicate function.
    *
-   * The typedef for ListItemPredicate is:
+   * The typedef for @sbmlconstant{ListItemPredicate,} is:
    * @code
    *   int (*ListItemPredicate) (const void *item);
    * @endcode
-   * where a return value of nonzero represents true and zero represents
+   * where a return value of @c 1 represents true and @c 0 represents
    * false.
    *
    * The caller owns the returned list (but not its constituent items) and
@@ -224,7 +261,7 @@ public:
    * @return a new List containing (pointers to) all items in this List for
    * which <code>predicate(item)</code> returned nonzero (true).  The
    * returned list may be empty if none of the items satisfy the @p
-   * predicate
+   * predicate.
    */
   List* findIf (ListItemPredicate  predicate) const;
 
@@ -235,6 +272,7 @@ public:
    * If @p n > <code>List.size()</code>, this method returns @c 0.
    *
    * @return the nth item in this List.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see remove()
    */
@@ -255,6 +293,7 @@ public:
    * If @p n > <code>List.size()</code>, this method returns @c 0.
    *
    * @return the nth item in this List.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see get()
    */
@@ -269,7 +308,7 @@ public:
   unsigned int getSize () const;
 
   /**
-   * Merge this elements of the second list into this list (by pointing the last ListNode to the first ListNode in the supplied List)
+   * Merge this elements of the second list into this list (by pointing the last ListNode to the first ListNode in the supplied List).
    *
    */
   void transferFrom(List* list);
@@ -278,13 +317,22 @@ public:
  /**
   * Delete all child elements of the given list, and then the list itself.
   *
-  * The child elements are to be deleted by the predicate, that will be called with 
-  * each element
+  * The child elements are to be deleted by the @sbmlconstant{ListDeleteItemFunc,} predicate, that will be called with 
+  * each element.
   *
   */
   static void deleteListAndChildrenWith(List* list, ListDeleteItemFunc delteFunc);
 
+  /** @endcond */
+
+
   /** @cond doxygenLibsbmlInternal */
+
+  ListIterator begin();
+  ListIterator end();
+
+  /** @endcond */
+
 protected:
   /** @cond doxygenLibsbmlInternal */
   unsigned int size;
@@ -351,6 +399,9 @@ BEGIN_C_DECLS
 /**
  * Creates a new List_t and returns a pointer to it.
  *
+ * The pointer that is returned by this function is owned by the caller, 
+ * who is responsible for deleting it.
+ *
  * @if conly
  * @memberof List_t
  * @endif
@@ -367,8 +418,11 @@ List_create (void);
  *
  * @param item the item to create a ListNode_t for.
  *
+ * The pointer that is returned by this function is owned by the caller,
+ * who is responsible for deleting it.
+ *
  * @if conly
- * @memberof List_t
+ * @memberof ListNode_t
  * @endif
  */
 LIBSBML_EXTERN
@@ -384,10 +438,10 @@ ListNode_create (void *item);
  *
  * Presumably, you either i) have pointers to the individual list items
  * elsewhere in your program and you want to keep them around for awhile
- * longer or ii) the list has no items (List_size(lst) == 0).  If neither
+ * longer or ii) the list has no items ( List_size() == @c 0 ).  If neither
  * are true, try List_freeItems() instead.
  *
- * @param lst The List_t structure
+ * @param lst the List_t structure.
  *
  * @if conly
  * @memberof List_t
@@ -403,7 +457,7 @@ List_free (List_t *lst);
  *
  * Frees the given ListNode_t.
  *
- * @param node The ListNode_t structure
+ * @param node the ListNode_t structure.
  *
  * @memberof ListNode_t
  */
@@ -413,10 +467,10 @@ ListNode_free (ListNode_t *node);
 /** @endcond */
 
 /**
- * Adds item to the end of this List_t.
+ * Adds a pointer to @p item to the end of this List_t.
  *
- * @param lst The List_t structure
- * @param item The item to add to the end of the list
+ * @param lst the List_t structure.
+ * @param item the item to add to the end of the list.
  *
  * @if conly
  * @memberof List_t
@@ -428,18 +482,18 @@ List_add (List_t *lst, void *item);
 
 
 /**
- * @return the number of items in this List_t for which predicate(item)
- * returns true.
+ * @return the number of items in this List_t for which 
+ * <code>predicate(item)</code> returns true.
  *
- * The typedef for ListItemPredicate is:
+ * The typedef for @sbmlconstant{ListItemPredicate,} is:
  *
  *   int (*ListItemPredicate) (const void *item);
  *
- * where a return value of non-zero represents true and zero represents
+ * where a return value of @c 1 represents true and @c 0 represents
  * false.
  *
- * @param lst The List_t structure
- * @param predicate The predicate to test the elements of the list against.
+ * @param lst the List_t structure.
+ * @param predicate the predicate to test the elements of the list against.
  *
  * @if conly
  * @memberof List_t
@@ -451,21 +505,30 @@ List_countIf (const List_t *lst, ListItemPredicate predicate);
 
 
 /**
- * @return the first occurrence of item1 in this List_t or NULL if item was
- * not found.  ListItemComparator is a pointer to a function used to find
- * item.  The typedef for ListItemComparator is:
+ * Searches the List_t for an entry that matches @p item1, according
+ * to @p comparator.
  *
- *   int (*ListItemComparator) (void *item1, void *item2);
+ * The @sbmlconstant{ListItemComparator,} is a pointer to a function used to find
+ * a matching entry.  The typedef for @sbmlconstant{ListItemComparator,} is:
+ *
+ * int (*ListItemComparator) (void *item1, void *item2);
  *
  * The return value semantics are the same as for strcmp:
+ * <ul>
+ * <li>  -1    item1 <  item2,
+ * <li>   0    item1 == item 2
+ * <li>   1    item1 >  item2
+ * </ul>
  *
- *   -1    item1 <  item2,
- *    0    item1 == item 2
- *    1    item1 >  item2
+ * @param lst the List_t structure.
+ * @param item1 the item to look for.
+ * @param comparator the pointer to the function used to find the item.
  *
- * @param lst The List_t structure
- * @param item1 The item to look for.
- * @param comparator The pointer to the function used to find the item.
+ * @return the first occurrence of an entry matching @p item1 in this 
+ * List_t or @c NULL if item was not found.
+ *
+ * The pointer that is returned by this function is not owned by the caller, 
+ * but may be queried and modified.
  *
  * @if conly
  * @memberof List_t
@@ -479,16 +542,17 @@ List_find ( const List_t       *lst,
 
 
 /**
- * @return a new List_t containing (pointers to) all items in this List_t for
- * which predicate(item) was true.
- *
- * The returned list may be empty.
+ * Create and return a new List_t with the subset of items for which
+ * <code>predicate(item)</code> returns true.  The returned list may be empty.
  *
  * The caller owns the returned list (but not its constituent items) and is
  * responsible for freeing it with List_free().
  *
- * @param lst The List_t structure
- * @param predicate The predicate to test the elements of the list against.
+ * @param lst the List_t structure.
+ * @param predicate the predicate to test the elements of the list against.
+ *
+ * @return a new List_t containing (pointers to) all items in this List_t for
+ * which <code>predicate(item)</code> was true.
  *
  * @if conly
  * @memberof List_t
@@ -500,10 +564,10 @@ List_findIf (const List_t *lst, ListItemPredicate predicate);
 
 
 /**
- * Returns the nth item in this List_t.  If n > List_size(lst) returns NULL.
+ * Returns the nth item in this List_t.  If n > List_size() returns NULL.
  *
- * @param lst The List_t structure
- * @param n The index of the item to find.
+ * @param lst the List_t structure.
+ * @param n the index of the item to find.
  *
  * @if conly
  * @memberof List_t
@@ -517,8 +581,8 @@ List_get (const List_t *lst, unsigned int n);
 /**
  * Adds item to the beginning of this List_t.
  *
- * @param lst The List_t structure
- * @param item The item to add to the list.
+ * @param lst the List_t structure.
+ * @param item the item to add to the list.
  *
  * @if conly
  * @memberof List_t
@@ -531,10 +595,15 @@ List_prepend (List_t *lst, void *item);
 
 /**
  * Removes the nth item from this List_t and returns a pointer to it.  If n >
- * List_size(lst) returns NULL.
+ * List_size() returns NULL.
  *
- * @param lst The List_t structure
- * @param n The index of the item to remove.
+ * @param lst the List_t structure.
+ * @param n the index of the item to remove.
+ *
+ * Unlike other 'remove' functions in libsbml, the caller does not own the 
+ * returned item: it continues to be owned by whoever owned it before being
+ * put on the List_t.  It may be queried or changed by the caller, like other
+ * elements of the List_t.
  *
  * @if conly
  * @memberof List_t
@@ -546,9 +615,11 @@ List_remove (List_t *lst, unsigned int n);
 
 
 /**
- * @return the number of elements in this List_t.
+ * The number of elements in @p lst.
  *
- * @param lst The List_t structure
+ * @param lst the List_t structure.
+ *
+ * @return the number of elements in the given List_t.
  *
  * @if conly
  * @memberof List_t

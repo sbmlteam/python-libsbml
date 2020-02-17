@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -71,7 +75,7 @@ XMLInputStream::XMLInputStream (  const char*   content
  /**
  * Copy Constructor, made private so as to notify users, that copying an input stream is not supported. 
  */
- XMLInputStream::XMLInputStream (const XMLInputStream& other)
+ XMLInputStream::XMLInputStream (const XMLInputStream& /*other*/)
    : mIsError(true)   
    , mParser(NULL)
    , mSBMLns(NULL)
@@ -143,7 +147,7 @@ XMLInputStream::getErrorLog ()
 
 
 /*
- * @return true if end of file (stream) has been reached, false otherwise.
+ * @return @c true if end of file (stream) has been reached, false otherwise.
  */
 bool
 XMLInputStream::isEOF () const
@@ -153,7 +157,7 @@ XMLInputStream::isEOF () const
 
 
 /*
- * @return true if a fatal error occurred while reading from this stream.
+ * @return @c true if a fatal error occurred while reading from this stream.
  */
 bool
 XMLInputStream::isError () const
@@ -163,7 +167,7 @@ XMLInputStream::isError () const
 
 
 /*
- * @return true if the stream is in a good state (i.e. isEOF() and
+ * @return @c true if the stream is in a good state (i.e. isEOF() and
  * isError() are both false), false otherwise.
  */
 bool
@@ -308,7 +312,7 @@ XMLInputStream::setSBMLNamespaces(SBMLNamespaces * sbmlns)
 }
 
 unsigned int
-XMLInputStream::determineNumberChildren(const std::string& elementName)
+XMLInputStream::determineNumberChildren(const std::string elementName)
 {
   bool valid = false;
   unsigned int num = this->mTokenizer.determineNumberChildren(valid, elementName);

@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -145,6 +149,40 @@ ListOfReplacedElements::writeXMLNS (XMLOutputStream& stream) const
 
 
 #endif /* __cplusplus */
+
+
+/*
+ * Get a ReplacedElement_t from the ListOf_t.
+ */
+LIBSBML_EXTERN
+ReplacedElement_t*
+ListOfReplacedElements_getReplacedElement(ListOf_t* lo, unsigned int n)
+{
+  if (lo == NULL)
+  {
+    return NULL;
+  }
+
+  return static_cast <ListOfReplacedElements*>(lo)->get(n);
+}
+
+
+/*
+ * Removes the nth ReplacedElement_t from this ListOf_t and returns a pointer
+ * to it.
+ */
+LIBSBML_EXTERN
+ReplacedElement_t*
+ListOfReplacedElements_remove(ListOf_t* lo, unsigned int n)
+{
+  if (lo == NULL)
+  {
+    return NULL;
+  }
+
+  return static_cast <ListOfReplacedElements*>(lo)->remove(n);
+}
+
 
 LIBSBML_CPP_NAMESPACE_END
 

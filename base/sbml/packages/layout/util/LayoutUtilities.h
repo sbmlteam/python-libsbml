@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -35,9 +39,10 @@
 #include <sbml/xml/XMLNode.h>
 #include <sbml/packages/layout/sbml/GraphicalObject.h>
 
-#ifdef __cplusplus
 
 LIBSBML_CPP_NAMESPACE_BEGIN
+
+#ifdef __cplusplus
 
 /**
  * Converts the given SBase* object to an XMLNode, with the appropriate namespace defined.
@@ -60,8 +65,9 @@ LIBSBML_EXTERN void addGraphicalObjectAttributes(const GraphicalObject& object,X
  */
 LIBSBML_EXTERN void copySBaseAttributes(const SBase& source,SBase& target);
 
-LIBSBML_CPP_NAMESPACE_END
 
 #endif /* __cplusplus */
+
+LIBSBML_CPP_NAMESPACE_END
 
 #endif /*LAYOUTUTILITIES_H_*/

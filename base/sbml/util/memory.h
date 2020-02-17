@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -55,6 +59,7 @@ safe_calloc (size_t nmemb, size_t size);
  * memory.  If the memory could not be allocated, prints an error message
  * and exits.
  */
+LIBSBML_EXTERN
 void *
 safe_malloc (size_t size);
 
@@ -264,7 +269,7 @@ MemTrace_MemInfoList_append (MemInfoList_t *list, MemInfoNode_t *node);
 
 /**
  * Returns a pointer to the MemInfoNode_t in MemInfoList_t with the given
- * address or NULL if address is not found.
+ * address or @c NULL if address is not found.
  */
 MemInfoNode_t *
 MemTrace_MemInfoList_get (const MemInfoList_t *list, const void *address);

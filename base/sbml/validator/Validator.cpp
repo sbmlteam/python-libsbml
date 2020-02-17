@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -47,6 +51,7 @@
 #include <sbml/ModifierSpeciesReference.h>
 #include <sbml/SBMLDocument.h>
 #include <sbml/SBMLReader.h>
+#include <sbml/math/DefinitionURLRegistry.h>
 
 /** @cond doxygenIgnored */
 using namespace std;
@@ -98,7 +103,7 @@ public:
   ~ConstraintSet () { }
 
 
-  /**
+  /*
    * Adds a Constraint to this ConstraintSet.
    */
   void add (TConstraint<T>* c)
@@ -106,7 +111,7 @@ public:
     constraints.push_back(c);
   }
 
-  /**
+  /*
    * Applies all Constraints in this ConstraintSet to the given SBML object
    * of type T.  Constraint violations are logged to Validator.
    */
@@ -115,10 +120,10 @@ public:
     for_each(constraints.begin(), constraints.end(), Apply<T>(model, object));
   }
 
-  /**
-   * Returns true if this ConstraintSet is empty, false otherwise.
+  /*
+   * Returns @c true if this ConstraintSet is empty, @c false otherwise.
    *
-   * @return true if this ConstraintSet is empty, false otherwise.
+   * @return @c true if this ConstraintSet is empty, @c false otherwise.
    */
   bool empty () const
   {
@@ -168,6 +173,7 @@ struct ValidatorConstraints
   ConstraintSet<SimpleSpeciesReference>   mSimpleSpeciesReference;
   ConstraintSet<SpeciesReference>         mSpeciesReference;
   ConstraintSet<ModifierSpeciesReference> mModifierSpeciesReference;
+  ConstraintSet<StoichiometryMath>        mStoichiometryMath;
   ConstraintSet<Event>                    mEvent;
   ConstraintSet<EventAssignment>          mEventAssignment;
   ConstraintSet<InitialAssignment>        mInitialAssignment;
@@ -177,6 +183,7 @@ struct ValidatorConstraints
   ConstraintSet<CompartmentType>          mCompartmentType;
   ConstraintSet<SpeciesType>              mSpeciesType;
   ConstraintSet<Priority>                 mPriority;
+  ConstraintSet<LocalParameter>           mLocalParameter;
 
   map<VConstraint*,bool> ptrMap;
 
@@ -339,6 +346,13 @@ ValidatorConstraints::add (VConstraint* c)
     return;
   }
 
+  if (dynamic_cast< TConstraint<StoichiometryMath>* >(c) != NULL)
+  {
+    mStoichiometryMath.add(static_cast< TConstraint<StoichiometryMath>* >(c));
+    return;
+  }
+
+
   if (dynamic_cast< TConstraint<Event>* >(c) != NULL)
   {
     mEvent.add( static_cast< TConstraint<Event>* >(c) );
@@ -393,6 +407,12 @@ ValidatorConstraints::add (VConstraint* c)
     return;
   }
 
+  if (dynamic_cast< TConstraint<LocalParameter>* >(c) != NULL)
+  {
+    mLocalParameter.add( static_cast< TConstraint<LocalParameter>* >(c) );
+    return;
+  }
+
 }
 
 // ----------------------------------------------------------------------
@@ -418,6 +438,7 @@ public:
 
   ValidatingVisitor (Validator& validator, const Model& model) : v(validator), m(model) { }
 
+  using SBMLVisitor::visit;
 
   void visit (const SBMLDocument& x)
   {
@@ -498,8 +519,16 @@ public:
 
   bool visit (const Parameter& x)
   {
-    v.mConstraints->mParameter.applyTo(m, x);
-    return !v.mConstraints->mParameter.empty();
+    if (x.getTypeCode() == SBML_LOCAL_PARAMETER)
+    {
+      return visit(dynamic_cast<const LocalParameter&>(x));
+    }
+    else
+    {
+      v.mConstraints->mParameter.applyTo(m, x);
+      return !v.mConstraints->mParameter.empty();
+    }
+
   }
 
 
@@ -572,6 +601,15 @@ public:
       !v.mConstraints->mModifierSpeciesReference.empty();
   }
 
+  bool visit(const StoichiometryMath& x)
+  {
+    v.mConstraints->mStoichiometryMath.applyTo(m, x);
+
+    return
+      !v.mConstraints->mStoichiometryMath.empty();
+  }
+
+
 
   bool visit (const Event& x)
   {
@@ -625,6 +663,11 @@ public:
     return !v.mConstraints->mSpeciesType.empty();
   }
 
+  bool visit (const LocalParameter& x)
+  {
+    v.mConstraints->mLocalParameter.applyTo(m, x);
+    return !v.mConstraints->mLocalParameter.empty();
+  }
 
 protected:
 
@@ -649,6 +692,42 @@ Validator::Validator (const SBMLErrorCategory_t category)
 {
   mCategory = category;
   mConstraints = new ValidatorConstraints();
+
+  switch(category)
+  {
+  case LIBSBML_CAT_SBML_L2V4_COMPAT:
+    mConsistencyLevel = 2;
+    mConsistencyVersion = 4;
+    break;
+  case LIBSBML_CAT_SBML_L2V3_COMPAT:
+    mConsistencyLevel = 2;
+    mConsistencyVersion = 3;
+    break;
+  case LIBSBML_CAT_SBML_L2V2_COMPAT:
+    mConsistencyLevel = 2;
+    mConsistencyVersion = 2;
+    break;
+  case LIBSBML_CAT_SBML_L2V1_COMPAT:
+    mConsistencyLevel = 2;
+    mConsistencyVersion = 1;
+    break;
+  case LIBSBML_CAT_SBML_L1_COMPAT:
+    mConsistencyLevel = 1;
+    mConsistencyVersion = 2;
+    break;
+  case LIBSBML_CAT_SBML_L3V1_COMPAT:
+    mConsistencyLevel = 3;
+    mConsistencyVersion = 1;
+    break;
+  case LIBSBML_CAT_SBML_L3V2_COMPAT:
+    mConsistencyLevel = 3;
+    mConsistencyVersion = 1;
+    break;
+  default:
+    mConsistencyLevel = 0;
+    mConsistencyVersion = 0;
+    break;
+  }
 }
 
 
@@ -700,6 +779,30 @@ Validator::getFailures () const
 {
   return mFailures;
 }
+
+
+/** @cond doxygenLibsbmlInternal */
+
+unsigned int 
+Validator::getConsistencyLevel()
+{
+  return mConsistencyLevel;
+}
+
+/** @endcond */
+
+
+/** @cond doxygenLibsbmlInternal */
+
+unsigned int 
+Validator::getConsistencyVersion()
+{
+  return mConsistencyVersion;
+}
+
+/** @endcond */
+
+
 
 
 /*
@@ -812,6 +915,9 @@ unsigned int
 Validator::validate (const std::string& filename)
 {
   SBMLReader    reader;
+  // if we are doing a read following another read need to reset
+  // the DefinitionURLRegistry
+  DefinitionURLRegistry::getInstance().clearDefinitions();
   SBMLDocument* d = reader.readSBML(filename);
 
 

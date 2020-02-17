@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -50,6 +54,7 @@
 #include <sbml/util/ElementFilter.h>
 
 #include <sbml/math/FormulaParser.h>
+#include <sbml/math/L3Parser.h>
 
 LIBSBML_CPP_NAMESPACE_BEGIN
 /** @cond doxygenLibsbmlInternal **/
@@ -71,6 +76,14 @@ void dealWithL1Stoichiometry(Model & m, bool l2 = true);
 
 void dealWithAssigningL1Stoichiometry(Model & m, bool l2 = true);
 
+/* function to adjust from L3V2 */
+
+void removeElementsMissingMath(Model &m);
+
+void removeListOfMissingElements(Model &m);
+
+void addMissingTrigger(Model &m);
+
 class UnitRefsFilter : public ElementFilter
 {
 public:
@@ -79,9 +92,9 @@ public:
   };
 
 
-	virtual bool filter(const SBase* element)
+  virtual bool filter(const SBase* element)
   {
-	  // return in case we don't have a valid element
+    // return in case we don't have a valid element
     if (element == NULL)
     {
         return false;
@@ -161,9 +174,10 @@ Model::convertL2ToL3 (bool strict, bool addDefaultUnits /*= true*/)
   if (addDefaultUnits)
     addDefinitionsForDefaultUnits();
 
-  setSpeciesReferenceConstantValueAndStoichiometry();
 
   convertStoichiometryMath();
+
+  setSpeciesReferenceConstantValueAndStoichiometry();
 
   assignRequiredValues();
 
@@ -288,6 +302,22 @@ Model::convertL3ToL2 (bool strict)
 
 
 void
+Model::convertFromL3V2(bool strict)
+{
+  if (strict)
+  {
+    removeElementsMissingMath(*this);
+    removeListOfMissingElements(*this);
+
+    // SK TODO: removeIds/Names
+
+  }
+
+  addMissingTrigger(*this);
+
+}
+
+void
 Model::dealWithDefaultValues()
 {
   for (unsigned int i = 0; i < getNumCompartments(); i++)
@@ -299,8 +329,12 @@ Model::dealWithDefaultValues()
     double spDims = c->getSpatialDimensionsAsDouble();
     bool replaceSD = (c->isSetSpatialDimensions() == true &&
       util_isEqual(spDims, 3.0) == false);
+    bool replaceSize = c->isSetSize();
+    double size = c->getSize();
 
     c->initDefaults();
+    if (replaceSize)
+      c->setSize(size);
     if (replaceConstant) 
       c->setConstant(constant);
     if (replaceSD) 
@@ -374,9 +408,14 @@ Model::dealWithDefaultValues()
     bool rev = r->getReversible();
     bool replaceRev = (r->isSetReversible() == true 
       && r->getReversible() == false);
+    bool fast = r->getFast();
+    bool replaceFast = (r->isSetFast() == true
+      && r->getFast() == true);
     r->initDefaults();
     if (replaceRev == true)
       r->setReversible(rev);
+    if (replaceFast == true)
+      r->setFast(fast);
 
     for (unsigned int j = 0; j < r->getNumReactants(); j++)
     {
@@ -545,12 +584,13 @@ Model::addModifiers ()
       // 2. It refers to a Species in this Model, and
       if (id == NULL || getSpecies(id) == NULL) continue;
 
+      std::string sid = std::string(id);
       // 3. It is not a Reactant, Product, or (already) a Modifier
-      if (getReaction(n)->getReactant(id) != NULL) continue;
-      if (getReaction(n)->getProduct (id) != NULL) continue;
-      if (getReaction(n)->getModifier(id) != NULL) continue;
+      if (getReaction(n)->getReactant(sid) != NULL) continue;
+      if (getReaction(n)->getProduct (sid) != NULL) continue;
+      if (getReaction(n)->getModifier(sid) != NULL) continue;
 
-      getReaction(n)->createModifier()->setSpecies(id);
+      getReaction(n)->createModifier()->setSpecies(sid);
     }
 
     delete names;
@@ -780,6 +820,31 @@ Model::convertParametersToLocals(unsigned int level, unsigned int version)
         kl->getListOfLocalParameters()->appendAndOwn(lp);
 //        kl->addLocalParameter(lp);
       }
+    }
+  }
+}
+
+void
+Model::dealWithFast()
+{
+  for (unsigned int i = 0; i < getNumReactions(); i++)
+  {
+    getReaction(i)->setFast(false);
+  }
+}
+
+void
+Model::dealWithL3Fast(unsigned int targetVersion)
+{
+  for (unsigned int i = 0; i < getNumReactions(); i++)
+  {
+    if (targetVersion == 1)
+    {
+      getReaction(i)->setFast(false);
+    }
+    else
+    {
+      getReaction(i)->unsetFast();
     }
   }
 }
@@ -1073,6 +1138,15 @@ Model::convertStoichiometryMath()
           ar->setMath(sr->getStoichiometryMath()->getMath());
         }
       }
+      else
+      {
+          // we may have converted a stoichiometryMath rational element
+        if (sr->getDenominator() != 1)
+        {
+          double stoich = sr->getStoichiometry()/sr->getDenominator();
+          sr->setStoichiometry(stoich);
+        }
+      }
     }
     for (j = 0; j < r->getNumProducts(); j++)
     {
@@ -1097,6 +1171,15 @@ Model::convertStoichiometryMath()
         if (sr->getStoichiometryMath()->isSetMath())
         {
           ar->setMath(sr->getStoichiometryMath()->getMath());
+        }
+      }
+      else
+      {
+          // we may have converted a stoichiometryMath rational element
+        if (sr->getDenominator() != 1)
+        {
+          double stoich = sr->getStoichiometry()/sr->getDenominator();
+          sr->setStoichiometry(stoich);
         }
       }
     }
@@ -1397,8 +1480,6 @@ Model::dealWithModelUnits(bool strict)
 {
   UnitRefsFilter filter;
   List * elements = getAllElements(&filter);
-  unsigned int n = 0;
-  unsigned int num = elements->getSize();
   
   if (isSetVolumeUnits() && isValidUnit(this, getVolumeUnits()))
   {
@@ -1415,10 +1496,9 @@ Model::dealWithModelUnits(bool strict)
       {
         std::string newSubsName = "volumeFromOriginal";
         existingUD->setId(newSubsName);
-        SBase* obj;
-        for (n = 0; n < num; n++)
+        for (ListIterator iter = elements->begin(); iter != elements->end(); ++iter)
         {
-          obj = (SBase*)(elements->get(n));
+          SBase* obj = static_cast<SBase*>(*iter);
           obj->renameUnitSIdRefs("volume", newSubsName);
         }
         addUnitDefinition(existingUD);
@@ -1458,10 +1538,9 @@ Model::dealWithModelUnits(bool strict)
       {
         std::string newSubsName = "areaFromOriginal";
         existingUD->setId(newSubsName);
-        SBase* obj;
-        for (n = 0; n < num; n++)
+        for (ListIterator iter = elements->begin(); iter != elements->end(); ++iter)
         {
-          obj = (SBase*)(elements->get(n));
+          SBase* obj = static_cast<SBase*>(*iter);
           obj->renameUnitSIdRefs("area", newSubsName);
         }
         addUnitDefinition(existingUD);
@@ -1501,10 +1580,9 @@ Model::dealWithModelUnits(bool strict)
       {
         std::string newSubsName = "lengthFromOriginal";
         existingUD->setId(newSubsName);
-        SBase* obj;
-        for (n = 0; n < num; n++)
+        for (ListIterator iter = elements->begin(); iter != elements->end(); ++iter)
         {
-          obj = (SBase*)(elements->get(n));
+          SBase* obj = static_cast<SBase*>(*iter);
           obj->renameUnitSIdRefs("length", newSubsName);
         }
         addUnitDefinition(existingUD);
@@ -1544,10 +1622,9 @@ Model::dealWithModelUnits(bool strict)
       {
         std::string newSubsName = "substanceFromOriginal";
         existingUD->setId(newSubsName);
-        SBase* obj;
-        for (n = 0; n < num; n++)
+        for (ListIterator iter = elements->begin(); iter != elements->end(); ++iter)
         {
-          obj = (SBase*)(elements->get(n));
+          SBase* obj = static_cast<SBase*>(*iter);
           obj->renameUnitSIdRefs("substance", newSubsName);
         }
         addUnitDefinition(existingUD);
@@ -1587,10 +1664,9 @@ Model::dealWithModelUnits(bool strict)
       {
         std::string newSubsName = "timeFromOriginal";
         existingUD->setId(newSubsName);
-        SBase* obj;
-        for (n = 0; n < num; n++)
+        for (ListIterator iter = elements->begin(); iter != elements->end(); ++iter)
         {
-          obj = (SBase*)(elements->get(n));
+          SBase* obj = static_cast<SBase*>(*iter);
           obj->renameUnitSIdRefs("time", newSubsName);
         }
         addUnitDefinition(existingUD);
@@ -1619,6 +1695,76 @@ Model::dealWithModelUnits(bool strict)
 }
 
 void
+dealWithSpeciesReference(Model & m, SpeciesReference * sr, unsigned int& idCount)
+{
+  if (sr->isSetStoichiometry() == false)
+  {
+    if (sr->isSetId() == false)
+    {
+      createNoValueStoichMath(m, *sr, idCount);
+      idCount++;
+    }
+    else
+    {
+      // id is set it could be used by initialAssignment
+      // used by rule
+      // not used
+      if (m.getRule(sr->getId()) != NULL)
+      {
+        //assignmentRule
+        if (m.getRule(sr->getId())->getTypeCode() == SBML_ASSIGNMENT_RULE)
+        {
+          useStoichMath(m, *sr, true);
+        }
+        else if (m.getRule(sr->getId())->getTypeCode() == SBML_RATE_RULE)
+        {
+          createParameterAsRateRule(m, *sr, *(m.getRule(sr->getId())), idCount);
+          idCount++;
+        }
+      }
+      else if (m.getInitialAssignment(sr->getId()) != NULL)
+      {
+        useStoichMath(m, *sr, false);
+      }
+      else
+      {
+        createNoValueStoichMath(m, *sr, idCount);
+        idCount++;
+      }
+    }
+  }
+  else
+  {
+    // stoichiometry is set
+    if (sr->isSetId())
+    {
+      // id is set it could be used by initialAssignment
+      // used by rule
+      // not used
+      if (m.getRule(sr->getId()) != NULL)
+      {
+        //assignmentRule
+        if (m.getRule(sr->getId())->getTypeCode() == SBML_ASSIGNMENT_RULE)
+        {
+          useStoichMath(m, *sr, true);
+        }
+        else if (m.getRule(sr->getId())->getTypeCode() == SBML_RATE_RULE)
+        {
+          createParameterAsRateRule(m, *sr, *(m.getRule(sr->getId())), idCount);
+          idCount++;
+        }
+      }
+      else if (m.getInitialAssignment(sr->getId()) != NULL)
+      {
+        useStoichMath(m, *sr, false);
+      }
+    }
+    // no id set - do not need to do anything
+  }
+}
+
+
+void
 Model::dealWithStoichiometry()
 {
   unsigned int idCount = 0;
@@ -1630,141 +1776,16 @@ Model::dealWithStoichiometry()
     for (j = 0; j < r->getNumReactants(); j++)
     {
       SpeciesReference *sr = r->getReactant(j);
-      if (sr->isSetStoichiometry() == false)
-      {
-        if (sr->isSetId() == false)
-        {
-          createNoValueStoichMath(*this, *sr, idCount);
-          idCount++;
-        }
-        else
-        {
-          // id is set it could be used by initialAssignment
-          // used by rule
-          // not used
-          if (getInitialAssignment(sr->getId()) != NULL)
-          {
-            useStoichMath(*this, *sr, false);
-          }
-          else if (getRule(sr->getId()) != NULL)
-          {
-            //assignmentRule
-            if (getRule(sr->getId())->getTypeCode() == SBML_ASSIGNMENT_RULE)
-            {  
-              useStoichMath(*this, *sr, true);
-            }
-            else if (getRule(sr->getId())->getTypeCode() == SBML_RATE_RULE)
-            {
-              createParameterAsRateRule(*this, *sr, *(getRule(sr->getId())), idCount);
-              idCount++;
-            }
-          }
-          else
-          {
-            createNoValueStoichMath(*this, *sr, idCount);
-            idCount++;
-          }
-        }
-      }
-      else
-      {
-        // stoichiometry is set
-        if (sr->isSetId())
-        {
-          // id is set it could be used by initialAssignment
-          // used by rule
-          // not used
-          if (getInitialAssignment(sr->getId()) != NULL)
-          {
-            useStoichMath(*this, *sr, false);
-          }
-          else if (getRule(sr->getId()) != NULL)
-          {
-            //assignmentRule
-            if (getRule(sr->getId())->getTypeCode() == SBML_ASSIGNMENT_RULE)
-            {            
-              useStoichMath(*this, *sr, true);
-            }
-            else if (getRule(sr->getId())->getTypeCode() == SBML_RATE_RULE)
-            {
-              createParameterAsRateRule(*this, *sr, *(getRule(sr->getId())), idCount);
-              idCount++;
-            }
-          }
-        }
-        // no id set - do not need to do anything
-      }
+      dealWithSpeciesReference(*this, sr, idCount);
     }
     for (j = 0; j < r->getNumProducts(); j++)
     {
       SpeciesReference *sr = r->getProduct(j);
-      if (sr->isSetStoichiometry() == false)
-      {
-        if (sr->isSetId() == false)
-        {
-          createNoValueStoichMath(*this, *sr, idCount);
-          idCount++;
-        }
-        else
-        {
-          // id is set it could be used by initialAssignment
-          // used by rule
-          // not used
-          if (getInitialAssignment(sr->getId()) != NULL)
-          {
-            useStoichMath(*this, *sr, false);
-          }
-          else if (getRule(sr->getId()) != NULL)
-          {
-            //assignmentRule
-            if (getRule(sr->getId())->getTypeCode() == SBML_ASSIGNMENT_RULE)
-            {  
-              useStoichMath(*this, *sr, true);
-            }
-            else if (getRule(sr->getId())->getTypeCode() == SBML_RATE_RULE)
-            {
-              createParameterAsRateRule(*this, *sr, *(getRule(sr->getId())), idCount);
-              idCount++;
-            }
-          }
-          else
-          {
-            createNoValueStoichMath(*this, *sr, idCount);
-            idCount++;
-          }
-        }
-      }
-      else
-      {
-        // stoichiometry is set
-        if (sr->isSetId())
-        {
-          // id is set it could be used by initialAssignment
-          // used by rule
-          // not used
-          if (getInitialAssignment(sr->getId()) != NULL)
-          {
-            useStoichMath(*this, *sr, false);
-          }
-          else if (getRule(sr->getId()) != NULL)
-          {
-            //assignmentRule
-            if (getRule(sr->getId())->getTypeCode() == SBML_ASSIGNMENT_RULE)
-            {            
-              useStoichMath(*this, *sr, true);
-            }
-            else if (getRule(sr->getId())->getTypeCode() == SBML_RATE_RULE)
-            {
-              createParameterAsRateRule(*this, *sr, *(getRule(sr->getId())), idCount);
-              idCount++;
-            }
-          }
-        }
-        // no id set - do not need to do anything
-      }
+      dealWithSpeciesReference(*this, sr, idCount);
     }
   }
 }
+
 
 void
 createNoValueStoichMath(Model & m, SpeciesReference & sr, unsigned int idCount)
@@ -1807,6 +1828,10 @@ createParameterAsRateRule(Model &m, SpeciesReference &sr, Rule &rr,
   Parameter *p = m.createParameter();
   p->setId(id);
   p->setConstant(false);
+  if (sr.isSetStoichiometry())
+  {
+    p->setValue(sr.getStoichiometry());
+  }
 
   rr.setVariable(id);
   
@@ -1817,23 +1842,45 @@ createParameterAsRateRule(Model &m, SpeciesReference &sr, Rule &rr,
     sm->setMath(ast);
     delete ast;
   }
+
+  // we might have an initial assignment that pointed to the SpeciesReference
+  // if we do it now needs to point to the parameter
+  InitialAssignment *ia = m.getInitialAssignment(sr.getId());
+  if (ia != NULL)
+  {
+    ia->setSymbol(id);
+  }
 }
 
 void
 useStoichMath(Model & m, SpeciesReference &sr, bool isRule)
 {
-  // use stoichiometryMath instead
-  StoichiometryMath *sm = sr.createStoichiometryMath();
-  if (sm != NULL)
+  // if we are oming from l3v2 we might not have math set
+  // in which case merely remove rule/ia
+  if (isRule)
   {
-    if (isRule == true)
+    if (m.getRule(sr.getId())->isSetMath())
     {
+      StoichiometryMath *sm = sr.createStoichiometryMath();
       sm->setMath(m.getRule(sr.getId())->getMath());
       delete m.removeRule(sr.getId());
+
     }
     else
     {
+      delete m.removeRule(sr.getId());
+    }
+  }
+  else
+  {
+    if (m.getInitialAssignment(sr.getId())->isSetMath())
+    {
+      StoichiometryMath *sm = sr.createStoichiometryMath();
       sm->setMath(m.getInitialAssignment(sr.getId())->getMath());
+      delete m.removeInitialAssignment(sr.getId());
+    }
+    else
+    {
       delete m.removeInitialAssignment(sr.getId());
     }
   }
@@ -1974,6 +2021,186 @@ void dealWithAssigningL1Stoichiometry(Model & m, bool l2)
         sr->setStoichiometry(sr->getStoichiometry());
         sr->setDenominator(1);
       }
+    }
+  }
+}
+
+void removeElementsMissingMath(Model &m)
+{
+  int i = 0;
+  for (i = m.getNumFunctionDefinitions()-1; i >= 0; i--)
+  {
+    if (!m.getFunctionDefinition(i)->isSetMath())
+    {
+      FunctionDefinition *obj = m.removeFunctionDefinition(i);
+      delete obj;
+    }
+  }
+  for (i = m.getNumInitialAssignments()-1; i >= 0; i--)
+  {
+    if (!m.getInitialAssignment(i)->isSetMath())
+    {
+      InitialAssignment *obj = m.removeInitialAssignment(i);
+      delete obj;
+    }
+  }
+  for (i = m.getNumRules()-1; i >= 0; i--)
+  {
+    if (!m.getRule(i)->isSetMath())
+    {
+      Rule *obj = m.removeRule(i);
+      delete obj;
+    }
+  }
+  for (i = m.getNumConstraints()-1; i >= 0; i--)
+  {
+    if (!m.getConstraint(i)->isSetMath())
+    {
+      Constraint *obj = m.removeConstraint(i);
+      delete obj;
+    }
+  }
+  for (i = m.getNumReactions()-1; i >= 0; i--)
+  {
+    if (m.getReaction(i)->isSetKineticLaw() && !m.getReaction(i)->getKineticLaw()->isSetMath())
+    {
+      m.getReaction(i)->unsetKineticLaw();
+    }
+  }
+  for (i = m.getNumEvents()-1; i >= 0; i--)
+  {
+    if (m.getEvent(i)->isSetTrigger() && !m.getEvent(i)->getTrigger()->isSetMath())
+    {
+      m.getEvent(i)->unsetTrigger();
+    }
+    if (m.getEvent(i)->isSetDelay() && !m.getEvent(i)->getDelay()->isSetMath())
+    {
+      m.getEvent(i)->unsetDelay();
+    }
+    if (m.getEvent(i)->isSetPriority() && !m.getEvent(i)->getPriority()->isSetMath())
+    {
+      m.getEvent(i)->unsetPriority();
+    }
+    for (int j = m.getEvent(i)->getNumEventAssignments()-1; j >= 0; j--)
+    {
+      if (!m.getEvent(i)->getEventAssignment(j)->isSetMath())
+      {
+        EventAssignment *obj = m.getEvent(i)->removeEventAssignment(j);
+        delete obj;
+      }
+    }
+  }
+
+
+}
+
+void adjustListOf(ListOf* listOf)
+{
+  if (listOf->size() == 0)
+  {
+    listOf->setExplicitlyListed(false);
+  }
+}
+
+void removeListOfMissingElements(Model &m)
+{
+  unsigned int i;
+  ListOf * listOf = m.getListOfFunctionDefinitions();
+  adjustListOf(listOf);
+
+  listOf = m.getListOfUnitDefinitions();
+  adjustListOf(listOf);
+
+  listOf = m.getListOfCompartments();
+  adjustListOf(listOf);
+
+  listOf = m.getListOfSpecies();
+  adjustListOf(listOf);
+
+  listOf = m.getListOfParameters();
+  adjustListOf(listOf);
+
+  listOf = m.getListOfInitialAssignments();
+  adjustListOf(listOf);
+
+  listOf = m.getListOfRules();
+  adjustListOf(listOf);
+
+  listOf = m.getListOfConstraints();
+  adjustListOf(listOf);
+
+  listOf = m.getListOfReactions();
+  adjustListOf(listOf);
+
+  listOf = m.getListOfEvents();
+  adjustListOf(listOf);
+
+  for (i = 0; i < m.getNumUnitDefinitions(); i++)
+  {
+    listOf = m.getUnitDefinition(i)->getListOfUnits();
+    adjustListOf(listOf);
+  }
+
+  for (i = 0; i < m.getNumReactions(); i++)
+  {
+    Reaction *r = m.getReaction(i);
+
+    listOf = r->getListOfReactants();
+    adjustListOf(listOf);
+
+    listOf = r->getListOfProducts();
+    adjustListOf(listOf);
+
+    listOf = r->getListOfModifiers();
+    adjustListOf(listOf);
+
+    if (r->isSetKineticLaw())
+    {
+      listOf = r->getKineticLaw()->getListOfLocalParameters();
+      adjustListOf(listOf);
+    }
+  }
+
+  for (i = 0; i < m.getNumEvents(); i++)
+  {
+    listOf = m.getEvent(i)->getListOfEventAssignments();
+    adjustListOf(listOf);
+  }
+}
+
+void addTrigger(Event * e)
+{
+  Trigger *t;
+  if (e->isSetTrigger())
+  {
+    t = e->getTrigger();
+  }
+  else
+  {
+    t = e->createTrigger();
+    t->setPersistent(true);
+    t->setInitialValue(true);
+  }
+
+  if (!t->isSetMath())
+  {
+    ASTNode * math = SBML_parseL3Formula("false");
+    t->setMath(math);
+    delete math;
+  }
+}
+void addMissingTrigger(Model &m)
+{
+  for (unsigned int i = 0; i < m.getNumEvents(); i++)
+  {
+    Event *e = m.getEvent(i);
+    if (!e->isSetTrigger())
+    {
+      addTrigger(e);
+    }
+    else if (!e->getTrigger()->isSetMath())
+    {
+      addTrigger(e);
     }
   }
 }

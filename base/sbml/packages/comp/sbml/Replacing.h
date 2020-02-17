@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -75,9 +79,11 @@ public:
    * Creates a new Replacing with the given level, version, and package
    * version.
    *
-   * @param level the SBML Level
-   * @param version the Version within the SBML Level
-   * @param pkgVersion the version of the package
+   * @param level the SBML Level.
+   * @param version the Version within the SBML Level.
+   * @param pkgVersion the version of the package.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   Replacing(unsigned int level      = CompExtension::getDefaultLevel(),
             unsigned int version    = CompExtension::getDefaultVersion(),
@@ -87,26 +93,35 @@ public:
   /**
    * Creates a new Replacing with the given CompPkgNamespaces object.
    *
-   * @param compns the namespace to use
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param compns the CompPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   Replacing(CompPkgNamespaces* compns);
 
 
   /**
    * Copy constructor.
+   *
+   * @param source the instance to copy.
    */
   Replacing(const Replacing& source);
 
 
   /**
    * Assignment operator.
+   *
+   * @param source the object whose values are used as the basis of the
+   * assignment.
    */
   Replacing& operator=(const Replacing& source);
 
 
   /**
    * Destructor.
-   */ 
+   */
   virtual ~Replacing ();
 
 
@@ -150,7 +165,7 @@ public:
 
 
   /**
-   * Returns true if getNumReferents() is exactly 1 and if the submodelRef is set.
+   * Returns @c true if getNumReferents() is exactly 1 and if the submodelRef is set.
    *
    * @return boolean: 'true' if the attributes are correctly set; 'false' if not.
    */
@@ -194,7 +209,7 @@ public:
   /** @cond doxygenLibsbmlInternal */
   /**
    * Subclasses should override this method to write out their contained
-   * SBML objects as XML elements.  Be sure to call your parents
+   * SBML objects as XML elements.  Be sure to call your parent's
    * implementation of this method as well.  For example:
    *
    *   SBase::writeElements(stream);
@@ -222,7 +237,7 @@ public:
   /**
    * Sets the parent SBMLDocument of this SBML object.
    *
-   * @param d the SBMLDocument object to use
+   * @param d the SBMLDocument object to use.
    */
   virtual void setSBMLDocument (SBMLDocument* d);
   /** @endcond */
@@ -250,7 +265,7 @@ protected:
   /**
    * Subclasses should override this method to read values from the given
    * XMLAttributes set into their specific fields.  Be sure to call your
-   * parents implementation of this method as well.
+   * parent's implementation of this method as well.
    */
   virtual void readAttributes (const XMLAttributes& attributes, 
                                const ExpectedAttributes& expectedAttributes);
@@ -260,7 +275,7 @@ protected:
   /** @cond doxygenLibsbmlInternal */
   /**
    * Subclasses should override this method to write their XML attributes
-   * to the XMLOutputStream.  Be sure to call your parents implementation
+   * to the XMLOutputStream.  Be sure to call your parent's implementation
    * of this method as well.  For example:
    *
    *   SBase::writeAttributes(stream);

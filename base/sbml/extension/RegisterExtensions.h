@@ -3,6 +3,10 @@
 #include <sbml/extension/SBMLExtension.h>
 #include <sbml/packages/comp-register.h>
 #include <sbml/packages/fbc-register.h>
+#include <sbml/packages/groups-register.h>
+#include <sbml/packages/l3v2extendedmath-register.h>
 #include <sbml/packages/layout-register.h>
+#include <sbml/packages/multi-register.h>
 #include <sbml/packages/qual-register.h>
+#include <sbml/packages/render-register.h>
 

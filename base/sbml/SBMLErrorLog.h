@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -146,7 +150,7 @@ public:
    *
    * @param n the index number of the error to retrieve (with 0 being the
    * first error).
-   * @param severity the severity of the error to retrieve 
+   * @param severity the severity of the error to retrieve.
    *
    * @return the <i>n</i>th SBMLError in this log, or @c NULL if @p n is
    * greater than or equal to
@@ -208,8 +212,10 @@ public:
 
   /**
    * Copy Constructor
+   *
+   * @param orig the instance to copy.
    */
-  SBMLErrorLog (const SBMLErrorLog& other);
+  SBMLErrorLog (const SBMLErrorLog& orig);
 
 
   /**
@@ -230,9 +236,9 @@ public:
    *
    * @param errorId an unsigned int, the identification number of the error.
    *
-   * @param level an unsigned int, the SBML Level
+   * @param level an unsigned int, the SBML Level.
    *
-   * @param version an unsigned int, the SBML Level's Version
+   * @param version an unsigned int, the SBML Level's Version.
    * 
    * @param details a string containing additional details about the error.
    * If the error code in @p errorId is one that is recognized by SBMLError,
@@ -256,7 +262,7 @@ public:
       const unsigned int errorId  = 0
     , const unsigned int level    = SBML_DEFAULT_LEVEL
     , const unsigned int version  = SBML_DEFAULT_VERSION
-    , const std::string& details  = ""
+    , const std::string details  = ""
     , const unsigned int line     = 0
     , const unsigned int column   = 0
     , const unsigned int severity = LIBSBML_SEV_ERROR
@@ -266,12 +272,12 @@ public:
 
   void logPackageError
   (
-      const std::string& package    = "core"
+      const std::string package    = "core"
     , const unsigned int errorId    = 0
     , const unsigned int pkgVersion = 1
     , const unsigned int level      = SBML_DEFAULT_LEVEL
     , const unsigned int version    = SBML_DEFAULT_VERSION
-    , const std::string& details    = ""
+    , const std::string details    = ""
     , const unsigned int line       = 0
     , const unsigned int column     = 0
     , const unsigned int severity   = LIBSBML_SEV_ERROR
@@ -328,7 +334,7 @@ public:
   void removeAll(const unsigned int errorId);
 
   /**
-   * Returns true if SBMLErrorLog contains an errorId
+   * Returns @c true if SBMLErrorLog contains an errorId
    *
    * @param errorId the error identifier of the error to be found.
    */

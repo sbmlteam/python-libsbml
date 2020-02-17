@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -42,6 +46,12 @@ addConstraint(new VConstraintModel20220(*this));
 
 addConstraint(new VConstraintModel20221(*this));
 
+addConstraint(new VConstraintModel20233(*this));
+
+addConstraint(new VConstraintCompartment20507(*this));
+
+addConstraint(new VConstraintCompartment20508(*this));
+
 addConstraint(new VConstraintCompartment20509(*this));
 
 addConstraint(new VConstraintSpecies20608(*this));
@@ -62,7 +72,13 @@ addConstraint(new VConstraintEvent99505(*this));
 
 addConstraint(new VConstraintPriority99505(*this));
 
+addConstraint(new VConstraintTrigger99505(*this));
+
 addConstraint(new VConstraintEventAssignment99505(*this));
+
+addConstraint(new VConstraintStoichiometryMath99505(*this));
+
+addConstraint(new VConstraintConstraint99505(*this));
 
 addConstraint(new VConstraintCompartment99508(*this));
 
@@ -73,6 +89,28 @@ addConstraint(new VConstraintParameter99508(*this));
 addConstraint(new VConstraintModel99506(*this));
 
 addConstraint(new VConstraintModel99507(*this));
+
+addConstraint(new VConstraintInitialAssignment99509(*this));
+
+addConstraint(new VConstraintAlgebraicRule99509(*this));
+
+addConstraint(new VConstraintAssignmentRule99509(*this));
+
+addConstraint(new VConstraintRateRule99509(*this));
+
+addConstraint(new VConstraintKineticLaw99509(*this));
+
+addConstraint(new VConstraintConstraint99509(*this));
+
+addConstraint(new VConstraintTrigger99509(*this));
+
+addConstraint(new VConstraintPriority99509(*this));
+
+addConstraint(new VConstraintDelay99509(*this));
+
+addConstraint(new VConstraintFunctionDefinition99509(*this));
+
+addConstraint(new VConstraintEventAssignment99509(*this));
 
 addConstraint(new ArgumentsUnitsCheck(10501, *this));
 
@@ -135,5 +173,11 @@ addConstraint(new VConstraintCompartment20518(*this));
 addConstraint(new VConstraintSpecies20616(*this));
 
 addConstraint(new VConstraintParameter20702(*this));
+
+addConstraint(new VConstraintKineticLaw99127(*this));
+
+addConstraint(new VConstraintKineticLaw99128(*this));
+
+
 /** @endcond */
 

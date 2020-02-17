@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -119,8 +123,8 @@ public:
    * where <span style="background-color: purple; color: white; padding-left: 2px; padding-right: 2px">x</span>
    * represents the separator character, @p sepchar.
    *
-   * @param triplet a string representing the triplet as shown above
-   * @param sepchar a character, the sepchar used in the triplet
+   * @param triplet a string representing the triplet as shown above.
+   * @param sepchar a character, the sepchar used in the triplet.
    *
    * @ifnot hasDefaultArgs @htmlinclude warn-default-args-in-docs.html @endif@~
    */
@@ -138,7 +142,7 @@ public:
   /**
    * Assignment operator for XMLTriple.
    *
-   * @param rhs The XMLTriple object whose values are used as the basis
+   * @param rhs the XMLTriple object whose values are used as the basis
    * of the assignment.
    */
   XMLTriple& operator=(const XMLTriple& rhs);
@@ -211,8 +215,8 @@ private:
  * @param lhs XMLTriple object to be compared with rhs.
  * @param rhs XMLTriple object to be compared with lhs.
  *
- * return @c non-zero (true) if the combination of name, URI, and
- * prefix of lhs is equal to that of rhs @c zero (false) otherwise.
+ * return @c 1 (true) if the combination of name, URI, and
+ * prefix of lhs is equal to that of rhs @c 0 (false) otherwise.
  */
 bool operator==(const XMLTriple& lhs, const XMLTriple& rhs);
 
@@ -223,8 +227,8 @@ bool operator==(const XMLTriple& lhs, const XMLTriple& rhs);
  * @param lhs XMLTriple object to be compared with rhs.
  * @param rhs XMLTriple object to be compared with lhs.
  *
- * return @c non-zero (true) if the combination of name, URI, and
- * prefix of lhs is not equal to that of rhs @c zero (false) otherwise.
+ * return @c 1 (true) if the combination of name, URI, and
+ * prefix of lhs is not equal to that of rhs @c 0 (false) otherwise.
  */
 bool operator!=(const XMLTriple& lhs, const XMLTriple& rhs);
 
@@ -281,7 +285,7 @@ XMLTriple_free (XMLTriple_t *triple);
 /**
  * Creates a deep copy of the given XMLTriple_t structure
  *
- * @param triple the XMLTriple_t structure to be copied
+ * @param triple the XMLTriple_t structure to be copied.
  *
  * @return a (deep) copy of the given XMLTriple_t structure.
  *
@@ -349,12 +353,12 @@ XMLTriple_getPrefixedName (const XMLTriple_t *triple);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether
  * this XMLTriple_t is empty.
  *
  * @param triple XMLTriple_t structure to be queried.
  *
- * @return @c non-zero (true) if this XMLTriple_t is empty, @c zero (false) otherwise.
+ * @return @c 1 (true) if this XMLTriple_t is empty, @c 0 (false) otherwise.
  *
  * @memberof XMLTriple_t
  */
@@ -364,15 +368,14 @@ XMLTriple_isEmpty(const XMLTriple_t *triple);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether
- * this XMLTriple_t is equal to the given XMLTriple_t.
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether
+ * the two XMLTriple_t structures are equal.
  *
- * @param lhs XMLTriple_t structure to be required.
- * @param rhs XMLTriple_t structure to be compared with this XMLTriple_t.
+ * @param lhs the first XMLTriple_t structure to be compared.
+ * @param rhs the second XMLTriple_t structure to be compared.
  *
- * @return @c non-zero (true) if the combination of name, URI, and prefix of this
- * XMLTriple_t is equal to that of the given XMLTriple_t,
- * @c zero (false) otherwise.
+ * @return @c 1 (true) if the combination of name, URI, and prefix of the
+ * two XMLTriple_t structures are equal, @c 0 (false) otherwise.
  *
  * @memberof XMLTriple_t
  */
@@ -382,15 +385,14 @@ XMLTriple_equalTo(const XMLTriple_t *lhs, const XMLTriple_t* rhs);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether
- * this XMLTriple_t is not equal to the given XMLTriple_t.
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether
+ * the two XMLTriple_t structures are not equal.
  *
- * @param lhs XMLTriple_t structure to be required.
- * @param rhs XMLTriple_t structure to be compared with this XMLTriple_t.
+ * @param lhs the first XMLTriple_t structure to be compared.
+ * @param rhs the second XMLTriple_t structure to be compared.
  *
- * @return @c non-zero (true) if the combination of name, URI, and prefix of this
- * XMLTriple_t is not equal to that of the given XMLTriple_t,
- * @c zero (false) otherwise.
+ * @return @c 1 (true) if the combination of name, URI, or prefix of the
+ * two XMLTriple_t structures are not equal, @c 0 (false) otherwise.
  *
  * @memberof XMLTriple_t
  */

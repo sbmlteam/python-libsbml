@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -148,6 +152,8 @@ public:
   /** @cond doxygenLibsbmlInternal */
   /**
    * Copy Constructor
+   *
+   * @param other the instance to copy.
    */
   XMLErrorLog (const XMLErrorLog& other);
   /** @endcond */
@@ -211,7 +217,7 @@ public:
    * parsing code and probably has no useful reason to be called from
    * application programs.
    *
-   * @param p XMLParser, the parser to use
+   * @param p XMLParser, the parser to use.
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -362,9 +368,9 @@ public:
    *
    * @copydetails doc_what_are_severity_overrides
    *
-   * @param originalSeverity the severity code to match
+   * @param originalSeverity the severity code to match.
    *
-   * @param targetSeverity the severity code to use as the new severity
+   * @param targetSeverity the severity code to use as the new severity.
    *
    * @param package a string, the name of an SBML Level&nbsp;3 package
    * extension to use to narrow the search for errors.  A value of @c "all"
@@ -383,6 +389,13 @@ public:
   void changeErrorSeverity(XMLErrorSeverity_t originalSeverity,
                            XMLErrorSeverity_t targetSeverity,
                            std::string package = "all");
+
+  /**
+  * Returns @c true if XMLErrorLog contains an errorId
+  *
+  * @param errorId the error identifier of the error to be found.
+  */
+  bool contains(const unsigned int errorId) const;
 
 protected:
   /** @cond doxygenLibsbmlInternal */
@@ -447,6 +460,7 @@ XMLErrorLog_add (XMLErrorLog_t *log, const XMLError_t *error);
  * @param n unsigned int number of the error to retrieve.
  *
  * @return the nth XMLError_t in this log.
+ * If the index @p n is invalid, @c NULL is returned.
  *
  * @memberof XMLErrorLog_t
  */
@@ -494,12 +508,12 @@ char*
 XMLErrorLog_toString (XMLErrorLog_t *log);
 
 /**
- * Predicate returning @c true or @c false depending on whether 
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether 
  * the 'severity overridden' flag of this XMLErrorLog_t is set.
  * 
  * @param log XMLErrorLog_t structure to be queried.
  *
- * @return @c non-zero (true) if the security override is not set to LIBSBML_OVERRIDE_DISABLED, @c zero (false) otherwise.
+ * @return @c 1 (true) if the security override is not set to LIBSBML_OVERRIDE_DISABLED, @c 0 (false) otherwise.
  *
  * @memberof XMLErrorLog_t
  */

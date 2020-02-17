@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -46,7 +50,7 @@ BEGIN_C_DECLS
  *
  * @copydetails doc_summary_of_string_math_l3
  *
- * @param formula the text-string formula expression to be parsed
+ * @param formula the text-string formula expression to be parsed.
  *
  * @return the root node of an AST representing the mathematical formula, or
  * @c NULL if an error occurred while parsing the formula.  When @c NULL is
@@ -84,9 +88,9 @@ SBML_parseL3Formula (const char *formula);
  * about the parser, please see the definition of L3ParserSettings and
  * the function @sbmlfunction{parseL3Formula, String}.
  *
- * @param formula the mathematical formula expression to be parsed
+ * @param formula the mathematical formula expression to be parsed.
  *
- * @param model the Model object to use for checking identifiers
+ * @param model the Model object to use for checking identifiers.
  *
  * @return the root node of an AST representing the mathematical formula,
  * or @c NULL if an error occurred while parsing the formula.  When @c NULL
@@ -124,9 +128,9 @@ SBML_parseL3FormulaWithModel (const char *formula, const Model_t * model);
  * L3ParserSettings and @sbmlfunction{parseL3FormulaWithSettings, String\,
  * L3ParserSettings}.
  *
- * @param formula the mathematical formula expression to be parsed
+ * @param formula the mathematical formula expression to be parsed.
  *
- * @param settings the settings to be used for this parser invocation
+ * @param settings the settings to be used for this parser invocation.
  *
  * @return the root node of an AST representing the mathematical formula,
  * or @c NULL if an error occurred while parsing the formula.  When @c NULL
@@ -178,10 +182,10 @@ SBML_getDefaultL3ParserSettings ();
  * Returns the last error reported by the "L3" mathematical formula parser.
  *
  * If the functions @sbmlfunction{parseL3Formula, String},
- * @sbmlfunction{parseL3FormulaWithSettings, String\, L3ParserSettings}, or
- * @sbmlfunction{parseL3FormulaWithModel, String\, Model} return @c NULL, an
- * error is set internally.  This function allows callers to retrieve
- * information about the error.
+ * @sbmlfunction{parseL3FormulaWithSettings, String\,
+ * L3ParserSettings}, or @sbmlfunction{parseL3FormulaWithModel,
+ * String\, Model} return @c NULL, an error is set internally.
+ * This function allows callers to retrieve information about the error.
  *
  * @return a string describing the error that occurred.  This will contain
  * the input string the parser was trying to parse, the character it had
@@ -190,7 +194,7 @@ SBML_getDefaultL3ParserSettings ();
  * @see @sbmlfunction{parseL3Formula, String}
  * @see @sbmlfunction{parseL3FormulaWithSettings, String\, L3ParserSettings}
  * @see @sbmlfunction{parseL3FormulaWithModel, String\, Model}
- * @see s@sbmlfunction{getDefaultL3ParserSettings,}
+ * @see @sbmlfunction{getDefaultL3ParserSettings,}
  *
  * @if conly
  * @memberof ASTNode_t

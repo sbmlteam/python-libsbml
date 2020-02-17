@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -67,8 +71,8 @@ SBasePlugin::SBasePlugin (const std::string &uri, const std::string &prefix,
 
 /** @cond doxygenLibsbmlInternal */
 /*
-* Copy constructor. Creates a copy of this SBasePlugin object.
-*/
+ * Copy constructor. Creates a copy of this SBasePlugin object.
+ */
 SBasePlugin::SBasePlugin(const SBasePlugin& orig)
   : mSBMLExt(orig.mSBMLExt)
    ,mSBML(NULL)   // (NOTE) NULL must be set to mSBML and mParent........ 
@@ -156,9 +160,9 @@ SBasePlugin::getElementBySId(const std::string& id)
   IdFilter filter;
   List* allElementsWithIds = this->getAllElements(&filter);
   if (allElementsWithIds == NULL) return NULL;
-  for (unsigned int i = 0; i < allElementsWithIds->getSize(); i++)
+  for (ListIterator iter = allElementsWithIds->begin(); iter != allElementsWithIds->end(); ++iter)
   {
-    SBase* obj = (SBase*)(allElementsWithIds->get(i));
+    SBase* obj = static_cast<SBase*>(*iter);
     if (obj->getId() == id)
     {
       delete allElementsWithIds;
@@ -177,9 +181,9 @@ SBasePlugin::getElementByMetaId(const std::string& metaid)
   MetaIdFilter filter;
   List* allElementsWithIds = this->getAllElements(&filter);
   if (allElementsWithIds == NULL) return NULL;
-  for (unsigned int i = 0; i < allElementsWithIds->getSize(); i++)
+  for (ListIterator iter = allElementsWithIds->begin(); iter != allElementsWithIds->end(); ++iter)
   {
-    SBase* obj = (SBase*)(allElementsWithIds->get(i));
+    SBase* obj = static_cast<SBase*>(*iter);
     if (obj->getMetaId() == metaid)
     {
       delete allElementsWithIds;
@@ -515,7 +519,7 @@ SBasePlugin::createObject(XMLInputStream& )
  * Subclasses should override this method to read (and store) XHTML,
  * MathML, etc. directly from the XMLInputStream.
  *
- * @return true if the subclass read from the stream, false otherwise.
+ * @return @c true if the subclass read from the stream, @c false otherwise.
  */
 bool
 SBasePlugin::readOtherXML (SBase* , XMLInputStream& )
@@ -816,6 +820,263 @@ SBasePlugin::getSBMLExtension() const
 /** @endcond */
 
 
+/** @cond doxygenLibsbmlInternal */
+
+  // ------------------------------------------------------------------
+  //
+  //  functions to faciliate matlab binding
+
+int 
+SBasePlugin::getAttribute(const std::string& attributeName, double& value) const
+{
+  return LIBSBML_OPERATION_FAILED;
+}
+
+
+int 
+SBasePlugin::getAttribute(const std::string& attributeName, bool& value) const
+{
+  return LIBSBML_OPERATION_FAILED;
+}
+
+
+int 
+SBasePlugin::getAttribute(const std::string& attributeName, int& value) const
+{
+  return LIBSBML_OPERATION_FAILED;
+}
+
+
+int 
+SBasePlugin::getAttribute(const std::string& attributeName, unsigned int& value) const
+{
+  return LIBSBML_OPERATION_FAILED;
+}
+
+
+int 
+SBasePlugin::getAttribute(const std::string& attributeName, std::string& value) const
+{
+  return LIBSBML_OPERATION_FAILED;
+}
+
+
+//int 
+//SBasePlugin::getAttribute(const std::string& attributeName, const char * value) const
+//{
+//  return LIBSBML_OPERATION_FAILED;
+//}
+//
+
+bool 
+SBasePlugin::isSetAttribute(const std::string& attributeName) const
+{
+  bool value = false;
+  return value;
+}
+
+
+int 
+SBasePlugin::setAttribute(const std::string& attributeName, double value)
+{
+  return LIBSBML_OPERATION_FAILED;
+}
+
+
+int 
+SBasePlugin::setAttribute(const std::string& attributeName, bool value)
+{
+  return LIBSBML_OPERATION_FAILED;
+}
+
+
+int 
+SBasePlugin::setAttribute(const std::string& attributeName, int value)
+{
+  return LIBSBML_OPERATION_FAILED;
+}
+
+
+int 
+SBasePlugin::setAttribute(const std::string& attributeName, unsigned int value)
+{
+  return LIBSBML_OPERATION_FAILED;
+}
+
+
+int 
+SBasePlugin::setAttribute(const std::string& attributeName, const std::string& value)
+{
+  return LIBSBML_OPERATION_FAILED;
+}
+
+
+//int 
+//SBasePlugin::setAttribute(const std::string& attributeName, const char * value)
+//{
+//  return LIBSBML_OPERATION_FAILED;
+//}
+
+
+int 
+SBasePlugin::unsetAttribute(const std::string& attributeName)
+{
+  return LIBSBML_OPERATION_FAILED;
+}
+
+SBase* 
+SBasePlugin::createChildObject(const std::string& elementName)
+{
+  return NULL;
+}
+
+unsigned int 
+SBasePlugin::getNumObjects(const std::string& elementName)
+{
+  return 0;
+}
+
+SBase* 
+SBasePlugin::getObject(const std::string& elementName, unsigned int index)
+{
+  return NULL;
+}
+
+
+void
+SBasePlugin::updateSBMLNamespace(const std::string& package, unsigned int level,
+  unsigned int version)
+{
+  if (package.empty() || package == "core")
+  {
+    std::string uri;
+
+    switch (level)
+    {
+    case 1:
+      uri = SBML_XMLNS_L1;
+      break;
+    case 2:
+      switch (version)
+      {
+      case 1:
+        uri = SBML_XMLNS_L2V1;
+        break;
+      case 2:
+        uri = SBML_XMLNS_L2V2;
+        break;
+      case 3:
+        uri = SBML_XMLNS_L2V3;
+        break;
+      case 4:
+        uri = SBML_XMLNS_L2V4;
+        break;
+      case 5:
+      default:
+        uri = SBML_XMLNS_L2V5;
+        break;
+      }
+      break;
+    case 3:
+    default:
+      switch (version)
+      {
+      case 1:
+        uri = SBML_XMLNS_L3V1;
+        break;
+      case 2:
+      default:
+        uri = SBML_XMLNS_L3V2;
+        break;
+      }
+      break;
+    }
+    // is there a prefix on the sbml namespace
+    std::string currentSBMLCoreURI =
+      SBMLNamespaces::getSBMLNamespaceURI(getLevel(),
+        getVersion());
+    std::string currentSBMLCorePrefix = "";
+
+    if (mSBMLNS == NULL)
+    {
+      mSBMLNS = new SBMLNamespaces(level, version);
+    }
+
+
+    if (mSBMLNS->getNamespaces() != NULL &&
+      mSBMLNS->getNamespaces()->getLength() > 0)
+    {
+      currentSBMLCorePrefix = mSBMLNS->getNamespaces()->
+        getPrefix(currentSBMLCoreURI);
+      mSBMLNS->getNamespaces()->remove(currentSBMLCorePrefix);
+      mSBMLNS->getNamespaces()->add(uri, currentSBMLCorePrefix);
+      
+      // it is possible that the ns exists unprefixed as well as prefixed
+      // the code will return the first it encounters
+      // so check if the original ns is still there
+      if (mSBMLNS->getNamespaces()->containsUri(currentSBMLCoreURI) == true)
+      {
+        currentSBMLCorePrefix = mSBMLNS->getNamespaces()
+          ->getPrefix(currentSBMLCoreURI);
+        mSBMLNS->getNamespaces()->remove(currentSBMLCorePrefix);
+        mSBMLNS->getNamespaces()->add(uri, currentSBMLCorePrefix);
+      }
+    }
+    else
+    {
+      mSBMLNS->addNamespace(uri, currentSBMLCorePrefix);
+    }
+
+    mSBMLNS->setLevel(level);
+    mSBMLNS->setVersion(version);
+    if (this->getPackageName().empty() || this->getPackageName() == "core")
+      setElementNamespace(uri);
+  }
+  else
+  {
+    std::string uri = this->getSBMLNamespaces()->getNamespaces()->getURI(package);
+    const SBMLExtension* sbmlext = SBMLExtensionRegistry::getInstance().getExtensionInternal(uri);
+    // so we have a plugin for this package already enabled
+    // if there are two version 1 of this package
+    // we want is to change the uri being used
+    if (sbmlext && sbmlext->isEnabled())
+    {
+      std::string newURI;
+      newURI.assign(uri);
+      size_t pos = newURI.find("level3");
+      if (version == 1)
+      {
+        newURI.replace(pos, 15, "level3/version1");
+      }
+      else if (version == 2)
+      {
+        newURI.replace(pos, 15, "level3/version2");
+      }
+
+      bool found = false;
+      unsigned int count = 0;
+      while (!found && count < sbmlext->getNumOfSupportedPackageURI())
+      {
+        if (newURI == sbmlext->getSupportedPackageURI(count))
+        {
+          found = true;
+        }
+        count++;
+      }
+
+      if (found)
+      {
+        mSBMLNS->getNamespaces()->remove(uri);
+        mSBMLNS->getNamespaces()->add(newURI, package);
+        if (this->getPackageName() == package)
+          setElementNamespace(newURI);
+      }
+    }
+
+  }
+}
+
+  /** @endcond */
 
 
 #endif /* __cplusplus */

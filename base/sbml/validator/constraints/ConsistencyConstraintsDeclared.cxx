@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -56,6 +60,8 @@ addConstraint(new VConstraintFunctionDefinition99301(*this));
 
 addConstraint(new VConstraintFunctionDefinition99302(*this));
 
+addConstraint(new VConstraintFunctionDefinition99304(*this));
+
 addConstraint(new VConstraintUnitDefinition20401(*this));
 
 addConstraint(new VConstraintUnitDefinition20402(*this));
@@ -91,10 +97,6 @@ addConstraint(new VConstraintCompartment20504(*this));
 addConstraint(new CompartmentOutsideCycles(20505, *this));
 
 addConstraint(new VConstraintCompartment20506(*this));
-
-addConstraint(new VConstraintCompartment20507(*this));
-
-addConstraint(new VConstraintCompartment20508(*this));
 
 addConstraint(new VConstraintCompartment20510(*this));
 
@@ -139,6 +141,7 @@ addConstraint(new UniqueVarsInInitialAssignmentsAndRules(20803, *this));
 addConstraint(new VConstraintInitialAssignment20804(*this));
 
 addConstraint(new VConstraintInitialAssignment20806(*this));
+
 addConstraint(new VConstraintAssignmentRule20901(*this));
 
 addConstraint(new VConstraintRateRule20902(*this));
@@ -161,6 +164,8 @@ addConstraint(new VConstraintAssignmentRule20911(*this));
 
 addConstraint(new VConstraintRateRule20911(*this));
 
+addConstraint(new RateOfCycles(20912, *this));
+
 addConstraint(new VConstraintConstraint21001(*this));
 
 addConstraint(new VConstraintConstraint21007(*this));
@@ -173,6 +178,8 @@ addConstraint(new VConstraintSpeciesReference21111(*this));
 
 addConstraint(new VConstraintSpeciesReference21113(*this));
 
+addConstraint(new VConstraintSpeciesReference99131(*this));
+
 addConstraint(new KineticLawVars(21121, *this));
 
 addConstraint(new VConstraintKineticLaw21124(*this));
@@ -183,10 +190,6 @@ addConstraint(new VConstraintKineticLaw21126(*this));
 
 addConstraint(new VConstraintKineticLaw21130(*this));
 
-addConstraint(new VConstraintKineticLaw99127(*this));
-
-addConstraint(new VConstraintKineticLaw99128(*this));
-
 addConstraint(new VConstraintKineticLaw99129(*this));
 
 addConstraint(new VConstraintAssignmentRule99129(*this));
@@ -194,6 +197,10 @@ addConstraint(new VConstraintAssignmentRule99129(*this));
 addConstraint(new VConstraintRateRule99129(*this));
 
 addConstraint(new StoichiometryMathVars(21131, *this));
+
+addConstraint(new VConstraintReaction21152(*this));
+
+addConstraint(new VConstraintLocalParameter21173(*this));
 
 addConstraint(new VConstraintEvent21201(*this));
 

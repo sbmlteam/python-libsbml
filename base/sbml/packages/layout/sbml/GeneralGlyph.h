@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -81,14 +85,26 @@ public:
   virtual ListOfReferenceGlyphs* clone () const;
 
   /**
-   * Ctor.
+   * Constructor.
+   *
+   * @param level the SBML Level.
+   * @param version the Version within the SBML Level.
+   * @param pkgVersion the version of the package.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
    ListOfReferenceGlyphs(unsigned int level      = LayoutExtension::getDefaultLevel(), 
                                 unsigned int version    = LayoutExtension::getDefaultVersion(), 
                                 unsigned int pkgVersion = LayoutExtension::getDefaultPackageVersion());
 
   /**
-   * Ctor.
+   * Constructor.
+   *
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param layoutns the LayoutPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
    ListOfReferenceGlyphs(LayoutPkgNamespaces* layoutns);
 
@@ -112,7 +128,7 @@ public:
    * Returns the XML element name of
    * this SBML object.
    *
-   * @return the string of the name of this element
+   * @return the string of the name of this element.
    */
   virtual const std::string& getElementName () const;
 
@@ -123,6 +139,7 @@ public:
    * @param n the index number of the ReferenceGlyph to get.
    * 
    * @return the nth ReferenceGlyph in this ListOfReferenceGlyphs.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -135,6 +152,7 @@ public:
    * @param n the index number of the ReferenceGlyph to get.
    * 
    * @return the nth ReferenceGlyph in this ListOfReferenceGlyphs.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -180,7 +198,7 @@ public:
    *
    * The caller owns the returned item and is responsible for deleting it.
    *
-   * @param n the index of the item to remove
+   * @param n the index of the item to remove.
    *
    * @see size()
    */
@@ -191,10 +209,10 @@ public:
    * Removes item in this ListOfReferenceGlyphs items with the given identifier.
    *
    * The caller owns the returned item and is responsible for deleting it.
-   * If none of the items in this list have the identifier @p sid, then @c
-   * NULL is returned.
+   * If none of the items in this list have the identifier @p sid, then
+   * @c NULL is returned.
    *
-   * @param sid the identifier of the item to remove
+   * @param sid the identifier of the item to remove.
    *
    * @return the item removed.  As mentioned above, the caller owns the
    * returned item.
@@ -214,7 +232,7 @@ protected:
    * Create and return an SBML object of this class, if present.
    *
    * @return the SBML object corresponding to next XMLToken in the
-   * XMLInputStream or NULL if the token was not recognized.
+   * XMLInputStream or @c NULL if the token was not recognized.
    */
   virtual SBase* createObject (XMLInputStream& stream);
   /** @endcond */
@@ -240,8 +258,13 @@ public:
    * Creates a new GeneralGlyph.  The list of reference glyph and subglyphs is
    * empty and the id of the associated element is set to the empty
    * string.
-   */ 
-   
+   *
+   * @param level the SBML Level.
+   * @param version the Version within the SBML Level.
+   * @param pkgVersion the version of the package.
+   *
+   * @copydetails doc_note_setting_lv_pkg
+   */
   GeneralGlyph (unsigned int level      = LayoutExtension::getDefaultLevel(),
                  unsigned int version    = LayoutExtension::getDefaultVersion(),
                  unsigned int pkgVersion = LayoutExtension::getDefaultPackageVersion());
@@ -249,6 +272,12 @@ public:
 
   /**
    * Creates a new GeneralGlyph with the given LayoutPkgNamespaces object.
+   *
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param layoutns the LayoutPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   GeneralGlyph (LayoutPkgNamespaces* layoutns);
 
@@ -258,8 +287,7 @@ public:
    *
    * (FOR BACKWARD COMPATIBILITY)
    *
-   */ 
-   
+   */
   GeneralGlyph (LayoutPkgNamespaces* layoutns, const std::string& id);
 
   /**
@@ -268,8 +296,7 @@ public:
    *
    * (FOR BACKWARD COMPATIBILITY)
    *
-   */ 
-   
+   */
   GeneralGlyph (LayoutPkgNamespaces* layoutns, const std::string& id, const std::string& referenceId);
        
 
@@ -283,25 +310,33 @@ public:
 
   /**
    * Copy constructor.
+   *
+   * @param source the instance to copy.
    */
    GeneralGlyph(const GeneralGlyph& source);
 
   /**
    * Assignment operator.
+   *
+   * @param source the object whose values are used as the basis of the
+   * assignment.
    */
   virtual  GeneralGlyph& operator=(const GeneralGlyph& source);
 
   /**
    * Destructor.
-   */ 
-   
+   */
   virtual ~GeneralGlyph(); 
   
   /**
    * Returns a List of all child SBase objects, including those nested to an
    * arbitrary depth
    *
-   * @return a List* of pointers to all children objects.
+   * @param filter a pointer to an ElementFilter, which causes the function 
+   * to return only elements that match a particular set of constraints.  
+   * If NULL (the default), the function will return all child objects.
+   *
+   * @return a List of pointers to all children objects.
    */
   virtual List* getAllElements(ElementFilter* filter=NULL);
 
@@ -314,126 +349,108 @@ public:
 
   /**
    * Returns the id of the associated element.
-   */  
-   
+   */
   const std::string& getReferenceId () const;
        
   /**
    * Sets the id of the associated element.
-   */ 
-   
+   */
   int setReferenceId (const std::string& id);
 
   /**
-   * Returns true if the id of the associated element is not the empty
+   * Returns @c true if the id of the associated element is not the empty
    * string.
-   */ 
-  
+   */
   bool isSetReferenceId () const;
        
   /**
    * Returns the ListOf object that hold the reference glyphs.
-   */  
-   
+   */
   const ListOfReferenceGlyphs* getListOfReferenceGlyphs () const;
 
   /**
    * Returns the ListOf object that hold the reference glyphs.
-   */  
-   
+   */
   ListOfReferenceGlyphs* getListOfReferenceGlyphs ();
        
   /**
    * Returns the ListOf object that hold the sub glyphs.
-   */  
-   
+   */
   const ListOfGraphicalObjects* getListOfSubGlyphs () const;
 
   /**
    * Returns the ListOf object that hold the sub glyphs.
-   */  
-   
+   */
   ListOfGraphicalObjects* getListOfSubGlyphs ();
        
   /**
-   * Returns the reference glyph with the given index.
+   * Returns the reference glyph with the given @p index.
    * If the index is invalid, @c NULL is returned.
-   */ 
-   
+   */
   const ReferenceGlyph* getReferenceGlyph (unsigned int index) const;
 
   /**
-   * Returns the reference glyph with the given index.
+   * Returns the reference glyph with the given @p index.
    * If the index is invalid, @c NULL is returned.
-   */ 
-   
+   */
   ReferenceGlyph* getReferenceGlyph (unsigned int index) ;
 
   /**
-   * Returns the sub glyph with the given index.
+   * Returns the sub glyph with the given @p index.
    * If the index is invalid, @c NULL is returned.
-   */ 
-   
+   */
   const GraphicalObject* getSubGlyph (unsigned int index) const;
 
   /**
-   * Returns the sub glyph with the given index.
+   * Returns the sub glyph with the given @p index.
    * If the index is invalid, @c NULL is returned.
-   */ 
-   
+   */
   GraphicalObject* getSubGlyph (unsigned int index) ;
 
   /**
    * Adds a new reference glyph to the list.
    */
-   
-  void addReferenceGlyph (const ReferenceGlyph* glyph);
+  int addReferenceGlyph (const ReferenceGlyph* glyph);
        
 
   /**
    * Adds a new subglyph to the list.
    */
-   
-  void addSubGlyph (const GraphicalObject* glyph);
+  int addSubGlyph (const GraphicalObject* glyph);
 
   /**
    * Returns the number of reference glyph objects.
-   */ 
-   
+   */
   unsigned int getNumReferenceGlyphs () const;
 
   /**
    * Returns the number of subglyph objects.
-   */ 
-   
+   */
   unsigned int getNumSubGlyphs () const;
        
   /**
    * Calls initDefaults from GraphicalObject.
-   */ 
-   
+   */
   void initDefaults (); 
 
   /**
    * Returns the curve object for the reaction glyph
-   */ 
+   */
   const Curve* getCurve () const;
 
   /**
    * Returns the curve object for the reaction glyph
-   */ 
+   */
   Curve* getCurve () ;
 
   /**
    * Sets the curve object for the reaction glyph.
-   */ 
-  
+   */
   void setCurve (const Curve* curve);
        
   /**
-   * Returns true if the curve consists of one or more segments.
-   */ 
-  
+   * Returns @c true if the curve consists of one or more segments.
+   */
   bool isSetCurve () const;
 
 
@@ -443,7 +460,6 @@ public:
    * list of reference objects and returns a reference to the newly
    * created object.
    */
-  
   ReferenceGlyph* createReferenceGlyph ();
     
   /**
@@ -451,7 +467,6 @@ public:
    * curve segment objects of the curve and returns a reference to the
    * newly created object.
    */
-  
   LineSegment* createLineSegment();
     
   /**
@@ -462,20 +477,18 @@ public:
    CubicBezier* createCubicBezier();
 
   /**
-   * Remove the reference glyph with the given index.
+   * Remove the reference glyph with the given @p index.
    * A pointer to the object is returned. If no object has been removed, NULL
    * is returned.
    */
-  
   ReferenceGlyph*
   removeReferenceGlyph(unsigned int index);
 
   /**
-   * Remove the subglyph with the given index.
+   * Remove the subglyph with the given @p index.
    * A pointer to the object is returned. If no object has been removed, NULL
    * is returned.
    */
-  
   GraphicalObject*
   removeSubGlyph(unsigned int index);
 
@@ -484,7 +497,6 @@ public:
    * A pointer to the object is returned. If no object has been removed, NULL
    * is returned.
    */
-  
   ReferenceGlyph*
   removeReferenceGlyph(const std::string& id);
 
@@ -493,7 +505,6 @@ public:
    * A pointer to the object is returned. If no object has been removed, NULL
    * is returned.
    */
-  
   GraphicalObject*
   removeSubGlyph(const std::string& id);
 
@@ -503,7 +514,6 @@ public:
    * id, @if cpp numeric_limits<unsigned int>::max() @else cpp the
    * value of the maximum long integer@endif@~ is returned as an indicator.
    */
-  
   unsigned int
   getIndexForReferenceGlyph(const std::string& id) const;
 
@@ -513,7 +523,6 @@ public:
    * id, @if cpp numeric_limits<unsigned int>::max() @else cpp the
    * value of the maximum long integer@endif@~ is returned as an indicator.
    */
-  
   unsigned int
   getIndexForSubGlyph(const std::string& id) const;
 
@@ -521,7 +530,7 @@ public:
   /** @cond doxygenLibsbmlInternal */
   /**
    * Subclasses should override this method to write out their contained
-   * SBML objects as XML elements.  Be sure to call your parents
+   * SBML objects as XML elements.  Be sure to call your parent's
    * implementation of this method as well.  For example:
    *
    *   SBase::writeElements(stream);
@@ -537,7 +546,7 @@ public:
    * Returns the XML element name of
    * this SBML object.
    *
-   * @return the string of the name of this element
+   * @return the string of the name of this element.
    */
   virtual const std::string& getElementName () const ;
 
@@ -556,7 +565,7 @@ public:
    * @copydetails doc_what_are_typecodes
    *
    * @return the SBML type code for this object:
-   * @sbmlconstant{SBML_LAYOUT_GENERALGLYPH, SBMLLayoutTypeCode_t}
+   * @sbmlconstant{SBML_LAYOUT_GENERALGLYPH, SBMLLayoutTypeCode_t}.
    *
    * @copydetails doc_warning_typecodes_not_unique
    *
@@ -588,7 +597,7 @@ public:
   /**
    * Sets the parent SBMLDocument of this SBML object.
    *
-   * @param d the SBMLDocument object to use
+   * @param d the SBMLDocument object to use.
    */
   virtual void setSBMLDocument (SBMLDocument* d);
   /** @endcond */
@@ -630,7 +639,7 @@ protected:
    * Create and return an SBML object of this class, if present.
    *
    * @return the SBML object corresponding to next XMLToken in the
-   * XMLInputStream or NULL if the token was not recognized.
+   * XMLInputStream or @c NULL if the token was not recognized.
    */
   virtual SBase*
   createObject (XMLInputStream& stream);
@@ -652,7 +661,7 @@ protected:
   /**
    * Subclasses should override this method to read values from the given
    * XMLAttributes set into their specific fields.  Be sure to call your
-   * parents implementation of this method as well.
+   * parent's implementation of this method as well.
    */
   virtual void readAttributes (const XMLAttributes& attributes, 
                                const ExpectedAttributes& expectedAttributes);
@@ -662,7 +671,7 @@ protected:
   /** @cond doxygenLibsbmlInternal */
   /**
    * Subclasses should override this method to write their XML attributes
-   * to the XMLOutputStream.  Be sure to call your parents implementation
+   * to the XMLOutputStream.  Be sure to call your parent's implementation
    * of this method as well.  For example:
    *
    *   SBase::writeAttributes(stream);
@@ -699,7 +708,7 @@ GeneralGlyph_create (void);
 /**
  * Creates a new GeneralGlyph_t structure from a template.
  *
- * @param temp The GeneralGlyph_t structure to copy.
+ * @param temp the GeneralGlyph_t structure to copy.
  *
  * @memberof GeneralGlyph_t
  */
@@ -711,8 +720,7 @@ GeneralGlyph_createFrom (const GeneralGlyph_t *temp);
 /**
  * Creates a new GeneralGlyph_t with the given @p sid
  *
- * @param gg The GeneralGlyph_t structure.
- * @param sid The id of the created SpeciesGlyph_t
+ * @param sid the id of the created SpeciesGlyph_t.
  *
  * @memberof GeneralGlyph_t
  */
@@ -724,9 +732,8 @@ GeneralGlyph_createWith (const char *sid);
 /**
  * Creates a new GeneralGlyph_t referencing the given element.
  *
- * @param gg The GeneralGlyph_t structure.
- * @param sid The id of the created SpeciesGlyph_t
- * @param referenceId The referenceId of the created SpeciesGlyph_t
+ * @param sid the id of the created SpeciesGlyph_t.
+ * @param referenceId the referenceId of the created SpeciesGlyph_t.
  *
  * @memberof GeneralGlyph_t
  */
@@ -738,7 +745,7 @@ GeneralGlyph_createWithReferenceId (const char *sid, const char *referenceId);
 /**
  * Frees the memory taken by the given glyph.
  *
- * @param gg The GeneralGlyph_t structure.
+ * @param gg the GeneralGlyph_t structure.
  *
  * @memberof GeneralGlyph_t
  */
@@ -750,8 +757,8 @@ GeneralGlyph_free (GeneralGlyph_t *gg);
 /**
  * Sets the reference for the glyph.
  *
- * @param gg The GeneralGlyph_t structure.
- * @param id The string to use as the referenceId of the GeneralGlyph_t
+ * @param gg the GeneralGlyph_t structure.
+ * @param id the string to use as the referenceId of the GeneralGlyph_t.
  *
  * @memberof GeneralGlyph_t
  */
@@ -763,7 +770,7 @@ GeneralGlyph_setReferenceId (GeneralGlyph_t *gg,const char *id);
 /**
  * Gets the reference id for the given glyph.
  *
- * @param gg The GeneralGlyph_t structure.
+ * @param gg the GeneralGlyph_t structure.
  *
  * @memberof GeneralGlyph_t
  */
@@ -773,10 +780,10 @@ GeneralGlyph_getReferenceId (const GeneralGlyph_t *gg);
 
 
 /**
- * Returns 0 if the reference element has not been set for this glyph and
- * 1 otherwise.
+ * Returns @c 0 (false) if the reference element has not been set for this glyph and
+ * @c 1 (true) otherwise.
  *
- * @param gg The GeneralGlyph_t structure.
+ * @param gg the GeneralGlyph_t structure.
  *
  * @memberof GeneralGlyph_t
  */
@@ -789,7 +796,8 @@ GeneralGlyph_isSetReferenceId (const GeneralGlyph_t *gg);
  * Add a ReferenceGlyph_t object to the list of
  * ReferenceGlyph_t's.
  *
- * @param gg The GeneralGlyph_t structure.
+ * @param gg the GeneralGlyph_t structure.
+ * @param srg the ReferenceGlyph_t structure to add.
  *
  * @memberof GeneralGlyph_t
  */
@@ -801,7 +809,7 @@ GeneralGlyph_addReferenceGlyph (GeneralGlyph_t   *gg,
 /**
  * Returns the number of ReferenceGlyphs for the GeneralGlyph_t.
  *
- * @param gg The GeneralGlyph_t structure.
+ * @param gg the GeneralGlyph_t structure.
  *
  * @memberof GeneralGlyph_t
  */
@@ -811,9 +819,10 @@ GeneralGlyph_getNumReferenceGlyphs (const GeneralGlyph_t *gg);
 
 
 /**
- * Returns the pointer to the ReferenceGlyph_t's for the given index.
+ * Returns the pointer to the ReferenceGlyph_t for the given @p index.
  *
- * @param gg The GeneralGlyph_t structure.
+ * @param gg the GeneralGlyph_t structure.
+ * @param index the index of the ReferenceGlyph_t structure to return.
  *
  * @memberof GeneralGlyph_t
  */
@@ -826,35 +835,22 @@ GeneralGlyph_getReferenceGlyph (GeneralGlyph_t *gg,
 /**
  * Returns the list object that holds all reference glyphs.
  *
- * @param gg The GeneralGlyph_t structure.
+ * @param gg the GeneralGlyph_t structure.
  *
  * @memberof GeneralGlyph_t
- */ 
+ */
 LIBSBML_EXTERN
 ListOf_t *
 GeneralGlyph_getListOfReferenceGlyphs (GeneralGlyph_t *gg);
 
 
 /**
- * Removes the reference glyph with the given index.  If the index
- * is invalid, nothing is removed.
- *
- * @param gg The GeneralGlyph_t structure.
- *
- * @memberof GeneralGlyph_t
- */ 
-LIBSBML_EXTERN
-ReferenceGlyph_t *
-GeneralGlyph_removeReferenceGlyph (GeneralGlyph_t *gg,
-                                   unsigned int index);
-
-/**
  * Calls initDefaults from GraphicalObject.
  *
- * @param gg The GeneralGlyph_t structure.
+ * @param gg the GeneralGlyph_t structure.
  *
  * @memberof GeneralGlyph_t
- */ 
+ */
 LIBSBML_EXTERN
 void
 GeneralGlyph_initDefaults (GeneralGlyph_t *gg);
@@ -863,7 +859,8 @@ GeneralGlyph_initDefaults (GeneralGlyph_t *gg);
 /**
  * Sets the curve for the reaction glyph.
  *
- * @param gg The GeneralGlyph_t structure.
+ * @param gg the GeneralGlyph_t structure.
+ * @param c the Curve_t structure to use.
  *
  * @memberof GeneralGlyph_t
  */
@@ -875,7 +872,7 @@ GeneralGlyph_setCurve (GeneralGlyph_t *gg, Curve_t *c);
 /**
  * Gets the Curve_t for the given reaction glyph.
  *
- * @param gg The GeneralGlyph_t structure.
+ * @param gg the GeneralGlyph_t structure.
  *
  * @memberof GeneralGlyph_t
  */
@@ -887,7 +884,7 @@ GeneralGlyph_getCurve (GeneralGlyph_t *gg);
 /**
  * Returns true if the Curve_t has one or more LineSegment.
  *
- * @param gg The GeneralGlyph_t structure.
+ * @param gg the GeneralGlyph_t structure.
  *
  * @memberof GeneralGlyph_t
  */
@@ -901,7 +898,7 @@ GeneralGlyph_isSetCurve (GeneralGlyph_t *gg);
  * list of reference glyphs and returns a pointer to the newly
  * created structure.
  *
- * @param gg The GeneralGlyph_t structure.
+ * @param gg the GeneralGlyph_t structure.
  *
  * @memberof GeneralGlyph_t
  */
@@ -915,7 +912,7 @@ GeneralGlyph_createReferenceGlyph (GeneralGlyph_t *gg);
  * list of reference glyphs and returns a pointer to the newly
  * created structure.
  *
- * @param gg The GeneralGlyph_t structure.
+ * @param gg the GeneralGlyph_t structure.
  *
  * @memberof GeneralGlyph_t
  */
@@ -929,7 +926,7 @@ GeneralGlyph_createReferenceGlyph (GeneralGlyph_t *gg);
  * curve segments and returns a pointer to the newly created
  * structure.
  *
- * @param gg The GeneralGlyph_t structure.
+ * @param gg the GeneralGlyph_t structure.
  *
  * @memberof GeneralGlyph_t
  */
@@ -943,7 +940,7 @@ GeneralGlyph_createLineSegment (GeneralGlyph_t *gg);
  * curve segments and returns a pointer to the newly created
  * structure.
  *
- * @param gg The GeneralGlyph_t structure.
+ * @param gg the GeneralGlyph_t structure.
  *
  * @memberof GeneralGlyph_t
  */
@@ -953,11 +950,12 @@ GeneralGlyph_createCubicBezier (GeneralGlyph_t *gg);
 
 
 /**
- * Remove the reference glyph with the given index.
+ * Remove the reference glyph with the given @p index.
  * A pointer to the structure is returned. If no structure has been removed, NULL
  * is returned.
  *
- * @param gg The GeneralGlyph_t structure.
+ * @param gg the GeneralGlyph_t structure.
+ * @param index the index of the ReferenceGlyph_t structure to remove.
  *
  * @memberof GeneralGlyph_t
  */
@@ -971,7 +969,8 @@ GeneralGlyph_removeReferenceGlyph(GeneralGlyph_t* gg, unsigned int index);
  * A pointer to the structure is returned. If no structure has been removed, NULL
  * is returned.
  *
- * @param gg The GeneralGlyph_t structure.
+ * @param gg the GeneralGlyph_t structure.
+ * @param id the id of the ReferenceGlyph_t structure to remove.
  *
  * @memberof GeneralGlyph_t
  */
@@ -985,7 +984,8 @@ GeneralGlyph_removeReferenceGlyphWithId(GeneralGlyph_t* gg, const char* id);
  * If the reaction glyph does not contain a reference glyph with this
  * id, UINT_MAX from limits.h is returned.
  *
- * @param gg The GeneralGlyph_t structure.
+ * @param gg the GeneralGlyph_t structure.
+ * @param id the id of the ReferenceGlyph_t to search for.
  *
  * @memberof GeneralGlyph_t
  */
@@ -997,7 +997,7 @@ GeneralGlyph_getIndexForReferenceGlyph(GeneralGlyph_t* gg,const char* id);
 /**
  * @return a (deep) copy of this GeneralGlyph_t.
  *
- * @param gg The GeneralGlyph_t structure.
+ * @param gg the GeneralGlyph_t structure.
  *
  * @memberof GeneralGlyph_t
  */

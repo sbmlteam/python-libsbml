@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -113,8 +117,8 @@ START_CONSTRAINT (20217, Model, x)
 
   inv_or( units == "second" );
   inv_or( units == "dimensionless"  );
-  inv_or( defn  != NULL && defn->isVariantOfTime() );
-  inv_or( defn  != NULL && defn->isVariantOfDimensionless() );
+  inv_or( defn  != NULL && defn->isVariantOfTime(true) );
+  inv_or( defn  != NULL && defn->isVariantOfDimensionless(true) );
 }
 END_CONSTRAINT
 
@@ -133,8 +137,8 @@ START_CONSTRAINT (20218, Model, x)
 
   inv_or( units == "litre" );
   inv_or( units == "dimensionless"  );
-  inv_or( defn  != NULL && defn->isVariantOfVolume() );
-  inv_or( defn  != NULL && defn->isVariantOfDimensionless() );
+  inv_or( defn  != NULL && defn->isVariantOfVolume(true) );
+  inv_or( defn  != NULL && defn->isVariantOfDimensionless(true) );
 }
 END_CONSTRAINT
 
@@ -152,8 +156,8 @@ START_CONSTRAINT (20219, Model, x)
   const UnitDefinition* defn  = m.getUnitDefinition(units);
 
   inv_or( units == "dimensionless"  );
-  inv_or( defn  != NULL && defn->isVariantOfArea() );
-  inv_or( defn  != NULL && defn->isVariantOfDimensionless() );
+  inv_or( defn  != NULL && defn->isVariantOfArea(true) );
+  inv_or( defn  != NULL && defn->isVariantOfDimensionless(true) );
 }
 END_CONSTRAINT
 
@@ -172,8 +176,8 @@ START_CONSTRAINT (20220, Model, x)
 
   inv_or( units == "metre" );
   inv_or( units == "dimensionless"  );
-  inv_or( defn  != NULL && defn->isVariantOfLength() );
-  inv_or( defn  != NULL && defn->isVariantOfDimensionless() );
+  inv_or( defn  != NULL && defn->isVariantOfLength(true) );
+  inv_or( defn  != NULL && defn->isVariantOfDimensionless(true) );
 }
 END_CONSTRAINT
 
@@ -196,11 +200,163 @@ START_CONSTRAINT (20221, Model, x)
   inv_or( units == "avogadro" );
   inv_or( units == "kilogram" );
   inv_or( units == "gram" );
-  inv_or( defn  != NULL && defn->isVariantOfSubstance() );
-  inv_or( defn  != NULL && defn->isVariantOfDimensionless() );
+  inv_or( defn  != NULL && defn->isVariantOfSubstance(true) );
+  inv_or( defn  != NULL && defn->isVariantOfDimensionless(true) );
 }
 END_CONSTRAINT
 
+
+START_CONSTRAINT (20233, Model, x)
+{
+  // level 3
+  pre( m.getLevel() > 2);
+  pre( m.isSetSubstanceUnits());
+
+  const string&         units = m.getSubstanceUnits();
+  const UnitDefinition* defn  = m.getUnitDefinition(units);
+
+  inv_or( units == "mole" );
+  inv_or( units == "item" );
+  inv_or( units == "dimensionless"  );
+  inv_or( units == "avogadro" );
+  inv_or( units == "kilogram" );
+  inv_or( units == "gram" );
+  inv_or( defn  != NULL && defn->isVariantOfSubstance(true) );
+  inv_or( defn  != NULL && defn->isVariantOfDimensionless(true) );
+}
+END_CONSTRAINT
+
+START_CONSTRAINT (20507, Compartment, c)
+{
+  pre (c.getLevel() > 1);
+  pre( c.getSpatialDimensions() == 1 );
+  pre( c.isSetUnits()                );
+
+  if (c.getLevel() == 2)
+  {
+    if (c.getVersion() == 1)
+    {
+      msg =
+        "The value of the 'units' attribute on a <compartment> having "
+        "'spatialDimensions' of '1' must be either 'length' or 'metre', "
+        "or the identifier of a <unitDefinition> based on "
+        "either 'metre' (with 'exponent' equal to '1').";
+    }
+    else
+    {
+      msg =
+        "The value of the 'units' attribute on a <compartment> having "
+        "'spatialDimensions' of '1' must be either 'length', 'metre', "
+        "'dimensionless', or the identifier of a <unitDefinition> based on "
+        "either 'metre' (with 'exponent' equal to '1') or 'dimensionless'.";
+    }
+  }
+  else
+  {
+    msg =
+      "The value of the 'units' attribute on a <compartment> having "
+      "'spatialDimensions' of '1' must be either 'metre', "
+      "'dimensionless', or the identifier of a <unitDefinition> based on "
+      "either 'metre' (with 'exponent' equal to '1') or 'dimensionless'.";
+  }
+
+  msg += " The <compartment> with id '" + c.getId() + "' does not comply.";
+
+  const string&         units = c.getUnits();
+  const UnitDefinition* defn  = m.getUnitDefinition(units);
+
+  /* dimensionless is allowable in L2V2 */
+  if (c.getLevel() == 2)
+  {
+    if (c.getVersion() == 1)
+    {
+      inv_or( units == "length" );
+      inv_or( units == "metre"  );
+      inv_or( defn  != NULL && defn->isVariantOfLength() );
+    }
+    else
+    {
+      inv_or( units == "length" );
+      inv_or( units == "metre"  );
+      inv_or( units == "dimensionless"  );
+      inv_or( defn  != NULL && defn->isVariantOfLength() );
+      inv_or( defn  != NULL && defn->isVariantOfDimensionless() );
+    }
+  }
+  else
+  {
+    inv_or( units == "metre"  );
+    inv_or( units == "dimensionless"  );
+    inv_or( defn  != NULL && defn->isVariantOfLength(true) );
+    inv_or( defn  != NULL && defn->isVariantOfDimensionless(true) );
+  }
+}
+END_CONSTRAINT
+
+
+START_CONSTRAINT (20508, Compartment, c)
+{
+  pre (c.getLevel() > 1);
+  pre( c.getSpatialDimensions() == 2 );
+  pre( c.isSetUnits()                );
+
+  if (c.getLevel() == 2)
+  {
+    if (c.getVersion() == 1)
+    {
+      msg =
+        "The value of the 'units' attribute on a <compartment> having "
+        "'spatialDimensions' of '2' must be either 'area' or "
+        "the identifier of a <unitDefinition> based on 'metre' (with "
+        "'exponent' equal to '2').";
+    }
+    else
+    {
+      msg =
+        "The value of the 'units' attribute on a <compartment> having "
+        "'spatialDimensions' of '2' must be either 'area', 'dimensionless', or "
+        "the identifier of a <unitDefinition> based on either 'metre' (with "
+        "'exponent' equal to '2') or 'dimensionless'.";
+    }
+  }
+  else
+  {
+    msg =
+      "The value of the 'units' attribute on a <compartment> having "
+      "'spatialDimensions' of '2' must be either 'dimensionless', or "
+      "the identifier of a <unitDefinition> based on either 'metre' (with "
+      "'exponent' equal to '2') or 'dimensionless'.";
+  }
+
+  msg += " The <compartment> with id '" + c.getId() + "' does not comply.";
+
+  const string&         units = c.getUnits();
+  const UnitDefinition* defn  = m.getUnitDefinition(units);
+
+  /* dimensionless is allowable in L2V2 */
+  if (c.getLevel() == 2)
+  {
+    if (c.getVersion() == 1)
+    {
+      inv_or( units == "area" );
+      inv_or( defn  != NULL && defn->isVariantOfArea() );
+    }
+    else
+    {
+      inv_or( units == "area" );
+      inv_or( units == "dimensionless"  );
+      inv_or( defn  != NULL && defn->isVariantOfArea() );
+      inv_or( defn  != NULL && defn->isVariantOfDimensionless() );
+    }
+  }
+  else
+  {
+    inv_or( units == "dimensionless"  );
+    inv_or( defn  != NULL && defn->isVariantOfArea(true) );
+    inv_or( defn  != NULL && defn->isVariantOfDimensionless(true) );
+  }
+}
+END_CONSTRAINT
 
 
 START_CONSTRAINT (20509, Compartment, c)
@@ -258,8 +414,8 @@ START_CONSTRAINT (20509, Compartment, c)
   {
     inv_or( units == "litre"  );
     inv_or( units == "dimensionless"  );
-    inv_or( defn  != NULL && defn->isVariantOfVolume() );
-    inv_or( defn  != NULL && defn->isVariantOfDimensionless() );
+    inv_or( defn  != NULL && defn->isVariantOfVolume(true) );
+    inv_or( defn  != NULL && defn->isVariantOfDimensionless(true) );
   }
 }
 END_CONSTRAINT
@@ -348,9 +504,9 @@ START_CONSTRAINT (20608, Species, s)
     inv_or( units == "gram"           );
     inv_or( units == "kilogram"       );
     inv_or( units == "avogadro"       );
-    inv_or( defn  != NULL && defn->isVariantOfSubstance()     );
-    inv_or( defn  != NULL && defn->isVariantOfDimensionless() );
-    inv_or( defn  != NULL && defn->isVariantOfMass()          );
+    inv_or( defn  != NULL && defn->isVariantOfSubstance(true)     );
+    inv_or( defn  != NULL && defn->isVariantOfDimensionless(true) );
+    inv_or( defn  != NULL && defn->isVariantOfMass(true)          );
   }
 }
 END_CONSTRAINT
@@ -395,8 +551,8 @@ START_CONSTRAINT (99130, Model, x)
   inv_or( units == "avogadro" );
   inv_or( units == "kilogram" );
   inv_or( units == "gram" );
-  inv_or( defn  != NULL && defn->isVariantOfSubstance() );
-  inv_or( defn  != NULL && defn->isVariantOfDimensionless() );
+  inv_or( defn  != NULL && defn->isVariantOfSubstance(true) );
+  inv_or( defn  != NULL && defn->isVariantOfDimensionless(true) );
 }
 END_CONSTRAINT
 
@@ -493,9 +649,11 @@ END_CONSTRAINT
 START_CONSTRAINT (99505, Event, e)
 {
   pre ( e.isSetDelay() == 1 );
+  // in L3v2 we may not have a math element and so cannot apply this check
+  pre (e.getDelay()->isSetMath());
 
   const FormulaUnitsData * formulaUnits = 
-                                  m.getFormulaUnitsData(e.getId(), SBML_EVENT);
+                                  m.getFormulaUnitsData(e.getInternalId(), SBML_EVENT);
 
   pre ( formulaUnits != 0 );
  
@@ -542,11 +700,39 @@ START_CONSTRAINT (99505, Priority, e)
 END_CONSTRAINT
 
   
+START_CONSTRAINT(99505, Trigger, e)
+{
+  const FormulaUnitsData * formulaUnits =
+    m.getFormulaUnitsData(e.getInternalId(), SBML_TRIGGER);
+
+  pre(formulaUnits != NULL);
+
+  if (e.isSetMath() == true)
+  {
+    char * formula = SBML_formulaToString(e.getMath());
+    msg = "The units of the <event> <trigger> expression '";
+    msg += formula;
+    msg += "' cannot be fully checked. Unit consistency reported as either no errors ";
+    msg += "or further unit errors related to this object may not be accurate.";
+    safe_free(formula);
+  }
+  else
+  {
+    msg = "The <event> <trigger> has no defined math expression. ";
+    msg += "Thus unit consistency reported as either no errors ";
+    msg += "or further unit errors related to this object may not be accurate.";
+  }
+
+  inv(!formulaUnits->getContainsUndeclaredUnits());
+}
+END_CONSTRAINT
+
+
 START_CONSTRAINT (99505, EventAssignment, ea)
 {
   EventAssignment *pEa = const_cast<EventAssignment *> (&ea);
   std::string eId = 
-    static_cast <Event *> (pEa->getAncestorOfType(SBML_EVENT))->getId();
+    static_cast <Event *> (pEa->getAncestorOfType(SBML_EVENT))->getInternalId();
   const string& variable = ea.getVariable() + eId;
 
   pre ( ea.isSetMath() == 1 );
@@ -566,6 +752,62 @@ START_CONSTRAINT (99505, EventAssignment, ea)
   inv( !formulaUnits->getContainsUndeclaredUnits());
 }
 END_CONSTRAINT
+
+START_CONSTRAINT(99505, Constraint, e)
+{
+  const FormulaUnitsData * formulaUnits =
+    m.getFormulaUnitsData(e.getInternalId(), SBML_CONSTRAINT);
+
+  pre(formulaUnits != NULL);
+
+  if (e.isSetMath() == true)
+  {
+    char * formula = SBML_formulaToString(e.getMath());
+    msg = "The units of the <constraint> expression '";
+    msg += formula;
+    msg += "' cannot be fully checked. Unit consistency reported as either no errors ";
+    msg += "or further unit errors related to this object may not be accurate.";
+    safe_free(formula);
+  }
+  else
+  {
+    msg = "The <constraint> has no defined math expression. ";
+    msg += "Thus unit consistency reported as either no errors ";
+    msg += "or further unit errors related to this object may not be accurate.";
+  }
+
+  inv(!formulaUnits->getContainsUndeclaredUnits());
+}
+END_CONSTRAINT
+
+
+START_CONSTRAINT(99505, StoichiometryMath, e)
+{
+  const FormulaUnitsData * formulaUnits =
+    m.getFormulaUnitsData(e.getInternalId(), SBML_STOICHIOMETRY_MATH);
+
+  pre(formulaUnits != NULL);
+
+  if (e.isSetMath() == true)
+  {
+    char * formula = SBML_formulaToString(e.getMath());
+    msg = "The units of the <reaction> <speciesReference> <stoichiometryMath> expression '";
+    msg += formula;
+    msg += "' cannot be fully checked. Unit consistency reported as either no errors ";
+    msg += "or further unit errors related to this object may not be accurate.";
+    safe_free(formula);
+  }
+  else
+  {
+    msg = "The <reaction> <speciesReference> <stoichiometryMath> has no defined math expression. ";
+    msg += "Thus unit consistency reported as either no errors ";
+    msg += "or further unit errors related to this object may not be accurate.";
+  }
+
+  inv(!formulaUnits->getContainsUndeclaredUnits());
+}
+END_CONSTRAINT
+
 
 START_CONSTRAINT (99508, Compartment, c)
 {
@@ -676,6 +918,195 @@ START_CONSTRAINT (99507, Model, x)
 }
 END_CONSTRAINT
 
+START_CONSTRAINT (99509, InitialAssignment, ia)
+{
+  const string& variable = ia.getSymbol();
+
+  pre (ia.getLevel() == 3 && ia.getVersion() > 1);
+
+  msg = "The <initialAssignment> with symbol '";
+  msg += variable;
+  msg += "' does not have a <math> element.";
+
+  inv( ia.isSetMath() == 1);
+}
+END_CONSTRAINT
+
+
+START_CONSTRAINT (99509, AlgebraicRule, r)
+{
+  pre (r.getLevel() == 3 && r.getVersion() > 1);
+
+  msg = "The <algebraicRule> ";
+  msg += " does not have a <math> element.";
+
+  inv( r.isSetMath() == 1);
+}
+END_CONSTRAINT
+
+
+START_CONSTRAINT (99509, AssignmentRule, r)
+{
+  const string& variable = r.getVariable();
+
+  pre (r.getLevel() == 3 && r.getVersion() > 1);
+
+  msg = "The <assignmentRule> with symbol '";
+  msg += variable;
+  msg += "' does not have a <math> element.";
+
+  inv( r.isSetMath() == 1);
+}
+END_CONSTRAINT
+
+
+START_CONSTRAINT (99509, RateRule, r)
+{
+  const string& variable = r.getVariable();
+
+  pre (r.getLevel() == 3 && r.getVersion() > 1);
+
+  msg = "The <rateRule> with symbol '";
+  msg += variable;
+  msg += "' does not have a <math> element.";
+
+  inv( r.isSetMath() == 1);
+}
+END_CONSTRAINT
+
+
+START_CONSTRAINT (99509, KineticLaw, kl)
+{
+  pre (kl.getLevel() == 3 && kl.getVersion() > 1);
+
+  const SBase * r = kl.getAncestorOfType(SBML_REACTION);
+
+  if (r != NULL && r->isSetIdAttribute())
+  {
+    msg = "The <kineticLaw> in <reaction> with id '";
+    msg += r->getIdAttribute();
+    msg += "' does not have a <math> element.";
+
+  }
+  else
+  {
+    msg = "The <kineticLaw> does not have a <math> element.";
+  }
+
+  inv( kl.isSetMath() == 1);
+}
+END_CONSTRAINT
+
+START_CONSTRAINT (99509, Constraint, c)
+{
+  pre (c.getLevel() == 3 && c.getVersion() > 1);
+
+  msg = "The <constraint> does not have a <math> element.";
+
+  inv( c.isSetMath() == 1);
+}
+END_CONSTRAINT
+
+START_CONSTRAINT (99509, Trigger, obj)
+{
+  pre (obj.getLevel() == 3 && obj.getVersion() > 1);
+
+  const SBase * r = obj.getAncestorOfType(SBML_EVENT);
+
+  if (r != NULL && r->isSetIdAttribute())
+  {
+    msg = "The <trigger> in <event> with id '";
+    msg += r->getIdAttribute();
+    msg += "' does not have a <math> element.";
+
+  }
+  else
+  {
+    msg = "The <trigger> does not have a <math> element.";
+  }
+
+  inv( obj.isSetMath() == 1);
+}
+END_CONSTRAINT
+
+
+START_CONSTRAINT (99509, Priority, obj)
+{
+  pre (obj.getLevel() == 3 && obj.getVersion() > 1);
+
+  const SBase * r = obj.getAncestorOfType(SBML_EVENT);
+
+  if (r != NULL && r->isSetIdAttribute())
+  {
+    msg = "The <priority> in <event> with id '";
+    msg += r->getIdAttribute();
+    msg += "' does not have a <math> element.";
+
+  }
+  else
+  {
+    msg = "The <priority> does not have a <math> element.";
+  }
+
+  inv( obj.isSetMath() == 1);
+}
+END_CONSTRAINT
+
+
+START_CONSTRAINT (99509, Delay, obj)
+{
+  pre (obj.getLevel() == 3 && obj.getVersion() > 1);
+
+  const SBase * r = obj.getAncestorOfType(SBML_EVENT);
+
+  if (r != NULL && r->isSetIdAttribute())
+  {
+    msg = "The <delay> in <event> with id '";
+    msg += r->getIdAttribute();
+    msg += "' does not have a <math> element.";
+
+  }
+  else
+  {
+    msg = "The <delay> does not have a <math> element.";
+  }
+
+  inv( obj.isSetMath() == 1);
+}
+END_CONSTRAINT
+
+
+START_CONSTRAINT (99509, EventAssignment, ea)
+{
+  const string& variable = ea.getVariable();
+
+  pre (ea.getLevel() == 3 && ea.getVersion() > 1);
+
+  msg = "The <eventAssignment> with variable '";
+  msg += variable;
+  msg += "' does not have a <math> element.";
+
+  inv( ea.isSetMath() == 1);
+}
+END_CONSTRAINT
+
+
+START_CONSTRAINT (99509, FunctionDefinition, obj)
+{
+  const string& variable = obj.getIdAttribute();
+
+  pre (obj.getLevel() == 3 && obj.getVersion() > 1);
+
+  msg = "The <functionDefinition> with id '";
+  msg += variable;
+  msg += "' does not have a <math> element.";
+
+  inv( obj.isSetMath() == 1);
+}
+END_CONSTRAINT
+
+
+
 // General Unit validation
 
 
@@ -731,8 +1162,8 @@ START_CONSTRAINT (10511, AssignmentRule, ar)
   /* check that the formula is okay 
      ie has no parameters with undeclared units */
   pre ( !formulaUnits->getContainsUndeclaredUnits()
-	|| (formulaUnits->getContainsUndeclaredUnits()
-	    && formulaUnits->getCanIgnoreUndeclaredUnits()) );
+  || (formulaUnits->getContainsUndeclaredUnits()
+      && formulaUnits->getCanIgnoreUndeclaredUnits()) );
 
   if (ar.getLevel() == 1)
   {
@@ -1162,9 +1593,11 @@ START_CONSTRAINT (10531, RateRule, rr)
   pre ( variableUnits != NULL ); 
 
   /* in level 3 need to check that the compartment has units defined */
-  pre (variableUnits->getUnitDefinition()->getNumUnits() > 0);
+  pre(variableUnits->getUnitDefinition() != NULL &&
+    variableUnits->getUnitDefinition()->getNumUnits() > 0);
   /* in L3 need to check that time units were set */
-  pre ( variableUnits->getPerTimeUnitDefinition()->getNumUnits() > 0);
+  pre (variableUnits->getPerTimeUnitDefinition() != NULL &&
+    variableUnits->getPerTimeUnitDefinition()->getNumUnits() > 0);
 
 
   /* check that the formula is okay 
@@ -1241,10 +1674,12 @@ START_CONSTRAINT (10532, RateRule, rr)
   pre ( formulaUnits  != NULL );
   pre ( variableUnits != NULL ); 
 
-  /* in level 3 need to check that the species has units defined */
-  pre (variableUnits->getUnitDefinition()->getNumUnits() > 0);
+  /* in level 3 need to check that the compartment has units defined */
+  pre(variableUnits->getUnitDefinition() != NULL &&
+    variableUnits->getUnitDefinition()->getNumUnits() > 0);
   /* in L3 need to check that time units were set */
-  pre ( variableUnits->getPerTimeUnitDefinition()->getNumUnits() > 0);
+  pre(variableUnits->getPerTimeUnitDefinition() != NULL &&
+    variableUnits->getPerTimeUnitDefinition()->getNumUnits() > 0);
 
 
   /* check that the formula is okay 
@@ -1334,7 +1769,8 @@ START_CONSTRAINT (10533, RateRule, rr)
   pre ( variableUnits != NULL); 
 
   /* in L3 need to check that time units were set */
-  pre ( variableUnits->getPerTimeUnitDefinition()->getNumUnits() > 0);
+  pre(variableUnits->getPerTimeUnitDefinition() != NULL &&
+    variableUnits->getPerTimeUnitDefinition()->getNumUnits() > 0);
 
   /* check that the formula is okay 
      ie has no parameters with undeclared units */
@@ -1395,7 +1831,8 @@ START_CONSTRAINT (10534, RateRule, rr)
   pre ( variableUnits != NULL ); 
 
   /* in L3 need to check that time units were set */
-  pre ( variableUnits->getPerTimeUnitDefinition()->getNumUnits() > 0);
+  pre(variableUnits->getPerTimeUnitDefinition() != NULL &&
+    variableUnits->getPerTimeUnitDefinition()->getNumUnits() > 0);
 
   /* check that the formula is okay 
      ie has no parameters with undeclared units */
@@ -1466,7 +1903,7 @@ START_CONSTRAINT (10541, KineticLaw, kl)
   msg += ".";
 
 
-  inv (UnitDefinition::areIdentical(formulaUnits->getUnitDefinition(), 
+  inv (UnitDefinition::areIdenticalSIUnits(formulaUnits->getUnitDefinition(), 
                                       variableUnits->getUnitDefinition()) == 1);
 }
 END_CONSTRAINT
@@ -1528,8 +1965,10 @@ START_CONSTRAINT (10551, Event, e)
 
   pre ( e.isSetDelay() == 1 );
 
+  pre (e.getDelay()->isSetMath());
+
   const FormulaUnitsData * formulaUnits = 
-                                  m.getFormulaUnitsData(e.getId(), SBML_EVENT);
+                                  m.getFormulaUnitsData(e.getInternalId(), SBML_EVENT);
 
   pre ( formulaUnits != NULL );
 
@@ -1566,7 +2005,7 @@ START_CONSTRAINT (10561, EventAssignment, ea)
 
   EventAssignment *pEa = const_cast<EventAssignment *> (&ea);
   std::string eId = 
-    static_cast <Event *> (pEa->getAncestorOfType(SBML_EVENT))->getId();
+    static_cast <Event *> (pEa->getAncestorOfType(SBML_EVENT))->getInternalId();
   const string& variable = ea.getVariable();
   const Compartment* c = m.getCompartment(variable);
 
@@ -1619,7 +2058,7 @@ START_CONSTRAINT (10562, EventAssignment, ea)
    
   EventAssignment *pEa = const_cast<EventAssignment *> (&ea);
   std::string eId = 
-    static_cast <Event *> (pEa->getAncestorOfType(SBML_EVENT))->getId();
+    static_cast <Event *> (pEa->getAncestorOfType(SBML_EVENT))->getInternalId();
   const string& variable = ea.getVariable();
   const Species * s = m.getSpecies(variable);
 
@@ -1666,7 +2105,7 @@ START_CONSTRAINT (10563, EventAssignment, ea)
    
   EventAssignment *pEa = const_cast<EventAssignment *> (&ea);
   std::string eId = 
-    static_cast <Event *> (pEa->getAncestorOfType(SBML_EVENT))->getId();
+    static_cast <Event *> (pEa->getAncestorOfType(SBML_EVENT))->getInternalId();
   const string& variable = ea.getVariable();
   const Parameter* p = m.getParameter(variable);
 
@@ -1713,7 +2152,7 @@ START_CONSTRAINT (10564, EventAssignment, ea)
 
   EventAssignment *pEa = const_cast<EventAssignment *> (&ea);
   std::string eId = 
-    static_cast <Event *> (pEa->getAncestorOfType(SBML_EVENT))->getId();
+    static_cast <Event *> (pEa->getAncestorOfType(SBML_EVENT))->getInternalId();
 
   pre ( ea.getLevel() > 2);
   pre ( sr != NULL);
@@ -1838,5 +2277,58 @@ START_CONSTRAINT (20702, Parameter, p)
   inv( p.isSetUnits() );
 }
 END_CONSTRAINT
+
+START_CONSTRAINT (99127, KineticLaw, kl)
+{
+  pre( kl.getLevel() == 1 || (kl.getLevel() == 2 && kl.getVersion() == 1));
+  pre( kl.isSetSubstanceUnits() );
+  
+  //msg =
+  //  "A KineticLaw's substanceUnits must be 'substance', 'item', 'mole', or "
+  //  "the id of a UnitDefinition that defines a variant of 'item' or 'mole' "
+  //  "(L2v1 Section 4.9.7).";
+
+
+  const string&         units = kl.getSubstanceUnits();
+  const UnitDefinition* defn  = m.getUnitDefinition(units);
+
+  std::string rnId = (kl.getAncestorOfType(SBML_REACTION) != NULL) ?
+    kl.getAncestorOfType(SBML_REACTION)->getId() : std::string("");
+  msg = "The substanceUnits of the <kineticLaw> in the <reaction> '" + rnId;
+  msg += "' are '" + units + "', which are not a variant of 'item' or 'mole'.";
+
+  inv_or( units == "substance" );
+  inv_or( units == "item"      );
+  inv_or( units == "mole"      );
+  inv_or( defn  != NULL && defn->isVariantOfSubstance() );
+}
+END_CONSTRAINT
+
+
+START_CONSTRAINT (99128, KineticLaw, kl)
+{
+  pre( kl.getLevel() == 1 || (kl.getLevel() == 2 && kl.getVersion() == 1));
+  pre( kl.isSetTimeUnits() );
+
+  //msg =
+  //  "A KineticLaw's timeUnits must be 'time', 'second', or the id of a "
+  //  "UnitDefnition that defines a variant of 'second' with exponent='1' "
+  //  "(L2v1 Section 4.9.7).";
+
+
+  const string&         units = kl.getTimeUnits();
+  const UnitDefinition* defn  = m.getUnitDefinition(units);
+
+  std::string rnId = (kl.getAncestorOfType(SBML_REACTION) != NULL) ?
+    kl.getAncestorOfType(SBML_REACTION)->getId() : std::string("");
+  msg = "The timeUnits of the <kineticLaw> in the <reaction> '" + rnId;
+  msg += "' are '" + units + "', which are not a variant of 'second'.";
+
+  inv_or( units == "time"   );
+  inv_or( units == "second" );
+  inv_or( defn  != NULL && defn->isVariantOfTime() );
+}
+END_CONSTRAINT
+
 /** @endcond */
 

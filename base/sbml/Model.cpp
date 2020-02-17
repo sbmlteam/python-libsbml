@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -55,6 +59,8 @@
 
 #include <sbml/util/IdentifierTransformer.h>
 #include <sbml/util/ElementFilter.h>
+#include <sbml/util/IdFilter.h>
+#include <sbml/util/MetaIdFilter.h>
 
 #include <sbml/extension/SBMLExtensionRegistry.h>
 #include <sbml/extension/SBasePlugin.h>
@@ -70,8 +76,6 @@ LIBSBML_CPP_NAMESPACE_BEGIN
 
 Model::Model (unsigned int level, unsigned int version) :
    SBase ( level, version )
- , mId               ( "" )
- , mName             ( "" )
  , mSubstanceUnits   ( "" )
  , mTimeUnits        ( "" )
  , mVolumeUnits      ( "" )
@@ -92,6 +96,9 @@ Model::Model (unsigned int level, unsigned int version) :
  , mReactions           (level,version)
  , mEvents              (level,version)
  , mFormulaUnitsData ( NULL  )
+ , mIdList (  )
+ , mMetaidList ( )
+ , mUnitsDataMap ()
 {
   if (!hasValidLevelVersionNamespaceCombination())
     throw SBMLConstructorException();
@@ -102,8 +109,6 @@ Model::Model (unsigned int level, unsigned int version) :
 
 Model::Model (SBMLNamespaces * sbmlns) :
    SBase             ( sbmlns )
- , mId               ( "" )
- , mName             ( "" )
  , mSubstanceUnits   ( "" )
  , mTimeUnits        ( "" )
  , mVolumeUnits      ( "" )
@@ -124,6 +129,9 @@ Model::Model (SBMLNamespaces * sbmlns) :
  , mReactions           (sbmlns)
  , mEvents              (sbmlns)
  , mFormulaUnitsData ( NULL  )
+ , mIdList (  )
+ , mMetaidList ( )
+ , mUnitsDataMap ()
 {
   if (!hasValidLevelVersionNamespaceCombination())
   {
@@ -151,6 +159,8 @@ Model::~Model ()
     }
     delete mFormulaUnitsData;
   }
+
+  mUnitsDataMap.clear();
 }
 
 
@@ -159,8 +169,6 @@ Model::~Model ()
  */
 Model::Model(const Model& orig)
   : SBase                (orig)
-  , mId                  (orig.mId)
-  , mName                (orig.mName)
   , mSubstanceUnits      (orig.mSubstanceUnits)
   , mTimeUnits           (orig.mTimeUnits)
   , mVolumeUnits         (orig.mVolumeUnits)
@@ -181,21 +189,29 @@ Model::Model(const Model& orig)
   , mReactions           (orig.mReactions)
   , mEvents              (orig.mEvents)
   , mFormulaUnitsData    (NULL)
+  , mIdList              (orig.mIdList)
+  , mMetaidList          (orig.mMetaidList)
+  , mUnitsDataMap        ()
 {
 
-  if(orig.mFormulaUnitsData != NULL)
+  if (orig.mFormulaUnitsData != NULL)
   {
-    this->mFormulaUnitsData  = new List();
-    unsigned int i,iMax = orig.mFormulaUnitsData->getSize();
-    for(i = 0; i < iMax; ++i)
+    this->mFormulaUnitsData = new List();
+    unsigned int i, iMax = orig.mFormulaUnitsData->getSize();
+    for (i = 0; i < iMax; ++i)
     {
-      this->mFormulaUnitsData
-        ->add(static_cast<FormulaUnitsData*>
-                                (orig.mFormulaUnitsData->get(i))->clone());
+      FormulaUnitsData *newFud = static_cast<FormulaUnitsData*>
+        (orig.mFormulaUnitsData->get(i))->clone();
+      this->mFormulaUnitsData->add((void *)newFud);
+      std::string id = newFud->getUnitReferenceId();
+      int typecode = newFud->getComponentTypecode();
+
+      KeyValue key(id, typecode);
+      mUnitsDataMap.insert(make_pair(key, newFud));
     }
   }
-  
   connectToChild();
+  
 }
 
 
@@ -207,8 +223,6 @@ Model& Model::operator=(const Model& rhs)
   if(&rhs!=this)
   {
     this->SBase::operator = (rhs);
-    mId = rhs.mId;
-    mName = rhs.mName;
     mSubstanceUnits       = rhs.mSubstanceUnits ;
     mTimeUnits            = rhs.mTimeUnits ;
     mVolumeUnits          = rhs.mVolumeUnits ;
@@ -237,6 +251,7 @@ Model& Model::operator=(const Model& rhs)
         delete static_cast<FormulaUnitsData*>( 
                           this->mFormulaUnitsData->remove(0) );
       delete this->mFormulaUnitsData;
+      mUnitsDataMap.clear();
     }
 
     if(rhs.mFormulaUnitsData != NULL)
@@ -245,16 +260,25 @@ Model& Model::operator=(const Model& rhs)
       unsigned int i,iMax = rhs.mFormulaUnitsData->getSize();
       for(i = 0; i < iMax; ++i)
       {
-        this->mFormulaUnitsData
-          ->add(static_cast<FormulaUnitsData*>
-                                   (rhs.mFormulaUnitsData->get(i))->clone());
+        FormulaUnitsData *newFud = static_cast<FormulaUnitsData*>
+          (rhs.mFormulaUnitsData->get(i))->clone();
+        this->mFormulaUnitsData->add((void *)newFud);
+        std::string id = newFud->getUnitReferenceId();
+        int typecode = newFud->getComponentTypecode();
+
+        KeyValue key(id, typecode);
+        mUnitsDataMap.insert(make_pair(key, newFud));
       }
     }
     else
     {
       this->mFormulaUnitsData = NULL;
+      mUnitsDataMap.clear();
     }
   }
+
+  mIdList     = rhs.mIdList;
+  mMetaidList = rhs.mMetaidList;
 
   connectToChild();
 
@@ -406,7 +430,7 @@ int
 Model::renameAllIds(IdentifierTransformer* idTransformer, ElementFilter* filter)
 {
   if (idTransformer == NULL) 
-	return LIBSBML_OPERATION_SUCCESS;
+  return LIBSBML_OPERATION_SUCCESS;
   
   //get all elements
   List* allElements = getAllElements(filter);
@@ -441,32 +465,32 @@ Model::renameIDs(List* elements, IdentifierTransformer* idTransformer)
     element->transformIdentifiers(idTransformer);
 
     if (element->getTypeCode() == SBML_LOCAL_PARAMETER) 
-	{
+  {
       element->setId(id); //Change it back.  This would perhaps be better served by overriding 'prependStringToAllIdentifiers' but hey.
     }
     string newid = element->getId();
     string newmetaid = element->getMetaId();
     if (id != newid) 
-	{
+  {
       int type = element->getTypeCode();
       if (type==SBML_UNIT_DEFINITION) 
-	  {
+    {
         renamedUnitSIds.push_back(make_pair(id, newid));
       }
       //else if (type==SBML_COMP_PORT) 
-	  //{
+    //{
       //  //Do nothing--these can only be referenced from outside the Model, so they need to be handled specially.
       //  // (In the default case, we throw them away).
       //}
       else 
-	  {
+    {
         //This is a little dangerous, but hey!  What's a little danger between friends!
         //(What we are assuming is that any attribute you can get with 'getId' is of the type 'SId')
         renamedSIds.push_back(make_pair(id, newid));
       }
     }
     if (metaid != newmetaid) 
-	{
+  {
       renamedMetaIds.push_back(make_pair(metaid, newmetaid));
     }
   }
@@ -474,19 +498,19 @@ Model::renameIDs(List* elements, IdentifierTransformer* idTransformer)
   for (unsigned long el = 0; el< elements->getSize(); ++el) 
   {
     SBase* element = static_cast<SBase*>(elements->get((unsigned int)el));
-	
+  
     for (it = renamedSIds.begin(); it != renamedSIds.end(); ++it) 
-	{
+  {
       element->renameSIdRefs((*it).first, (*it).second);
     }
-	
+  
     for (it = renamedUnitSIds.begin(); it != renamedUnitSIds.end(); ++it) 
-	{
+  {
       element->renameUnitSIdRefs((*it).first, (*it).second);
     }
-	
+  
     for (it = renamedMetaIds.begin(); it != renamedMetaIds.end(); ++it) 
-	{
+  {
       element->renameMetaIdRefs((*it).first, (*it).second);
     }
   }
@@ -587,7 +611,7 @@ Model::getConversionFactor () const
 
 
 /*
- * @return true if the id of this SBML object has been set, false
+ * @return @c true if the id of this SBML object has been set, false
  * otherwise.
  */
 bool
@@ -598,7 +622,7 @@ Model::isSetId () const
 
 
 /*
- * @return true if the name of this SBML object is set, false
+ * @return @c true if the name of this SBML object is set, false
  * otherwise.
  */
 bool
@@ -687,7 +711,7 @@ Model::isSetConversionFactor () const
 
 
 /*
- * Sets the id of this SBML object to a copy of sid.
+ * Sets the id of this SBML object to a copy of @p sid.
  */
 int
 Model::setId (const std::string& sid)
@@ -1146,9 +1170,7 @@ Model::addFunctionDefinition (const FunctionDefinition* fd)
   }
   else
   {
-    mFunctionDefinitions.append(fd);
-   
-    return LIBSBML_OPERATION_SUCCESS;
+    return mFunctionDefinitions.append(fd);
   }
 }
 
@@ -1171,9 +1193,7 @@ Model::addUnitDefinition (const UnitDefinition* ud)
   }
   else
   {
-    mUnitDefinitions.append(ud);
-
-    return LIBSBML_OPERATION_SUCCESS;
+    return mUnitDefinitions.append(ud);
   }
 }
 
@@ -1196,9 +1216,7 @@ Model::addCompartmentType (const CompartmentType* ct)
   }
   else
   {
-    mCompartmentTypes.append(ct);
-
-    return LIBSBML_OPERATION_SUCCESS;
+    return mCompartmentTypes.append(ct);
   }
 }
 
@@ -1221,9 +1239,7 @@ Model::addSpeciesType (const SpeciesType* st)
   }
   else
   {
-    mSpeciesTypes.append(st);
-
-    return LIBSBML_OPERATION_SUCCESS;
+    return mSpeciesTypes.append(st);
   }
 }
 
@@ -1246,9 +1262,7 @@ Model::addCompartment (const Compartment* c)
   }
   else
   {
-    mCompartments.append(c);
-
-    return LIBSBML_OPERATION_SUCCESS;
+    return mCompartments.append(c);
   }
 }
 
@@ -1271,9 +1285,7 @@ Model::addSpecies (const Species* s)
   }
   else
   {
-    mSpecies.append(s);
-
-    return LIBSBML_OPERATION_SUCCESS;
+    return mSpecies.append(s);
   }
 }
 
@@ -1299,15 +1311,13 @@ Model::addParameter (const Parameter* p)
     /* hack so that this will accept a local parameter !! */
     if (p->getTypeCode() == SBML_LOCAL_PARAMETER)
     {
-      Parameter *p1 = new Parameter(*p);
-      mParameters.append(p1);
+      Parameter p1(*p);
+      return mParameters.append(&p1);
     }
     else
     {
-      mParameters.append(p);
+      return mParameters.append(p);
     }
-
-    return LIBSBML_OPERATION_SUCCESS;
   }
 }
 
@@ -1330,9 +1340,7 @@ Model::addInitialAssignment (const InitialAssignment* ia)
   }
   else
   {
-    mInitialAssignments.append(ia);
-
-    return LIBSBML_OPERATION_SUCCESS;
+    return mInitialAssignments.append(ia);
   }
 }
 
@@ -1356,9 +1364,7 @@ Model::addRule (const Rule* r)
   }
   else
   {
-    mRules.append(r);
-
-    return LIBSBML_OPERATION_SUCCESS;
+    return mRules.append(r);
   }
 }
 
@@ -1376,9 +1382,7 @@ Model::addConstraint (const Constraint* c)
   }
   else
   {
-    mConstraints.append(c);
-
-    return LIBSBML_OPERATION_SUCCESS;
+    return mConstraints.append(c);
   }
 }
 
@@ -1401,9 +1405,7 @@ Model::addReaction (const Reaction* r)
   }
   else
   {
-    mReactions.append(r);
-
-    return LIBSBML_OPERATION_SUCCESS;
+    return mReactions.append(r);
   }
 }
 
@@ -1426,9 +1428,7 @@ Model::addEvent (const Event* e)
   }
   else
   {
-    mEvents.append(e);
-
-    return LIBSBML_OPERATION_SUCCESS;
+    return mEvents.append(e);
   }
 }
 
@@ -3328,7 +3328,7 @@ int Model::removeFromParentAndDelete()
 
 /** @cond doxygenLibsbmlInternal */
 /*
- * @return true if the given ASTNode is a boolean.  Often times, this
+ * @return @c true if the given ASTNode is a boolean.  Often times, this
  * question can be answered with the ASTNode's own isBoolean() method,
  * but if the AST is an expression that calls a function defined in the
  * Model's ListOf FunctionDefinitions, the model is needed for lookup
@@ -3354,7 +3354,7 @@ Model::isBoolean (const ASTNode* node) const
 
     if (fd != NULL && fd->isSetMath())
     {
-      return isBoolean( fd->getMath()->getRightChild() );
+      return isBoolean( fd->getBody() );
     }
     else
     {
@@ -3408,18 +3408,18 @@ void
 Model::connectToChild()
 {
       SBase::connectToChild();
-	  mFunctionDefinitions.connectToParent(this);
-	  mUnitDefinitions    .connectToParent(this);
-	  mCompartmentTypes   .connectToParent(this);
-	  mSpeciesTypes       .connectToParent(this);
-	  mCompartments       .connectToParent(this);
-	  mSpecies            .connectToParent(this);
-	  mParameters         .connectToParent(this);
-	  mInitialAssignments .connectToParent(this);
-	  mRules              .connectToParent(this);
-	  mConstraints        .connectToParent(this);
-	  mReactions          .connectToParent(this);
-	  mEvents             .connectToParent(this);
+    mFunctionDefinitions.connectToParent(this);
+    mUnitDefinitions    .connectToParent(this);
+    mCompartmentTypes   .connectToParent(this);
+    mSpeciesTypes       .connectToParent(this);
+    mCompartments       .connectToParent(this);
+    mSpecies            .connectToParent(this);
+    mParameters         .connectToParent(this);
+    mInitialAssignments .connectToParent(this);
+    mRules              .connectToParent(this);
+    mConstraints        .connectToParent(this);
+    mReactions          .connectToParent(this);
+    mEvents             .connectToParent(this);
 }
 
 
@@ -3446,6 +3446,28 @@ Model::enablePackageInternal(const std::string& pkgURI,
   mConstraints        .enablePackageInternal(pkgURI,pkgPrefix,flag);
   mReactions          .enablePackageInternal(pkgURI,pkgPrefix,flag);
   mEvents             .enablePackageInternal(pkgURI,pkgPrefix,flag);
+}
+
+
+void
+Model::updateSBMLNamespace(const std::string& pkg, unsigned int level,
+  unsigned int version)
+{
+  SBase::updateSBMLNamespace(pkg, level, version);
+
+  mFunctionDefinitions.updateSBMLNamespace(pkg, level, version);
+  mUnitDefinitions.updateSBMLNamespace(pkg, level, version);
+  mCompartmentTypes.updateSBMLNamespace(pkg, level, version);
+  mSpeciesTypes.updateSBMLNamespace(pkg, level, version);
+  mCompartments.updateSBMLNamespace(pkg, level, version);
+  mSpecies.updateSBMLNamespace(pkg, level, version);
+  mParameters.updateSBMLNamespace(pkg, level, version);
+  mInitialAssignments.updateSBMLNamespace(pkg, level, version);
+  mRules.updateSBMLNamespace(pkg, level, version);
+  mConstraints.updateSBMLNamespace(pkg, level, version);
+  mReactions.updateSBMLNamespace(pkg, level, version);
+  mEvents.updateSBMLNamespace(pkg, level, version);
+
 }
 /** @endcond */
 
@@ -3763,6 +3785,908 @@ Model::removeEvent (const std::string& sid)
   return mEvents.remove(sid);
 }
 
+
+
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Model.
+ */
+int
+Model::getAttribute(const std::string& attributeName, bool& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Model.
+ */
+int
+Model::getAttribute(const std::string& attributeName, int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Model.
+ */
+int
+Model::getAttribute(const std::string& attributeName, double& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Model.
+ */
+int
+Model::getAttribute(const std::string& attributeName,
+                    unsigned int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Model.
+ */
+int
+Model::getAttribute(const std::string& attributeName,
+                    std::string& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "substanceUnits")
+  {
+    value = getSubstanceUnits();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "timeUnits")
+  {
+    value = getTimeUnits();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "volumeUnits")
+  {
+    value = getVolumeUnits();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "lengthUnits")
+  {
+    value = getLengthUnits();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "areaUnits")
+  {
+    value = getAreaUnits();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "extentUnits")
+  {
+    value = getExtentUnits();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "conversionFactor")
+  {
+    value = getConversionFactor();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Model.
+ */
+//int
+//Model::getAttribute(const std::string& attributeName, const char* value) const
+//{
+//  int return_value = SBase::getAttribute(attributeName, value);
+//
+//  if (return_value == LIBSBML_OPERATION_SUCCESS)
+//  {
+//    return return_value;
+//  }
+//
+//  if (attributeName == "substanceUnits")
+//  {
+//    value = getSubstanceUnits().c_str();
+//    return_value = LIBSBML_OPERATION_SUCCESS;
+//  }
+//  else if (attributeName == "timeUnits")
+//  {
+//    value = getTimeUnits().c_str();
+//    return_value = LIBSBML_OPERATION_SUCCESS;
+//  }
+//  else if (attributeName == "volumeUnits")
+//  {
+//    value = getVolumeUnits().c_str();
+//    return_value = LIBSBML_OPERATION_SUCCESS;
+//  }
+//  else if (attributeName == "lengthUnits")
+//  {
+//    value = getLengthUnits().c_str();
+//    return_value = LIBSBML_OPERATION_SUCCESS;
+//  }
+//  else if (attributeName == "areaUnits")
+//  {
+//    value = getAreaUnits().c_str();
+//    return_value = LIBSBML_OPERATION_SUCCESS;
+//  }
+//  else if (attributeName == "extentUnits")
+//  {
+//    value = getExtentUnits().c_str();
+//    return_value = LIBSBML_OPERATION_SUCCESS;
+//  }
+//  else if (attributeName == "conversionFactor")
+//  {
+//    value = getConversionFactor().c_str();
+//    return_value = LIBSBML_OPERATION_SUCCESS;
+//  }
+//
+//  return return_value;
+//}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Predicate returning @c true if this Model's attribute "attributeName" is
+ * set.
+ */
+bool
+Model::isSetAttribute(const std::string& attributeName) const
+{
+  bool value = SBase::isSetAttribute(attributeName);
+
+  if (attributeName == "substanceUnits")
+  {
+    value = isSetSubstanceUnits();
+  }
+  else if (attributeName == "timeUnits")
+  {
+    value = isSetTimeUnits();
+  }
+  else if (attributeName == "volumeUnits")
+  {
+    value = isSetVolumeUnits();
+  }
+  else if (attributeName == "lengthUnits")
+  {
+    value = isSetLengthUnits();
+  }
+  else if (attributeName == "areaUnits")
+  {
+    value = isSetAreaUnits();
+  }
+  else if (attributeName == "extentUnits")
+  {
+    value = isSetExtentUnits();
+  }
+  else if (attributeName == "conversionFactor")
+  {
+    value = isSetConversionFactor();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Model.
+ */
+int
+Model::setAttribute(const std::string& attributeName, bool value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Model.
+ */
+int
+Model::setAttribute(const std::string& attributeName, int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Model.
+ */
+int
+Model::setAttribute(const std::string& attributeName, double value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Model.
+ */
+int
+Model::setAttribute(const std::string& attributeName, unsigned int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Model.
+ */
+int
+Model::setAttribute(const std::string& attributeName,
+                    const std::string& value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  if (attributeName == "substanceUnits")
+  {
+    return_value = setSubstanceUnits(value);
+  }
+  else if (attributeName == "timeUnits")
+  {
+    return_value = setTimeUnits(value);
+  }
+  else if (attributeName == "volumeUnits")
+  {
+    return_value = setVolumeUnits(value);
+  }
+  else if (attributeName == "lengthUnits")
+  {
+    return_value = setLengthUnits(value);
+  }
+  else if (attributeName == "areaUnits")
+  {
+    return_value = setAreaUnits(value);
+  }
+  else if (attributeName == "extentUnits")
+  {
+    return_value = setExtentUnits(value);
+  }
+  else if (attributeName == "conversionFactor")
+  {
+    return_value = setConversionFactor(value);
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Model.
+ */
+//int
+//Model::setAttribute(const std::string& attributeName, const char* value)
+//{
+//  int return_value = SBase::setAttribute(attributeName, value);
+//
+//  if (attributeName == "substanceUnits")
+//  {
+//    return_value = setSubstanceUnits(value);
+//  }
+//  else if (attributeName == "timeUnits")
+//  {
+//    return_value = setTimeUnits(value);
+//  }
+//  else if (attributeName == "volumeUnits")
+//  {
+//    return_value = setVolumeUnits(value);
+//  }
+//  else if (attributeName == "lengthUnits")
+//  {
+//    return_value = setLengthUnits(value);
+//  }
+//  else if (attributeName == "areaUnits")
+//  {
+//    return_value = setAreaUnits(value);
+//  }
+//  else if (attributeName == "extentUnits")
+//  {
+//    return_value = setExtentUnits(value);
+//  }
+//  else if (attributeName == "conversionFactor")
+//  {
+//    return_value = setConversionFactor(value);
+//  }
+//
+//  return return_value;
+//}
+//
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Unsets the value of the "attributeName" attribute of this Model.
+ */
+int
+Model::unsetAttribute(const std::string& attributeName)
+{
+  int value = SBase::unsetAttribute(attributeName);
+
+  if (attributeName == "substanceUnits")
+  {
+    value = unsetSubstanceUnits();
+  }
+  else if (attributeName == "timeUnits")
+  {
+    value = unsetTimeUnits();
+  }
+  else if (attributeName == "volumeUnits")
+  {
+    value = unsetVolumeUnits();
+  }
+  else if (attributeName == "lengthUnits")
+  {
+    value = unsetLengthUnits();
+  }
+  else if (attributeName == "areaUnits")
+  {
+    value = unsetAreaUnits();
+  }
+  else if (attributeName == "extentUnits")
+  {
+    value = unsetExtentUnits();
+  }
+  else if (attributeName == "conversionFactor")
+  {
+    value = unsetConversionFactor();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Creates and returns an new "elementName" object in this Model.
+ */
+SBase*
+Model::createChildObject(const std::string& elementName)
+{
+  SBase* obj = NULL;
+
+  if (elementName == "functionDefinition")
+  {
+    return createFunctionDefinition();
+  }
+  else if (elementName == "unitDefinition")
+  {
+    return createUnitDefinition();
+  }
+  else if (elementName == "compartment")
+  {
+    return createCompartment();
+  }
+  else if (elementName == "species")
+  {
+    return createSpecies();
+  }
+  else if (elementName == "parameter")
+  {
+    return createParameter();
+  }
+  else if (elementName == "initialAssignment")
+  {
+    return createInitialAssignment();
+  }
+  else if (elementName == "constraint")
+  {
+    return createConstraint();
+  }
+  else if (elementName == "reaction")
+  {
+    return createReaction();
+  }
+  else if (elementName == "event")
+  {
+    return createEvent();
+  }
+  else if (elementName == "assignmentRule")
+  {
+    return createAssignmentRule();
+  }
+  else if (elementName == "parameterAssignmentRule")
+  {
+    AssignmentRule *ar = createAssignmentRule();
+    ar->setL1TypeCode(SBML_PARAMETER_RULE);
+    return ar;
+  }
+  else if (elementName == "speciesAssignmentRule")
+  {
+    AssignmentRule *ar = createAssignmentRule();
+    ar->setL1TypeCode(SBML_SPECIES_CONCENTRATION_RULE);
+    return ar;
+  }
+  else if (elementName == "compartmentAssignmentRule")
+  {
+    AssignmentRule *ar = createAssignmentRule();
+    ar->setL1TypeCode(SBML_COMPARTMENT_VOLUME_RULE);
+    return ar;
+  }
+  else if (elementName == "parameterRateRule")
+  {
+    RateRule *ar = createRateRule();
+    ar->setL1TypeCode(SBML_PARAMETER_RULE);
+    return ar;
+  }
+  else if (elementName == "speciesRateRule")
+  {
+    RateRule *ar = createRateRule();
+    ar->setL1TypeCode(SBML_SPECIES_CONCENTRATION_RULE);
+    return ar;
+  }
+  else if (elementName == "compartmentRateRule")
+  {
+    RateRule *ar = createRateRule();
+    ar->setL1TypeCode(SBML_COMPARTMENT_VOLUME_RULE);
+    return ar;
+  }
+  else if (elementName == "rateRule")
+  {
+    return createRateRule();
+  }
+  else if (elementName == "algebraicRule")
+  {
+    return createAlgebraicRule();
+  }
+  else if (elementName == "compartmentType")
+  {
+    return createCompartmentType();
+  }
+  else if (elementName == "speciesType")
+  {
+    return createSpeciesType();
+  }
+
+  return obj;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Adds an new "elementName" object in this Model.
+ */
+int
+Model::addChildObject(const std::string& elementName, const SBase* element)
+{
+  if (elementName == "functionDefinition" && element->getTypeCode() == SBML_FUNCTION_DEFINITION)
+  {
+    return addFunctionDefinition((const FunctionDefinition*)(element));
+  }
+  else if (elementName == "unitDefinition"  && element->getTypeCode() == SBML_UNIT_DEFINITION)
+  {
+    return addUnitDefinition((const UnitDefinition*)(element));
+  }
+  else if (elementName == "compartment"  && element->getTypeCode() == SBML_COMPARTMENT)
+  {
+    return addCompartment((const Compartment*)(element));
+  }
+  else if (elementName == "species"  && element->getTypeCode() == SBML_SPECIES)
+  {
+    return addSpecies((const Species*)(element));
+  }
+  else if (elementName == "parameter"  && element->getTypeCode() == SBML_PARAMETER)
+  {
+    return addParameter((const Parameter*)(element));
+  }
+  else if (elementName == "initialAssignment"  && element->getTypeCode() == SBML_INITIAL_ASSIGNMENT)
+  {
+    return addInitialAssignment((const InitialAssignment*)(element));
+  }
+  else if (elementName == "constraint"  && element->getTypeCode() == SBML_CONSTRAINT)
+  {
+    return addConstraint((const Constraint*)(element));
+  }
+  else if (elementName == "reaction"  && element->getTypeCode() == SBML_REACTION)
+  {
+    return addReaction((const Reaction*)(element));
+  }
+  else if (elementName == "event"  && element->getTypeCode() == SBML_EVENT)
+  {
+    return addEvent((const Event*)(element));
+  }
+  else if (elementName == "assignmentRule"  && element->getTypeCode() == SBML_ASSIGNMENT_RULE)
+  {
+    return addRule((const Rule*)(element));
+  }
+  else if (elementName == "rateRule"  && element->getTypeCode() == SBML_RATE_RULE)
+  {
+    return addRule((const Rule*)(element));
+  }
+  else if (elementName == "algebraicRule"  && element->getTypeCode() == SBML_ALGEBRAIC_RULE)
+  {
+    return addRule((const Rule*)(element));
+  }
+  else if (elementName == "compartmentType"  && element->getTypeCode() == SBML_COMPARTMENT_TYPE)
+  {
+    return addCompartmentType((const CompartmentType*)(element));
+  }
+  else if (elementName == "speciesType"  && element->getTypeCode() == SBML_SPECIES_TYPE)
+  {
+    return addSpeciesType((const SpeciesType*)(element));
+  }
+
+  return LIBSBML_OPERATION_FAILED;
+}
+
+/** @endcond */
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Adds an new "elementName" object in this Model.
+ */
+SBase*
+Model::removeChildObject(const std::string& elementName, const std::string& id)
+{
+  if (elementName == "functionDefinition")
+  {
+    return removeFunctionDefinition(id);
+  }
+  else if (elementName == "unitDefinition")
+  {
+    return removeUnitDefinition(id);
+  }
+  else if (elementName == "compartment")
+  {
+    return removeCompartment(id);
+  }
+  else if (elementName == "species")
+  {
+    return removeSpecies(id);
+  }
+  else if (elementName == "parameter")
+  {
+    return removeParameter(id);
+  }
+  else if (elementName == "initialAssignment")
+  {
+    return removeInitialAssignment(id);
+  }
+  else if (elementName == "constraint")
+  {
+ //   return removeConstraint(id);
+  }
+  else if (elementName == "reaction")
+  {
+    return removeReaction(id);
+  }
+  else if (elementName == "event")
+  {
+    return removeEvent(id);
+  }
+  else if (elementName == "assignmentRule")
+  {
+    return removeRule(id);
+  }
+  else if (elementName == "rateRule")
+  {
+    return removeRule(id);
+  }
+  else if (elementName == "algebraicRule")
+  {
+    return removeRule(id);
+  }
+  else if (elementName == "compartmentType")
+  {
+    return removeCompartmentType(id);
+  }
+  else if (elementName == "speciesType")
+  {
+    return removeSpeciesType(id);
+  }
+
+  return NULL;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Returns the number of "elementName" in this Model.
+ */
+unsigned int
+Model::getNumObjects(const std::string& elementName)
+{
+  unsigned int n = 0;
+
+  if (elementName == "functionDefinition")
+  {
+    return getNumFunctionDefinitions();
+  }
+  else if (elementName == "unitDefinition")
+  {
+    return getNumUnitDefinitions();
+  }
+  else if (elementName == "compartment")
+  {
+    return getNumCompartments();
+  }
+  else if (elementName == "species")
+  {
+    return getNumSpecies();
+  }
+  else if (elementName == "parameter")
+  {
+    return getNumParameters();
+  }
+  else if (elementName == "initialAssignment")
+  {
+    return getNumInitialAssignments();
+  }
+  else if (elementName == "constraint")
+  {
+    return getNumConstraints();
+  }
+  else if (elementName == "reaction")
+  {
+    return getNumReactions();
+  }
+  else if (elementName == "event")
+  {
+    return getNumEvents();
+  }
+  else if (elementName == "rule")
+  {
+    return getNumRules();
+  }
+  else if (elementName == "assignmentRule")
+  {
+    return getNumRules();
+  }
+  else if (elementName == "parameterAssignmentRule")
+  {
+    return getNumRules();
+  }
+  else if (elementName == "speciesAssignmentRule")
+  {
+    return getNumRules();
+  }
+  else if (elementName == "compartmentAssignmentRule")
+  {
+    return getNumRules();
+  }
+  else if (elementName == "parameterRateRule")
+  {
+    return getNumRules();
+  }
+  else if (elementName == "speciesRateRule")
+  {
+    return getNumRules();
+  }
+  else if (elementName == "compartmentRateRule")
+  {
+    return getNumRules();
+  }
+  else if (elementName == "rateRule")
+  {
+    return getNumRules();
+  }
+  else if (elementName == "algebraicRule")
+  {
+    return getNumRules();
+  }
+  else if (elementName == "compartmentType")
+  {
+    return getNumCompartmentTypes();
+  }
+  else if (elementName == "speciesType")
+  {
+    return getNumSpeciesTypes();
+  }
+
+  return n;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Returns the nth object of "objectName" in this Model.
+ */
+SBase*
+Model::getObject(const std::string& elementName, unsigned int index)
+{
+  SBase* obj = NULL;
+
+  if (elementName == "functionDefinition")
+  {
+    return getFunctionDefinition(index);
+  }
+  else if (elementName == "unitDefinition")
+  {
+    return getUnitDefinition(index);
+  }
+  else if (elementName == "compartment")
+  {
+    return getCompartment(index);
+  }
+  else if (elementName == "species")
+  {
+    return getSpecies(index);
+  }
+  else if (elementName == "parameter")
+  {
+    return getParameter(index);
+  }
+  else if (elementName == "initialAssignment")
+  {
+    return getInitialAssignment(index);
+  }
+  else if (elementName == "constraint")
+  {
+    return getConstraint(index);
+  }
+  else if (elementName == "reaction")
+  {
+    return getReaction(index);
+  }
+  else if (elementName == "event")
+  {
+    return getEvent(index);
+  }
+  else if (elementName == "rule")
+  {
+    return getRule(index);
+  }
+  else if (elementName == "assignmentRule")
+  {
+    return getRule(index);
+  }
+  else if (elementName == "parameterAssignmentRule")
+  {
+    return getRule(index);
+  }
+  else if (elementName == "speciesAssignmentRule")
+  {
+    return getRule(index);
+  }
+  else if (elementName == "compartmentAssignmentRule")
+  {
+    return getRule(index);
+  }
+  else if (elementName == "parameterRateRule")
+  {
+    return getRule(index);
+  }
+  else if (elementName == "speciesRateRule")
+  {
+    return getRule(index);
+  }
+  else if (elementName == "compartmentRateRule")
+  {
+    return getRule(index);
+  }
+  else if (elementName == "rateRule")
+ {
+    return getRule(index);
+  }
+  else if (elementName == "algebraicRule")
+  {
+    return getRule(index);
+  }
+  else if (elementName == "compartmentType")
+  {
+    return getCompartmentType(index);
+  }
+  else if (elementName == "speciesType")
+  {
+    return getSpeciesType(index);
+  }
+
+  return obj;
+}
+
+/** @endcond */
+
+
+
 int 
 Model::appendFrom(const Model* model)
 {
@@ -3827,7 +4751,7 @@ Model::renameUnitSIdRefs(const std::string& oldid, const std::string& newid)
  * Subclasses should override this method to read (and store) XHTML,
  * MathML, etc. directly from the XMLInputStream.
  *
- * @return true if the subclass read from the stream, false otherwise.
+ * @return @c true if the subclass read from the stream, false otherwise.
  */
 bool
 Model::readOtherXML (XMLInputStream& stream)
@@ -3848,8 +4772,8 @@ Model::readOtherXML (XMLInputStream& stream)
       if (getLevel() < 3) 
       {
         logError(NotSchemaConformant, getLevel(), getVersion(),
-	        "Only one <annotation> element is permitted inside a "
-	        "particular containing element.");
+          "Only one <annotation> element is permitted inside a "
+          "particular containing element.");
       }
       else
       {
@@ -3895,7 +4819,7 @@ Model::readOtherXML (XMLInputStream& stream)
     {
       mPlugins[i]->parseAnnotation(this, mAnnotation);
     }
-	
+  
     read = true;
   }
 
@@ -3944,6 +4868,7 @@ Model::createObject (XMLInputStream& stream)
         logError(OneOfEachListOf);
       }
     }
+    mFunctionDefinitions.setExplicitlyListed();
     object = &mFunctionDefinitions;
   }
 
@@ -3960,6 +4885,7 @@ Model::createObject (XMLInputStream& stream)
         logError(OneOfEachListOf);
       }
     }
+    mUnitDefinitions.setExplicitlyListed();
     object = &mUnitDefinitions;
   }
 
@@ -3975,6 +4901,7 @@ Model::createObject (XMLInputStream& stream)
     {
       logError(NotSchemaConformant);
     }
+    mCompartmentTypes.setExplicitlyListed();
     object = &mCompartmentTypes;
   }
 
@@ -3990,6 +4917,7 @@ Model::createObject (XMLInputStream& stream)
     {
       logError(NotSchemaConformant);
     }
+    mSpeciesTypes.setExplicitlyListed();
     object = &mSpeciesTypes;
   }
 
@@ -4006,6 +4934,7 @@ Model::createObject (XMLInputStream& stream)
         logError(OneOfEachListOf);
       }
     }
+    mCompartments.setExplicitlyListed();
     object = &mCompartments;
   }
   
@@ -4022,6 +4951,7 @@ Model::createObject (XMLInputStream& stream)
         logError(OneOfEachListOf);
       }
     }
+    mSpecies.setExplicitlyListed();
     object = &mSpecies;
   }
 
@@ -4038,6 +4968,7 @@ Model::createObject (XMLInputStream& stream)
         logError(OneOfEachListOf);
       }
     }
+    mParameters.setExplicitlyListed();
     object = &mParameters;
   }
 
@@ -4058,6 +4989,7 @@ Model::createObject (XMLInputStream& stream)
         logError(OneOfEachListOf);
       }
     }
+    mInitialAssignments.setExplicitlyListed();
     object = &mInitialAssignments;
   }
 
@@ -4074,6 +5006,7 @@ Model::createObject (XMLInputStream& stream)
         logError(OneOfEachListOf);
       }
     }
+    mRules.setExplicitlyListed();
     object = &mRules;
   }
 
@@ -4094,6 +5027,7 @@ Model::createObject (XMLInputStream& stream)
         logError(OneOfEachListOf);
       }
     }
+    mConstraints.setExplicitlyListed();
     object = &mConstraints;
   }
 
@@ -4110,6 +5044,7 @@ Model::createObject (XMLInputStream& stream)
         logError(OneOfEachListOf);
       }
     }
+    mReactions.setExplicitlyListed();
     object = &mReactions;
   }
 
@@ -4130,6 +5065,7 @@ Model::createObject (XMLInputStream& stream)
         logError(OneOfEachListOf);
       }
     }
+    mEvents.setExplicitlyListed();
     object = &mEvents;
   }
 
@@ -4196,7 +5132,7 @@ Model::addExpectedAttributes(ExpectedAttributes& attributes)
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 Model::readAttributes (const XMLAttributes& attributes,
@@ -4227,7 +5163,7 @@ Model::readAttributes (const XMLAttributes& attributes,
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 Model::readL1Attributes (const XMLAttributes& attributes)
@@ -4255,7 +5191,7 @@ Model::readL1Attributes (const XMLAttributes& attributes)
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 Model::readL2Attributes (const XMLAttributes& attributes)
@@ -4284,7 +5220,7 @@ Model::readL2Attributes (const XMLAttributes& attributes)
   //
   if (version == 2) 
     mSBOTerm = SBO::readTerm(attributes, this->getErrorLog(), level, version,
-				getLine(), getColumn());
+        getLine(), getColumn());
   
 }
 /** @endcond */
@@ -4294,7 +5230,7 @@ Model::readL2Attributes (const XMLAttributes& attributes)
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 Model::readL3Attributes (const XMLAttributes& attributes)
@@ -4302,22 +5238,33 @@ Model::readL3Attributes (const XMLAttributes& attributes)
   const unsigned int level   = getLevel  ();
   const unsigned int version = getVersion();
 
+  bool assigned;
   //
   //   id: SId    { use="optional" }  (L2v1 -> )
   //
-  bool assigned = attributes.readInto("id", mId, getErrorLog(), false, getLine(), getColumn());
-  if (assigned && mId.size() == 0)
+  // for l3v2 sbase will read this as generically optional
+  // we want to log errors relating to the specific object
+  if (version == 1)
   {
-    logEmptyString("id", level, version, "<model>");
+    assigned = attributes.readInto("id", mId, getErrorLog(), false, 
+      getLine(), getColumn());
+    if (assigned && mId.size() == 0)
+    {
+      logEmptyString("id", level, version, "<model>");
+    }
+    if (!SyntaxChecker::isValidInternalSId(mId))
+    {
+      logError(InvalidIdSyntax, level, version, "The id '" + mId + 
+      "' does not conform to the syntax.");
+    }
+
+    //
+    // name: string  { use="optional" }  (L2v1 ->)
+    //
+    attributes.readInto("name", mName, getErrorLog(), false, 
+                                       getLine(), getColumn());
   }
-  if (!SyntaxChecker::isValidInternalSId(mId)) 
-    logError(InvalidIdSyntax, level, version, "The id '" + mId + "' does not conform to the syntax.");
 
-
-  //
-  // name: string  { use="optional" }  (L2v1 ->)
-  //
-  attributes.readInto("name", mName, getErrorLog(), false, getLine(), getColumn());
 
   //
   // substanceUnits: string  { use="optional" }  (L3v1 ->)
@@ -4408,7 +5355,7 @@ Model::readL3Attributes (const XMLAttributes& attributes)
 /** @cond doxygenLibsbmlInternal */
 /*
  * Subclasses should override this method to write their XML attributes
- * to the XMLOutputStream.  Be sure to call your parents implementation
+ * to the XMLOutputStream.  Be sure to call your parent's implementation
  * of this method as well.
  */
 void
@@ -4429,19 +5376,26 @@ Model::writeAttributes (XMLOutputStream& stream) const
     SBO::writeTerm(stream, mSBOTerm);
   }
 
+  // for L3V2 and above SBase will write this out
+  if (level < 3 || (level == 3 && version == 1))
+  {
   //
   // name: SName   { use="required" }  (L1v1, L1v2)
   //   id: SId     { use="required" }  (L2v1->)
   //
   const string id = (level == 1) ? "name" : "id";
   stream.writeAttribute(id, mId);
-
+  }
   if (level > 1)
   {
-    //
-    // name: string  { use="optional" }  (L2v1->)
-    //
-    stream.writeAttribute("name", mName);
+    // for L3V2 and above SBase will write this out
+    if (level < 3 || (level == 3 && version == 1))
+    {
+      //
+      // name: string  { use="optional" }  (L2v1->)
+      //
+      stream.writeAttribute("name", mName);
+    }
   }
 
   if (level > 2)
@@ -4494,13 +5448,16 @@ Model::writeAttributes (XMLOutputStream& stream) const
 /** @cond doxygenLibsbmlInternal */
 /*
  * Subclasses should override this method to write out their contained
- * SBML objects as XML elements.  Be sure to call your parents
+ * SBML objects as XML elements.  Be sure to call your parent's
  * implementation of this method as well.
  */
 void
 Model::writeElements (XMLOutputStream& stream) const
 {
-  if ( mNotes ) stream << *mNotes;
+  if (mNotes != NULL)
+  {
+    mNotes->writeToStream(stream);
+  }
   Model * m = const_cast <Model *> (this);
   m->syncAnnotation();
   if ( mAnnotation ) stream << *mAnnotation;
@@ -4508,40 +5465,119 @@ Model::writeElements (XMLOutputStream& stream) const
   const unsigned int level   = getLevel  ();
   const unsigned int version = getVersion();
 
-  if (level > 1 && getNumFunctionDefinitions() > 0)
+  // for l3v2 there may not be any elements in the listOf but
+  // if there is other information i.e. attributes/notes/annotations
+  // we write out the empty wrapper with this information
+  if (level == 3 && version > 1)
   {
-    mFunctionDefinitions.write(stream);
+    if (mFunctionDefinitions.hasOptionalElements() == true ||
+        mFunctionDefinitions.hasOptionalAttributes() == true ||
+        mFunctionDefinitions.isExplicitlyListed())
+    {
+      mFunctionDefinitions.write(stream);
+    }
+
+    if (mUnitDefinitions.hasOptionalElements() == true ||
+        mUnitDefinitions.hasOptionalAttributes() == true ||
+        mUnitDefinitions.isExplicitlyListed())
+    {
+      mUnitDefinitions.write(stream);
+    }
+
+    if (mCompartments.hasOptionalElements() == true ||
+        mCompartments.hasOptionalAttributes() == true ||
+        mCompartments.isExplicitlyListed())
+    {
+      mCompartments.write(stream);
+    }
+
+    if (mSpecies.hasOptionalElements() == true ||
+        mSpecies.hasOptionalAttributes() == true ||
+        mSpecies.isExplicitlyListed())
+    {
+      mSpecies.write(stream);
+    }
+
+    if (mParameters.hasOptionalElements() == true ||
+        mParameters.hasOptionalAttributes() == true ||
+        mParameters.isExplicitlyListed())
+    {
+      mParameters.write(stream);
+    }
+
+    if (mInitialAssignments.hasOptionalElements() == true ||
+        mInitialAssignments.hasOptionalAttributes() == true ||
+        mInitialAssignments.isExplicitlyListed())
+    {
+      mInitialAssignments.write(stream);
+    }
+
+    if (mRules.hasOptionalElements() == true ||
+        mRules.hasOptionalAttributes() == true ||
+        mRules.isExplicitlyListed())
+    {
+      mRules.write(stream);
+    }
+
+    if (mConstraints.hasOptionalElements() == true ||
+        mConstraints.hasOptionalAttributes() == true ||
+        mConstraints.isExplicitlyListed())
+    {
+      mConstraints.write(stream);
+    }
+
+    if (mReactions.hasOptionalElements() == true ||
+        mReactions.hasOptionalAttributes() == true ||
+        mReactions.isExplicitlyListed())
+    {
+      mReactions.write(stream);
+    }
+
+    if (mEvents.hasOptionalElements() == true ||
+        mEvents.hasOptionalAttributes() == true ||
+        mEvents.isExplicitlyListed())
+    {
+      mEvents.write(stream);
+    }
   }
-
-  if ( getNumUnitDefinitions() > 0 ) mUnitDefinitions.write(stream);
-
-  if (level == 2 && version > 1)
+  else
   {
-    if ( getNumCompartmentTypes() > 0 ) mCompartmentTypes.write(stream);
-    if ( getNumSpeciesTypes    () > 0 ) mSpeciesTypes    .write(stream);
-  }
+      // code as before
+    if (level > 1 && getNumFunctionDefinitions() > 0 )
+    {
+      mFunctionDefinitions.write(stream);
+    }
 
-  if ( getNumCompartments() > 0 ) mCompartments.write(stream);
-  if ( getNumSpecies     () > 0 ) mSpecies     .write(stream);
-  if ( getNumParameters  () > 0 ) mParameters  .write(stream);
+    if ( getNumUnitDefinitions() > 0 ) mUnitDefinitions.write(stream);
 
-  if (level > 2 || (level == 2 && version > 1))
-  {
-    if ( getNumInitialAssignments() > 0 ) mInitialAssignments.write(stream);
-  }
+    if (level == 2 && version > 1)
+    {
+      if ( getNumCompartmentTypes() > 0 ) mCompartmentTypes.write(stream);
+      if ( getNumSpeciesTypes    () > 0 ) mSpeciesTypes    .write(stream);
+    }
 
-  if ( getNumRules() > 0 ) mRules.write(stream);
+    if ( getNumCompartments() > 0 ) mCompartments.write(stream);
+    if ( getNumSpecies     () > 0 ) mSpecies     .write(stream);
+    if ( getNumParameters  () > 0 ) mParameters  .write(stream);
 
-  if (level > 2 || (level == 2 && version > 1))
-  {
-    if ( getNumConstraints() > 0 ) mConstraints.write(stream);
-  }
+    if (level > 2 || (level == 2 && version > 1))
+    {
+      if ( getNumInitialAssignments() > 0 ) mInitialAssignments.write(stream);
+    }
 
-  if ( getNumReactions() > 0 ) mReactions.write(stream);
+    if ( getNumRules() > 0 ) mRules.write(stream);
 
-  if (level > 1 && getNumEvents () > 0 )
-  {
-    mEvents.write(stream);
+    if (level > 2 || (level == 2 && version > 1))
+    {
+      if ( getNumConstraints() > 0 ) mConstraints.write(stream);
+    }
+
+    if ( getNumReactions() > 0 ) mReactions.write(stream);
+
+    if (level > 1 && getNumEvents () > 0 )
+    {
+      mEvents.write(stream);
+    }
   }
 
   //
@@ -4599,19 +5635,19 @@ void Model::createSpeciesReferenceUnitsData(SpeciesReference* sr,
   
   if (sr->isSetStoichiometryMath())
   {
-    fud = createFormulaUnitsData();
-    fud->setUnitReferenceId(sr->getSpecies());
+    fud = createFormulaUnitsData(sr->getSpecies(), SBML_STOICHIOMETRY_MATH);
+    //fud->setUnitReferenceId(sr->getSpecies());
     sr->getStoichiometryMath()->setInternalId(sr->getSpecies());
-    fud->setComponentTypecode(SBML_STOICHIOMETRY_MATH);
+    //fud->setComponentTypecode(SBML_STOICHIOMETRY_MATH);
     
     createUnitsDataFromMath(unitFormatter, fud, 
                             sr->getStoichiometryMath()->getMath());
   }
   else if (sr->getLevel() > 2 && sr->isSetId())
   {
-    fud = createFormulaUnitsData();
-    fud->setUnitReferenceId(sr->getId());
-    fud->setComponentTypecode(SBML_SPECIES_REFERENCE);
+    fud = createFormulaUnitsData(sr->getId(), SBML_SPECIES_REFERENCE);
+    //fud->setUnitReferenceId(sr->getId());
+    //fud->setComponentTypecode(SBML_SPECIES_REFERENCE);
     
     /* units will be dimensionless */
     UnitDefinition* ud;
@@ -4673,6 +5709,7 @@ Model::populateListFormulaUnitsData()
   // for math expressions already evaluated
 
   createInitialAssignmentUnitsData(unitFormatter);
+  createConstraintUnitsData(unitFormatter);
   createRuleUnitsData(unitFormatter);
   createReactionUnitsData(unitFormatter);
   createEventUnitsData(unitFormatter);
@@ -4694,6 +5731,8 @@ Model::removeListFormulaUnitsData()
     delete mFormulaUnitsData;
     mFormulaUnitsData = NULL;
   }
+
+  mUnitsDataMap.clear();
 }
 /** @endcond */
 
@@ -4703,10 +5742,10 @@ void
 Model::createSubstanceUnitsData()
 {
   UnitDefinition *ud = NULL;
-  FormulaUnitsData *fud = createFormulaUnitsData();
+  FormulaUnitsData *fud = createFormulaUnitsData("substance", SBML_MODEL);
   
-  fud->setUnitReferenceId("substance");
-  fud->setComponentTypecode(SBML_MODEL);
+  //fud->setUnitReferenceId("substance");
+  //fud->setComponentTypecode(SBML_MODEL);
   
   if (getLevel() < 3)
   {
@@ -4814,10 +5853,10 @@ void
 Model::createTimeUnitsData()
 {
   UnitDefinition *ud = NULL;
-  FormulaUnitsData *fud = createFormulaUnitsData();
+  FormulaUnitsData *fud = createFormulaUnitsData("time", SBML_MODEL);
   
-  fud->setUnitReferenceId("time");
-  fud->setComponentTypecode(SBML_MODEL);
+  //fud->setUnitReferenceId("time");
+  //fud->setComponentTypecode(SBML_MODEL);
   
   if (getLevel() < 3)
   {
@@ -4925,10 +5964,10 @@ void
 Model::createVolumeUnitsData()
 {
   UnitDefinition *ud = NULL;
-  FormulaUnitsData *fud = createFormulaUnitsData();
+  FormulaUnitsData *fud = createFormulaUnitsData("volume", SBML_MODEL);
   
-  fud->setUnitReferenceId("volume");
-  fud->setComponentTypecode(SBML_MODEL);
+  //fud->setUnitReferenceId("volume");
+  //fud->setComponentTypecode(SBML_MODEL);
   
   if (getLevel() < 3)
   {
@@ -5036,10 +6075,10 @@ void
 Model::createAreaUnitsData()
 {
   UnitDefinition *ud = NULL;
-  FormulaUnitsData *fud = createFormulaUnitsData();
+  FormulaUnitsData *fud = createFormulaUnitsData("area", SBML_MODEL);
   
-  fud->setUnitReferenceId("area");
-  fud->setComponentTypecode(SBML_MODEL);
+  //fud->setUnitReferenceId("area");
+  //fud->setComponentTypecode(SBML_MODEL);
   
   if (getLevel() < 3)
   {
@@ -5149,10 +6188,10 @@ void
 Model::createLengthUnitsData()
 {
   UnitDefinition *ud = NULL;
-  FormulaUnitsData *fud = createFormulaUnitsData();
+  FormulaUnitsData *fud = createFormulaUnitsData("length", SBML_MODEL);
   
-  fud->setUnitReferenceId("length");
-  fud->setComponentTypecode(SBML_MODEL);
+  //fud->setUnitReferenceId("length");
+  //fud->setComponentTypecode(SBML_MODEL);
   
   if (getLevel() < 3)
   {
@@ -5260,10 +6299,10 @@ void
 Model::createExtentUnitsData()
 {
   UnitDefinition *ud = NULL;
-  FormulaUnitsData *fud = createFormulaUnitsData();
+  FormulaUnitsData *fud = createFormulaUnitsData("extent", SBML_MODEL);
   
-  fud->setUnitReferenceId("extent");
-  fud->setComponentTypecode(SBML_MODEL);
+  //fud->setUnitReferenceId("extent");
+  //fud->setComponentTypecode(SBML_MODEL);
   
   if (getLevel() < 3)
   {
@@ -5349,10 +6388,10 @@ void
 Model::createSubstancePerTimeUnitsData()
 {
   UnitDefinition *ud = NULL;
-  FormulaUnitsData *fud = createFormulaUnitsData();
+  FormulaUnitsData *fud = createFormulaUnitsData("subs_per_time", SBML_UNKNOWN);
   
-  fud->setUnitReferenceId("subs_per_time");
-  fud->setComponentTypecode(SBML_UNKNOWN);
+  //fud->setUnitReferenceId("subs_per_time");
+  //fud->setComponentTypecode(SBML_UNKNOWN);
   
   if (getLevel() < 3)
   {
@@ -5451,9 +6490,9 @@ Model::createCompartmentUnitsData()
   {
     Compartment* c = getCompartment(n);
     
-    fud = createFormulaUnitsData();    
-    fud->setUnitReferenceId(c->getId());
-    fud->setComponentTypecode(SBML_COMPARTMENT);
+    fud = createFormulaUnitsData(c->getId(), SBML_COMPARTMENT);
+    //fud->setUnitReferenceId(c->getId());
+    //fud->setComponentTypecode(SBML_COMPARTMENT);
     
     ud = unitFormatter.getUnitDefinitionFromCompartment(c);
     
@@ -5482,9 +6521,9 @@ Model::createSpeciesUnitsData()
   {
     Species* s = getSpecies(n);
     
-    fud = createFormulaUnitsData();
-    fud->setUnitReferenceId(s->getId());
-    fud->setComponentTypecode(SBML_SPECIES);
+    fud = createFormulaUnitsData(s->getId(), SBML_SPECIES);
+    //fud->setUnitReferenceId(s->getId());
+    //fud->setComponentTypecode(SBML_SPECIES);
     
     /* TO DO - sort out getUDFromSpecies
      */
@@ -5533,9 +6572,9 @@ Model::createL3SpeciesUnitsData()
     /* create the substance unit */
     unitFormatter.resetFlags();
 
-    fud = createFormulaUnitsData();
-    fud->setUnitReferenceId(s->getId()+"subs");
-    fud->setComponentTypecode(SBML_SPECIES);
+    fud = createFormulaUnitsData(s->getId() + "subs", SBML_SPECIES);
+    //fud->setUnitReferenceId(s->getId()+"subs");
+    //fud->setComponentTypecode(SBML_SPECIES);
     
     ud = unitFormatter.getSpeciesSubstanceUnitDefinition(s);
    
@@ -5557,9 +6596,9 @@ Model::createL3SpeciesUnitsData()
     /* create the extent unit */
     unitFormatter.resetFlags();
     
-    fud = createFormulaUnitsData();
-    fud->setUnitReferenceId(s->getId()+"extent");
-    fud->setComponentTypecode(SBML_SPECIES);
+    fud = createFormulaUnitsData(s->getId() + "extent", SBML_SPECIES);
+    //fud->setUnitReferenceId(s->getId()+"extent");
+    //fud->setComponentTypecode(SBML_SPECIES);
     
     ud = unitFormatter.getSpeciesExtentUnitDefinition(s);
     
@@ -5596,9 +6635,9 @@ Model::createParameterUnitsData()
     
     unitFormatter.resetFlags();
 
-    fud = createFormulaUnitsData();
-    fud->setUnitReferenceId(p->getId());
-    fud->setComponentTypecode(SBML_PARAMETER);
+    fud = createFormulaUnitsData(p->getId(), SBML_PARAMETER);
+    //fud->setUnitReferenceId(p->getId());
+    //fud->setComponentTypecode(SBML_PARAMETER);
     
     unitFormatter.resetFlags();
     ud = unitFormatter.getUnitDefinitionFromParameter(p);
@@ -5631,6 +6670,7 @@ Model::createUnitsDataFromMath(UnitFormulaFormatter * unitFormatter,
                               (unitFormatter->getContainsUndeclaredUnits());
     fud->setCanIgnoreUndeclaredUnits
                                 (unitFormatter->canIgnoreUndeclaredUnits());
+    fud->setContainsInconsistency(unitFormatter->getContainsInconsistentUnits());
   }
 
   fud->setUnitDefinition(ud);
@@ -5648,15 +6688,39 @@ Model::createInitialAssignmentUnitsData(UnitFormulaFormatter * unitFormatter)
   {
     InitialAssignment* ia = getInitialAssignment(n);
     
-    fud = createFormulaUnitsData();
-    fud->setUnitReferenceId(ia->getSymbol());
-    fud->setComponentTypecode(SBML_INITIAL_ASSIGNMENT);
+    fud = createFormulaUnitsData(ia->getSymbol(), SBML_INITIAL_ASSIGNMENT);
+    //fud->setUnitReferenceId(ia->getSymbol());
+    //fud->setComponentTypecode(SBML_INITIAL_ASSIGNMENT);
       
     createUnitsDataFromMath(unitFormatter, fud, ia->getMath());
   }
 }
 /** @endcond */
 
+
+/** @cond doxygenLibsbmlInternal */
+void
+Model::createConstraintUnitsData(UnitFormulaFormatter * unitFormatter)
+{
+  FormulaUnitsData *fud = NULL;
+  char newId[15];
+  std::string newID;
+
+  for (unsigned int n = 0; n < getNumConstraints(); n++)
+  {
+    Constraint* c = getConstraint(n);
+    sprintf(newId, "constraint_%u", n);
+    newID.assign(newId);
+    c->setInternalId(newID);
+
+    fud = createFormulaUnitsData(newID, SBML_CONSTRAINT);
+    //fud->setUnitReferenceId(newID);
+    //fud->setComponentTypecode(SBML_CONSTRAINT);
+
+    createUnitsDataFromMath(unitFormatter, fud, c->getMath());
+  }
+}
+/** @endcond */
 
 /** @cond doxygenLibsbmlInternal */
 void
@@ -5671,7 +6735,7 @@ Model::createRuleUnitsData(UnitFormulaFormatter * unitFormatter)
   {
     Rule* r = getRule(n);
     
-    fud = createFormulaUnitsData();
+    //fud = createFormulaUnitsData();
     // need to create an id for an algebbraic rule
     if (r->getTypeCode() == SBML_ALGEBRAIC_RULE)
     {
@@ -5681,13 +6745,15 @@ Model::createRuleUnitsData(UnitFormulaFormatter * unitFormatter)
       static_cast <AlgebraicRule *> (r)->setInternalIdOnly();
       countAlg++;
 
-      fud->setUnitReferenceId(newID);
+      fud = createFormulaUnitsData(newID, r->getTypeCode());
+      //fud->setUnitReferenceId(newID);
     }
     else
     {
-      fud->setUnitReferenceId(r->getVariable());
+      fud = createFormulaUnitsData(r->getVariable(), r->getTypeCode());
+      //fud->setUnitReferenceId(r->getVariable());
     }
-    fud->setComponentTypecode(r->getTypeCode());
+    //fud->setComponentTypecode(r->getTypeCode());
     
     createUnitsDataFromMath(unitFormatter, fud, r->getMath());
   }
@@ -5709,8 +6775,8 @@ Model::createReactionUnitsData(UnitFormulaFormatter * unitFormatter)
     /* get units returned by kineticLaw formula */
     if (react->isSetKineticLaw())
     {
-      fud = createFormulaUnitsData();
-      fud->setUnitReferenceId(react->getId());
+      fud = createFormulaUnitsData(react->getId(), SBML_KINETIC_LAW);
+      //fud->setUnitReferenceId(react->getId());
 
       /* set the id of the kinetic law 
        * normally a kinetic law doesnt have an id
@@ -5720,7 +6786,7 @@ Model::createReactionUnitsData(UnitFormulaFormatter * unitFormatter)
        */
       react->getKineticLaw()->setInternalId(react->getId());
 
-      fud->setComponentTypecode(SBML_KINETIC_LAW);
+      //fud->setComponentTypecode(SBML_KINETIC_LAW);
 
       // have to use the old way for now as unitFormatter needs to know
       // if we are in a reaction so it can access localParameters
@@ -5769,18 +6835,17 @@ Model::createLocalParameterUnitsData(KineticLaw * kl,
   for (unsigned int n=0; n < kl->getNumParameters(); n++)
   {
     Parameter * lp = kl->getParameter(n);
-
-    fud = createFormulaUnitsData();
-  
     std::string lpId = lp->getId() + '_' + kl->getInternalId();
 
-    fud->setUnitReferenceId(lpId);
+    fud = createFormulaUnitsData(lpId, SBML_LOCAL_PARAMETER);
 
-    fud->setComponentTypecode(SBML_LOCAL_PARAMETER);
+    //fud->setUnitReferenceId(lpId);
+    //fud->setComponentTypecode(SBML_LOCAL_PARAMETER);
 
     std::string units = lp->getUnits();
     if (units.empty() == false)
     {
+      char * charUnits = safe_strdup(units.c_str());
       fud->setContainsParametersWithUndeclaredUnits(false);
 
       if (UnitKind_isValidUnitKindString(units.c_str(), 
@@ -5796,7 +6861,7 @@ Model::createLocalParameterUnitsData(KineticLaw * kl,
             SBMLDocument::getDefaultVersion());
         }
         Unit * unit = ud->createUnit();
-        unit->setKind(UnitKind_forName(units.c_str()));
+        unit->setKind(UnitKind_forName(charUnits));
         unit->initDefaults();
       }
       else
@@ -5823,6 +6888,7 @@ Model::createLocalParameterUnitsData(KineticLaw * kl,
         }
       }
 
+      safe_free(charUnits);
       fud->setUnitDefinition(ud);
       fud->setCanIgnoreUndeclaredUnits(false);
     }
@@ -5860,28 +6926,21 @@ Model::createEventUnitsData(UnitFormulaFormatter * unitFormatter)
   {
     Event* e = getEvent(n);
 
-    // sort out the id of this event - it may or may not be set
-    if (e->isSetId())
-    {
-      newID = e->getId();//sprintf(newId, "%s", e->getId());
-    }
-    else
-    {
-      sprintf(newId, "event_%u", countEvents);
-      newID.assign(newId);
-      countEvents++;
-    }
+    sprintf(newId, "event_%u", countEvents);
+    newID.assign(newId);
+    e->setInternalId(newID);
+    countEvents++;
     
-    if (!e->isSetId())
-    {
-      e->setId(newID);
-      e->setInternalIdOnly();
-    }
-
     /* dont need units returned by trigger formula - 
      * should be boolean
+     * but we might want to check they are defined
      */
-    
+    if (e->isSetTrigger())
+    {
+      createTriggerUnitsData(unitFormatter, e, newID);
+    }
+
+
     /* get units returned by dely */
     if (e->isSetDelay())
     {
@@ -5910,14 +6969,14 @@ Model::createDelayUnitsData(UnitFormulaFormatter* unitFormatter, Event * e,
                             const std::string& eventId)
 {
   UnitDefinition *ud = NULL;
-  FormulaUnitsData *fud = createFormulaUnitsData();
+  FormulaUnitsData *fud = createFormulaUnitsData(eventId, SBML_EVENT);
     
   Delay * d = e->getDelay();
 
-  fud->setUnitReferenceId(eventId);
+  //fud->setUnitReferenceId(eventId);
   d->setInternalId(eventId);
 
-  fud->setComponentTypecode(SBML_EVENT);
+  //fud->setComponentTypecode(SBML_EVENT);
 
   createUnitsDataFromMath(unitFormatter, fud, d->getMath());
   
@@ -5934,16 +6993,36 @@ Model::createDelayUnitsData(UnitFormulaFormatter* unitFormatter, Event * e,
 /** @endcond */
 
 /** @cond doxygenLibsbmlInternal */
+void
+Model::createTriggerUnitsData(UnitFormulaFormatter* unitFormatter, Event * e,
+  const std::string& eventId)
+{
+  //UnitDefinition *ud = NULL;
+  FormulaUnitsData *fud = createFormulaUnitsData(eventId, SBML_TRIGGER);
+
+  Trigger * d = e->getTrigger();
+
+  //fud->setUnitReferenceId(eventId);
+  d->setInternalId(eventId);
+
+  //fud->setComponentTypecode(SBML_TRIGGER);
+
+  createUnitsDataFromMath(unitFormatter, fud, d->getMath());
+
+  fud->setEventTimeUnitDefinition(NULL);
+}
+/** @endcond */
+/** @cond doxygenLibsbmlInternal */
 void 
 Model::createPriorityUnitsData(UnitFormulaFormatter* unitFormatter, 
                                Priority * p, const std::string& eventId)
 {
-  FormulaUnitsData *fud = createFormulaUnitsData();
+  FormulaUnitsData *fud = createFormulaUnitsData(eventId, SBML_PRIORITY);
     
-  fud->setUnitReferenceId(eventId);
+  //fud->setUnitReferenceId(eventId);
   p->setInternalId(eventId);
 
-  fud->setComponentTypecode(SBML_PRIORITY);
+  //fud->setComponentTypecode(SBML_PRIORITY);
 
   createUnitsDataFromMath(unitFormatter, fud, p->getMath());
 }
@@ -5954,12 +7033,11 @@ void
 Model::createEventAssignmentUnitsData(UnitFormulaFormatter* unitFormatter, 
                             EventAssignment * ea, const std::string& eventId)
 {
-  FormulaUnitsData *fud = createFormulaUnitsData();
-  
   std::string eaId = ea->getVariable() + eventId;
+  FormulaUnitsData *fud = createFormulaUnitsData(eaId, SBML_EVENT_ASSIGNMENT);
 
-  fud->setUnitReferenceId(eaId);
-  fud->setComponentTypecode(SBML_EVENT_ASSIGNMENT);
+  //fud->setUnitReferenceId(eaId);
+  //fud->setComponentTypecode(SBML_EVENT_ASSIGNMENT);
 
   createUnitsDataFromMath(unitFormatter, fud, ea->getMath());
 }
@@ -5978,7 +7056,13 @@ Model::addFormulaUnitsData (const FormulaUnitsData* fud)
     mFormulaUnitsData = new List();
   }
 
-  mFormulaUnitsData->add((void *)fud->clone());
+  FormulaUnitsData *newFud = fud->clone();
+  mFormulaUnitsData->add((void *)newFud);
+  std::string id =  fud->getUnitReferenceId();
+  int typecode = fud->getComponentTypecode();
+
+  KeyValue key(id, typecode);
+  mUnitsDataMap.insert(make_pair(key, newFud));
 }
 /** @endcond */
 
@@ -6001,6 +7085,29 @@ Model::createFormulaUnitsData ()
 }
 /** @endcond */
 
+
+/** @cond doxygenLibsbmlInternal */
+/**
+* Creates a new FormulaUnitsData inside this Model and returns it.
+*/
+FormulaUnitsData*
+Model::createFormulaUnitsData(const std::string& id, int typecode)
+{
+  FormulaUnitsData* fud = new FormulaUnitsData();
+  if (mFormulaUnitsData == NULL)
+  {
+    mFormulaUnitsData = new List();
+  }
+  fud->setUnitReferenceId(id);
+  fud->setComponentTypecode(typecode);
+
+  KeyValue key(id, typecode);
+  mUnitsDataMap.insert(make_pair(key, fud));
+  mFormulaUnitsData->add(fud);
+
+  return fud;
+}
+/** @endcond */
 
 /** @cond doxygenLibsbmlInternal */
 /*
@@ -6051,20 +7158,27 @@ Model::getFormulaUnitsData (const std::string& sid,
 FormulaUnitsData*
 Model::getFormulaUnitsData (const std::string& sid, int typecode)
 {
-  FormulaUnitsData * fud;
+  FormulaUnitsData * fud = NULL;
 
-  for (unsigned int n = 0; n < getNumFormulaUnitsData(); n++)
+  //for (unsigned int n = 0; n < getNumFormulaUnitsData(); n++)
+  //{
+  //  fud = static_cast <FormulaUnitsData*> (mFormulaUnitsData->get(n));
+  //  if (!strcmp(fud->getUnitReferenceId().c_str(), sid.c_str()))
+  //  {
+  //    if (fud->getComponentTypecode() == typecode)
+  //    {
+  //      return fud;
+  //    }
+  //  }
+  //}
+
+  KeyValue key(sid, typecode);
+  UnitsValueIter it = mUnitsDataMap.find(key);
+  if (it != mUnitsDataMap.end())
   {
-    fud = static_cast <FormulaUnitsData*> (mFormulaUnitsData->get(n));
-    if (!strcmp(fud->getUnitReferenceId().c_str(), sid.c_str()))
-    {
-      if (fud->getComponentTypecode() == typecode)
-      {
-        return fud;
-      }
-    }
+    fud = it->second;
   }
-  return NULL;
+  return fud;
 }
 /** @endcond */
 
@@ -6180,6 +7294,110 @@ Model::isPopulatedListFormulaUnitsData()
 }
 /** @endcond */
 
+
+/**
+ * Populates the internal list of the identifiers of all elements within this Model object.
+ */
+void 
+Model::populateAllElementIdList()
+{
+  mIdList.clear();
+  IdFilter filter;
+  List* allElements = this->getAllElements(&filter);
+
+  //for (unsigned int i = 0; i < allElements->getSize(); i++)
+  //{
+  //  mIdList.append(static_cast<SBase*>(allElements->get(i))->getId());
+  //}
+
+  for (ListIterator iter = allElements->begin(); iter != allElements->end(); ++iter)
+  {
+    mIdList.append(static_cast<SBase*>(*iter)->getId());
+  }
+
+  delete allElements;
+}
+
+
+/**
+  * @return @c true if the id list has already been populated, @c false
+  * otherwise.
+  */
+bool 
+Model::isPopulatedAllElementIdList() const
+{
+  return (mIdList.size() != 0);
+}
+
+
+/**
+  * Returns the internal list of the identifiers of all elements within this Model object.
+  */
+IdList
+Model::getAllElementIdList() const
+{
+  return mIdList;
+}
+
+
+/**
+  * Clears the internal list of the identifiers of all elements within this Model object.
+  */
+void
+Model::clearAllElementIdList()
+{
+  mIdList.clear();
+}
+
+
+/**
+ * Populates the internal list of the metaids of all elements within this Model object.
+ */
+void 
+Model::populateAllElementMetaIdList()
+{
+  mMetaidList.clear();
+  MetaIdFilter filter;
+  List* allElements = this->getAllElements(&filter);
+
+  for (ListIterator iter = allElements->begin(); iter != allElements->end(); ++iter)
+  {
+    mMetaidList.append(static_cast<SBase*>(*iter)->getMetaId());
+  }
+
+  delete allElements;
+}
+
+
+/**
+  * @return @c true if the metaid list has already been populated, @c false
+  * otherwise.
+  */
+bool 
+Model::isPopulatedAllElementMetaIdList() const
+{
+  return (mMetaidList.size() != 0);
+}
+
+
+/**
+  * Returns the internal list of the metaids of all elements within this Model object.
+  */
+IdList
+Model::getAllElementMetaIdList() const
+{
+  return mMetaidList;
+}
+
+
+/**
+  * Clears the internal list of the metaids of all elements within this Model object.
+  */
+void
+Model::clearAllElementMetaIdList()
+{
+  mMetaidList.clear();
+}
 
 
 #endif /* __cplusplus */

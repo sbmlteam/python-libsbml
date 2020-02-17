@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -508,21 +512,23 @@ START_CONSTRAINT(10701, Model, m1)
   pre(m1.isSetSBOTerm());
   msg = "SBO term '" + m1.getSBOTermID() + "' on the <model> is not in the appropriate branch.";
 
-  //msg = 
-  //  "The value of the 'sboTerm' attribute on a <model> must be an SBO "
-  //  "identifier (http://www.biomodels.net/SBO/) referring to a modeling "
-  //  "framework defined in SBO (i.e., terms derived from SBO:0000004, "
-  //  "\"modeling framework\"). "
-  //  "(References: L2V2 Section 4.2.1; L2V3 Section 4.2.2.)";
-
+  //L2V1-3 must be modelling framework
+  // L2v5 - occuring entity representation
+  // L3v1 - occuring entitiy representation
+  // l3V1R2 + L3V2 either is allowed
 
   if (m1.getLevel() == 2 && m1.getVersion() < 4)
   {
     inv(SBO::isModellingFramework((unsigned int)m1.getSBOTerm()));
   }
-  else
+  else if (m1.getLevel() == 2 && m1.getVersion() == 5)
   {
     inv(SBO::isOccurringEntityRepresentation((unsigned int)m1.getSBOTerm()));
+  }
+  else
+  {
+    inv_or(SBO::isModellingFramework((unsigned int)m1.getSBOTerm()));
+    inv_or(SBO::isOccurringEntityRepresentation((unsigned int)m1.getSBOTerm()));
   }
 }
 END_CONSTRAINT
@@ -968,6 +974,18 @@ START_CONSTRAINT(10717, Delay, d)
   inv(SBO::isMathematicalExpression((unsigned int)d.getSBOTerm()));
 }
 END_CONSTRAINT
+
+
+START_CONSTRAINT(10718, LocalParameter, p)
+{
+  pre(p.getLevel() > 2);
+  pre(p.isSetSBOTerm());
+  pre(p.getTypeCode() == SBML_LOCAL_PARAMETER);
+
+  inv(SBO::isQuantitativeSystemsDescriptionParameter(p.getSBOTerm()));
+}
+END_CONSTRAINT
+
 
 START_CONSTRAINT(99702, Model, m1)
 {

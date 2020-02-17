@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -41,13 +45,13 @@
  * at which the reaction takes place, and optional parameters.
  *
  * As with other major objects in SBML, Reaction has a mandatory attribute,
- * "id", used to give the compartment type an identifier.  The identifier
+ * "id", used to give the reaction an identifier.  The identifier
  * must be a text string conforming to the identifer syntax permitted in
  * SBML.  In SBML Level&nbsp;2 and Level&nbsp;3, the reaction "id"
  * identifier can be used in mathematical formulas elsewhere in an SBML
  * model to represent the rate of that reaction; this usage is explained
- * below.  Reaction also has an optional "name" attribute, of type @c
- * string.  The "id" and "name" must be used according to the guidelines
+ * below.  Reaction also has an optional "name" attribute, of type
+ * @c string.  The "id" and "name" must be used according to the guidelines
  * described in the SBML specification.
  *
  * The species participating as reactants, products, and/or modifiers in a
@@ -68,11 +72,14 @@
  * formula to refer to species that have not been declared for that
  * reaction.
  *
- * <li> A reaction definition can contain an empty list of reactants
+ * <li> For SBML Levels 1, 2, and SBML Level&nbsp;3 Version&nbsp;1, a 
+ * reaction definition can contain an empty list of reactants
  * <em>or</em> an empty list of products, but it must have at least one
  * reactant or product; in other words, a reaction without any reactant or
  * product species is not permitted.  (This restriction does not apply to
- * modifier species, which remain optional in all cases.)
+ * modifier species, which remain optional in all cases.)  In SBML 
+ * Level&nbsp;3 Version&nbsp;2, this requirement was dropped, allowing 
+ * the creation of reactions with neither reactants nor products.
  * </ul>
  * 
  * A reaction can contain up to one KineticLaw object in a subelement named
@@ -110,13 +117,16 @@
  * software generating it.
  *
  * The Reaction object class has another boolean attribute called "fast".
- * This attribute is optional in SBML Level&nbsp;2, with a default of @c
- * false; it is mandatory in SBML Level&nbsp;3 (with no default value).  It
+ * This attribute is optional in SBML Level&nbsp;2, with a default of
+ * @c false; it is mandatory in SBML Level&nbsp;3 (with no default value).  
+ * In SBML Level&nbsp;3 Version&nbsp;2, a value of @c true for the "fast"
+ * attribute is deprecated in favor of all reactions having a "fast" value 
+ * of @c false.  It
  * is used to indicate that a reaction occurs on a vastly faster time scale
  * than others in a system.  Readers are directed to the SBML Level&nbsp;2
  * Version&nbsp;4 specification, which provides more detail about the
  * conditions under which a reaction can be considered to be fast in this
- * sense.  The attribute's default value is @c false.  SBML Level&nbsp;1
+ * sense.  SBML Level&nbsp;1
  * and Level&nbsp;2 Version&nbsp;1 incorrectly claimed that software tools
  * could ignore this attribute if they did not implement support for the
  * corresponding concept; however, further research in SBML has revealed
@@ -129,7 +139,9 @@
  * so may lead to different results as compared to a software system that
  * <em>does</em> make use of "fast".
  *
- * In SBML Level&nbsp;3 Version&nbsp;1, the Reaction object has an
+ * @copydetails doc_fast_attribute_removed
+ *
+ * In SBML Level&nbsp;3, the Reaction object has an
  * additional optional attribute named "compartment", whose value must be
  * the identifier of a compartment defined in the enclosing Model object.
  * The "compartment" attribute can be used to indicate the compartment in
@@ -211,10 +223,10 @@ public:
    * Creates a new Reaction using the given SBML @p level and @p version
    * values.
    *
-   * @param level an unsigned int, the SBML Level to assign to this Reaction
+   * @param level an unsigned int, the SBML Level to assign to this Reaction.
    *
    * @param version an unsigned int, the SBML Version to assign to this
-   * Reaction
+   * Reaction.
    *
    * @copydetails doc_throw_exception_lv
    *
@@ -255,7 +267,7 @@ public:
   /**
    * Assignment operator for Reaction.
    *
-   * @param rhs The object whose values are used as the basis of the
+   * @param rhs the object whose values are used as the basis of the
    * assignment.
    */
   Reaction& operator=(const Reaction& rhs);
@@ -285,7 +297,7 @@ public:
    * Returns the first child element found that has the given @p id in the
    * model-wide SId namespace, or @c NULL if no such object is found.
    *
-   * @param id string representing the id of objects to find.
+   * @param id string representing the id of the object to find.
    *
    * @return pointer to the first element found with the given @p id.
    */
@@ -296,7 +308,7 @@ public:
    * Returns the first child element it can find with the given @p metaid, or
    * @c NULL if no such object is found.
    *
-   * @param metaid string representing the metaid of objects to find
+   * @param metaid string representing the metaid of the object to find.
    *
    * @return pointer to the first element found with the given @p metaid.
    */
@@ -306,6 +318,10 @@ public:
   /**
    * Returns a List of all child SBase objects, including those nested to an
    * arbitrary depth
+   *
+   * @param filter a pointer to an ElementFilter, which causes the function 
+   * to return only elements that match a particular set of constraints.  
+   * If NULL (the default), the function will return all child objects.
    *
    * @return a List of pointers to all children objects.
    */
@@ -329,7 +345,9 @@ public:
    * 
    * @li Sets the "reversible" attribute to @c true
    * @li Sets the "fast" attribute to @c false
-   * @li Marks the "fast" attribute as @em not having been set
+   * @li Marks the "fast" attribute as @em not having been set for
+   *     SBML Level&nbsp;2, but @em as having been set for
+   *     SBML Level&nbsp;1 and SBML Level&nbsp;3.
    *
    * @copydetails doc_warning_reaction_cant_ignore_fast
    */
@@ -338,16 +356,27 @@ public:
 
   /**
    * Returns the value of the "id" attribute of this Reaction.
-   * 
+   *
+   * @note Because of the inconsistent behavior of this function with 
+   * respect to assignments and rules, it is now recommended to
+   * use the getIdAttribute() function instead.
+   *
+   * @copydetails doc_id_attribute
+   *
    * @return the id of this Reaction.
+   *
+   * @see getIdAttribute()
+   * @see setIdAttribute(const std::string& sid)
+   * @see isSetIdAttribute()
+   * @see unsetIdAttribute()
    */
   virtual const std::string& getId () const;
 
 
   /**
-   * Returns the value of the "name" attribute of this Reaction.
-   * 
-   * @return the name of this Reaction.
+   * Returns the value of the "name" attribute of this Reaction object.
+   *
+   * @copydetails doc_get_name
    */
   virtual const std::string& getName () const;
 
@@ -380,6 +409,8 @@ public:
   /**
    * Returns the value of the "fast" attribute of this Reaction.
    * 
+   * @copydetails doc_fast_attribute_removed
+   *
    * @return the "fast" status of this Reaction.
    *
    * @copydetails doc_warning_reaction_cant_ignore_fast
@@ -393,8 +424,8 @@ public:
    * 
    * @return the compartment of this Reaction.
    *
-   * @note The "compartment" attribute is available in SBML Level&nbsp;3
-   * Version&nbsp;1 Core, but is not present on Reaction in lower Levels of
+   * @note The "compartment" attribute is available in SBML Level&nbsp;3,
+   * but is not present on Reaction in lower Levels of
    * SBML.
    */
   const std::string& getCompartment () const;
@@ -404,8 +435,7 @@ public:
    * Predicate returning @c true if this
    * Reaction's "id" attribute is set.
    *
-   * @return @c true if the "id" attribute of this Reaction is
-   * set, @c false otherwise.
+   * @copydetails doc_isset_id
    */
   virtual bool isSetId () const;
 
@@ -414,8 +444,7 @@ public:
    * Predicate returning @c true if this
    * Reaction's "name" attribute is set.
    *
-   * @return @c true if the "name" attribute of this Reaction is
-   * set, @c false otherwise.
+   * @copydetails doc_isset_name
    */
   virtual bool isSetName () const;
 
@@ -432,9 +461,11 @@ public:
 
   /**
    * Predicate returning @c true if the value of
-   * the "fast" attribute on this Reaction.
+   * the "fast" attribute on this Reaction is set.
    *
-   * @return @c true if the "fast" attribute is true, @c false otherwise.
+   * @copydetails doc_fast_attribute_removed
+   *
+   * @return @c true if the "fast" attribute is set, @c false otherwise.
    *
    * @copydetails doc_warning_reaction_cant_ignore_fast
    */
@@ -449,7 +480,7 @@ public:
    * set, @c false otherwise.
    *
    * @note The "compartment" attribute is available in SBML
-   * Level&nbsp;3 Version&nbsp;1 Core, but is not present on Reaction in
+   * Level&nbsp;3, but is not present on Reaction in
    * lower Levels of SBML.
    */
   bool isSetCompartment () const;
@@ -468,29 +499,15 @@ public:
   /**
    * Sets the value of the "id" attribute of this Reaction.
    *
-   * The string @p sid is copied.
-   *
-   * @copydetails doc_id_syntax
-   *
-   * @param sid the string to use as the identifier of this Reaction
-   *
-   * @copydetails doc_returns_success_code
-   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
+   * @copydetails doc_set_id
    */
-  virtual int setId (const std::string& sid);
+  virtual int setId(const std::string& sid);
 
 
   /**
    * Sets the value of the "name" attribute of this Reaction.
    *
-   * The string in @p name is copied.
-   *
-   * @param name the new name for the Reaction
-   *
-   * @copydetails doc_returns_success_code
-   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
+   * @copydetails doc_set_name
    */
   virtual int setName (const std::string& name);
 
@@ -523,11 +540,19 @@ public:
   /**
    * Sets the value of the "fast" attribute of this Reaction.
    *
+   * @copydetails doc_fast_attribute_removed
+   *
+   * Calling this function with an argument of @c true for an
+   * SBML Level&nbsp;3 Version&nbsp;2 Reaction will not set
+   * the value, as the attribute does not exist for that level/version.
+   * @li @sbmlconstant{LIBSBML_UNEXPECTED_ATTRIBUTE, OperationReturnValues_t}
+   *
    * @param value the value of the "fast" attribute.
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * 
+   * @li @sbmlconstant{LIBSBML_UNEXPECTED_ATTRIBUTE, OperationReturnValues_t}
+   *
    * @copydetails doc_warning_reaction_cant_ignore_fast
    */
   int setFast (bool value);
@@ -538,7 +563,7 @@ public:
    *
    * The string @p sid is copied.  
    *
-   * @param sid the string to use as the compartment of this Reaction
+   * @param sid the string to use as the compartment of this Reaction.
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -546,7 +571,7 @@ public:
    * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
    *
    * @note The "compartment" attribute is available in SBML
-   * Level&nbsp;3 Version&nbsp;1 Core, but is not present on Reaction in
+   * Level&nbsp;3, but is not present on Reaction in
    * lower Levels of SBML.
    */
   int setCompartment (const std::string& sid);
@@ -555,9 +580,7 @@ public:
   /**
    * Unsets the value of the "name" attribute of this Reaction.
    *
-   * @copydetails doc_returns_success_code
-   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   * @copydetails doc_unset_name
    */
   virtual int unsetName ();
 
@@ -575,9 +598,12 @@ public:
   /**
    * Unsets the value of the "fast" attribute of this Reaction.
    *
+   * @copydetails doc_fast_attribute_removed
+   *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
    * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_UNEXPECTED_ATTRIBUTE, OperationReturnValues_t}
    *
    * @copydetails doc_warning_reaction_cant_ignore_fast
    */
@@ -593,7 +619,7 @@ public:
    * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
    *
    * @note The "compartment" attribute is available in SBML
-   * Level&nbsp;3 Version&nbsp;1 Core, but is not present on Reaction in
+   * Level&nbsp;3, but is not present on Reaction in
    * lower Levels of SBML.
    */
   int unsetCompartment ();
@@ -616,7 +642,7 @@ public:
    * The SpeciesReference instance in @p sr is copied.
    *
    * @param sr a SpeciesReference object referring to a Species in the
-   * enclosing Model
+   * enclosing Model.
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -635,16 +661,16 @@ public:
   /**
    * Adds the given species as a reactant with the given stoichiometry
    *
-   * @param species the species to be added as reactant
+   * @param species the species to be added as reactant.
    *
    * @param stoichiometry an optional parameter specifying the
-   *        stoichiometry of the product (defaulting to 1)
+   *        stoichiometry of the added reactant (defaulting to 1).
    *
    * @param id an optional id to be given to the species reference that will
-   *        be created. (defaulting to empty string, i.e. not set)
+   *        be created. (defaulting to empty string, i.e. not set).
    *
    * @param constant an attribute specifying whether the species reference is
-   *        constant or not (defaulting to true)
+   *        constant or not (defaulting to true).
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -660,7 +686,7 @@ public:
    */
   int addReactant(const Species* species,
                   double stoichiometry = 1.0,
-                  const std::string& id = "",
+                  const std::string id = "",
                   bool constant = true);
 
   /**
@@ -669,7 +695,7 @@ public:
    * The SpeciesReference instance in @p sr is copied.
    *
    * @param sr a SpeciesReference object referring to a Species in the
-   * enclosing Model
+   * enclosing Model.
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -686,16 +712,16 @@ public:
   /**
    * Adds the given species as a product with the given stoichiometry
    *
-   * @param species the species to be added as product
+   * @param species the species to be added as product.
    *
    * @param stoichiometry an optional parameter specifying the
-   *        stoichiometry of the product (defaulting to 1)
+   *        stoichiometry of the added product (defaulting to 1).
    *
    * @param id an optional id to be given to the species reference that will
-   *        be created. (defaulting to empty string, i.e. not set)
+   *        be created. (defaulting to empty string, i.e. not set).
    *
    * @param constant an attribute specifying whether the species reference is
-   *        constant or not (defaulting to true)
+   *        constant or not (defaulting to true).
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -711,7 +737,7 @@ public:
    */
   int addProduct(const Species* species,
                  double stoichiometry = 1.0,
-                 const std::string& id = "",
+                 const std::string id = "",
                  bool constant = true);
 
   /**
@@ -721,7 +747,7 @@ public:
    * The ModifierSpeciesReference instance in @p msr is copied.
    *
    * @param msr a ModifierSpeciesReference object referring to a Species in
-   * the enclosing Model
+   * the enclosing Model.
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -740,10 +766,10 @@ public:
   /**
    * Adds the given species as a modifier to this reaction
    *
-   * @param species the species to be added as modifier
+   * @param species the species to be added as modifier.
    *
    * @param id an optional id to be given to the species reference that will
-   *        be created. (defaulting to empty string, i.e. not set)
+   *        be created. (defaulting to empty string, i.e. not set).
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -758,7 +784,7 @@ public:
    * @see createModifier()
    */
   int addModifier(const Species *species,
-                  const std::string &id = "");
+                  const std::string id = "");
 
   /**
    * Creates a new SpeciesReference, adds it to this Reaction's list of
@@ -793,7 +819,7 @@ public:
    *
    * If this Reaction had a previous KineticLaw, it will be destroyed.
    *
-   * @return the new KineticLaw object
+   * @return the new KineticLaw object.
    */
   KineticLaw* createKineticLaw ();
 
@@ -802,7 +828,7 @@ public:
    * Returns the list of reactants in this Reaction object.
    * 
    * @return the ListOfSpeciesReferences containing the references to the
-   * species acting as reactants in this reaction
+   * species acting as reactants in this reaction.
    */
   const ListOfSpeciesReferences* getListOfReactants () const;
 
@@ -811,7 +837,7 @@ public:
    * Returns the list of reactants in this Reaction object.
    * 
    * @return the ListOfSpeciesReferences containing the references to the
-   * species acting as reactants in this reaction
+   * species acting as reactants in this reaction.
    */
   ListOfSpeciesReferences* getListOfReactants ();
 
@@ -820,7 +846,7 @@ public:
    * Returns the list of products in this Reaction object.
    * 
    * @return the ListOfSpeciesReferences containing the references to the
-   * species acting as products in this reaction
+   * species acting as products in this reaction.
    */
   const ListOfSpeciesReferences* getListOfProducts () const;
 
@@ -829,7 +855,7 @@ public:
    * Returns the list of products in this Reaction object.
    * 
    * @return the ListOfSpeciesReferences containing the references to the
-   * species acting as products in this reaction
+   * species acting as products in this reaction.
    */
   ListOfSpeciesReferences* getListOfProducts ();
 
@@ -838,7 +864,7 @@ public:
    * Returns the list of modifiers in this Reaction object.
    * 
    * @return the ListOfSpeciesReferences containing the references to the
-   * species acting as modifiers in this reaction
+   * species acting as modifiers in this reaction.
    */
   const ListOfSpeciesReferences* getListOfModifiers () const;
 
@@ -847,7 +873,7 @@ public:
    * Returns the list of modifiers in this Reaction object.
    * 
    * @return the ListOfSpeciesReferences containing the references to the
-   * species acting as modifiers in this reaction
+   * species acting as modifiers in this reaction.
    */
   ListOfSpeciesReferences* getListOfModifiers ();
 
@@ -863,6 +889,7 @@ public:
    * 
    * @return the nth reactant (as a SpeciesReference object) of this
    * Reaction.
+   * If the index @p n is invalid, @c NULL is returned.
    */
   const SpeciesReference* getReactant (unsigned int n) const;
 
@@ -878,6 +905,7 @@ public:
    * 
    * @return the nth reactant (as a SpeciesReference object) of this
    * Reaction.
+   * If the index @p n is invalid, @c NULL is returned.
    */
   SpeciesReference* getReactant (unsigned int n);
 
@@ -887,7 +915,7 @@ public:
    * a specific identifier in this Reaction.
    *
    * @param species the identifier of the reactant Species ("species" 
-   * attribute of the reactant SpeciesReference object)
+   * attribute of the reactant SpeciesReference object).
    *
    * @return a SpeciesReference object, or @c NULL if no species with the
    * given identifier @p species appears as a reactant in this Reaction.
@@ -900,7 +928,7 @@ public:
    * a specific identifier in this Reaction.
    *
    * @param species the identifier of the reactant Species ("species" 
-   * attribute of the reactant SpeciesReference object)
+   * attribute of the reactant SpeciesReference object).
    *
    * @return a SpeciesReference object, or @c NULL if no species with the
    * given identifier @p species appears as a reactant in this Reaction.
@@ -919,6 +947,7 @@ public:
    * 
    * @return the nth product (as a SpeciesReference object) of this
    * Reaction.
+   * If the index @p n is invalid, @c NULL is returned.
    */
   const SpeciesReference* getProduct (unsigned int n) const;
 
@@ -934,6 +963,7 @@ public:
    * 
    * @return the nth product (as a SpeciesReference object) of this
    * Reaction.
+   * If the index @p n is invalid, @c NULL is returned.
    */
   SpeciesReference* getProduct (unsigned int n);
 
@@ -943,7 +973,7 @@ public:
    * a specific identifier in this Reaction.
    *
    * @param species the identifier of the product Species ("species"
-   * attribute of the product SpeciesReference object)
+   * attribute of the product SpeciesReference object).
    *
    * @return a SpeciesReference object, or @c NULL if no species with the
    * given identifier @p species appears as a product in this Reaction.
@@ -956,7 +986,7 @@ public:
    * a specific identifier in this Reaction.
    *
    * @param species the identifier of the product Species ("species"
-   * attribute of the product SpeciesReference object)
+   * attribute of the product SpeciesReference object).
    *
    * @return a SpeciesReference object, or @c NULL if no species with the
    * given identifier @p species appears as a product in this Reaction.
@@ -971,10 +1001,11 @@ public:
    * Callers should first call getNumModifiers() to find out how many
    * modifiers there are, to avoid using an invalid index number.
    *
-   * @param n the index of the modifier species sought
+   * @param n the index of the modifier species sought.
    * 
    * @return the nth modifier (as a ModifierSpeciesReference object) of
    * this Reaction.
+   * If the index @p n is invalid, @c NULL is returned.
    */
   const ModifierSpeciesReference* getModifier (unsigned int n) const;
 
@@ -986,10 +1017,11 @@ public:
    * Callers should first call getNumModifiers() to find out how many
    * modifiers there are, to avoid using an invalid index number.
    *
-   * @param n the index of the modifier species sought
+   * @param n the index of the modifier species sought.
    * 
    * @return the nth modifier (as a ModifierSpeciesReference object) of
    * this Reaction.
+   * If the index @p n is invalid, @c NULL is returned.
    */
   ModifierSpeciesReference* getModifier (unsigned int n);
 
@@ -999,7 +1031,7 @@ public:
    * having a specific identifier in this Reaction.
    *
    * @param species the identifier of the modifier Species ("species" 
-   * attribute of the ModifierSpeciesReference object)
+   * attribute of the ModifierSpeciesReference object).
    *
    * @return a ModifierSpeciesReference object, or @c NULL if no species with
    * the given identifier @p species appears as a modifier in this
@@ -1014,7 +1046,7 @@ public:
    * having a specific identifier in this Reaction.
    *
    * @param species the identifier of the modifier Species ("species" 
-   * attribute of the ModifierSpeciesReference object)
+   * attribute of the ModifierSpeciesReference object).
    *
    * @return a ModifierSpeciesReference object, or @c NULL if no species with
    * the given identifier @p species appears as a modifier in this
@@ -1055,7 +1087,7 @@ public:
    * The caller should first call getNumReactants() to find out how many
    * reactants there are, to avoid using an invalid index number.
    *
-   * @param n the index of the reactant SpeciesReference object to remove
+   * @param n the index of the reactant SpeciesReference object to remove.
    *
    * @return the removed reactant SpeciesReference object, or @c NULL if the 
    * given index is out of range.
@@ -1070,7 +1102,7 @@ public:
    * The caller owns the returned object and is responsible for deleting it.
    *
    * @param species the "species" attribute of the reactant SpeciesReference 
-   * object
+   * object.
    *
    * @return the removed reactant SpeciesReference object, or @c NULL if no 
    * reactant SpeciesReference object with the given "species" attribute 
@@ -1087,7 +1119,7 @@ public:
    * The caller should first call getNumProducts() to find out how many
    * products there are, to avoid using an invalid index number.
    *
-   * @param n the index of the product SpeciesReference object to remove
+   * @param n the index of the product SpeciesReference object to remove.
    *
    * @return the removed product SpeciesReference object, or @c NULL if the 
    * given index is out of range.
@@ -1102,7 +1134,7 @@ public:
    * The caller owns the returned object and is responsible for deleting it.
    *
    * @param species the "species" attribute of the product SpeciesReference 
-   * object
+   * object.
    *
    * @return the removed product SpeciesReference object, or @c NULL if no 
    * product SpeciesReference object with the given "species" attribute 
@@ -1119,7 +1151,7 @@ public:
    * The caller should first call getNumModifiers() to find out how many
    * modifiers there are, to avoid using an invalid index number.
    *
-   * @param n the index of the ModifierSpeciesReference object to remove
+   * @param n the index of the ModifierSpeciesReference object to remove.
    *
    * @return the removed ModifierSpeciesReference object, or @c NULL if the 
    * given index is out of range.
@@ -1134,7 +1166,7 @@ public:
    * The caller owns the returned object and is responsible for deleting it.
    *
    * @param species the "species" attribute of the ModifierSpeciesReference 
-   * object
+   * object.
    *
    * @return the removed ModifierSpeciesReference object, or @c NULL if no 
    * ModifierSpeciesReference object with the given "species" attribute @p 
@@ -1178,6 +1210,14 @@ public:
 
   /** @endcond */
 
+  /** @cond doxygenLibsbmlInternal */
+
+  virtual void updateSBMLNamespace(const std::string& package,
+    unsigned int level, unsigned int version);
+
+  /** @endcond */
+
+
   /**
    * Returns the libSBML type code for this SBML object.
    * 
@@ -1206,7 +1246,7 @@ public:
   /** @cond doxygenLibsbmlInternal */
   /**
    * Subclasses should override this method to write out their contained
-   * SBML objects as XML elements.  Be sure to call your parents
+   * SBML objects as XML elements.  Be sure to call your parent's
    * implementation of this method as well.
    */
   virtual void writeElements (XMLOutputStream& stream) const;
@@ -1219,13 +1259,375 @@ public:
    *
    * The required attributes for a Reaction object are:
    * @li "id" (or "name" in SBML Level&nbsp;1)
-   * @li "fast" (in Level&nbsp;3 only, where it is defined as a required attribute)
+   * @li "fast" (in Level&nbsp;3 Version&nbsp;1 only, where it is defined as a required attribute)
    * @li "reversible" (in Level&nbsp;3 only, where it is defined as a required attribute)
    *
    * @return @c true if the required attributes have been set, @c false
    * otherwise.
    */
   virtual bool hasRequiredAttributes() const ;
+
+
+
+
+
+
+  #ifndef SWIG
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Reaction.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, bool& value)
+    const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Reaction.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Reaction.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           double& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Reaction.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           unsigned int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Reaction.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           std::string& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Reaction.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  //virtual int getAttribute(const std::string& attributeName,
+  //                         const char* value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Predicate returning @c true if this Reaction's attribute "attributeName"
+   * is set.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @return @c true if this Reaction's attribute "attributeName" has been set,
+   * otherwise @c false is returned.
+   */
+  virtual bool isSetAttribute(const std::string& attributeName) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Reaction.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, bool value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Reaction.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Reaction.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, double value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Reaction.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           unsigned int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Reaction.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           const std::string& value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Reaction.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  //virtual int setAttribute(const std::string& attributeName, const char*
+  //  value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Unsets the value of the "attributeName" attribute of this Reaction.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int unsetAttribute(const std::string& attributeName);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Creates and returns an new "elementName" object in this Reaction.
+   *
+   * @param elementName, the name of the element to create.
+   *
+   * @return pointer to the element created.
+   */
+  virtual SBase* createChildObject(const std::string& elementName);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+  * Add a new "elementName" object to this Reaction.
+  *
+  * @param elementName, the name of the element to create.
+  * @param element, pointer to the element to be added.
+  *
+  * @copydetails doc_returns_success_code
+  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+  * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+  */
+  virtual int addChildObject(const std::string& elementName, const SBase* element);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+  * Removes and returns the "elementName" object with the given id in this Reaction.
+  *
+  * @param elementName, the name of the element to remove.
+  * @param id, the id of the element to remove
+  *
+  * @return pointer to the element removed.
+  */
+  virtual SBase* removeChildObject(const std::string& elementName, const std::string& id);
+
+  /** @endcond */
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Returns the number of "elementName" in this Reaction.
+   *
+   * @param elementName, the name of the element to get number of.
+   *
+   * @return unsigned int number of elements.
+   */
+  virtual unsigned int getNumObjects(const std::string& elementName);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Returns the nth object of "objectName" in this Reaction.
+   *
+   * @param elementName, the name of the element to get number of.
+   *
+   * @param index, unsigned int the index of the object to retrieve.
+   *
+   * @return pointer to the object.
+   */
+  virtual SBase* getObject(const std::string& elementName, unsigned int index);
+
+  /** @endcond */
+
+
+
+
+  #endif /* !SWIG */
 
 
 protected:
@@ -1251,7 +1653,7 @@ protected:
   /**
    * Subclasses should override this method to read values from the given
    * XMLAttributes set into their specific fields.  Be sure to call your
-   * parents implementation of this method as well.
+   * parent's implementation of this method as well.
    */
   virtual void readAttributes (const XMLAttributes& attributes,
                                const ExpectedAttributes& expectedAttributes);
@@ -1265,7 +1667,7 @@ protected:
 
   /**
    * Subclasses should override this method to write their XML attributes
-   * to the XMLOutputStream.  Be sure to call your parents implementation
+   * to the XMLOutputStream.  Be sure to call your parent's implementation
    * of this method as well.
    */
   virtual void writeAttributes (XMLOutputStream& stream) const;
@@ -1273,8 +1675,8 @@ protected:
   bool isExplicitlySetReversible() const { return mExplicitlySetReversible; };
   bool isExplicitlySetFast() const { return mExplicitlySetFast; };
 
-  std::string mId;
-  std::string mName;
+  //std::string mId;
+  //std::string mName;
  
   ListOfSpeciesReferences  mReactants;
   ListOfSpeciesReferences  mProducts;
@@ -1324,9 +1726,9 @@ public:
    * The object is constructed such that it is valid for the given SBML
    * Level and Version combination.
    *
-   * @param level the SBML Level
+   * @param level the SBML Level.
    * 
-   * @param version the Version within the SBML Level
+   * @param version the Version within the SBML Level.
    *
    * @copydetails doc_throw_exception_lv
    *
@@ -1391,6 +1793,7 @@ public:
    * @param n the index number of the Reaction to get.
    * 
    * @return the nth Reaction in this ListOfReactions.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -1403,6 +1806,7 @@ public:
    * @param n the index number of the Reaction to get.
    * 
    * @return the nth Reaction in this ListOfReactions.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -1414,8 +1818,8 @@ public:
    *
    * @param sid a string representing the identifier of the Reaction to get.
    * 
-   * @return Reaction in this ListOfReactions with the given @p sid or @c
-   * NULL if no such Reaction exists.
+   * @return Reaction in this ListOfReactions with the given @p sid or
+   * @c NULL if no such Reaction exists.
    *
    * @see get(unsigned int n)
    * @see size()
@@ -1428,8 +1832,8 @@ public:
    *
    * @param sid a string representing the identifier of the Reaction to get.
    * 
-   * @return Reaction in this ListOfReactions with the given @p sid or @c
-   * NULL if no such Reaction exists.
+   * @return Reaction in this ListOfReactions with the given @p sid or
+   * @c NULL if no such Reaction exists.
    *
    * @see get(unsigned int n)
    * @see size()
@@ -1443,7 +1847,7 @@ public:
    *
    * The caller owns the returned item and is responsible for deleting it.
    *
-   * @param n the index of the item to remove
+   * @param n the index of the item to remove.
    *
    * @see size()
    */
@@ -1457,7 +1861,7 @@ public:
    * If none of the items in this list have the identifier @p sid, then
    * NULL is returned.
    *
-   * @param sid the identifier of the item to remove
+   * @param sid the identifier of the item to remove.
    *
    * @return the item removed.  As mentioned above, the caller owns the
    * returned item.
@@ -1505,20 +1909,14 @@ BEGIN_C_DECLS
  * and @p version values.
  *
  * @param level an unsigned int, the SBML Level to assign to this
- * Reaction_t
+ * Reaction_t.
  *
  * @param version an unsigned int, the SBML Version to assign to this
- * Reaction_t
+ * Reaction_t.
  *
  * @return a pointer to the newly created Reaction_t structure.
  *
- * @note Once a Reaction_t has been added to an SBMLDocument_t, the @p
- * level and @p version for the document @em override those used to create
- * the Reaction_t.  Despite this, the ability to supply the values at
- * creation time is an important aid to creating valid SBML.  Knowledge of
- * the intended SBML Level and Version  determine whether it is valid to
- * assign a particular value to an attribute, or whether it is valid to add
- * a structure to an existing SBMLDocument_t.
+ * @copydetails doc_note_setting_lv
  *
  * @memberof Reaction_t
  */
@@ -1532,17 +1930,11 @@ Reaction_create (unsigned int level, unsigned int version);
  * SBMLNamespaces_t structure.
  *
  * @param sbmlns SBMLNamespaces_t, a pointer to an SBMLNamespaces_t structure
- * to assign to this Reaction_t
+ * to assign to this Reaction_t.
  *
  * @return a pointer to the newly created Reaction_t structure.
  *
- * @note Once a Reaction_t has been added to an SBMLDocument_t, the
- * @p sbmlns namespaces for the document @em override those used to create
- * the Reaction_t.  Despite this, the ability to supply the values at creation 
- * time is an important aid to creating valid SBML.  Knowledge of the intended 
- * SBML Level and Version determine whether it is valid to assign a particular 
- * value to an attribute, or whether it is valid to add a structure to an 
- * existing SBMLDocument_t.
+ * @copydetails doc_note_setting_lv
  *
  * @memberof Reaction_t
  */
@@ -1574,8 +1966,18 @@ Reaction_clone (const Reaction_t *r);
 /**
  * Initializes the fields of this Reaction_t to their defaults:
  *
- *   - reversible = 1 (true)
- *   - fast       = 0 (false)  (L1 only)
+ * The SBML Reaction component has slightly different aspects and
+ * default attribute values in different SBML Levels and Versions.
+ * This method sets the values to certain common defaults, based
+ * mostly on what they are in SBML Level&nbsp;2.  Specifically:
+ *
+ * @li Sets the "reversible" attribute to @c true
+ * @li Sets the "fast" attribute to @c false
+ * @li Marks the "fast" attribute as @em not having been set for
+ *     SBML Level&nbsp;2, but @em as having been set for
+ *     SBML Level&nbsp;1 and SBML Level&nbsp;3.
+ *
+ * @copydetails doc_warning_reaction_cant_ignore_fast
  *
  * @memberof Reaction_t
  */
@@ -1588,7 +1990,7 @@ Reaction_initDefaults (Reaction_t *r);
  * Returns a list of XMLNamespaces_t associated with this Reaction_t
  * structure.
  *
- * @param r the Reaction_t structure
+ * @param r the Reaction_t structure.
  * 
  * @return pointer to the XMLNamespaces_t structure associated with 
  * this structure
@@ -1643,6 +2045,8 @@ Reaction_getReversible (const Reaction_t *r);
 /**
  * @return the fast status of this Reaction_t.
  *
+ * @copydetails doc_fast_attribute_removed
+ *
  * @memberof Reaction_t
  */
 LIBSBML_EXTERN
@@ -1661,8 +2065,8 @@ Reaction_getCompartment (const Reaction_t *r);
 
 
 /**
- * @return true (non-zero) if the id of this Reaction_t is set, false
- * (0) otherwise.
+ * @return @c 1 (true) if the id of this Reaction_t is set, 
+ * @c 0 (false) otherwise.
  *
  * @memberof Reaction_t
  */
@@ -1672,8 +2076,8 @@ Reaction_isSetId (const Reaction_t *r);
 
 
 /**
- * @return true (non-zero) if the name of this Reaction_t is set, false
- * (0) otherwise.
+ * @return @c 1 (true) if the name of this Reaction_t is set, 
+ * @c 0 (false) otherwise.
  *
  * @memberof Reaction_t
  */
@@ -1683,8 +2087,8 @@ Reaction_isSetName (const Reaction_t *r);
 
 
 /**
- * @return true (non-zero) if the KineticLaw_t of this Reaction_t is set,
- * false (0) otherwise.
+ * @return @c 1 (true) if the KineticLaw_t of this Reaction_t is set,
+ * @c 0 (false) otherwise.
  *
  * @memberof Reaction_t
  */
@@ -1694,12 +2098,14 @@ Reaction_isSetKineticLaw (const Reaction_t *r);
 
 
 /**
- * @return true (non-zero) if the fast status of this Reaction_t is set,
- * false (0) otherwise.
+ * @return @c 1 (true) if the fast status of this Reaction_t is set,
+ * @c 0 (false) otherwise.
  *
  * In L1, fast is optional with a default of false, which means it is
  * effectively always set.  In L2, however, fast is optional with no
  * default value, so it may or may not be set to a specific value.
+ *
+ * @copydetails doc_fast_attribute_removed
  *
  * @memberof Reaction_t
  */
@@ -1709,8 +2115,8 @@ Reaction_isSetFast (const Reaction_t *r);
 
 
 /**
- * @return true (non-zero) if the KineticLaw_t of this Reaction_t is set,
- * false (0) otherwise.
+ * @return @c 1 (true) if the KineticLaw_t of this Reaction_t is set,
+ * @c 0 (false) otherwise.
  *
  * @memberof Reaction_t
  */
@@ -1720,8 +2126,8 @@ Reaction_isSetCompartment (const Reaction_t *r);
 
 
 /**
- * @return true (non-zero) if the reversible attribute of this Reaction_t is set,
- * false (0) otherwise.
+ * @return @c 1 (true) if the reversible attribute of this Reaction_t is set,
+ * @c 0 (false) otherwise.
  *
  * @memberof Reaction_t
  */
@@ -1731,13 +2137,13 @@ Reaction_isSetReversible (const Reaction_t *r);
 
 
 /**
- * Sets the id of this Reaction_t to a copy of sid.
+ * Sets the id of this Reaction_t to a copy of @p sid.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
  *
- * @note Using this function with an id of NULL is equivalent to
+ * @note Using this function with an @p sid of NULL is equivalent to
  * unsetting the "id" attribute.
  *
  * @memberof Reaction_t
@@ -1784,6 +2190,7 @@ Reaction_setKineticLaw (Reaction_t *r, const KineticLaw_t *kl);
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
  *
  * @memberof Reaction_t
  */
@@ -1795,8 +2202,11 @@ Reaction_setReversible (Reaction_t *r, int value);
 /**
  * Sets the fast status of this Reaction_t to value (boolean).
  *
+ * @copydetails doc_fast_attribute_removed
+ *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_UNEXPECTED_ATTRIBUTE, OperationReturnValues_t}
  *
  * @memberof Reaction_t
  */
@@ -1869,9 +2279,12 @@ Reaction_unsetKineticLaw (Reaction_t *r);
 /**
  * Unsets the fast status of this Reation_t.
  *
+ * @copydetails doc_fast_attribute_removed
+ *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
  * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_UNEXPECTED_ATTRIBUTE, OperationReturnValues_t}
  *
  * In L1, fast is optional with a default of false, which means it is
  * effectively always set.  In L2, however, fast is optional with no
@@ -1900,19 +2313,19 @@ Reaction_unsetReversible (Reaction_t *r);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether
  * all the required attributes for this Reaction_t structure
  * have been set.
  *
  * The required attributes for a Reaction_t structure are:
- * @li id (name in L1)
- * @li fast (in L3 only)
- * @li reversible (in L3 only)
+ * @li "id" (or "name" in SBML Level&nbsp;1)
+ * @li "fast" (in Level&nbsp;3 Version&nbsp;1 only, where it is defined as a required attribute)
+ * @li "reversible" (in Level&nbsp;3 only, where it is defined as a required attribute)
  *
  * @param r the Reaction_t structure to check.
  *
- * @return a true if all the required
- * attributes for this structure have been defined, false otherwise.
+ * @return @c 1 (true) if all the required
+ * attributes for this structure have been defined, @c 0 (false) otherwise.
  *
  * @memberof Reaction_t
  */
@@ -1973,13 +2386,13 @@ Reaction_addModifier (Reaction_t *r, const SpeciesReference_t *msr);
 /**
  * Adds a copy of the given Species_t object as a reactant to this Reaction_t.
  *
- * @param r the Reaction_t structure to which the reactant is added
- * @param s the Species_t structure to be added as reactant
- * @param stoichiometry of the product
- * @param id be given to the species reference that will
+ * @param r the Reaction_t structure to which the reactant is added.
+ * @param s the Species_t structure to be added as reactant.
+ * @param stoichiometry the stoichiometry of the added reactant.
+ * @param id the string to be used as the id of the SpeciesReference_t that will
  *        be created. 
- * @param constant an attribute specifying whether the species reference is
- *        constant or not
+ * @param constant an attribute specifying whether the created SpeciesReference_t is
+ *        constant or not.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -2001,13 +2414,13 @@ Reaction_addReactantBySpecies (Reaction_t *r, const Species_t *s,
 /**
  * Adds a copy of the given Species_t object as a product to this Reaction_t.
  *
- * @param r the Reaction_t structure to which the product is added
- * @param s the Species_t structure to be added as product
- * @param stoichiometry of the product
- * @param id be given to the species reference that will
- *        be created. 
- * @param constant an attribute specifying whether the species reference is
- *        constant or not
+ * @param r the Reaction_t structure to which the product is added.
+ * @param s the Species_t structure to be added as product.
+ * @param stoichiometry the stoichiometry of the added product.
+ * @param id the string to be used as the id of the SpeciesReference_t that will
+ *        be created.
+ * @param constant an attribute specifying whether the SpeciesReference_t is
+ *        constant or not.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -2029,10 +2442,10 @@ Reaction_addProductBySpecies (Reaction_t *r, const Species_t *s,
 /**
  * Adds a copy of the given Species_t object as a modifier to this Reaction_t.
  *
- * @param r the Reaction_t structure to which the modifier is added
- * @param s the Species_t structure to be added as modifier
- * @param id be given to the species reference that will
- *        be created. 
+ * @param r the Reaction_t structure to which the modifier is added.
+ * @param s the Species_t structure to be added as modifier.
+ * @param id the string to be used as the id of the SpeciesReference_t that will
+ *        be created.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -2126,6 +2539,7 @@ Reaction_getListOfModifiers (Reaction_t *r);
 
 /**
  * @return the nth reactant (SpeciesReference_t) of this Reaction_t.
+ * If the index @p n is invalid, @c NULL is returned.
  *
  * @memberof Reaction_t
  */
@@ -2147,6 +2561,7 @@ Reaction_getReactantBySpecies (Reaction_t *r, const char *species);
 
 /**
  * @return the nth product (SpeciesReference_t) of this Reaction_t.
+ * If the index @p n is invalid, @c NULL is returned.
  *
  * @memberof Reaction_t
  */
@@ -2168,6 +2583,7 @@ Reaction_getProductBySpecies (Reaction_t *r, const char *species);
 
 /**
  * @return the nth modifier (modifier SpeciesReference_t) of this Reaction_t.
+ * If the index @p n is invalid, @c NULL is returned.
  *
  * @memberof Reaction_t
  */
@@ -2224,8 +2640,8 @@ Reaction_getNumModifiers (const Reaction_t *r);
  *
  * The caller owns the returned structure and is responsible for deleting it.
  *
- * @param r the Reaction_t structure
- * @param n the integer index of the reactant SpeciesReference_t to remove
+ * @param r the Reaction_t structure.
+ * @param n the integer index of the reactant SpeciesReference_t to remove.
  *
  * @return the reactant SpeciesReference_t structure removed.  As mentioned 
  * above, the caller owns the returned structure. @c NULL is returned if the 
@@ -2245,9 +2661,9 @@ Reaction_removeReactant (Reaction_t *r, unsigned int n);
  *
  * The caller owns the returned structure and is responsible for deleting it.
  *
- * @param r the Reaction_t structure
+ * @param r the Reaction_t structure.
  * @param species the "species" attribute of the reactant SpeciesReference_t 
- * to remove
+ * to remove.
  *
  * @return the reactant SpeciesReference_t structure removed.  As mentioned 
  * above, the caller owns the returned structure. @c NULL is returned if no 
@@ -2267,8 +2683,8 @@ Reaction_removeReactantBySpecies (Reaction_t *r, const char *species);
  *
  * The caller owns the returned structure and is responsible for deleting it.
  *
- * @param r the Reaction_t structure
- * @param n the integer index of the product SpeciesReference_t to remove
+ * @param r the Reaction_t structure.
+ * @param n the integer index of the product SpeciesReference_t to remove.
  *
  * @return the product SpeciesReference_t structure removed.  As mentioned 
  * above, the caller owns the returned structure. @c NULL is returned if the 
@@ -2288,9 +2704,9 @@ Reaction_removeProduct (Reaction_t *r, unsigned int n);
  *
  * The caller owns the returned structure and is responsible for deleting it.
  *
- * @param r the Reaction_t structure
+ * @param r the Reaction_t structure.
  * @param species the "species" attribute of the product SpeciesReference_t 
- * to remove
+ * to remove.
  *
  * @return the product SpeciesReference_t structure removed.  As mentioned 
  * above, the caller owns the returned structure. @c NULL is returned if no 
@@ -2310,8 +2726,8 @@ Reaction_removeProductBySpecies (Reaction_t *r, const char *species);
  *
  * The caller owns the returned structure and is responsible for deleting it.
  *
- * @param r the Reaction_t structure
- * @param n the integer index of the modifier SpeciesReference_t to remove
+ * @param r the Reaction_t structure.
+ * @param n the integer index of the modifier SpeciesReference_t to remove.
  *
  * @return the modifier SpeciesReference_t structure removed.  As mentioned 
  * above, the caller owns the returned structure. @c NULL is returned if the 
@@ -2331,9 +2747,9 @@ Reaction_removeModifier (Reaction_t *r, unsigned int n);
  *
  * The caller owns the returned structure and is responsible for deleting it.
  *
- * @param r the Reaction_t structure
+ * @param r the Reaction_t structure.
  * @param species the "species" attribute of the modifier SpeciesReference_t 
- * to remove
+ * to remove.
  *
  * @return the modifier SpeciesReference_t structure removed.  As mentioned 
  * above, the caller owns the returned structure. @c NULL is returned if no 
@@ -2371,7 +2787,7 @@ ListOfReactions_getById (ListOf_t *lo, const char *sid);
  * The caller owns the returned item and is responsible for deleting it.
  *
  * @param lo the list of Reaction_t structures to search.
- * @param sid the "id" attribute value of the structure to remove
+ * @param sid the "id" attribute value of the structure to remove.
  *
  * @return The Reaction_t structure removed, or a null pointer if no such
  * item exists in @p lo.

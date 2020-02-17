@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -261,20 +265,20 @@ PowerUnitsCheck::checkUnitsFromPower (const Model& m,
 
         if (sb.getTypeCode() == SBML_KINETIC_LAW)
         {
-	        const KineticLaw* kl = dynamic_cast<const KineticLaw*>(&sb);
+          const KineticLaw* kl = dynamic_cast<const KineticLaw*>(&sb);
 
-	        /* First try local parameters and if null is returned, try
-	        * the global parameters */
-	        if (kl != NULL)
-	        {
-	          param = kl->getParameter(child->getName());
-	        }
+          /* First try local parameters and if null is returned, try
+          * the global parameters */
+          if (kl != NULL)
+          {
+            param = kl->getParameter(child->getName());
+          }
         }
 
-	      if (param == NULL)
-	      {
-	        param = m.getParameter(child->getName());
-	      }
+        if (param == NULL)
+        {
+          param = m.getParameter(child->getName());
+        }
 
         if (param == NULL && m.getLevel() > 2)
         {
@@ -302,7 +306,7 @@ PowerUnitsCheck::checkUnitsFromPower (const Model& m,
         }
         else
         {
-	  /* No parameter definition found for child->getName() */
+    /* No parameter definition found for child->getName() */
           logUnitConflict(node, sb);
         }
       }
@@ -354,7 +358,11 @@ PowerUnitsCheck::checkUnitsFromPower (const Model& m,
     }
     else if (isInteger == 0)
     {
-      logNonIntegerPowerConflict(node, sb);
+      // in level 3 this would be allowed
+      if (m.getLevel() < 3)
+      {
+        logNonIntegerPowerConflict(node, sb);
+      }
     }
 
   }
@@ -381,20 +389,20 @@ PowerUnitsCheck::checkUnitsFromPower (const Model& m,
 
  //     if (sb.getTypeCode() == SBML_KINETIC_LAW)
  //     {
-	//      const KineticLaw* kl = dynamic_cast<const KineticLaw*>(&sb);
+  //      const KineticLaw* kl = dynamic_cast<const KineticLaw*>(&sb);
 
-	//      /* First try local parameters and if null is returned, try
-	//      * the global parameters */
-	//      if (kl != NULL)
-	//      {
-	//        param = kl->getParameter(child->getName());
-	//      }
+  //      /* First try local parameters and if null is returned, try
+  //      * the global parameters */
+  //      if (kl != NULL)
+  //      {
+  //        param = kl->getParameter(child->getName());
+  //      }
  //     }
 
-	//    if (param == NULL)
-	//    {
-	//      param = m.getParameter(child->getName());
-	//    }
+  //    if (param == NULL)
+  //    {
+  //      param = m.getParameter(child->getName());
+  //    }
  //     
  //   }
 
@@ -416,7 +424,7 @@ PowerUnitsCheck::checkUnitsFromPower (const Model& m,
  //     }
  //     else
  //     {
-	///* No parameter definition found for child->getName() */
+  ///* No parameter definition found for child->getName() */
  //       logUnitConflict(node, sb);
  //     }
  //   }
@@ -471,14 +479,14 @@ const string
 PowerUnitsCheck::getMessage (const ASTNode& node, const SBase& object)
 {
 
-  ostringstream msg;
+  ostringstream oss_msg;
 
-  //msg << getPreamble();
+  //oss_msg << getPreamble();
 
   char * formula = SBML_formulaToString(&node);
-  msg << "The formula '" << formula;
-  msg << "' in the " << getFieldname() << " element of the <" << object.getElementName();
-  msg << "> ";
+  oss_msg << "The formula '" << formula;
+  oss_msg << "' in the " << getFieldname() << " element of the <" << object.getElementName();
+  oss_msg << "> ";
   switch(object.getTypeCode()) {
   case SBML_INITIAL_ASSIGNMENT:
   case SBML_EVENT_ASSIGNMENT:
@@ -488,15 +496,15 @@ PowerUnitsCheck::getMessage (const ASTNode& node, const SBase& object)
     break;
   default:
     if (object.isSetId()) {
-      msg << "with id '" << object.getId() << "' ";
+      oss_msg << "with id '" << object.getId() << "' ";
     }
     break;
   }
-  msg << "contains a power that is not an integer and thus may produce ";
-  msg << "invalid units.";
+  oss_msg << "contains a power that is not an integer and thus may produce ";
+  oss_msg << "invalid units.";
   safe_free(formula);
 
-  return msg.str();
+  return oss_msg.str();
 }
 
 

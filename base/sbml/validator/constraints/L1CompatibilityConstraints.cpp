@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -39,10 +43,12 @@
 #include <sbml/AlgebraicRule.h>
 #include <sbml/validator/VConstraint.h>
 #include <math.h>
+#include "CompatibilityConstraints.cxx"
 #endif
 
 
 #include <sbml/validator/ConstraintMacros.h>
+
 
 /** @cond doxygenIgnored */
 using namespace std;
@@ -125,6 +131,7 @@ END_CONSTRAINT
 
 START_CONSTRAINT (91008, SpeciesReference, sr) 
 {
+  bool fail = false;
   //msg =
   //  "A <speciesReference> containing a non-integer or non-rational "
   //  "<stoichiometryMath> subelement cannot be represented in SBML Level 1.";
@@ -132,15 +139,55 @@ START_CONSTRAINT (91008, SpeciesReference, sr)
   /* doesnt apply if the SpeciesReference is a modifier */
   pre(!sr.isModifier());
 
-  if (sr.isSetStoichiometryMath() )
+  if (sr.isSetStoichiometryMath())
   {
-    inv_or( sr.getStoichiometryMath()->getMath()->isInteger()  );
-    inv_or( sr.getStoichiometryMath()->getMath()->isRational() );
+    if (!sr.getStoichiometryMath()->getMath()->isInteger() &&
+      !sr.getStoichiometryMath()->getMath()->isRational())
+    {
+      fail = true;
+    }
   }
   else if (sr.getLevel() > 2)
   {
-    inv( sr.getConstant());
+    if (!sr.getConstant())
+    {
+      fail = true;
+    }
+    else
+    {
+      // here we need to check whether we are being assigned by an initialAssignment
+      if (sr.isSetId() && (m.getInitialAssignmentBySymbol(sr.getId()) != NULL))
+      {
+        if (!m.getInitialAssignmentBySymbol(sr.getId())->isSetMath())
+        {
+          fail = true;
+        }
+        else
+        {
+          const ASTNode* math = m.getInitialAssignmentBySymbol(sr.getId())->getMath();
+          if (!math->isInteger() && !math->isRational())
+          {
+            // do a last minute check on whether the math will evaluate to an integer
+            double value = SBMLTransforms::evaluateASTNode(math, &m);
+            if (!util_isNaN(value))
+            {
+              if (!util_isEqual(value, floor(value)))
+              {
+                fail = true;
+              }
+            }
+            else 
+            {
+              fail = true;
+            }
+          }
+        }
+       
+      }
+    }
   }
+
+  inv(fail == false);
 }
 END_CONSTRAINT
 

@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -183,7 +187,7 @@ XMLTriple::getPrefixedName () const
 
 
 /*
- * @return true if this XMLTriple set is empty, false otherwise.
+ * @return @c true if this XMLTriple set is empty, false otherwise.
  */
 bool
 XMLTriple::isEmpty () const
@@ -197,8 +201,8 @@ XMLTriple::isEmpty () const
 /*
  * Comparison (equal-to) operator for XMLTriple.
  *
- * @return @c non-zero (true) if the combination of name, URI, and 
- * prefix of lhs is equal to that of rhs @c zero (false) otherwise.
+ * @return @c 1 (true) if the combination of name, URI, and 
+ * prefix of lhs is equal to that of rhs @c 0 (false) otherwise.
  */
 bool operator==(const XMLTriple& lhs, const XMLTriple& rhs)
 {
@@ -213,8 +217,8 @@ bool operator==(const XMLTriple& lhs, const XMLTriple& rhs)
 /*
  * Comparison (not equal-to) operator for XMLTriple.
  *
- * @return @c non-zero (true) if the combination of name, URI, and 
- * prefix of lhs is not equal to that of rhs @c zero (false) otherwise.
+ * @return @c 1 (true) if the combination of name, URI, and 
+ * prefix of lhs is not equal to that of rhs @c 0 (false) otherwise.
  */
 bool operator!=(const XMLTriple& lhs, const XMLTriple& rhs)
 {

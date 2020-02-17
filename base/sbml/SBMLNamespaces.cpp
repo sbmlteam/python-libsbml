@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -89,6 +93,9 @@ SBMLNamespaces::initSBMLNamespace()
     case 1:
       mNamespaces->add(SBML_XMLNS_L3V1);
       break;
+    case 2:
+      mNamespaces->add(SBML_XMLNS_L3V2);
+      break;
     }
     break;
   }
@@ -122,7 +129,7 @@ SBMLNamespaces::SBMLNamespaces(unsigned int level, unsigned int version)
  */
 SBMLNamespaces::SBMLNamespaces(unsigned int level, unsigned int version, 
                                const std::string &pkgName, unsigned int pkgVersion, 
-                               const std::string& pkgPrefix)
+                               const std::string pkgPrefix)
  : mLevel(level)
   ,mVersion(version)
 {
@@ -194,6 +201,7 @@ SBMLNamespaces::getSupportedNamespaces()
   result->add(new SBMLNamespaces(2,4));
   result->add(new SBMLNamespaces(2,5));
   result->add(new SBMLNamespaces(3,1));
+  result->add(new SBMLNamespaces(3,2));
   return result;
 }
 
@@ -256,8 +264,11 @@ SBMLNamespaces::getSBMLNamespaceURI(unsigned int level,
     switch(version)
     {
     case 1:
-    default:
       uri = SBML_XMLNS_L3V1;
+      break;
+    case 2:
+    default:
+      uri = SBML_XMLNS_L3V2;
       break;
     }
     break;
@@ -390,7 +401,7 @@ SBMLNamespaces::addPackageNamespace(const std::string &pkgName, unsigned int pkg
     const std::string prefix = (pkgPrefix.empty()) ? pkgName : pkgPrefix;
     if (!uri.empty() && mNamespaces != NULL)
     {
-      mNamespaces->add(uri,prefix);
+      return mNamespaces->add(uri,prefix);
     }
     else
     {
@@ -402,7 +413,7 @@ SBMLNamespaces::addPackageNamespace(const std::string &pkgName, unsigned int pkg
     return LIBSBML_INVALID_ATTRIBUTE_VALUE;
   }
 
-  return LIBSBML_OPERATION_SUCCESS;
+//  return LIBSBML_OPERATION_SUCCESS;
 }
 
 
@@ -547,6 +558,7 @@ SBMLNamespaces::isSBMLNamespace(const std::string& uri)
   if (uri == SBML_XMLNS_L2V4) return true;
   if (uri == SBML_XMLNS_L2V5) return true;
   if (uri == SBML_XMLNS_L3V1) return true;
+  if (uri == SBML_XMLNS_L3V2) return true;
 
   return false;
 }
@@ -568,6 +580,12 @@ SBMLNamespaces::isValidCombination()
     // (e.g. SBML_XMLNS_L2V1 and SBML_XMLNS_L2V3) are defined.
     //
     int numNS = 0;
+
+    if (xmlns->hasURI(SBML_XMLNS_L3V2))
+    {
+      ++numNS;
+      declaredURI.assign(SBML_XMLNS_L3V2);
+    }
 
     if (xmlns->hasURI(SBML_XMLNS_L3V1))
     {
@@ -733,6 +751,17 @@ SBMLNamespaces::isValidCombination()
             }
           }
           break;
+        case 2:
+         // the namespaces contains the sbml namespaces
+          // check it is the correct ns for the level/version
+          if (sbmlDeclared)
+          {
+            if (declaredURI != string(SBML_XMLNS_L3V2))
+            {
+              valid = false;
+            }
+          }
+          break;
         default:
           valid = false;
           break;
@@ -849,10 +878,11 @@ SBMLNamespaces_getSupportedNamespaces(int *length)
    const List* supported = SBMLNamespaces::getSupportedNamespaces();
   
    *length = (int) supported->getSize();
-  SBMLNamespaces_t ** result = (SBMLNamespaces_t**)malloc(sizeof(SBMLNamespaces_t*)*((unsigned long)*length));
-  memset(result, 0, sizeof(SBMLNamespaces_t*)*((unsigned long)*length));
+  SBMLNamespaces_t ** result = (SBMLNamespaces_t**)safe_malloc(sizeof(SBMLNamespaces_t*)*((unsigned long)(*length)));
+  //memset(result, 0, sizeof(SBMLNamespaces_t*)*((unsigned long)*length));
   for (int i = 0; i < *length; i++)
   {
+    result[i] = (SBMLNamespaces_t*)safe_malloc(sizeof(SBMLNamespaces_t*));
     result[i] = ((SBMLNamespaces*)supported->get((unsigned int)i))->clone();
   }
   SBMLNamespaces::freeSBMLNamespaces(const_cast<List*>(supported));

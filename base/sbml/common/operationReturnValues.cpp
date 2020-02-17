@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -52,6 +56,8 @@ static OperationReturnValues_t SBML_OPERATION_RETURN_VALUES_INDICES[] =
   , LIBSBML_ANNOTATION_NAME_NOT_FOUND
   , LIBSBML_ANNOTATION_NS_NOT_FOUND
   , LIBSBML_MISSING_METAID
+  , LIBSBML_DEPRECATED_ATTRIBUTE
+  , LIBSBML_USE_ID_ATTRIBUTE_FUNCTION
   , LIBSBML_PKG_VERSION_MISMATCH
   , LIBSBML_PKG_UNKNOWN
   , LIBSBML_PKG_UNKNOWN_VERSION
@@ -174,6 +180,14 @@ static const char* SBML_OPERATION_RETURN_VALUES_STRINGS[] =
     "The requested action cannot be performed as the target object does not have "
     "the metaid attribute set. "
    
+  , /* LIBSBML_DEPRECATED_ATTRIBUTE   = -15*/
+    "The attribute that is the subject of this operation has been deprecated "
+    "for the combination of SBML Level and Version for the underlying "
+    "object. "
+     
+  , /*LIBSBML_USE_ID_ATTRIBUTE_FUNCTION   = -16 */
+    "For L3V2 use the IdAttribute functions. "
+
   , /*LIBSBML_PKG_VERSION_MISMATCH = -20*/
    "The Version of package extension within the SBML Level and version "
    "associated with the object does not match the Version of the parent "

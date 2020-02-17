@@ -2,6 +2,10 @@
 
 #include "comp-package.h"
 #include "fbc-package.h"
+#include "groups-package.h"
+#include "l3v2extendedmath-package.h"
 #include "layout-package.h"
+#include "multi-package.h"
 #include "qual-package.h"
+#include "render-package.h"
 

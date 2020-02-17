@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -60,16 +64,16 @@ SBMLErrorLog::SBMLErrorLog ()
 }
 
 /*
-* Copy Constructor
-*/
+ * Copy Constructor
+ */
 SBMLErrorLog::SBMLErrorLog (const SBMLErrorLog& other)
   : XMLErrorLog(other)
 {
 }
 
 /*
-* Assignment operator
-*/
+ * Assignment operator
+ */
 SBMLErrorLog& SBMLErrorLog::operator=(const SBMLErrorLog& other)
 {
   XMLErrorLog::operator=(other);
@@ -122,7 +126,7 @@ void
 SBMLErrorLog::logError ( const unsigned int errorId
                        , const unsigned int level
                        , const unsigned int version
-                       , const std::string& details
+                       , const std::string details
                        , const unsigned int line
                        , const unsigned int column
                        , const unsigned int severity
@@ -134,12 +138,12 @@ SBMLErrorLog::logError ( const unsigned int errorId
 
 
 void
-SBMLErrorLog::logPackageError ( const std::string& package
+SBMLErrorLog::logPackageError ( const std::string package
                        , const unsigned int errorId
                        , const unsigned int pkgVersion
                        , const unsigned int level
                        , const unsigned int version
-                       , const std::string& details
+                       , const std::string details
                        , const unsigned int line
                        , const unsigned int column
                        , const unsigned int severity
@@ -362,7 +366,7 @@ SBMLErrorLog::getError (unsigned int n) const
  * Returns the nth SBMLError with severity in this log.
  *
  * @param n unsigned int number of the error to retrieve.
- * @param severity the severity sought
+ * @param severity the severity sought.
  *
  * @return the nth SBMLError in this log.
  */

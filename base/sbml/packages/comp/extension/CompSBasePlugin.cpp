@@ -8,7 +8,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -131,7 +135,8 @@ CompSBasePlugin::createObject(XMLInputStream& stream)
       if (mListOfReplacedElements != NULL)
       {
         getErrorLog()->logPackageError("comp", CompOneListOfReplacedElements, 
-          getPackageVersion(), getLevel(), getVersion(), message + "may only have one <listOfReplacedElements>");
+          getPackageVersion(), getLevel(), getVersion(), 
+          message + "may only have one <listOfReplacedElements>", getLine(), getColumn());
       }
       createListOfReplacedElements();
       object = mListOfReplacedElements;
@@ -156,7 +161,8 @@ CompSBasePlugin::createObject(XMLInputStream& stream)
         if (mSBML != NULL && getErrorLog() != NULL)
         {
           getErrorLog()->logPackageError("comp", CompOneReplacedByElement, 
-                          getPackageVersion(), getLevel(), getVersion(), message + "may only have one <replacedBy> child.");
+                          getPackageVersion(), getLevel(), getVersion(), 
+            message + "may only have one <replacedBy> child.", getLine(), getColumn());
         }
       }
       delete mReplacedBy;
@@ -262,6 +268,13 @@ CompSBasePlugin::writeAttributes (XMLOutputStream& stream) const
 
 const ListOfReplacedElements*
 CompSBasePlugin::getListOfReplacedElements () const
+{
+  return mListOfReplacedElements;
+}
+
+
+ListOfReplacedElements*
+CompSBasePlugin::getListOfReplacedElements ()
 {
   return mListOfReplacedElements;
 }
@@ -564,8 +577,146 @@ CompSBasePlugin::accept(SBMLVisitor& v) const
 /** @endcond */
 
 
+#endif  /* __cplusplus */
 
+
+/*
+ * Returns a ListOf_t * containing ReplacedElement_t objects from this
+ * CompSBasePlugin_t.
+ */
+LIBSBML_EXTERN
+ListOf_t*
+CompSBasePlugin_getListOfReplacedElements(CompSBasePlugin_t* csbp)
+{
+  return (csbp != NULL) ? csbp->getListOfReplacedElements() : NULL;
+}
+
+
+/*
+ * Get a ReplacedElement_t from the CompSBasePlugin_t.
+ */
+LIBSBML_EXTERN
+ReplacedElement_t*
+CompSBasePlugin_getReplacedElement(CompSBasePlugin_t* csbp, unsigned int n)
+{
+  return (csbp != NULL) ? csbp->getReplacedElement(n) : NULL;
+}
+
+
+/*
+ * Adds a copy of the given ReplacedElement_t to this CompSBasePlugin_t.
+ */
+LIBSBML_EXTERN
+int
+CompSBasePlugin_addReplacedElement(CompSBasePlugin_t* csbp,
+                                   const ReplacedElement_t* re)
+{
+  return (csbp != NULL) ? csbp->addReplacedElement(re) :
+    LIBSBML_INVALID_OBJECT;
+}
+
+
+/*
+ * Get the number of ReplacedElement_t objects in this CompSBasePlugin_t.
+ */
+LIBSBML_EXTERN
+unsigned int
+CompSBasePlugin_getNumReplacedElements(CompSBasePlugin_t* csbp)
+{
+  return (csbp != NULL) ? csbp->getNumReplacedElements() : SBML_INT_MAX;
+}
+
+
+/*
+ * Creates a new ReplacedElement_t object, adds it to this CompSBasePlugin_t
+ * object and returns the ReplacedElement_t object created.
+ */
+LIBSBML_EXTERN
+ReplacedElement_t*
+CompSBasePlugin_createReplacedElement(CompSBasePlugin_t* csbp)
+{
+  return (csbp != NULL) ? csbp->createReplacedElement() : NULL;
+}
+
+
+/*
+ * Removes the nth ReplacedElement_t from this CompSBasePlugin_t and returns a
+ * pointer to it.
+ */
+LIBSBML_EXTERN
+ReplacedElement_t*
+CompSBasePlugin_removeReplacedElement(CompSBasePlugin_t* csbp, unsigned int n)
+{
+  return (csbp != NULL) ? csbp->removeReplacedElement(n) : NULL;
+}
+
+
+/*
+ * Returns the value of the "replacedBy" element of this CompSBasePlugin_t.
+ */
+LIBSBML_EXTERN
+const ReplacedBy_t*
+CompSBasePlugin_getReplacedBy(const CompSBasePlugin_t * csbp)
+{
+  if (csbp == NULL)
+  {
+    return NULL;
+  }
+
+  return (ReplacedBy_t*)(csbp->getReplacedBy());
+}
+
+
+/*
+ * Predicate returning @c 1 (true) if this CompSBasePlugin_t's "replacedBy"
+ * element is set.
+ */
+LIBSBML_EXTERN
+int
+CompSBasePlugin_isSetReplacedBy(const CompSBasePlugin_t * csbp)
+{
+  return (csbp != NULL) ? static_cast<int>(csbp->isSetReplacedBy()) : 0;
+}
+
+
+/*
+ * Sets the value of the "replacedBy" element of this CompSBasePlugin_t.
+ */
+LIBSBML_EXTERN
+int
+CompSBasePlugin_setReplacedBy(CompSBasePlugin_t * csbp,
+                              const ReplacedBy_t* replacedBy)
+{
+  return (csbp != NULL) ? csbp->setReplacedBy(replacedBy) :
+    LIBSBML_INVALID_OBJECT;
+}
+
+
+/*
+ * Creates a new ReplacedBy_t object, adds it to this CompSBasePlugin_t object
+ * and returns the ReplacedBy_t object created.
+ */
+LIBSBML_EXTERN
+ReplacedBy_t*
+CompSBasePlugin_createReplacedBy(CompSBasePlugin_t* csbp)
+{
+  if (csbp == NULL)
+  {
+    return NULL;
+  }
+
+  return (ReplacedBy_t*)(csbp->createReplacedBy());
+}
+
+
+/*
+ * Unsets the value of the "replacedBy" element of this CompSBasePlugin_t.
+ */
+LIBSBML_EXTERN
+int
+CompSBasePlugin_unsetReplacedBy(CompSBasePlugin_t * csbp)
+{
+  return (csbp != NULL) ? csbp->unsetReplacedBy() : LIBSBML_INVALID_OBJECT;
+}
 
 LIBSBML_CPP_NAMESPACE_END
-
-#endif  /* __cplusplus */

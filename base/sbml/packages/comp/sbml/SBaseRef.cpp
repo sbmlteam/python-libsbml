@@ -8,7 +8,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -51,7 +55,7 @@ SBaseRef::SBaseRef (unsigned int level, unsigned int version, unsigned int pkgVe
   : CompBase (level,version, pkgVersion)
   , mMetaIdRef("")
   , mPortRef("")
-  , mIdRef("")
+//  , mIdRef("")
   , mUnitRef("")
   , mSBaseRef(NULL)
   , mReferencedElement(NULL)
@@ -64,7 +68,7 @@ SBaseRef::SBaseRef(CompPkgNamespaces* compns)
   : CompBase(compns)
   , mMetaIdRef("")
   , mPortRef("")
-  , mIdRef("")
+//  , mIdRef("")
   , mUnitRef("")
   , mSBaseRef(NULL)
   , mReferencedElement(NULL)
@@ -79,7 +83,7 @@ SBaseRef::SBaseRef(CompPkgNamespaces* compns, bool isDerived)
   : CompBase(compns)
   , mMetaIdRef("")
   , mPortRef("")
-  , mIdRef("")
+//  , mIdRef("")
   , mUnitRef("")
   , mSBaseRef(NULL)
   , mReferencedElement(NULL)
@@ -264,7 +268,7 @@ SBaseRef::getPortRef () const
 
 
 /*
- * @return true if the portRef of this SBML object has been set, false
+ * @return @c true if the portRef of this SBML object has been set, false
  * otherwise.
  */
 bool
@@ -327,7 +331,7 @@ SBaseRef::getIdRef () const
 
 
 /*
- * @return true if the idRef of this SBML object has been set, false
+ * @return @c true if the idRef of this SBML object has been set, false
  * otherwise.
  */
 bool
@@ -388,7 +392,7 @@ SBaseRef::getUnitRef () const
 
 
 /*
- * @return true if the unitRef of this SBML object has been set, false
+ * @return @c true if the unitRef of this SBML object has been set, false
  * otherwise.
  */
 bool
@@ -436,7 +440,7 @@ SBaseRef::getSBaseRef ()
 }
 
 /*
- * @return true if the child SBaseRef of this SBaseRef is set, false otherwise.
+ * @return @c true if the child SBaseRef of this SBaseRef is set, false otherwise.
  */
 bool
 SBaseRef::isSetSBaseRef () const
@@ -589,10 +593,19 @@ SBaseRef::addExpectedAttributes(ExpectedAttributes& attributes)
 
 /** @cond doxygenLibsbmlInternal */
 void
-SBaseRef::readAttributes (const XMLAttributes& attributes,
-                          const ExpectedAttributes& expectedAttributes)
+SBaseRef::readAttributes(const XMLAttributes& attributes,
+                         const ExpectedAttributes& expectedAttributes)
 {
-  CompBase::readAttributes(attributes,expectedAttributes);
+  readAttributes(attributes, expectedAttributes, false, false, CompUnknown);
+}
+
+/** @cond doxygenLibsbmlInternal */
+void
+SBaseRef::readAttributes (const XMLAttributes& attributes,
+                          const ExpectedAttributes& expectedAttributes,
+                          bool hasCompIdName, bool idRequired, CompSBMLErrorCode_t errcode)
+{
+  CompBase::readAttributes(attributes,expectedAttributes, hasCompIdName, idRequired, errcode);
 
   const unsigned int sbmlLevel   = getLevel  ();
   //const unsigned int sbmlVersion = getVersion();
@@ -650,7 +663,7 @@ SBaseRef::createObject (XMLInputStream& stream)
     if (mSBaseRef != NULL && (name =="sBaseRef" || name=="sbaseRef")) {
       if (errlog != NULL) {
           errlog->logPackageError(getPackageName(), CompOneSBaseRefOnly, 
-            getPackageVersion(), getLevel(), getVersion());
+            getPackageVersion(), getLevel(), getVersion(), "", getLine(), getColumn());
       }
       object = mSBaseRef;
     }
@@ -664,7 +677,7 @@ SBaseRef::createObject (XMLInputStream& stream)
     else if ( name == "sbaseRef" ) {
       if (errlog != NULL) {
           errlog->logPackageError(getPackageName(), CompDeprecatedSBaseRefSpelling, 
-            getPackageVersion(), getLevel(), getVersion());
+            getPackageVersion(), getLevel(), getVersion(), "", getLine(), getColumn());
       }
       COMP_CREATE_NS(compns, getSBMLNamespaces());
       mSBaseRef = new SBaseRef(compns);
@@ -1212,9 +1225,9 @@ SBaseRef_setMetaIdRef(SBaseRef_t * sbr, const char * metaIdRef)
 
 LIBSBML_EXTERN
 int
-SBaseRef_setSBaseRef(SBaseRef_t * sbr, SBaseRef_t * sBaseRef)
+SBaseRef_setSBaseRef(SBaseRef_t * parent, SBaseRef_t * child)
 {
-  return (sbr != NULL) ? sbr->setSBaseRef(sBaseRef) : LIBSBML_INVALID_OBJECT;
+  return (parent != NULL) ? parent->setSBaseRef(child) : LIBSBML_INVALID_OBJECT;
 }
 
 

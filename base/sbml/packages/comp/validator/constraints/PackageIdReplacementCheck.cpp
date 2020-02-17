@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -129,20 +133,15 @@ PackageIdReplacementCheck::~PackageIdReplacementCheck ()
 void
 PackageIdReplacementCheck::check_ (const Model& m, const Model&)
 {
-  unsigned int n, size;
   const CompSBasePlugin * plug;
   ReplacedFilter filter;
   ReplacedByFilter repByFilter;
 
   /* get all elements that have replaced elements */
   List* allElements = const_cast<Model *>(&m)->getAllElements(&filter);
-
-  size = allElements->getSize();
-
-
-  for (n = 0; n < size; ++n) 
+  for (ListIterator iter = allElements->begin(); iter != allElements->end(); ++iter)
   {
-    SBase *sb = static_cast<SBase*>(allElements->get(n));
+    SBase* sb = static_cast<SBase*>(*iter);
     plug = static_cast<const CompSBasePlugin*>(sb->getPlugin("comp"));
 
     for (unsigned int i = 0; i < plug->getNumReplacedElements(); i++)
@@ -157,12 +156,9 @@ PackageIdReplacementCheck::check_ (const Model& m, const Model&)
   /* get all elements that have replaced elements */
   allElements = const_cast<Model *>(&m)->getAllElements(&repByFilter);
 
-  size = allElements->getSize();
-
-
-  for (n = 0; n < size; ++n) 
+  for (ListIterator iter = allElements->begin(); iter != allElements->end(); ++iter)
   {
-    SBase *sb = static_cast<SBase*>(allElements->get(n));
+    SBase* sb = static_cast<SBase*>(*iter);
     plug = static_cast<const CompSBasePlugin*>(sb->getPlugin("comp"));
 
     checkReferencedElement(*(const_cast<ReplacedBy*>

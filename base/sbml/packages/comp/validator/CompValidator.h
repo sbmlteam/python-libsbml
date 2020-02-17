@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -32,7 +36,7 @@
  *
  * The CompValidator class extends the Validator class from core libSBML to
  * apply validation to the constructs introduced by the SBML Level&nbsp;3
- * Hierarchical Model Composition package. This class then acts as a base
+ * Hierarchical %Model Composition package. This class then acts as a base
  * class for any validators that apply rules to the &ldquo;comp&rdquo;
  * package specification constructs or to entire models that use the
  * &ldquo;comp&rdquo; package, and may therefore be subject to other global

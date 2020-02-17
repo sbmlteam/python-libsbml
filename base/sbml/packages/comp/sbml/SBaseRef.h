@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -63,7 +67,7 @@
  * of a UnitDefinition object.  The namespace of the <code>UnitSIdRef</code>
  * value is the set of unit identifiers defined in the submodel, not the
  * parent model. (Note that even though this attribute is of type <code>UnitSIdRef</code>,
- * the reserved unit identifiers that are defined by SBML Level 3 (see
+ * the reserved unit identifiers that are defined by SBML Level&nbsp;3 (see
  * Section 3.1.10 of the core specification) are
  * *not* permitted as values of "unitRef".  Reserved unit
  * identifiers may not be replaced or deleted.)
@@ -128,9 +132,11 @@ public:
   /**
    * Creates a new SBaseRef with the given level, version, and package version.
    *
-   * @param level the SBML Level
-   * @param version the Version within the SBML Level
-   * @param pkgVersion the version of the package
+   * @param level the SBML Level.
+   * @param version the Version within the SBML Level.
+   * @param pkgVersion the version of the package.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   SBaseRef(unsigned int level      = CompExtension::getDefaultLevel(),
            unsigned int version    = CompExtension::getDefaultVersion(),
@@ -140,19 +146,28 @@ public:
   /**
    * Creates a new SBaseRef with the given CompPkgNamespaces object.
    *
-   * @param compns the namespace to use
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param compns the CompPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   SBaseRef(CompPkgNamespaces* compns);
 
 
   /**
    * Copy constructor.
+   *
+   * @param source the instance to copy.
    */
   SBaseRef(const SBaseRef& source);
 
 
   /**
    * Assignment operator.
+   *
+   * @param source the object whose values are used as the basis of the
+   * assignment.
    */
   SBaseRef& operator=(const SBaseRef& source);
 
@@ -160,14 +175,14 @@ public:
   /**
    * Creates and returns a deep copy of this SBaseRef object.
    * 
-   * @return a (deep) copy of this SBaseRef object
+   * @return a (deep) copy of this SBaseRef object.
    */
   virtual SBaseRef* clone () const;
 
 
   /**
    * Destructor.
-   */ 
+   */
   virtual ~SBaseRef ();
 
 
@@ -175,7 +190,7 @@ public:
    * Returns the first child element found that has the given @p id in the
    * model-wide SId namespace, or @c NULL if no such object is found.
    *
-   * @param id string representing the id of objects to find
+   * @param id string representing the id of the object to find.
    *
    * @return a pointer to the SBase element with the given @p id.
    */
@@ -186,7 +201,7 @@ public:
    * Returns the first child element it can find with the given @p metaid, or
    * itself if it has the given @p metaid, or @c NULL if no such object is found.
    *
-   * @param metaid string representing the metaid of objects to find
+   * @param metaid string representing the metaid of the object to find.
    *
    * @return a pointer to the SBase element with the given @p metaid.
    */
@@ -197,7 +212,11 @@ public:
    * Returns a List of all child SBase* objects, including those nested to an
    * arbitrary depth.
    *
-   * @return a List* of pointers to all children objects.
+   * @param filter a pointer to an ElementFilter, which causes the function 
+   * to return only elements that match a particular set of constraints.  
+   * If NULL (the default), the function will return all child objects.
+   *
+   * @return a List of pointers to all children objects.
    */
   virtual List* getAllElements(ElementFilter* filter=NULL);
   
@@ -323,9 +342,7 @@ public:
   /**
    * Unsets the value of the "idRef" attribute of this SBaseRef.
    *
-   * @copydetails doc_returns_success_code
-   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
-   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   * @copydetails doc_unset_id
    */
   virtual int unsetIdRef ();
 
@@ -376,7 +393,7 @@ public:
   /**
    * Get the child sBaseRef of this sBaseRef.
    * 
-   * @return the const SBaseRef child of this SBaseRef, or NULL if none exists.
+   * @return the const SBaseRef child of this SBaseRef, or @c NULL if none exists.
    */
   const SBaseRef* getSBaseRef () const;
 
@@ -384,7 +401,7 @@ public:
   /**
    * Get the child sBaseRef of this SBaseRef.
    * 
-   * @return the SBaseRef child of this SBaseRef, or NULL if none exists.
+   * @return the SBaseRef child of this SBaseRef, or @c NULL if none exists.
    */
   SBaseRef* getSBaseRef ();
 
@@ -449,7 +466,7 @@ public:
 
 
   /**
-   * Returns true if getNumReferents() is exactly 1.
+   * Returns @c true if getNumReferents() is exactly 1.
    *
    * @return boolean: 'true' if the attributes are correctly set; 'false' if not.
    */
@@ -477,7 +494,7 @@ public:
    * @copydetails doc_what_are_typecodes
    *
    * @return the SBML type code for this object:
-   * @sbmlconstant{SBML_COMP_SBASEREF, SBMLCompTypeCode_t}
+   * @sbmlconstant{SBML_COMP_SBASEREF, SBMLCompTypeCode_t}.
    *
    * @copydetails doc_warning_typecodes_not_unique
    *
@@ -490,7 +507,7 @@ public:
   /** @cond doxygenLibsbmlInternal */
   /**
    * Subclasses should override this method to write out their contained
-   * SBML objects as XML elements.  Be sure to call your parents
+   * SBML objects as XML elements.  Be sure to call your parent's
    * implementation of this method as well.  For example:
    *
    *   SBase::writeElements(stream);
@@ -518,7 +535,7 @@ public:
   /**
    * Sets the parent SBMLDocument of this SBML object.
    *
-   * @param d the SBMLDocument object to use
+   * @param d the SBMLDocument object to use.
    */
   virtual void setSBMLDocument (SBMLDocument* d);
   /** @endcond */
@@ -610,7 +627,7 @@ protected:
   /**
    * Need a version of the SBaseRef constructor that does not load plugins.
    *
-   * @param compns the namespace to use
+   * @param compns the namespace to use.
    */
   SBaseRef(CompPkgNamespaces* compns, bool isDerived);
   /** @endcond */
@@ -630,7 +647,18 @@ protected:
   /**
    * Subclasses should override this method to read values from the given
    * XMLAttributes set into their specific fields.  Be sure to call your
-   * parents implementation of this method as well.
+   * parent's implementation of this method as well.
+   */
+  virtual void readAttributes (const XMLAttributes& attributes, 
+                               const ExpectedAttributes& expectedAttributes,
+                               bool hasCompIdName, bool idRequired, CompSBMLErrorCode_t errcode);
+  /** @endcond */
+
+  /** @cond doxygenLibsbmlInternal */
+  /**
+   * Subclasses should override this method to read values from the given
+   * XMLAttributes set into their specific fields.  Be sure to call your
+   * parent's implementation of this method as well.
    */
   virtual void readAttributes (const XMLAttributes& attributes, 
                                const ExpectedAttributes& expectedAttributes);
@@ -650,7 +678,7 @@ protected:
   /** @cond doxygenLibsbmlInternal */
   /**
    * Subclasses should override this method to write their XML attributes
-   * to the XMLOutputStream.  Be sure to call your parents implementation
+   * to the XMLOutputStream.  Be sure to call your parent's implementation
    * of this method as well.  For example:
    *
    *   SBase::writeAttributes(stream);
@@ -697,14 +725,14 @@ BEGIN_C_DECLS
 
 /**
  * Creates a new SBaseRef_t structure using the given SBML @p level
- * and @p version values.
+ * and @p version, and the @p pkgVersion package version.
  *
  * @param level an unsigned int, the SBML Level to assign to this
- * SBaseRef_t
+ * SBaseRef_t.
  * @param version an unsigned int, the SBML Version to assign to this
- * SBaseRef_t
- * @param pkgVersion an unsigned int, the SBML 'Qual' package Version to assign to this
- * SBaseRef_t
+ * SBaseRef_t.
+ * @param pkgVersion an unsigned int, the SBML 'comp' package Version to assign to this
+ * SBaseRef_t.
  *
  * @return a pointer to the newly created SBaseRef_t structure.
  *
@@ -815,13 +843,13 @@ SBaseRef_getSBaseRef(SBaseRef_t * sbr);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether the given
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether the given
  * SBaseRef_t structure's portRef is set.
  *
- * @param sbr the SBaseRef_t structure to query
+ * @param sbr the SBaseRef_t structure to query.
  * 
- * @return @c non-zero (true) if the "portRef" attribute of the given
- * SBaseRef_t structure is set, zero (false) otherwise.
+ * @return @c 1 (true) if the "portRef" attribute of the given
+ * SBaseRef_t structure is set, @c 0 (false) otherwise.
  *
  * @memberof SBaseRef_t
  */
@@ -831,13 +859,13 @@ SBaseRef_isSetPortRef(SBaseRef_t * sbr);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether the given
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether the given
  * SBaseRef_t structure's idRef is set.
  *
- * @param sbr the SBaseRef_t structure to query
+ * @param sbr the SBaseRef_t structure to query.
  * 
- * @return @c non-zero (true) if the "idRef" attribute of the given
- * SBaseRef_t structure is set, zero (false) otherwise.
+ * @return @c 1 (true) if the "idRef" attribute of the given
+ * SBaseRef_t structure is set, @c 0 (false) otherwise.
  *
  * @memberof SBaseRef_t
  */
@@ -847,13 +875,13 @@ SBaseRef_isSetIdRef(SBaseRef_t * sbr);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether the given
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether the given
  * SBaseRef_t structure's unitRef is set.
  *
- * @param sbr the SBaseRef_t structure to query
+ * @param sbr the SBaseRef_t structure to query.
  * 
- * @return @c non-zero (true) if the "unitRef" attribute of the given
- * SBaseRef_t structure is set, zero (false) otherwise.
+ * @return @c 1 (true) if the "unitRef" attribute of the given
+ * SBaseRef_t structure is set, @c 0 (false) otherwise.
  *
  * @memberof SBaseRef_t
  */
@@ -863,13 +891,13 @@ SBaseRef_isSetUnitRef(SBaseRef_t * sbr);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether the given
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether the given
  * SBaseRef_t structure's metaIdRef is set.
  *
- * @param sbr the SBaseRef_t structure to query
+ * @param sbr the SBaseRef_t structure to query.
  * 
- * @return @c non-zero (true) if the "metaIdRef" attribute of the given
- * SBaseRef_t structure is set, zero (false) otherwise.
+ * @return @c 1 (true) if the "metaIdRef" attribute of the given
+ * SBaseRef_t structure is set, @c 0 (false) otherwise.
  *
  * @memberof SBaseRef_t
  */
@@ -879,13 +907,13 @@ SBaseRef_isSetMetaIdRef(SBaseRef_t * sbr);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether the given
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether the given
  * SBaseRef_t structure's child SBaseRef_t is set.
  *
- * @param sbr the SBaseRef_t structure to query
+ * @param sbr the SBaseRef_t structure to query.
  * 
- * @return @c non-zero (true) if the SBaseRef_t child of the given
- * SBaseRef_t structure is set, zero (false) otherwise.
+ * @return @c 1 (true) if the SBaseRef_t child of the given
+ * SBaseRef_t structure is set, @c 0 (false) otherwise.
  *
  * @memberof SBaseRef_t
  */
@@ -897,7 +925,7 @@ SBaseRef_isSetSBaseRef(SBaseRef_t * sbr);
 /**
  * Sets the portRef of the given SBaseRef_t to a copy of @p portRef.
  *
- * @param sbr the SBaseRef_t structure to set
+ * @param sbr the SBaseRef_t structure to set.
  * @param portRef the portRef to assign to the given SBaseRef_t's "portRef" attribute.
  *
  * @copydetails doc_returns_success_code
@@ -917,7 +945,7 @@ SBaseRef_setPortRef(SBaseRef_t * sbr, const char * portRef);
 /**
  * Sets the idRef of the given SBaseRef_t to a copy of @p idRef.
  *
- * @param sbr the SBaseRef_t structure to set
+ * @param sbr the SBaseRef_t structure to set.
  * @param idRef the idRef to assign to the given SBaseRef_t's "idRef" attribute.
  *
  * @copydetails doc_returns_success_code
@@ -937,7 +965,7 @@ SBaseRef_setIdRef(SBaseRef_t * sbr, const char * idRef);
 /**
  * Sets the unitRef of the given SBaseRef_t to a copy of @p unitRef.
  *
- * @param sbr the SBaseRef_t structure to set
+ * @param sbr the SBaseRef_t structure to set.
  * @param unitRef the unitRef to assign to the given SBaseRef_t's "unitRef" attribute.
  *
  * @copydetails doc_returns_success_code
@@ -957,7 +985,7 @@ SBaseRef_setUnitRef(SBaseRef_t * sbr, const char * unitRef);
 /**
  * Sets the metaIdRef of the given SBaseRef_t to a copy of @p metaIdRef.
  *
- * @param sbr the SBaseRef_t structure to set
+ * @param sbr the SBaseRef_t structure to set.
  * @param metaIdRef the metaIdRef to assign to the given SBaseRef_t's "metaIdRef" attribute.
  *
  * @copydetails doc_returns_success_code
@@ -975,10 +1003,10 @@ SBaseRef_setMetaIdRef(SBaseRef_t * sbr, const char * metaIdRef);
 
 
 /**
- * Sets the sBaseRef of this SBaseRef_t to a copy of the given SBaseRef_t.
+ * Sets the child SBaseRef_t of the @p parent SBaseRef_t to a copy of @p child.
  *
- * @param sbr the SBaseRef_t structure to set
- * @param sBaseRef the SBaseRef_t structure to use.
+ * @param parent the parent SBaseRef_t structure.
+ * @param child the intended child SBaseRef_t structure to copy.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -989,13 +1017,13 @@ SBaseRef_setMetaIdRef(SBaseRef_t * sbr, const char * metaIdRef);
  */
 LIBSBML_EXTERN
 int
-SBaseRef_setSBaseRef(SBaseRef_t * sbr, SBaseRef_t * sBaseRef);
+SBaseRef_setSBaseRef(SBaseRef_t * parent, SBaseRef_t * child);
 
 
 /**
  * Unsets the "portRef" attribute of the given SBaseRef_t structure.
  *
- * @param sbr the SBaseRef_t structure to unset
+ * @param sbr the SBaseRef_t structure to unset.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -1011,7 +1039,7 @@ SBaseRef_unsetPortRef(SBaseRef_t * sbr);
 /**
  * Unsets the "idRef" attribute of the given SBaseRef_t structure.
  *
- * @param sbr the SBaseRef_t structure to unset
+ * @param sbr the SBaseRef_t structure to unset.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -1027,7 +1055,7 @@ SBaseRef_unsetIdRef(SBaseRef_t * sbr);
 /**
  * Unsets the "unitRef" attribute of the given SBaseRef_t structure.
  *
- * @param sbr the SBaseRef_t structure to unset
+ * @param sbr the SBaseRef_t structure to unset.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -1043,7 +1071,7 @@ SBaseRef_unsetUnitRef(SBaseRef_t * sbr);
 /**
  * Unsets the "metaIdRef" attribute of the given SBaseRef_t structure.
  *
- * @param sbr the SBaseRef_t structure to unset
+ * @param sbr the SBaseRef_t structure to unset.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -1059,7 +1087,7 @@ SBaseRef_unsetMetaIdRef(SBaseRef_t * sbr);
 /**
  * Removes the SBaseRef_t child of the given SBaseRef_t structure.
  *
- * @param sbr the SBaseRef_t structure to unset
+ * @param sbr the SBaseRef_t structure to unset.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -1077,8 +1105,8 @@ SBaseRef_unsetSBaseRef(SBaseRef_t * sbr);
   * all the required attributes for the given SBaseRef_t structure
   * have been set.
   *
-  * @note The required attributes for a SBaseRef_t structure are:
-  * @li useValuesfromTriggerTime ( L3 onwards )
+  * @note The required attributes for a SBaseRef_t structure are
+  * that it must use exactly one attribute to refer to its target.
   *
  * @memberof SBaseRef_t
  */

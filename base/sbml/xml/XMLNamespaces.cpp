@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -107,7 +111,7 @@ XMLNamespaces::clone () const
  * then the existing XML namespace will be overwritten by the new one.
  */
 int
-XMLNamespaces::add (const std::string& uri, const std::string& prefix)
+XMLNamespaces::add (const std::string& uri, const std::string prefix)
 {
   //
   // avoids duplicate prefix
@@ -203,10 +207,10 @@ XMLNamespaces::clear ()
 /*
  * Lookup the index of an XML namespace declaration by URI.
  *
- * @return the index of the given declaration, or -1 if not present.
+ * @return the index of the given declaration, or @c -1 if not present.
  */
 int
-XMLNamespaces::getIndex (const std::string uri) const
+XMLNamespaces::getIndex (const std::string& uri) const
 {
   for (int index = 0; index < getLength(); ++index)
   {
@@ -220,18 +224,18 @@ XMLNamespaces::getIndex (const std::string uri) const
  * Tests whether the given uri is contained in this set of namespaces. 
  */
 bool 
-XMLNamespaces::containsUri(const std::string uri) const
+XMLNamespaces::containsUri(const std::string& uri) const
 {
   return getIndex(uri) != -1;
 }
 
 /*
- * Lookup the index of an XML namespace declaration by Prefix.
+ * Lookup the index of an XML namespace declaration by @p prefix.
  *
- * @return the index of the given declaration, or -1 if not present.
+ * @return the index of the given declaration, or @c -1 if not present.
  */
 int
-XMLNamespaces::getIndexByPrefix (const std::string prefix) const
+XMLNamespaces::getIndexByPrefix (const std::string& prefix) const
 {
   for (int index = 0; index < getLength(); ++index)
   {
@@ -303,7 +307,7 @@ XMLNamespaces::getURI (int index) const
  * If prefix does not exist, an empty string will be returned.
  */
 std::string
-XMLNamespaces::getURI (const std::string& prefix) const
+XMLNamespaces::getURI (const std::string prefix) const
 {
   for (int index = 0; index < getLength(); ++index)
   {
@@ -315,7 +319,7 @@ XMLNamespaces::getURI (const std::string& prefix) const
 
 
 /*
- * @return true if this XMLNamespaces set is empty, false otherwise.
+ * @return @c true if this XMLNamespaces set is empty, false otherwise.
  */
 bool
 XMLNamespaces::isEmpty () const

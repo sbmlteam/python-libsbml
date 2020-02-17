@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -81,11 +85,11 @@ static const packageErrorTableEntry qualErrorTable[] =
 
     // 3010201
   { QualFunctionTermBool, 
-    "FunctionTerm should return boolean",
+    "FunctionTerm should return Boolean",
     LIBSBML_CAT_MATHML_CONSISTENCY, 
     LIBSBML_SEV_WARNING,
     "The MathML <math> element in a <functionTerm> object should "
-    "evaluate to a value of type boolean.", 
+    "evaluate to a value of type Boolean.", 
     { "L3V1 Qual V1 Section 3.6.5"
     }
   },
@@ -272,11 +276,11 @@ static const packageErrorTableEntry qualErrorTable[] =
 
   // 3020304
   { QualConstantMustBeBool, 
-    "Attribute 'constant' on <qualitativeSpecies> must be boolean.",
+    "Attribute 'constant' on <qualitativeSpecies> must be Boolean.",
     LIBSBML_CAT_GENERAL_CONSISTENCY, 
     LIBSBML_SEV_ERROR,
     "The attribute 'qual:constant' in <qualitativeSpecies> must be of "
-    "the data type boolean.",
+    "the data type Boolean.",
     { "L3V1 Qual V1 Section 3.5"
     }
   },
@@ -354,7 +358,7 @@ static const packageErrorTableEntry qualErrorTable[] =
   { QualQSAssignedOnlyOnce, 
     "A <qualitativeSpecies> can only be assigned once.",
     LIBSBML_CAT_GENERAL_CONSISTENCY, 
-    LIBSBML_SEV_ERROR,
+    LIBSBML_SEV_WARNING,
     "A <qualitativeSpecies> that is referenced by an <output> with the "
     "'qual:transitionEffect' attribute set to 'assignmentLevel' should not be "
     "referenced by any other <output> with the same 'transitionEffect' "

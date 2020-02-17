@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -316,7 +320,7 @@ const char * xmlCategoryStringTable[] =
  * purposefully doesn't do that.
  */
 XMLError::XMLError (  const int errorId
-                    , const std::string& details
+                    , const std::string details
                     , const unsigned int line
                     , const unsigned int column
                     , const unsigned int severity
@@ -595,7 +599,7 @@ XMLError::getErrorIdOffset () const
 
 
 /*
- * @return true if this XMLError is for informational purposes only,
+ * @return @c true if this XMLError is for informational purposes only,
  * false otherwise.
  */
 bool
@@ -606,7 +610,7 @@ XMLError::isInfo () const
 
 
 /*
- * @return true if this XMLError is a warning, false otherwise.
+ * @return @c true if this XMLError is a warning, false otherwise.
  */
 bool
 XMLError::isWarning () const
@@ -616,7 +620,7 @@ XMLError::isWarning () const
 
 
 /*
- * @return true if this XMLError is an error, false otherwise.
+ * @return @c true if this XMLError is an error, false otherwise.
  */
 bool
 XMLError::isError () const
@@ -626,7 +630,7 @@ XMLError::isError () const
 
 
 /*
- * @return true if this XMLError is a fatal error, false otherwise.
+ * @return @c true if this XMLError is a fatal error, false otherwise.
  */
 bool
 XMLError::isFatal () const

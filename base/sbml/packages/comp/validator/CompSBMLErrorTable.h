@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -450,7 +454,7 @@ static const packageErrorTableEntry compErrorTable[] =
     LIBSBML_CAT_GENERAL_CONSISTENCY, 
     LIBSBML_SEV_ERROR,
     "The value of the 'comp:source' attribute on an <externalModelDefinition> "
-    "object must reference an SBML Level 3 Version 1 document.",
+    "object must reference an SBML Level 3 document.",
     { "L3V1 Comp V1 Section 3.3.2"
     }
   },
@@ -1185,7 +1189,7 @@ static const packageErrorTableEntry compErrorTable[] =
     "attributes: 'comp:portRef', 'comp:idRef', 'comp:unitRef' "
     "or 'comp:metaIdRef'. No other attributes from "
     "the HierarchicalModel Composition namespace are permitted on a "
-    "<replacedElement> object.",
+    "<replacedBy> object.",
     { "L3V1 Comp V1 Section 3.6.4"
     }
   },

@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -72,7 +76,7 @@
  * Each XMLError object also contains a category code; its value may be
  * retrieved using the method XMLError::getCategory().  Category values
  * are drawn from @if clike the enumeration <a class="el" href="#XMLErrorCategory_t">XMLErrorCategory_t</a> described below.@else a
- * set of constants whose names begin with the characters @c LIBSBML_CAT_, described below.@endif@~ &nbsp;Categories
+ * set of constants whose names begin with the characters @c LIBSBML_CAT_, described below.@endif@~&nbsp;Categories
  * are used by libSBML to provide more information to calling programs about
  * the nature of a given error.  
  *
@@ -662,7 +666,7 @@ public:
   XMLError
   (
       const int errorId           = 0
-    , const std::string& details  = ""
+    , const std::string details  = ""
     , const unsigned int line     = 0
     , const unsigned int column   = 0
     , const unsigned int severity = LIBSBML_SEV_FATAL
@@ -681,7 +685,7 @@ public:
   /**
    * Assignment operator for XMLError.
    *
-   * @param rhs The XMLError object whose values are used as the basis
+   * @param rhs the XMLError object whose values are used as the basis
    * of the assignment.
    */
   XMLError& operator=(const XMLError& rhs);
@@ -718,7 +722,7 @@ public:
    * obtain additional information about the nature and severity of the
    * problem.
    *
-   * @return the message text
+   * @return the message text.
    *
    * @see getErrorId()
    * @see getShortMessage()
@@ -738,7 +742,7 @@ public:
    * applications may wish to check XMLError::getMessage() in addition or
    * instead.
    *
-   * @return the short error message text
+   * @return the short error message text.
    * 
    * @see getErrorId()
    * @see getMessage()
@@ -766,7 +770,7 @@ public:
    * encounters these values in an XMLError object, it can assume no valid
    * line/column number could be provided by libSBML in that situation.
    *
-   * @return the line number
+   * @return the line number.
    *
    * @see getColumn()
    */
@@ -791,7 +795,7 @@ public:
    * encounters these values in an XMLError object, it can assume no valid
    * line/column number could be provided by libSBML in that situation.
    *
-   * @return the column number
+   * @return the column number.
    *
    * @see getLine()
    */
@@ -955,7 +959,7 @@ public:
    * the value @sbmlconstant{LIBSBML_CAT_INTERNAL, XMLErrorCategory_t} from the
    * @if clike enumeration #XMLErrorCategory_t. @else set of predefined category codes.@endif@~
    *
-   * @return @c true or @c false
+   * @return a boolean indicating whether the error is an internal error.
    *
    * @see isSystem()
    * @see isXML()
@@ -972,7 +976,7 @@ public:
    * the value @sbmlconstant{LIBSBML_CAT_SYSTEM, XMLErrorCategory_t} from the
    * @if clike enumeration #XMLErrorCategory_t. @else set of predefined category codes.@endif@~
    *
-   * @return @c true or @c false
+   * @return boolean indicating whether the error is a system error.
    *
    * @see isInternal()
    * @see isXML()
@@ -990,7 +994,7 @@ public:
    * the value @sbmlconstant{LIBSBML_CAT_XML, XMLErrorCategory_t} from the
    * @if clike enumeration #XMLErrorCategory_t. @else set of predefined category codes.@endif@~
    *
-   * @return @c true or @c false
+   * @return a boolean indicating whether the error is an XML catetory error.
    *
    * @see isInternal()
    * @see isSystem()
@@ -1008,7 +1012,8 @@ public:
    * the value XMLUnknownError or UnknownError from the
    * @if clike enumeration #XMLErrorCode_t. @else set of predefined error codes.@endif@~
    *
-   * @return @c true or @c false
+   * @return a boolean indicating whether the error is a valid error (@c true) 
+   * or whether it is unknown (@c false).
    */
   bool isValid () const;
 
@@ -1018,7 +1023,7 @@ public:
    * 
    * @param line an unsigned int, the line number to set.
    *
-   * @copydetails doc_returns_success_code
+   * @copydetails doc_returns_one_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
    *
    * @see setColumn(unsigned int column)
@@ -1031,7 +1036,7 @@ public:
    * 
    * @param column an unsigned int, the column number to set.
    *
-   * @copydetails doc_returns_success_code
+   * @copydetails doc_returns_one_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
    *
    * @see setLine(unsigned int line)
@@ -1331,7 +1336,7 @@ XMLError_getColumn (const XMLError_t *error);
 
 /**
  * Return the severity of this XMLError_t.  The possible values (for the XML
- * layer) are those from the enumeration XMLErrorSeverity_t.
+ * layer) are those from the enumeration #XMLErrorSeverity_t.
  *
  * @param error the XMLError_t from which to return the severity.
  *
@@ -1345,7 +1350,7 @@ XMLError_getSeverity (const XMLError_t *error);
 
 
 /**
- * Return the severity of this XMLError_t as a string.erity_t.
+ * Return the severity of this XMLError_t as a string.
  *
  * @param error the XMLError_t from which to return the severity.
  *
@@ -1388,13 +1393,13 @@ XMLError_getCategoryAsString (const XMLError_t *error);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether 
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether 
  * this XMLError_t structure is for information only.
  *
  * @param error the XMLError_t.
  *
- * @return @c non-zero (true) if this XMLError_t is for informational purposes
- * only, @c zero (false) otherwise.
+ * @return @c 1 (true) if this XMLError_t is for informational purposes
+ * only, @c 0 (false) otherwise.
  *
  * @memberof XMLError_t
  */
@@ -1404,12 +1409,12 @@ XMLError_isInfo (const XMLError_t *error);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether 
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether 
  * this XMLError_t structure is a warning.
  *
  * @param error the XMLError_t.
  *
- * @return @c non-zero (true) if this XMLError_t is a warning, @c zero (false) otherwise.
+ * @return @c 1 (true) if this XMLError_t is a warning, @c 0 (false) otherwise.
  *
  * @memberof XMLError_t
  */
@@ -1419,12 +1424,12 @@ XMLError_isWarning (const XMLError_t *error);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether 
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether 
  * this XMLError_t structure is an error.
  *
  * @param error the XMLError_t.
  *
- * @return @c non-zero (true) if this XMLError_t is an error, @c zero (false) otherwise.
+ * @return @c 1 (true) if this XMLError_t is an error, @c 0 (false) otherwise.
  *
  * @memberof XMLError_t
  */
@@ -1434,12 +1439,12 @@ XMLError_isError (const XMLError_t *error);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether 
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether 
  * this XMLError_t structure is a fatal error.
  *
  * @param error the XMLError_t.
  *
- * @return @c non-zero (true) if this XMLError_t is a fatal error, @c zero (false) otherwise.
+ * @return @c 1 (true) if this XMLError_t is a fatal error, @c 0 (false) otherwise.
  *
  * @memberof XMLError_t
  */

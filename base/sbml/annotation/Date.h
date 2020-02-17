@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -70,11 +74,11 @@
  * signifying @c + and @c 1 signifying @c -).  See the paragraph below for
  * further explanations.
  * 
- * @li @em hours offset: an unsigned int representing the time zone's hour
- * offset from GMT.
+ * @li @em hours @em offset: an unsigned int representing the time zone's hour
+ * offset from GMT, with a range of 0&ndash;12.
  * 
- * @li @em minute offset: an unsigned int representing the time zone's
- * minute offset from GMT.
+ * @li @em minute @em offset: an unsigned int representing the time zone's
+ * minute offset from GMT, with a range of 0&ndash;59.
  *
  * To illustrate the time zone offset, a value of <code>-05:00</code> would
  * correspond to USA Eastern Standard Time.  In the Date object, this would
@@ -144,6 +148,8 @@
  *
  * @li @em DD is a two-digit integer representing the day of the month,
  * with a range of values of 01&ndash;31.
+ * 
+ * @li @em T is the literal character @c T.
  * 
  * @li @em hh is a two-digit integer representing the hour on a 24-hour
  * clock, with a range of values of 00&ndash;23.
@@ -286,7 +292,7 @@ public:
   /**
    * Assignment operator.
    *
-   * @param rhs The object whose values are used as the basis of the
+   * @param rhs the object whose values are used as the basis of the
    * assignment.
    */
   Date& operator=(const Date& rhs);
@@ -487,7 +493,7 @@ public:
    * Sets the value of this Date object's time zone hour offset.
    *  
    * @param hoursOffset an unsigned int representing the hours of the
-   * offset; it must be in the range 0&ndash;23 or an error will be
+   * offset; it must be in the range 0&ndash;12 or an error will be
    * signaled.
    *
    * @copydetails doc_returns_success_code
@@ -536,7 +542,7 @@ public:
 
 
   /**
-   * Returns true or false depending on whether this date object represents
+   * Returns @c true or @c false depending on whether this date object represents
    * a valid date and time value.
    *
    * This method verifies that the date/time value stored in this object is
@@ -661,7 +667,7 @@ Date_free(Date_t* date);
 /**
  * Creates a deep copy of the given Date_t structure
  * 
- * @param date the Date_t structure to be copied
+ * @param date the Date_t structure to be copied.
  * 
  * @return a (deep) copy of the given Date_t structure.
  *
@@ -674,7 +680,7 @@ Date_clone (const Date_t* date);
 /**
  * Returns the Date_t as a string.
  *
- * @param date the Date_t structure to be queried
+ * @param date the Date_t structure to be queried.
  * 
  * @return the date as a string.
  *
@@ -687,7 +693,7 @@ Date_getDateAsString(Date_t * date);
 /**
  * Returns the year from this Date_t.
  *
- * @param date the Date_t structure to be queried
+ * @param date the Date_t structure to be queried.
  * 
  * @return the year from this Date_t.
  *
@@ -700,7 +706,7 @@ Date_getYear(Date_t * date);
 /**
  * Returns the month from this Date_t.
  *
- * @param date the Date_t structure to be queried
+ * @param date the Date_t structure to be queried.
  * 
  * @return the month from this Date_t.
  *
@@ -713,7 +719,7 @@ Date_getMonth(Date_t * date);
 /**
  * Returns the day from this Date_t.
  *
- * @param date the Date_t structure to be queried
+ * @param date the Date_t structure to be queried.
  * 
  * @return the day from this Date_t.
  *
@@ -726,7 +732,7 @@ Date_getDay(Date_t * date);
 /**
  * Returns the hour from this Date_t.
  *
- * @param date the Date_t structure to be queried
+ * @param date the Date_t structure to be queried.
  * 
  * @return the hour from this Date_t.
  *
@@ -739,7 +745,7 @@ Date_getHour(Date_t * date);
 /**
  * Returns the minute from this Date_t.
  *
- * @param date the Date_t structure to be queried
+ * @param date the Date_t structure to be queried.
  * 
  * @return the minute from this Date_t.
  *
@@ -752,7 +758,7 @@ Date_getMinute(Date_t * date);
 /**
  * Returns the seconds from this Date_t.
  *
- * @param date the Date_t structure to be queried
+ * @param date the Date_t structure to be queried.
  * 
  * @return the seconds from this Date_t.
  *
@@ -765,7 +771,7 @@ Date_getSecond(Date_t * date);
 /**
  * Returns the sign of the offset from this Date_t.
  *
- * @param date the Date_t structure to be queried
+ * @param date the Date_t structure to be queried.
  * 
  * @return the sign of the offset from this Date_t.
  *
@@ -778,7 +784,7 @@ Date_getSignOffset(Date_t * date);
 /**
  * Returns the hours of the offset from this Date_t.
  *
- * @param date the Date_t structure to be queried
+ * @param date the Date_t structure to be queried.
  * 
  * @return the hours of the offset from this Date_t.
  *
@@ -791,7 +797,7 @@ Date_getHoursOffset(Date_t * date);
 /**
  * Returns the minutes of the offset from this Date_t.
  *
- * @param date the Date_t structure to be queried
+ * @param date the Date_t structure to be queried.
  * 
  * @return the minutes of the offset from this Date_t.
  *
@@ -802,9 +808,9 @@ unsigned int
 Date_getMinutesOffset(Date_t * date);
 
 /**
- * Sets the value of the year checking appropriateness.
+ * Sets the value of the year, checking appropriateness.
  *  
- * @param date the Date_t structure to be set
+ * @param date the Date_t structure to be set.
  * @param value an unsigned int representing the year to set.  
  *
  * @copydetails doc_returns_success_code
@@ -819,10 +825,10 @@ int
 Date_setYear(Date_t * date, unsigned int value);
 
 /**
- * Sets the value of the month checking appropriateness.
+ * Sets the value of the month, checking appropriateness.
  *  
- * @param date the Date_t structure to be set
- * @param value an unsigned int representing the month to set.  
+ * @param date the Date_t structure to be set.
+ * @param value an unsigned int representing the month to set.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -836,10 +842,10 @@ int
 Date_setMonth(Date_t * date, unsigned int value);
 
 /**
- * Sets the value of the day checking appropriateness.
+ * Sets the value of the day, checking appropriateness.
  *  
- * @param date the Date_t structure to be set
- * @param value an unsigned int representing the day to set.  
+ * @param date the Date_t structure to be set.
+ * @param value an unsigned int representing the day to set.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -853,10 +859,10 @@ int
 Date_setDay(Date_t * date, unsigned int value);
 
 /**
- * Sets the value of the hour checking appropriateness.
+ * Sets the value of the hour, checking appropriateness.
  *  
- * @param date the Date_t structure to be set
- * @param value an unsigned int representing the hour to set.  
+ * @param date the Date_t structure to be set.
+ * @param value an unsigned int representing the hour to set.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -870,10 +876,10 @@ int
 Date_setHour(Date_t * date, unsigned int value);
 
 /**
- * Sets the value of the minute checking appropriateness.
+ * Sets the value of the minute, checking appropriateness.
  *  
- * @param date the Date_t structure to be set
- * @param value an unsigned int representing the minute to set.  
+ * @param date the Date_t structure to be set.
+ * @param value an unsigned int representing the minute to set.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -887,10 +893,10 @@ int
 Date_setMinute(Date_t * date, unsigned int value);
 
 /**
- * Sets the value of the second checking appropriateness.
+ * Sets the value of the second, checking appropriateness.
  *  
- * @param date the Date_t structure to be set
- * @param value an unsigned int representing the second to set.  
+ * @param date the Date_t structure to be set.
+ * @param value an unsigned int representing the second to set.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -904,11 +910,11 @@ int
 Date_setSecond(Date_t * date, unsigned int value);
 
 /**
- * Sets the value of the offset sign checking appropriateness.
+ * Sets the value of the offset sign, checking appropriateness.
  *  
- * @param date the Date_t structure to be set
+ * @param date the Date_t structure to be set.
  * @param value an unsigned int representing the sign of the 
- * offset to set.  
+ * offset to set.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -922,9 +928,9 @@ int
 Date_setSignOffset(Date_t * date, unsigned int value);
 
 /**
- * Sets the value of the offset hour checking appropriateness.
+ * Sets the value of the offset hour, checking appropriateness.
  *  
- * @param date the Date_t structure to be set
+ * @param date the Date_t structure to be set.
  * @param value an unsigned int representing the hours of the 
  * offset to set.  
  *
@@ -940,9 +946,9 @@ int
 Date_setHoursOffset(Date_t * date, unsigned int value);
 
 /**
- * Sets the value of the offset minutes checking appropriateness.
+ * Sets the value of the offset minutes, checking appropriateness.
  *  
- * @param date the Date_t structure to be set
+ * @param date the Date_t structure to be set.
  * @param value an unsigned int representing the minutes of the 
  * offset to set.  
  *
@@ -960,7 +966,7 @@ Date_setMinutesOffset(Date_t * date, unsigned int value);
 /**
  * Sets the value of the date from a string.
  *  
- * @param date the Date_t structure to be set
+ * @param date the Date_t structure to be set.
  * @param str string representing the date to set.  
  *
  * @copydetails doc_returns_success_code
@@ -988,9 +994,9 @@ Date_setDateAsString(Date_t * date, const char* str);
  * minutes number is less than or equal to 59, whether a time zone offset
  * is set, etc.
  *
- * @param date the Date_t structure to be checked
+ * @param date the Date_t structure to be checked.
  *
- * @return @c true if the date is valid, @c false otherwise.
+ * @return @c 1 (true) if the date is valid, @c 0 (false) otherwise.
  *
  * @memberof Date_t
  */

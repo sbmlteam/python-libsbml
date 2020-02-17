@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -43,6 +47,9 @@
 #include <locale.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#if defined CYGWIN
+#include <cstdlib>
+#endif
 
 #include <sbml/common/common.h>
 #include <sbml/common/libsbml-package.h>
@@ -50,10 +57,8 @@
 #include <sbml/util/List.h>
 #include <sbml/util/util.h>
 
+
 #include <math.h>
-#ifdef __cplusplus
-#include <cmath>
-#endif
 
 #if defined(_MSC_VER) || defined(__BORLANDC__)
 #  include <float.h>
@@ -124,7 +129,7 @@ c_locale_vsnprintf (char *str, size_t size, const char *format, va_list ap)
   result = vsnprintf(str, size, format, ap);
 
   setlocale(LC_ALL, locale);
-  free(locale);
+  safe_free(locale);
   
   return result;
 }
@@ -143,7 +148,7 @@ c_locale_strtod (const char *nptr, char **endptr)
   result = strtod(nptr, endptr);
 
   setlocale(LC_ALL, locale);
-  free(locale);
+  safe_free(locale);
 
   return result;
 }
@@ -188,10 +193,11 @@ safe_strcat (const char *str1, const char *str2)
   
   len1    = (int)strlen(str1);
   len2    = (int)strlen(str2);
-  concat = (char *) safe_malloc( (size_t) len1 + (size_t)len2 + 1 );
+  concat = (char *) safe_malloc( (size_t) len1 + (size_t)len2 + 2 );
 
 
   strncpy(concat, str1, (size_t)len1 + 1);
+  concat[len1 + 1] = '\0';
   strncat(concat, str2, (size_t)len2);
 
   return concat;
@@ -492,7 +498,7 @@ util_freeArray (void ** objects, int length)
   {
     util_free(objects[i]);
   }
-  free(objects);
+  safe_free(objects);
 
 }
 

@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -181,5 +185,73 @@ ListOfModelDefinitions::writeXMLNS (XMLOutputStream& stream) const
 
 #endif /* __cplusplus */
 
-LIBSBML_CPP_NAMESPACE_END
 
+/*
+ * Get a ModelDefinition_t from the ListOf_t.
+ */
+LIBSBML_EXTERN
+ModelDefinition_t*
+ListOfModelDefinitions_getModelDefinition(ListOf_t* lo, unsigned int n)
+{
+  if (lo == NULL)
+  {
+    return NULL;
+  }
+
+  return static_cast <ListOfModelDefinitions*>(lo)->get(n);
+}
+
+
+/*
+ * Get a ModelDefinition_t from the ListOf_t based on its identifier.
+ */
+LIBSBML_EXTERN
+ModelDefinition_t*
+ListOfModelDefinitions_getById(ListOf_t* lo, const char *sid)
+{
+  if (lo == NULL)
+  {
+    return NULL;
+  }
+
+  return (sid != NULL) ? static_cast <ListOfModelDefinitions*>(lo)->get(sid) :
+    NULL;
+}
+
+
+/*
+ * Removes the nth ModelDefinition_t from this ListOf_t and returns a pointer
+ * to it.
+ */
+LIBSBML_EXTERN
+ModelDefinition_t*
+ListOfModelDefinitions_remove(ListOf_t* lo, unsigned int n)
+{
+  if (lo == NULL)
+  {
+    return NULL;
+  }
+
+  return static_cast <ListOfModelDefinitions*>(lo)->remove(n);
+}
+
+
+/*
+ * Removes the ModelDefinition_t from this ListOf_t based on its identifier and
+ * returns a pointer to it.
+ */
+LIBSBML_EXTERN
+ModelDefinition_t*
+ListOfModelDefinitions_removeById(ListOf_t* lo, const char* sid)
+{
+  if (lo == NULL)
+  {
+    return NULL;
+  }
+
+  return (sid != NULL) ? static_cast <ListOfModelDefinitions*>(lo)->remove(sid)
+    : NULL;
+}
+
+
+LIBSBML_CPP_NAMESPACE_END

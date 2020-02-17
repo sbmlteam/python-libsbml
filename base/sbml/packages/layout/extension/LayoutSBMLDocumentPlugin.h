@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -34,7 +38,7 @@
  * @sbmlbrief{layout} Extension of SBMLDocument.
  *
  * The LayoutSBMLDocumentPlugin class inherits from the SBMLDocumentPlugin
- * class, and codifies the extentions to the SBMLDocument class defined in
+ * class, and codifies the extensions to the SBMLDocument class defined in
  * the SBML Level&nbsp;3 @ref layout (&ldquo;layout&rdquo;) package.
  *
  * The LayoutSBMLDocumentPlugin defines a
@@ -68,7 +72,18 @@ class LIBSBML_EXTERN LayoutSBMLDocumentPlugin : public SBMLDocumentPlugin
 public:
 
   /**
-   * Creates a new LayoutSBMLDocumentPlugin
+   * Creates a new LayoutSBMLDocumentPlugin object using the given parameters.
+   *
+   * @copydetails doc_what_are_xmlnamespaces
+   *
+   * @copydetails doc_what_are_sbmlnamespaces
+   *
+   * @param uri the URI of the SBML Level&nbsp;3 package implemented by
+   * this libSBML package extension.
+   *
+   * @param prefix the XML namespace prefix being used for the package.
+   *
+   * @param layoutns the namespaces object for the package.
    */
   LayoutSBMLDocumentPlugin(const std::string& uri, const std::string& prefix, 
                            LayoutPkgNamespaces* layoutns);
@@ -77,7 +92,7 @@ public:
   /**
    * Copy constructor for LayoutSBMLDocumentPlugin.
    *
-   * @param orig; the LayoutSBMLDocumentPlugin instance to copy.
+   * @param orig the LayoutSBMLDocumentPlugin instance to copy.
    */
   LayoutSBMLDocumentPlugin(const LayoutSBMLDocumentPlugin& orig);
 
@@ -85,8 +100,8 @@ public:
    /**
    * Assignment operator for LayoutSBMLDocumentPlugin.
    *
-   * @param rhs; the object whose values are used as the basis
-   * of the assignment
+   * @param rhs the object whose values are used as the basis
+   * of the assignment.
    */
   LayoutSBMLDocumentPlugin& operator=(const LayoutSBMLDocumentPlugin& rhs);
 
@@ -145,7 +160,6 @@ public:
   /**
    * Accepts the SBMLVisitor.
    */
-
   IdList getMetaidList() const;
 
   bool haveValidationListsBeenPopulated() const;

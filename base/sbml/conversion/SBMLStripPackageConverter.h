@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -115,7 +119,7 @@ public:
   /**
    * Assignment operator for SBMLStripPackageConverter.
    *
-   * @param rhs The object whose values are used as the basis of the
+   * @param rhs the object whose values are used as the basis of the
    * assignment.
    */
   SBMLStripPackageConverter& operator=(const SBMLStripPackageConverter& rhs);
@@ -183,12 +187,12 @@ public:
   virtual ConversionProperties getDefaultProperties() const;
 
   /** 
-   * @return the package to be stripped 
+   * @return the package to be stripped.
    */
   std::string getPackageToStrip() const;
 
   /** 
-   * @return whether all unrecognized packages should be removed
+   * @return a boolean indicating whether all unrecognized packages should be removed.
    */
   bool isStripAllUnrecognizedPackages() const;
 
@@ -204,7 +208,7 @@ protected:
   /**
    * This function strips the packge with given prefix
    *
-   * @return true, if the conversion succeeded, false otherwise.
+   * @return @c true, if the conversion succeeded, @c false otherwise.
    */
   bool stripPackage(const std::string& packageToStrip);
   

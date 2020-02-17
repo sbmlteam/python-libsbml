@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -48,6 +52,7 @@
 #define SBMLExtensionRegistry_h
 
 #include <sbml/extension/SBMLExtension.h>
+#include <sbml/extension/ASTBasePlugin.h>
 LIBSBML_CPP_NAMESPACE_BEGIN
 
 
@@ -76,6 +81,7 @@ public:
   typedef std::map<std::string, const SBMLExtension*>              SBMLExtensionMap;
   typedef std::pair<std::string, const SBMLExtension*>             SBMLExtensionPair;
   typedef SBMLExtensionMap::iterator                               SBMLExtensionMapIter;
+
   /** @endcond */
 #endif //SWIG
 
@@ -224,7 +230,7 @@ private:
   /**
    * Returns an SBMLExtension object with the given package URI or package name (string).
    *
-   * @param package the URI or name of the package extension
+   * @param package the URI or name of the package extension.
    *
    * @return the SBMLExtension object with the given package URI or name. The returned
    *         extension is NOT ALLOWED to be freed (i.e.: deleted)!
@@ -239,7 +245,7 @@ public:
   /**
    * Returns the list of SBasePluginCreators with the given extension point.
    *
-   * @param extPoint the SBaseExtensionPoint
+   * @param extPoint the SBaseExtensionPoint.
    *
    * @return the list of SBasePluginCreators with the given typecode.
    */
@@ -261,7 +267,7 @@ public:
    * Returns an SBasePluginCreator object with the combination of the given
    * extension point and package URI.
    *
-   * @param extPoint the SBaseExtensionPoint
+   * @param extPoint the SBaseExtensionPoint.
    * @param uri the URI of the target package extension.
    *
    * @return the SBasePluginCreator object corresponding to the arguments.
@@ -282,7 +288,7 @@ public:
   /**
    * Returns the number of extensions that have a given extension point.
    *
-   * @param extPoint the SBaseExtensionPoint object
+   * @param extPoint the SBaseExtensionPoint object.
    *
    * @return the number of SBMLExtension-derived objects with the given
    * extension point.
@@ -346,7 +352,7 @@ public:
    * SBML packages for which package extensions are registered with this copy
    * of libSBML.  The vector will contain <code>std::string</code> objects.
    *
-   * @return a vector of strings
+   * @return a vector of strings of the registered package names.
    */
   static std::vector<std::string> getAllRegisteredPackageNames();
 
@@ -375,6 +381,9 @@ public:
    */
   static std::string getRegisteredPackageName(unsigned int index);
 
+  std::vector<ASTBasePlugin*> getASTPlugins();
+  unsigned int getNumASTPlugins();
+  const ASTBasePlugin * getASTPlugin(unsigned int i);
 
 private:
 
@@ -392,6 +401,7 @@ private:
   /** @cond doxygenLibsbmlInternal */
   SBMLExtensionMap  mSBMLExtensionMap;
   SBasePluginMap    mSBasePluginMap;
+  std::vector<ASTBasePlugin*>  mASTPluginsVector;
 
   static SBMLExtensionRegistry* mInstance;
 
@@ -405,6 +415,7 @@ private:
   friend class SBase;
   friend class ASTBasePlugin;
   friend class ASTBase;
+  friend class ASTNode;
   friend class L3ParserSettings;
   template <class SBMLExtensionType> friend class SBMLExtensionNamespaces;
   template<class SBasePluginType, class SBMLExtensionType> friend class SBasePluginCreator;
@@ -440,10 +451,10 @@ SBMLExtensionRegistry_addExtension(const SBMLExtension_t* extension);
 /**
  * Returns an SBMLExtension_t structure with the given package URI or package name (string).
  *
- * @param package the URI or name of the package extension
+ * @param package the URI or name of the package extension.
  *
- * @return a clone of the SBMLExtension_t structure with the given package URI or name.
- * Or NULL in case of an invalid package name.
+ * @return a clone of the SBMLExtension_t structure with the given package URI or name,
+ * or @c NULL in case of an invalid package name.
  *
  * @note The returned extension is to be freed (i.e.: deleted) by the caller!
  *
@@ -457,7 +468,7 @@ SBMLExtensionRegistry_getExtension(const char* package);
  * Returns an SBasePluginCreator_t structure with the combination of the given
  * extension point and URI of the package extension.
  *
- * @param extPoint the SBaseExtensionPoint_t
+ * @param extPoint the SBaseExtensionPoint_t.
  * @param uri the URI of the target package extension.
  *
  * @return the SBasePluginCreator_t with the combination of the given
@@ -473,7 +484,7 @@ SBMLExtensionRegistry_getSBasePluginCreator(const SBaseExtensionPoint_t* extPoin
 /**
  * Returns a copied array of SBasePluginCreators with the given extension point.
  *
- * @param extPoint the SBaseExtensionPoint_t
+ * @param extPoint the SBaseExtensionPoint_t.
  * @param length pointer to a variable holding the length of the array returned.
  *
  * @return an array of SBasePluginCreators with the given typecode.
@@ -502,13 +513,13 @@ SBMLExtensionRegistry_getSBasePluginCreatorsByURI(const char* uri, int* length);
 
 
 /**
- * Checks if the extension with the given URI is enabled (true) or
- * disabled (false)
+ * Checks if the extension with the given URI is enabled (@c 1, true) or
+ * disabled (@c 0, false)
  *
  * @param uri the URI of the target package.
  *
- * @return false (0) will be returned if the given package is disabled
- * or not registered, otherwise true (1) will be returned.
+ * @return @c 0 (false) will be returned if the given package is disabled
+ * or not registered, otherwise @c 1 (true) will be returned.
  *
  * @memberof SBMLExtensionRegistry_t
  */
@@ -520,11 +531,11 @@ SBMLExtensionRegistry_isEnabled(const char* uri);
  * Enable/disable the package with the given uri.
  *
  * @param uri the URI of the target package.
- * @param isEnabled the bool value corresponding to enabled (true/1) or
- * disabled (false/0)
+ * @param isEnabled the bool value corresponding to enabled (@c nonzero, true) or
+ * disabled (@c zero, false).
  *
- * @return false (0) will be returned if the given bool value is false
- * or the given package is not registered, otherwise true (1) will be
+ * @return @c 0 (false) will be returned if the given bool value is false
+ * or the given package is not registered, otherwise @c 1 (true) will be
  * returned.
  *
  * @memberof SBMLExtensionRegistry_t
@@ -535,13 +546,13 @@ SBMLExtensionRegistry_setEnabled(const char* uri, int isEnabled);
 
 
 /**
- * Checks if the extension with the given URI is registered (true/1)
- * or not (false/0)
+ * Checks if the extension with the given URI is registered (@c 1, true)
+ * or not (@c 0, false)
  *
  * @param uri the URI of the target package.
  *
- * @return true (1) will be returned if the package with the given URI
- * is registered, otherwise false (0) will be returned.
+ * @return @c 1 (true) will be returned if the package with the given URI
+ * is registered, otherwise @c 0 (false) will be returned.
  *
  * @memberof SBMLExtensionRegistry_t
  */
@@ -553,7 +564,7 @@ SBMLExtensionRegistry_isRegistered(const char* uri);
 /**
  * Returns the number of SBMLExtension_t structures for the given extension point.
  *
- * @param extPoint the SBaseExtensionPoint_t
+ * @param extPoint the SBaseExtensionPoint_t.
  *
  * @return the number of SBMLExtension_t structures for the given extension point.
  *
@@ -564,8 +575,8 @@ int
 SBMLExtensionRegistry_getNumExtensions(const SBaseExtensionPoint_t* extPoint);
 
 /**
- * Returns a list of registered packages (such as 'layout', 'fbc' or 'comp')
- * the list contains char* strings and has to be freed by the caller.
+ * Returns a list of registered packages (such as 'layout', 'fbc' or 'comp').
+ * The list contains char* strings and has to be freed by the caller.
  *
  * @return the names of the registered packages in a list
  *
@@ -590,9 +601,9 @@ SBMLExtensionRegistry_getNumRegisteredPackages();
 /**
  * Returns the registered package name at the given index
  *
- * @param index zero based index of the package name to return
+ * @param index zero based index of the package name to return.
  *
- * @return the package name with the given index or NULL
+ * @return the package name with the given index or @c NULL
  *
  * @memberof SBMLExtensionRegistry_t
  */

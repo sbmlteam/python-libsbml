@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -124,7 +128,7 @@ SBMLWriter::setProgramVersion (const std::string& version)
  * SBMLWriter::hasZlib() and SBMLWriter::hasBzip2() can be used to check whether
  * underlying libSBML is linked with the library.
  *
- * @return true on success and false if the filename could not be opened
+ * @return @c true on success and false if the filename could not be opened
  * for writing.
  */
 bool
@@ -222,7 +226,7 @@ SBMLWriter::writeSBML (const SBMLDocument* d, const std::string& filename)
 /*
  * Writes the given SBML document to the output stream.
  *
- * @return true on success and false if one of the underlying parser
+ * @return @c true on success and false if one of the underlying parser
  * components fail (rare).
  */
 bool

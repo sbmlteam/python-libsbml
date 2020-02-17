@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -92,7 +96,7 @@ StoichiometryMathVars::check_ (const Model& m, const Reaction& r)
   {
     const SpeciesReference *sr = r.getReactant(n);
 
-    if (sr->isSetStoichiometryMath())
+    if (sr->isSetStoichiometryMath() && sr->getStoichiometryMath()->isSetMath())
     {
       List* variables = sr->getStoichiometryMath()->getMath()
         ->getListOfNodes( ASTNode_isName );
@@ -113,7 +117,7 @@ StoichiometryMathVars::check_ (const Model& m, const Reaction& r)
   {
     const SpeciesReference *sr = r.getProduct(n);
 
-    if (sr->isSetStoichiometryMath())
+    if (sr->isSetStoichiometryMath() && sr->getStoichiometryMath()->isSetMath())
     {
       List* variables = sr->getStoichiometryMath()->getMath()
         ->getListOfNodes( ASTNode_isName );

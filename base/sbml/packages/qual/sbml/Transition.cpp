@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -49,8 +53,8 @@ LIBSBML_CPP_NAMESPACE_BEGIN
  */
 Transition::Transition (unsigned int level, unsigned int version, unsigned int pkgVersion)
   : SBase(level, version)
-   ,mId ("")
-   ,mName ("")
+//   ,mId ("")
+//   ,mName ("")
    ,mInputs (level, version, pkgVersion)
    ,mOutputs (level, version, pkgVersion)
    ,mFunctionTerms (level, version, pkgVersion)
@@ -68,8 +72,8 @@ Transition::Transition (unsigned int level, unsigned int version, unsigned int p
  */
 Transition::Transition (QualPkgNamespaces* qualns)
   : SBase(qualns)
-   ,mId ("")
-   ,mName ("")
+//   ,mId ("")
+//   ,mName ("")
    ,mInputs (qualns)
    ,mOutputs (qualns)
    ,mFunctionTerms (qualns)
@@ -90,8 +94,8 @@ Transition::Transition (QualPkgNamespaces* qualns)
  */
 Transition::Transition (const Transition& orig)
   : SBase(orig)
-  , mId (orig.mId)
-  , mName (orig.mName)
+  //, mId (orig.mId)
+  //, mName (orig.mName)
   , mInputs (orig.mInputs)
   , mOutputs (orig.mOutputs)
   , mFunctionTerms (orig.mFunctionTerms)
@@ -387,7 +391,7 @@ Transition::getInputBySpecies(const std::string& sid) const
 
 
 /**
- * Adds a copy the given "Input" to this Transition.
+ * Adds a copy the given Input to this Transition.
  */
 int 
 Transition::addInput(const Input* i)
@@ -420,9 +424,7 @@ Transition::addInput(const Input* i)
   }
   else
   {
-    mInputs.append(i);
-
-    return LIBSBML_OPERATION_SUCCESS;
+    return mInputs.append(i);
   }
 }
 
@@ -430,7 +432,7 @@ Transition::addInput(const Input* i)
   /**
    * Get the number of Input objects in this Transition.
    *
-   * @return the number of Input objects in this Transition
+   * @return the number of Input objects in this Transition.
    */
 unsigned int 
 Transition::getNumInputs() const
@@ -440,7 +442,7 @@ Transition::getNumInputs() const
 
 
 /**
- * Creates a new Output object, adds it to this Transitions
+ * Creates a new Output object, adds it to this Transition's
  * ListOfOutputs and returns the Output object created. 
  */
 Input* 
@@ -573,7 +575,7 @@ Transition::getOutputBySpecies(const std::string& sid) const
 
 
 /**
- * Adds a copy the given "Output" to this Transition.
+ * Adds a copy the given Output to this Transition.
  */
 int 
 Transition::addOutput(const Output* i)
@@ -606,9 +608,7 @@ Transition::addOutput(const Output* i)
   }
   else
   {
-    mOutputs.append(i);
-
-    return LIBSBML_OPERATION_SUCCESS;
+    return mOutputs.append(i);
   }
 }
 
@@ -616,7 +616,7 @@ Transition::addOutput(const Output* i)
   /**
    * Get the number of Output objects in this Transition.
    *
-   * @return the number of Output objects in this Transition
+   * @return the number of Output objects in this Transition.
    */
 unsigned int 
 Transition::getNumOutputs() const
@@ -626,7 +626,7 @@ Transition::getNumOutputs() const
 
 
 /**
- * Creates a new Output object, adds it to this Transitions
+ * Creates a new Output object, adds it to this Transition's
  * ListOfOutputs and returns the Output object created. 
  */
 Output* 
@@ -739,7 +739,7 @@ Transition::getFunctionTerm(const std::string& sid) const
 
 
 /**
- * Adds a copy the given "FunctionTerm" to this Transition.
+ * Adds a copy the given FunctionTerm to this Transition.
  */
 int 
 Transition::addFunctionTerm(const FunctionTerm* i)
@@ -766,9 +766,7 @@ Transition::addFunctionTerm(const FunctionTerm* i)
   }
   else
   {
-    mFunctionTerms.append(i);
-
-    return LIBSBML_OPERATION_SUCCESS;
+    return mFunctionTerms.append(i);
   }
 }
 
@@ -776,7 +774,7 @@ Transition::addFunctionTerm(const FunctionTerm* i)
   /**
    * Get the number of FunctionTerm objects in this Transition.
    *
-   * @return the number of FunctionTerm objects in this Transition
+   * @return the number of FunctionTerm objects in this Transition.
    */
 unsigned int 
 Transition::getNumFunctionTerms() const
@@ -786,7 +784,7 @@ Transition::getNumFunctionTerms() const
 
 
 /**
- * Creates a new Output object, adds it to this Transitions
+ * Creates a new Output object, adds it to this Transition's
  * ListOfOutputs and returns the Output object created. 
  */
 FunctionTerm* 
@@ -915,21 +913,12 @@ Transition::getTypeCode () const
  * check if all the required attributes are set
  */
 bool
-Transition::hasRequiredAttributes () const
-{
-  bool allPresent = true;
-
-  return allPresent;
-}
-
-
-/*
- * check if all the required attributes are set
- */
-bool
 Transition::hasRequiredElements () const
 {
   bool allPresent = true;
+  if (!isSetDefaultTerm()) {
+    allPresent = false;
+  }
 
   return allPresent;
 }
@@ -999,9 +988,6 @@ Transition::setSBMLDocument (SBMLDocument* d)
 
 
   /** @cond doxygenLibsbmlInternal */
-/*
- * 
- */
 void
 Transition::connectToChild()
 {
@@ -1029,6 +1015,428 @@ Transition::enablePackageInternal(const std::string& pkgURI,
 
 
 /** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Transition.
+ */
+int
+Transition::getAttribute(const std::string& attributeName, bool& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Transition.
+ */
+int
+Transition::getAttribute(const std::string& attributeName, int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Transition.
+ */
+int
+Transition::getAttribute(const std::string& attributeName,
+                         double& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Transition.
+ */
+int
+Transition::getAttribute(const std::string& attributeName,
+                         unsigned int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Transition.
+ */
+int
+Transition::getAttribute(const std::string& attributeName,
+                         std::string& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "id")
+  {
+    value = getId();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "name")
+  {
+    value = getName();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Predicate returning @c true if this Transition's attribute "attributeName"
+ * is set.
+ */
+bool
+Transition::isSetAttribute(const std::string& attributeName) const
+{
+  bool value = SBase::isSetAttribute(attributeName);
+
+  if (attributeName == "id")
+  {
+    value = isSetId();
+  }
+  else if (attributeName == "name")
+  {
+    value = isSetName();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Transition.
+ */
+int
+Transition::setAttribute(const std::string& attributeName, bool value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Transition.
+ */
+int
+Transition::setAttribute(const std::string& attributeName, int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Transition.
+ */
+int
+Transition::setAttribute(const std::string& attributeName, double value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Transition.
+ */
+int
+Transition::setAttribute(const std::string& attributeName, unsigned int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Transition.
+ */
+int
+Transition::setAttribute(const std::string& attributeName,
+                         const std::string& value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  if (attributeName == "id")
+  {
+    return_value = setId(value);
+  }
+  else if (attributeName == "name")
+  {
+    return_value = setName(value);
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Unsets the value of the "attributeName" attribute of this Transition.
+ */
+int
+Transition::unsetAttribute(const std::string& attributeName)
+{
+  int value = SBase::unsetAttribute(attributeName);
+
+  if (attributeName == "id")
+  {
+    value = unsetId();
+  }
+  else if (attributeName == "name")
+  {
+    value = unsetName();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Creates and returns an new "elementName" object in this Transition.
+ */
+SBase*
+Transition::createChildObject(const std::string& elementName)
+{
+  SBase* obj = NULL;
+
+  if (elementName == "input")
+  {
+    return createInput();
+  }
+  else if (elementName == "output")
+  {
+    return createOutput();
+  }
+  else if (elementName == "functionTerm")
+  {
+    return createFunctionTerm();
+  }
+  else if (elementName == "defaultTerm")
+  {
+    return createDefaultTerm();
+  }
+
+  return obj;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Adds a new "elementName" object to this Transition.
+ */
+int
+Transition::addChildObject(const std::string& elementName,
+                           const SBase* element)
+{
+  if (elementName == "input" && element->getTypeCode() == SBML_QUAL_INPUT)
+  {
+    return addInput((const Input*)(element));
+  }
+  else if (elementName == "output" && element->getTypeCode() ==
+    SBML_QUAL_OUTPUT)
+  {
+    return addOutput((const Output*)(element));
+  }
+  else if (elementName == "functionTerm" && element->getTypeCode() ==
+    SBML_QUAL_FUNCTION_TERM)
+  {
+    return addFunctionTerm((const FunctionTerm*)(element));
+  }
+  else if (elementName == "defaultTerm" && element->getTypeCode() ==
+    SBML_QUAL_DEFAULT_TERM)
+  {
+    return setDefaultTerm((const DefaultTerm*)(element));
+  }
+
+
+  return LIBSBML_OPERATION_FAILED;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Removes and returns the new "elementName" object with the given id in this
+ * Transition.
+ */
+SBase*
+Transition::removeChildObject(const std::string& elementName,
+                              const std::string& id)
+{
+  if (elementName == "input")
+  {
+    return removeInput(id);
+  }
+  else if (elementName == "output")
+  {
+    return removeOutput(id);
+  }
+  else if (elementName == "functionTerm")
+  {
+    return removeFunctionTerm(id);
+  }
+
+  return NULL;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Returns the number of "elementName" in this Transition.
+ */
+unsigned int
+Transition::getNumObjects(const std::string& elementName)
+{
+  unsigned int n = 0;
+
+  if (elementName == "input")
+  {
+    return getNumInputs();
+  }
+  else if (elementName == "output")
+  {
+    return getNumOutputs();
+  }
+  else if (elementName == "functionTerm")
+  {
+    return getNumFunctionTerms();
+  }
+  else if (elementName == "defaultTerm")
+  {
+    return (isSetDefaultTerm() ? 1 : 0);
+  }
+
+
+  return n;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Returns the nth object of "objectName" in this Transition.
+ */
+SBase*
+Transition::getObject(const std::string& elementName, unsigned int index)
+{
+  SBase* obj = NULL;
+
+  if (elementName == "input")
+  {
+    return getInput(index);
+  }
+  else if (elementName == "output")
+  {
+    return getOutput(index);
+  }
+  else if (elementName == "functionTerm")
+  {
+    return getFunctionTerm(index);
+  }
+  else if (elementName == "defaultTerm")
+  {
+    return getDefaultTerm();
+  }
+
+
+  return obj;
+}
+
+/** @endcond */
+
+
+/** @cond doxygenLibsbmlInternal */
 /*
  * @return the SBML object corresponding to next XMLToken in the
  * XMLInputStream or @c NULL if the token was not recognized.
@@ -1045,7 +1453,7 @@ Transition::createObject (XMLInputStream& stream)
     if (mInputs.size() != 0)
     {
       getErrorLog()->logPackageError("qual", QualTransitionLOElements, 
-        getPackageVersion(), getLevel(), getVersion());
+        getPackageVersion(), getLevel(), getVersion(), "", getLine(), getColumn());
     }
       
     object = &mInputs;
@@ -1055,7 +1463,7 @@ Transition::createObject (XMLInputStream& stream)
     if (mOutputs.size() != 0)
     {
       getErrorLog()->logPackageError("qual", QualTransitionLOElements, 
-        getPackageVersion(), getLevel(), getVersion());
+        getPackageVersion(), getLevel(), getVersion(), "", getLine(), getColumn());
     }
       
     object = &mOutputs;
@@ -1114,7 +1522,7 @@ Transition::readAttributes (const XMLAttributes& attributes,
           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownPackageAttribute);
         getErrorLog()->logPackageError("qual", QualLOTransitionsAllowedAttributes,
-          getPackageVersion(), sbmlLevel, sbmlVersion, details);
+          getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
       } 
       else if (getErrorLog()->getError((unsigned int)n)->getErrorId() == UnknownCoreAttribute)
       {
@@ -1122,7 +1530,7 @@ Transition::readAttributes (const XMLAttributes& attributes,
           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownCoreAttribute);
         getErrorLog()->logPackageError("qual", QualLOTransitionsAllowedAttributes,
-          getPackageVersion(), sbmlLevel, sbmlVersion, details);
+          getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
       } 
     }
   }
@@ -1141,7 +1549,7 @@ Transition::readAttributes (const XMLAttributes& attributes,
                           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownPackageAttribute);
         getErrorLog()->logPackageError("qual", QualTransitionAllowedAttributes,
-                       getPackageVersion(), sbmlLevel, sbmlVersion, details);
+                       getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
       }
       else if (getErrorLog()->getError((unsigned int)n)->getErrorId() == UnknownCoreAttribute)
       {
@@ -1149,7 +1557,7 @@ Transition::readAttributes (const XMLAttributes& attributes,
                           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownCoreAttribute);
         getErrorLog()->logPackageError("qual", QualTransitionAllowedCoreAttributes,
-                       getPackageVersion(), sbmlLevel, sbmlVersion, details);
+                       getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
       }
     }
   }
@@ -1249,7 +1657,7 @@ ListOfTransitions::clone () const
 
 /*
  * Get a Transition from the ListOfTransitions by index.
-*/
+ */
 Transition*
 ListOfTransitions::get(unsigned int n)
 {
@@ -1694,6 +2102,14 @@ int
 Transition_hasRequiredAttributes(Transition_t * t)
 {
   return (t != NULL) ? static_cast<int>(t->hasRequiredAttributes()) : 0;
+}
+
+
+LIBSBML_EXTERN
+int
+Transition_hasRequiredElements(Transition_t * t)
+{
+  return (t != NULL) ? static_cast<int>(t->hasRequiredElements()) : 0;
 }
 
 

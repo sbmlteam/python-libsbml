@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -47,6 +51,8 @@
 using namespace std;
 
 
+#ifdef __cplusplus
+
 LIBSBML_CPP_NAMESPACE_BEGIN
 
 
@@ -55,8 +61,8 @@ LIBSBML_CPP_NAMESPACE_BEGIN
  */
 GeneProductAssociation::GeneProductAssociation (unsigned int level, unsigned int version, unsigned int pkgVersion)
   : SBase(level, version)
-  , mId ("")
-  , mName ("")
+//  , mId ("")
+//  , mName ("")
   , mAssociation (NULL)
 {
   // set an SBMLNamespaces derived object of this package
@@ -72,8 +78,8 @@ GeneProductAssociation::GeneProductAssociation (unsigned int level, unsigned int
  */
 GeneProductAssociation::GeneProductAssociation (FbcPkgNamespaces* fbcns)
   : SBase(fbcns)
-  , mId ("")
-  , mName ("")
+//  , mId ("")
+//  , mName ("")
   , mAssociation (NULL)
 {
   // set the element namespace of this object
@@ -325,7 +331,8 @@ GeneProductAssociation::setAssociation(FbcAssociation* association)
 }
 
 
-int GeneProductAssociation::setAssociation(const std::string& association)
+int GeneProductAssociation::setAssociation(const std::string& association, 
+                                           bool usingId, bool addMissingGP)
 {
   SBMLDocument* doc = getSBMLDocument();
   if (doc == NULL)
@@ -337,13 +344,14 @@ int GeneProductAssociation::setAssociation(const std::string& association)
   if (plugin == NULL)
     return LIBSBML_INVALID_OBJECT;
 
-  FbcAssociation* newAssociation = FbcAssociation::parseFbcInfixAssociation(association, plugin);
+  FbcAssociation* newAssociation = FbcAssociation::parseFbcInfixAssociation(association, plugin, usingId, addMissingGP);
   if (newAssociation == NULL)
     return LIBSBML_OPERATION_FAILED;
 
+  /* this clones the association so we need to free the memory */
   int result = setAssociation(newAssociation);
 
-  if (result != LIBSBML_OPERATION_SUCCESS)
+  if (result == LIBSBML_OPERATION_SUCCESS)
     delete newAssociation;
 
   return result;
@@ -478,7 +486,7 @@ GeneProductAssociation::writeElements (XMLOutputStream& stream) const
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -492,15 +500,17 @@ GeneProductAssociation::accept (SBMLVisitor& v) const
   v.visit(*this);
 
 /* VISIT CHILDREN */
-  mAssociation->accept(v);
-
+  if (mAssociation != NULL)
+  {
+    mAssociation->accept(v);
+  }
   v.leave(*this);
 
   return true;
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -517,7 +527,7 @@ GeneProductAssociation::setSBMLDocument (SBMLDocument* d)
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -535,7 +545,7 @@ GeneProductAssociation::connectToChild()
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -551,7 +561,355 @@ GeneProductAssociation::enablePackageInternal(const std::string& pkgURI,
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this
+ * GeneProductAssociation.
+ */
+int
+GeneProductAssociation::getAttribute(const std::string& attributeName,
+                                     bool& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this
+ * GeneProductAssociation.
+ */
+int
+GeneProductAssociation::getAttribute(const std::string& attributeName,
+                                     int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this
+ * GeneProductAssociation.
+ */
+int
+GeneProductAssociation::getAttribute(const std::string& attributeName,
+                                     double& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this
+ * GeneProductAssociation.
+ */
+int
+GeneProductAssociation::getAttribute(const std::string& attributeName,
+                                     unsigned int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this
+ * GeneProductAssociation.
+ */
+int
+GeneProductAssociation::getAttribute(const std::string& attributeName,
+                                     std::string& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "id")
+  {
+    value = getId();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "name")
+  {
+    value = getName();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Predicate returning @c true if this GeneProductAssociation's attribute
+ * "attributeName" is set.
+ */
+bool
+GeneProductAssociation::isSetAttribute(const std::string& attributeName) const
+{
+  bool value = SBase::isSetAttribute(attributeName);
+
+  if (attributeName == "id")
+  {
+    value = isSetId();
+  }
+  else if (attributeName == "name")
+  {
+    value = isSetName();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this
+ * GeneProductAssociation.
+ */
+int
+GeneProductAssociation::setAttribute(const std::string& attributeName,
+                                     bool value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this
+ * GeneProductAssociation.
+ */
+int
+GeneProductAssociation::setAttribute(const std::string& attributeName,
+                                     int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this
+ * GeneProductAssociation.
+ */
+int
+GeneProductAssociation::setAttribute(const std::string& attributeName,
+                                     double value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this
+ * GeneProductAssociation.
+ */
+int
+GeneProductAssociation::setAttribute(const std::string& attributeName,
+                                     unsigned int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this
+ * GeneProductAssociation.
+ */
+int
+GeneProductAssociation::setAttribute(const std::string& attributeName,
+                                     const std::string& value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  if (attributeName == "id")
+  {
+    return_value = setId(value);
+  }
+  else if (attributeName == "name")
+  {
+    return_value = setName(value);
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Unsets the value of the "attributeName" attribute of this
+ * GeneProductAssociation.
+ */
+int
+GeneProductAssociation::unsetAttribute(const std::string& attributeName)
+{
+  int value = SBase::unsetAttribute(attributeName);
+
+  if (attributeName == "id")
+  {
+    value = unsetId();
+  }
+  else if (attributeName == "name")
+  {
+    value = unsetName();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Creates and returns an new "elementName" object in this
+ * GeneProductAssociation.
+ */
+SBase*
+GeneProductAssociation::createChildObject(const std::string& elementName)
+{
+  FbcAssociation* obj = NULL;
+
+  if (elementName == "and")
+  {
+    return createAnd();
+  }
+  else if (elementName == "or")
+  {
+    return createOr();
+  }
+  else if (elementName == "geneProductRef")
+  {
+    return createGeneProductRef();
+  }
+
+  return obj;
+}
+
+/** @endcond */
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Returns the number of "elementName" in this GeneProductAssociation.
+ */
+unsigned int
+GeneProductAssociation::getNumObjects(const std::string& elementName)
+{
+  unsigned int n = 0;
+
+  if (elementName == "association" || elementName == "and"
+    || elementName == "or" || elementName == "geneProductRef")
+  {
+    if (isSetAssociation())
+      n = 1;
+  }
+
+  return n;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Returns the nth object of "objectName" in this GeneProductAssociation.
+ */
+SBase*
+GeneProductAssociation::getObject(const std::string& elementName,
+                                  unsigned int index)
+{
+  SBase* obj = NULL;
+
+  if (elementName == "association" || elementName == "and"
+    || elementName == "or" || elementName == "geneProductRef")
+  {
+    return getAssociation();
+  }
+
+  return obj;
+}
+
+/** @endcond */
+
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -587,6 +945,7 @@ GeneProductAssociation::createObject(XMLInputStream& stream)
                     details, getLine(), getColumn());
 
   }
+  delete mAssociation;
 
   if (name == "and")
   {
@@ -616,7 +975,7 @@ GeneProductAssociation::createObject(XMLInputStream& stream)
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -634,7 +993,7 @@ GeneProductAssociation::addExpectedAttributes(ExpectedAttributes& attributes)
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -718,7 +1077,7 @@ GeneProductAssociation::readAttributes (const XMLAttributes& attributes,
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -740,7 +1099,7 @@ GeneProductAssociation::writeAttributes (XMLOutputStream& stream) const
 }
 
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
 LIBSBML_EXTERN
@@ -913,5 +1272,8 @@ GeneProductAssociation_hasRequiredElements(const GeneProductAssociation_t * gpa)
 
 
 LIBSBML_CPP_NAMESPACE_END
+
+#endif /* __cplusplus */
+
 
 

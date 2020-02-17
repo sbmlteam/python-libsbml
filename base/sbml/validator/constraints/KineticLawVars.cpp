@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -89,13 +93,17 @@ KineticLawVars::check_ (const Model& m, const Reaction& r)
 
   if ( r.isSetKineticLaw() && r.getKineticLaw()->isSetMath() )
   {
-    const ASTNode* math  = r.getKineticLaw()->getMath();
+    const KineticLaw* kl = r.getKineticLaw();
+    const ASTNode* math  = kl->getMath();
     List*    names = math->getListOfNodes( ASTNode_isName );
 
     for (n = 0; n < names->getSize(); ++n)
     {
       ASTNode*    node = static_cast<ASTNode*>( names->get(n) );
       string   name = node->getName() ? node->getName() : "";
+
+      if (kl->getParameter(name) != NULL)
+        continue;
 
       if (m.getSpecies(name) != NULL && !mSpecies.contains(name) )
         logUndefined(r, name);

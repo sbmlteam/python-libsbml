@@ -8,7 +8,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -105,6 +109,383 @@ RateRule::hasRequiredAttributes() const
 
   return allPresent;
 }
+
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this RateRule.
+ */
+int
+RateRule::getAttribute(const std::string& attributeName, bool& value) const
+{
+  int return_value = Rule::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this RateRule.
+ */
+int
+RateRule::getAttribute(const std::string& attributeName, int& value) const
+{
+  int return_value = Rule::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this RateRule.
+ */
+int
+RateRule::getAttribute(const std::string& attributeName, double& value) const
+{
+  int return_value = Rule::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this RateRule.
+ */
+int
+RateRule::getAttribute(const std::string& attributeName,
+                       unsigned int& value) const
+{
+  int return_value = Rule::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this RateRule.
+ */
+int
+RateRule::getAttribute(const std::string& attributeName,
+                       std::string& value) const
+{
+  int return_value = LIBSBML_OPERATION_FAILED;
+  if (getLevel() > 1)
+  {
+    return_value = Rule::getAttribute(attributeName, value);
+  }
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "variable")
+  {
+    value = getVariable();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else
+  {
+    int l1type = getL1TypeCode();
+    if ((attributeName == "name" && l1type == SBML_PARAMETER_RULE) 
+      || (attributeName == "compartment" && l1type == SBML_COMPARTMENT_VOLUME_RULE) 
+      || (attributeName == "species" && l1type == SBML_SPECIES_CONCENTRATION_RULE))
+    {
+      value = getVariable();
+      return_value = LIBSBML_OPERATION_SUCCESS;
+    }
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this RateRule.
+ */
+//int
+//RateRule::getAttribute(const std::string& attributeName,
+//                       const char* value) const
+//{
+//  int return_value = LIBSBML_OPERATION_FAILED;
+//  if (getLevel() > 1)
+//  {
+//    return_value = Rule::getAttribute(attributeName, value);
+//  }
+//
+//  if (return_value == LIBSBML_OPERATION_SUCCESS)
+//  {
+//    return return_value;
+//  }
+//
+//  if (attributeName == "variable")
+//  {
+//    value = getVariable().c_str();
+//    return_value = LIBSBML_OPERATION_SUCCESS;
+//  }
+//  else
+//  {
+//    int l1type = getL1TypeCode();
+//    if ((attributeName == "name" && l1type == SBML_PARAMETER_RULE) 
+//      || (attributeName == "compartment" && l1type == SBML_COMPARTMENT_VOLUME_RULE) 
+//      || (attributeName == "species" && l1type == SBML_SPECIES_CONCENTRATION_RULE))
+//    {
+//      value = getVariable().c_str();
+//      return_value = LIBSBML_OPERATION_SUCCESS;
+//    }
+//  }
+//
+//  return return_value;
+//}
+//
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Predicate returning @c true if this RateRule's attribute "attributeName" is
+ * set.
+ */
+bool
+RateRule::isSetAttribute(const std::string& attributeName) const
+{
+  bool value = false;
+  if (getLevel() > 1)
+  {
+    value = Rule::isSetAttribute(attributeName);
+  }
+
+  if (attributeName == "variable")
+  {
+    value = isSetVariable();
+  }
+  else
+  {
+    int l1type = getL1TypeCode();
+    if ((attributeName == "name" && l1type == SBML_PARAMETER_RULE) 
+      || (attributeName == "compartment" && l1type == SBML_COMPARTMENT_VOLUME_RULE) 
+      || (attributeName == "species" && l1type == SBML_SPECIES_CONCENTRATION_RULE))
+    {
+      value = isSetVariable();
+    }
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this RateRule.
+ */
+int
+RateRule::setAttribute(const std::string& attributeName, bool value)
+{
+  int return_value = Rule::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this RateRule.
+ */
+int
+RateRule::setAttribute(const std::string& attributeName, int value)
+{
+  int return_value = Rule::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this RateRule.
+ */
+int
+RateRule::setAttribute(const std::string& attributeName, double value)
+{
+  int return_value = Rule::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this RateRule.
+ */
+int
+RateRule::setAttribute(const std::string& attributeName, unsigned int value)
+{
+  int return_value = Rule::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this RateRule.
+ */
+int
+RateRule::setAttribute(const std::string& attributeName,
+                       const std::string& value)
+{
+  int return_value = LIBSBML_OPERATION_FAILED;
+  if (getLevel() > 1)
+  {
+    return_value = Rule::setAttribute(attributeName, value);
+  }
+
+  if (attributeName == "variable")
+  {
+    return_value = setVariable(value);
+  }
+  else
+  {
+    int l1type = getL1TypeCode();
+    if ((attributeName == "name" && l1type == SBML_PARAMETER_RULE) 
+      || (attributeName == "compartment" && l1type == SBML_COMPARTMENT_VOLUME_RULE) 
+      || (attributeName == "species" && l1type == SBML_SPECIES_CONCENTRATION_RULE))
+    {
+      return_value = setVariable(value);
+    }
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this RateRule.
+ */
+//int
+//RateRule::setAttribute(const std::string& attributeName, const char* value)
+//{
+//  int return_value = LIBSBML_OPERATION_FAILED;
+//  if (getLevel() > 1)
+//  {
+//    return_value = Rule::setAttribute(attributeName, value);
+//  }
+//
+//  if (attributeName == "variable")
+//  {
+//    return_value = setVariable(value);
+//  }
+//  else
+//  {
+//    int l1type = getL1TypeCode();
+//    if ((attributeName == "name" && l1type == SBML_PARAMETER_RULE) 
+//      || (attributeName == "compartment" && l1type == SBML_COMPARTMENT_VOLUME_RULE) 
+//      || (attributeName == "species" && l1type == SBML_SPECIES_CONCENTRATION_RULE))
+//    {
+//        return_value = setVariable(value);
+//    }
+//  }
+//
+//  return return_value;
+//}
+//
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Unsets the value of the "attributeName" attribute of this RateRule.
+ */
+int
+RateRule::unsetAttribute(const std::string& attributeName)
+{
+  int return_value = LIBSBML_OPERATION_FAILED;
+  if (getLevel() > 1)
+  {
+    return_value = Rule::unsetAttribute(attributeName);
+  }
+
+  if (attributeName == "variable")
+  {
+    return_value = unsetVariable();
+  }
+  else
+  {
+    int l1type = getL1TypeCode();
+    if ((attributeName == "name" && l1type == SBML_PARAMETER_RULE) 
+      || (attributeName == "compartment" && l1type == SBML_COMPARTMENT_VOLUME_RULE) 
+      || (attributeName == "species" && l1type == SBML_SPECIES_CONCENTRATION_RULE))
+    {
+      return_value = unsetVariable();
+    }
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+
+
 
 
 /** @cond doxygenLibsbmlInternal */

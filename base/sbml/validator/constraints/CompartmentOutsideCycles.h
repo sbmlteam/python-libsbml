@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -77,7 +81,7 @@ protected:
    * Checks that no Compartments in Model have a cycle via their 'outside'
    * attribute.
    *
-   * Sets mHolds to true if no cycles are found, false otherwise.
+   * Sets mHolds to @c true if no cycles are found, @c false otherwise.
    */
   virtual void check_ (const Model& m, const Model& object);
 
@@ -88,11 +92,11 @@ protected:
   void checkForCycle (const Model& m, const Compartment* c);
 
   /**
-   * Returns true if Compartment @p c is contained in one of the already found
-   * cycles, false otherwise.
+   * Returns @c true if Compartment @p c is contained in one of the already found
+   * cycles, @c false otherwise.
    *
-   * @return true if Compartment c is contained in one of the already found
-   * cycles, false otherwise.
+   * @return @c true if Compartment c is contained in one of the already found
+   * cycles, @c false otherwise.
    */
   bool isInCycle (const Compartment* c);
 

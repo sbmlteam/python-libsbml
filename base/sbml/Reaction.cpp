@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -92,8 +96,6 @@ GetSpeciesRef (const ListOf& items, const std::string& species)
 
 Reaction::Reaction (unsigned int level, unsigned int version) :
    SBase ( level, version )
- , mId        ( ""       )
- , mName      ( ""       )
  , mReactants (level, version)
  , mProducts  (level, version)
  , mModifiers (level, version)
@@ -126,8 +128,6 @@ Reaction::Reaction (unsigned int level, unsigned int version) :
 
 Reaction::Reaction (SBMLNamespaces * sbmlns) :
    SBase      ( sbmlns   )
- , mId        ( ""       )
- , mName      ( ""       )
  , mReactants (sbmlns)
  , mProducts  (sbmlns)
  , mModifiers (sbmlns)
@@ -175,8 +175,6 @@ Reaction::~Reaction ()
  */
 Reaction::Reaction (const Reaction& orig)
   : SBase      ( orig )
-  , mId        ( orig.mId )
-  , mName      ( orig.mName )
   , mReactants ( orig.mReactants  )
   , mProducts  ( orig.mProducts   )
   , mModifiers ( orig.mModifiers  )
@@ -211,8 +209,6 @@ Reaction& Reaction::operator=(const Reaction& rhs)
     mReactants  = rhs.mReactants  ;
     mProducts   = rhs.mProducts   ;
     mModifiers  = rhs.mModifiers  ;
-    mId = rhs.mId;
-    mName = rhs.mName;
     mCompartment = rhs.mCompartment;
     mIsSetReversible = rhs.mIsSetReversible;
     mExplicitlySetReversible = rhs.mExplicitlySetReversible;
@@ -443,7 +439,7 @@ Reaction::getCompartment () const
 
 
 /*
- * @return true if the id of this SBML object is set, false
+ * @return @c true if the id of this SBML object is set, false
  * otherwise.
  */
 bool
@@ -454,7 +450,7 @@ Reaction::isSetId () const
 
 
 /*
- * @return true if the name of this SBML object is set, false
+ * @return @c true if the name of this SBML object is set, false
  * otherwise.
  */
 bool
@@ -466,7 +462,7 @@ Reaction::isSetName () const
 
 
 /*
- * @return true if the KineticLaw of this Reaction is set, false
+ * @return @c true if the KineticLaw of this Reaction is set, false
  * otherwise.
  */
 bool
@@ -477,7 +473,7 @@ Reaction::isSetKineticLaw () const
 
 
 /*
- * @return true if the fast status of this Reaction is set, false
+ * @return @c true if the fast status of this Reaction is set, false
  * otherwise.
  *
  * In L1, fast is optional with a default of false, which means it is
@@ -492,7 +488,7 @@ Reaction::isSetFast () const
 
 
 /*
- * @return true if the compartment of this SBML object is set, false
+ * @return @c true if the compartment of this SBML object is set, false
  * otherwise.
  */
 bool
@@ -503,7 +499,7 @@ Reaction::isSetCompartment () const
 
 
 /*
- * @return true if the fast status of this Reaction is set, false
+ * @return @c true if the fast status of this Reaction is set, false
  * otherwise.
  */
 bool
@@ -514,7 +510,7 @@ Reaction::isSetReversible () const
 
 
 /*
- * Sets the id of this SBML object to a copy of sid.
+ * Sets the id of this SBML object to a copy of @p sid.
  */
 int
 Reaction::setId (const std::string& sid)
@@ -623,15 +619,25 @@ Reaction::setReversible (bool value)
 int
 Reaction::setFast (bool value)
 {
-  mFast      = value;
-  mIsSetFast = true;
-  mExplicitlySetFast = true;
-  return LIBSBML_OPERATION_SUCCESS;
+  if (getLevel() == 3 && getVersion() > 1)
+  {
+    mFast = false;
+    mIsSetFast = false;
+    mExplicitlySetFast = false;
+    return LIBSBML_UNEXPECTED_ATTRIBUTE;
+  }
+  else
+  {
+    mFast      = value;
+    mIsSetFast = true;
+    mExplicitlySetFast = true;
+    return LIBSBML_OPERATION_SUCCESS;
+  }
 }
 
 
 /*
- * Sets the compartment of this SBML object to a copy of sid.
+ * Sets the compartment of this SBML object to a copy of @p sid.
  */
 int
 Reaction::setCompartment (const std::string& sid)
@@ -715,6 +721,11 @@ Reaction::unsetFast ()
 {
   mIsSetFast = false;
 
+  if (getLevel() == 3 && getVersion() > 1)
+  {
+    return LIBSBML_UNEXPECTED_ATTRIBUTE;
+  }
+
   if (!mIsSetFast)
   {
     return LIBSBML_OPERATION_SUCCESS;
@@ -793,16 +804,14 @@ Reaction::addReactant (const SpeciesReference* sr)
   }
   else
   {
-    mReactants.append(sr);
-
-    return LIBSBML_OPERATION_SUCCESS;
+    return mReactants.append(sr);
   }
 }
 
 int Reaction::addReactant(
     const Species *species,
     double stoichiometry,
-    const std::string &id,
+    const std::string id,
     bool constant)
 {
   if (species == NULL)
@@ -850,9 +859,7 @@ Reaction::addProduct (const SpeciesReference* sr)
   }
   else
   {
-    mProducts.append(sr);
-
-    return LIBSBML_OPERATION_SUCCESS;
+    return mProducts.append(sr);
   }
 }
 
@@ -860,7 +867,7 @@ int
 Reaction::addProduct(
     const Species *species,
     double stoichiometry,
-    const std::string &id,
+    const std::string id,
     bool constant)
 {
   if (species == NULL)
@@ -909,16 +916,14 @@ Reaction::addModifier (const ModifierSpeciesReference* msr)
   }
   else
   {
-    mModifiers.append(msr);
-
-    return LIBSBML_OPERATION_SUCCESS;
+    return mModifiers.append(msr);
   }
 }
 
 int
 Reaction::addModifier(
     const Species *species,
-    const std::string &id)
+    const std::string id)
 {
   if (species == NULL)
     return LIBSBML_INVALID_OBJECT;
@@ -1423,6 +1428,20 @@ Reaction::enablePackageInternal(const std::string& pkgURI,
 
   if (mKineticLaw) mKineticLaw->enablePackageInternal(pkgURI,pkgPrefix,flag);
 }
+
+
+void
+Reaction::updateSBMLNamespace(const std::string& pkg, unsigned int level,
+  unsigned int version)
+{
+  SBase::updateSBMLNamespace(pkg, level, version);
+
+  mReactants.updateSBMLNamespace(pkg, level, version);
+  mProducts.updateSBMLNamespace(pkg, level, version);
+  mModifiers.updateSBMLNamespace(pkg, level, version);
+
+  if (mKineticLaw) mKineticLaw->updateSBMLNamespace(pkg, level, version);
+}
 /** @endcond */
 
 
@@ -1457,17 +1476,17 @@ Reaction::hasRequiredAttributes() const
 
   /* required attributes for reaction: 
   * @li id (name in L1)
-  * @li fast (in L3 only)
+  * @li fast (in L3V1 only)
   * @li reversible (in L3 only)
   */
 
   if (!isSetId())
     allPresent = false;
 
-  if (getLevel() > 2 && !isSetFast())
+  if (getLevel() > 2 && !isSetReversible())
     allPresent = false;
 
-  if (getLevel() > 2 && !isSetReversible())
+  if (getLevel() == 3  && getVersion() == 1 && !isSetFast())
     allPresent = false;
 
   return allPresent;
@@ -1495,6 +1514,7 @@ Reaction::createObject (XMLInputStream& stream)
       else
         logError(OneSubElementPerReaction, getLevel(), getVersion());
     }
+    mReactants.setExplicitlyListed();
     object = &mReactants;
   }
   else if (name == "listOfProducts")
@@ -1506,6 +1526,7 @@ Reaction::createObject (XMLInputStream& stream)
       else
         logError(OneSubElementPerReaction, getLevel(), getVersion());
     }
+    mProducts.setExplicitlyListed();
     object = &mProducts;
   }
   else if (name == "listOfModifiers")
@@ -1522,6 +1543,7 @@ Reaction::createObject (XMLInputStream& stream)
       else
         logError(OneSubElementPerReaction, getLevel(), getVersion());
     }
+    mModifiers.setExplicitlyListed();
     object = &mModifiers;
   }
   else if (name == "kineticLaw")
@@ -1558,6 +1580,505 @@ Reaction::createObject (XMLInputStream& stream)
 /** @endcond */
 
 
+
+
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Reaction.
+ */
+int
+Reaction::getAttribute(const std::string& attributeName, bool& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "fast")
+  {
+    value = getFast();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+  else if (attributeName == "reversible")
+  {
+    value = getReversible();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Reaction.
+ */
+int
+Reaction::getAttribute(const std::string& attributeName, int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Reaction.
+ */
+int
+Reaction::getAttribute(const std::string& attributeName, double& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Reaction.
+ */
+int
+Reaction::getAttribute(const std::string& attributeName,
+                       unsigned int& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Reaction.
+ */
+int
+Reaction::getAttribute(const std::string& attributeName,
+                       std::string& value) const
+{
+  int return_value = SBase::getAttribute(attributeName, value);
+
+  if (return_value == LIBSBML_OPERATION_SUCCESS)
+  {
+    return return_value;
+  }
+
+  if (attributeName == "compartment")
+  {
+    value = getCompartment();
+    return_value = LIBSBML_OPERATION_SUCCESS;
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Gets the value of the "attributeName" attribute of this Reaction.
+ */
+//int
+//Reaction::getAttribute(const std::string& attributeName,
+//                       const char* value) const
+//{
+//  int return_value = SBase::getAttribute(attributeName, value);
+//
+//  if (return_value == LIBSBML_OPERATION_SUCCESS)
+//  {
+//    return return_value;
+//  }
+//
+//  if (attributeName == "compartment")
+//  {
+//    value = getCompartment().c_str();
+//    return_value = LIBSBML_OPERATION_SUCCESS;
+//  }
+//
+//  return return_value;
+//}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Predicate returning @c true if this Reaction's attribute "attributeName" is
+ * set.
+ */
+bool
+Reaction::isSetAttribute(const std::string& attributeName) const
+{
+  bool value = SBase::isSetAttribute(attributeName);
+
+  if (attributeName == "fast")
+  {
+    value = isSetFast();
+  }
+  else if (attributeName == "reversible")
+  {
+    value = isSetReversible();
+  }
+  else if (attributeName == "compartment")
+  {
+    value = isSetCompartment();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Reaction.
+ */
+int
+Reaction::setAttribute(const std::string& attributeName, bool value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  if (attributeName == "fast")
+  {
+    return_value = setFast(value);
+  }
+  else if (attributeName == "reversible")
+  {
+    return_value = setReversible(value);
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Reaction.
+ */
+int
+Reaction::setAttribute(const std::string& attributeName, int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Reaction.
+ */
+int
+Reaction::setAttribute(const std::string& attributeName, double value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Reaction.
+ */
+int
+Reaction::setAttribute(const std::string& attributeName, unsigned int value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Reaction.
+ */
+int
+Reaction::setAttribute(const std::string& attributeName,
+                       const std::string& value)
+{
+  int return_value = SBase::setAttribute(attributeName, value);
+
+  if (attributeName == "compartment")
+  {
+    return_value = setCompartment(value);
+  }
+
+  return return_value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Sets the value of the "attributeName" attribute of this Reaction.
+ */
+//int
+//Reaction::setAttribute(const std::string& attributeName, const char* value)
+//{
+//  int return_value = SBase::setAttribute(attributeName, value);
+//
+//  if (attributeName == "compartment")
+//  {
+//    return_value = setCompartment(value);
+//  }
+//
+//  return return_value;
+//}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Unsets the value of the "attributeName" attribute of this Reaction.
+ */
+int
+Reaction::unsetAttribute(const std::string& attributeName)
+{
+  int value = SBase::unsetAttribute(attributeName);
+
+  if (attributeName == "fast")
+  {
+    value = unsetFast();
+  }
+  else if (attributeName == "reversible")
+  {
+    value = unsetReversible();
+  }
+  else if (attributeName == "compartment")
+  {
+    value = unsetCompartment();
+  }
+
+  return value;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Creates and returns an new "elementName" object in this Reaction.
+ */
+SBase*
+Reaction::createChildObject(const std::string& elementName)
+{
+  SBase* obj = NULL;
+
+  if (elementName == "kineticLaw")
+  {
+    return createKineticLaw();
+  }
+  else if (elementName == "product")
+  {
+    return createProduct();
+  }
+  else if (elementName == "reactant")
+  {
+    return createReactant();
+  }
+  else if (elementName == "modifier")
+  {
+    return createModifier();
+  }
+
+  return obj;
+}
+
+/** @endcond */
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Adds an new "elementName" object in this Reaction.
+ */
+int
+Reaction::addChildObject(const std::string& elementName, const SBase* element)
+{
+  if (elementName == "kineticLaw" && element->getTypeCode() == SBML_KINETIC_LAW)
+  {
+    return setKineticLaw((const KineticLaw*)(element));
+  }
+  else if (elementName == "reactant" && element->getTypeCode() == SBML_SPECIES_REFERENCE)
+  {
+    return addReactant((const SpeciesReference*)(element));
+  }
+  else if (elementName == "product" && element->getTypeCode() == SBML_SPECIES_REFERENCE)
+  {
+    return addProduct((const SpeciesReference*)(element));
+  }
+  else if (elementName == "modifier" && element->getTypeCode() == SBML_MODIFIER_SPECIES_REFERENCE)
+  {
+    return addModifier((const ModifierSpeciesReference*)(element));
+  }
+
+  return LIBSBML_OPERATION_FAILED;
+}
+
+/** @endcond */
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Adds an new "elementName" object in this Reaction.
+ */
+SBase*
+Reaction::removeChildObject(const std::string& elementName, const std::string& id)
+{
+
+  if (elementName == "kineticLaw")
+  {
+    KineticLaw* t = getKineticLaw();
+    if (unsetKineticLaw() == LIBSBML_OPERATION_SUCCESS)
+      return t;
+  }
+  else if (elementName == "reactant")
+  {
+    return removeReactant(id);
+  }
+  else if (elementName == "product")
+  {
+    return removeProduct(id);
+  }
+  else if (elementName == "modifier")
+  {
+    return removeModifier(id);
+  }
+
+  return NULL;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Returns the number of "elementName" in this Reaction.
+ */
+unsigned int
+Reaction::getNumObjects(const std::string& elementName)
+{
+  unsigned int n = 0;
+
+  if (elementName == "kineticLaw")
+  {
+    if (isSetKineticLaw())
+    {
+      return 1;
+    }
+  }
+  else if (elementName == "reactant")
+  {
+    return getNumReactants();
+  }
+  else if (elementName == "product")
+  {
+    return getNumProducts();
+  }
+  else if (elementName == "modifier")
+  {
+    return getNumModifiers();
+  }
+
+  return n;
+}
+
+/** @endcond */
+
+
+
+/** @cond doxygenLibsbmlInternal */
+
+/*
+ * Returns the nth object of "objectName" in this Reaction.
+ */
+SBase*
+Reaction::getObject(const std::string& elementName, unsigned int index)
+{
+  SBase* obj = NULL;
+
+  if (elementName == "kineticLaw")
+  {
+    return getKineticLaw();
+  }
+  else if (elementName == "reactant")
+  {
+    return getReactant(index);
+  }
+  else if (elementName == "product")
+  {
+    return getProduct(index);
+  }
+  else if (elementName == "modifier")
+  {
+    return getModifier(index);
+  }
+
+  return obj;
+}
+
+/** @endcond */
+
+
 /** @cond doxygenLibsbmlInternal */
 /**
  * Subclasses should override this method to get the list of
@@ -1573,30 +2094,50 @@ Reaction::addExpectedAttributes(ExpectedAttributes& attributes)
   const unsigned int level   = getLevel  ();
   const unsigned int version = getVersion();
 
-  attributes.add("name");
-  attributes.add("reversible");
-  attributes.add("fast");
-
-  if (level > 1)
+  switch (level)
   {
+  case 1:
+    attributes.add("name");
+    attributes.add("reversible");
+    attributes.add("fast");
+    break;
+  case 2:
+    attributes.add("name");
+    attributes.add("reversible");
+    attributes.add("fast");
     attributes.add("id");
-
-    if (level == 2 && version == 2)
+    if (version == 2)
     {
       attributes.add("sboTerm");
     }
-  }
-  if (level > 2)
-  {
+
+    break;
+  case 3:
+    attributes.add("reversible");
     attributes.add("compartment");
+    if (version == 1)
+    {
+      attributes.add("name");
+      attributes.add("id");
+      attributes.add("fast");
+    }
+    break;
+  default:
+    // assumes l3v2
+    attributes.add("reversible");
+    attributes.add("compartment");
+    break;
   }
+
 }
+/** @endcond */
 
 
+/** @cond doxygenLibsbmlInternal */
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 Reaction::readAttributes (const XMLAttributes& attributes,
@@ -1627,7 +2168,7 @@ Reaction::readAttributes (const XMLAttributes& attributes,
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 Reaction::readL1Attributes (const XMLAttributes& attributes)
@@ -1666,7 +2207,7 @@ Reaction::readL1Attributes (const XMLAttributes& attributes)
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 Reaction::readL2Attributes (const XMLAttributes& attributes)
@@ -1718,7 +2259,7 @@ Reaction::readL2Attributes (const XMLAttributes& attributes)
 /*
  * Subclasses should override this method to read values from the given
  * XMLAttributes set into their specific fields.  Be sure to call your
- * parents implementation of this method as well.
+ * parent's implementation of this method as well.
  */
 void
 Reaction::readL3Attributes (const XMLAttributes& attributes)
@@ -1729,18 +2270,34 @@ Reaction::readL3Attributes (const XMLAttributes& attributes)
   //
   //   id: SId    { use="required" }  (L2v1 ->)
   //
-  bool assigned = attributes.readInto("id", mId, getErrorLog(), false, getLine(), getColumn());
-  if (!assigned)
+  bool assigned;
+  // for l3v2 sbase will read this as generically optional
+  // we want to log errors relating to the specific object
+  if (version == 1)
   {
-    logError(AllowedAttributesOnReaction, level, version, 
-      "The required attribute 'id' is missing.");
+    assigned = attributes.readInto("id", mId, getErrorLog(), false, getLine(), getColumn());
+    if (!assigned)
+    {
+      logError(AllowedAttributesOnReaction, level, version, 
+        "The required attribute 'id' is missing.");
+    }
+    if (assigned && mId.size() == 0)
+    {
+      logEmptyString("id", level, version, "<reaction>");
+    }
+    if (!SyntaxChecker::isValidInternalSId(mId)) 
+      logError(InvalidIdSyntax, level, version, "The id '" + mId + "' does not conform to the syntax.");
   }
-  if (assigned && mId.size() == 0)
+  else
   {
-    logEmptyString("id", level, version, "<reaction>");
+    // need to check that id was present
+    // it has already been read and checked for syntax/emptyness
+    if (attributes.hasAttribute("id") == false)
+    {
+      logError(AllowedAttributesOnReaction, level, version, 
+        "The required attribute 'id' is missing.");
+    }
   }
-  if (!SyntaxChecker::isValidInternalSId(mId)) 
-    logError(InvalidIdSyntax, level, version, "The id '" + mId + "' does not conform to the syntax.");
 
   string elplusid = "<reaction>";
   if (!mId.empty()) {
@@ -1759,22 +2316,30 @@ Reaction::readL3Attributes (const XMLAttributes& attributes)
   }
 
   //
-  // fast: boolean  { use="required" }                  (L3v1 ->)
+  // fast: boolean  { use="required" }                  (L3v1 only)
   //
-  mIsSetFast = attributes.readInto("fast", mFast, getErrorLog(), 
-                                              false, getLine(), getColumn());
-  if (!mIsSetFast)
+  if (version == 1)
   {
-    logError(AllowedAttributesOnReaction, level, version, 
-      "The required attribute 'fast' is missing from the "
-                + elplusid + ".");
+    mIsSetFast = attributes.readInto("fast", mFast, getErrorLog(), 
+                                                false, getLine(), getColumn());
+    if (!mIsSetFast)
+    {
+      logError(AllowedAttributesOnReaction, level, version, 
+        "The required attribute 'fast' is missing from the "
+                  + elplusid + ".");
+    }
   }
 
   //
   // name: string  { use="optional" }  (L2v1 ->)
   //
-  attributes.readInto("name", mName, getErrorLog(), false, getLine(), getColumn());
-
+  // for l3v2 sbase will read this
+  if (version == 1)
+  {
+    attributes.readInto("name", mName, getErrorLog(), false, 
+                                       getLine(), getColumn());
+  }
+   
   //
   // compartment: string { use="optional" } (L3v1 -> )
   //
@@ -1794,7 +2359,7 @@ Reaction::readL3Attributes (const XMLAttributes& attributes)
 /** @cond doxygenLibsbmlInternal */
 /*
  * Subclasses should override this method to write their XML attributes
- * to the XMLOutputStream.  Be sure to call your parents implementation
+ * to the XMLOutputStream.  Be sure to call your parent's implementation
  * of this method as well.
  */
 void
@@ -1815,17 +2380,21 @@ Reaction::writeAttributes (XMLOutputStream& stream) const
     SBO::writeTerm(stream, mSBOTerm);
   }
 
-  //
-  // name: SName   { use="required" }  (L1v1, L1v2)
-  //   id: SId     { use="required" }  (L2v1, L2v2)
-  //
-  const string id = (level == 1) ? "name" : "id";
-  stream.writeAttribute(id, mId);
+  // for L3V2 and above SBase will write this out
+  if (level < 3 || (level == 3 && version == 1))
+  {
+    //
+    // name: SName   { use="required" }  (L1v1, L1v2)
+    //   id: SId     { use="required" }  (L2v1, L2v2)
+    //
+    const string id = (level == 1) ? "name" : "id";
+    stream.writeAttribute(id, mId);
 
-  //
-  // name: string  { use="optional" }  (L2v1->)
-  //
-  if (level > 1) stream.writeAttribute("name", mName);
+    //
+    // name: string  { use="optional" }  (L2v1->)
+    //
+    if (level > 1) stream.writeAttribute("name", mName);
+  }
 
   //
   // reversible: boolean  { use="optional"  default="true" }
@@ -1859,7 +2428,7 @@ Reaction::writeAttributes (XMLOutputStream& stream) const
   else
   {
     // in L3 only write it out if it has been set
-    if (isSetFast())
+    if (version == 1 && isSetFast())
       stream.writeAttribute("fast", mFast);
   }
 
@@ -1879,7 +2448,7 @@ Reaction::writeAttributes (XMLOutputStream& stream) const
 /** @cond doxygenLibsbmlInternal */
 /*
  * Subclasses should override this method to write out their contained
- * SBML objects as XML elements.  Be sure to call your parents
+ * SBML objects as XML elements.  Be sure to call your parent's
  * implementation of this method as well.
  */
 void
@@ -1889,10 +2458,37 @@ Reaction::writeElements (XMLOutputStream& stream) const
 
   const unsigned int level = getLevel();
 
-  if (getNumReactants () > 0) mReactants.write(stream);
-  if (getNumProducts  () > 0) mProducts .write(stream);
+  if (getLevel() == 3 && getVersion() > 1)
+  {
+    if (mReactants.hasOptionalElements() == true ||
+        mReactants.hasOptionalAttributes() == true ||
+        mReactants.isExplicitlyListed())
+    {
+      mReactants.write(stream);
+    }
 
-  if (level > 1 && getNumModifiers () > 0) mModifiers.write(stream);
+    if (mProducts.hasOptionalElements() == true ||
+        mProducts.hasOptionalAttributes() == true ||
+        mProducts.isExplicitlyListed())
+    {
+      mProducts.write(stream);
+    }
+
+    if (mModifiers.hasOptionalElements() == true ||
+        mModifiers.hasOptionalAttributes() == true ||
+        mModifiers.isExplicitlyListed())
+    {
+      mModifiers.write(stream);
+    }
+  }
+  else
+  {
+    // use original code
+    if (getNumReactants () > 0) mReactants.write(stream);
+    if (getNumProducts  () > 0) mProducts .write(stream);
+
+    if (level > 1 && getNumModifiers () > 0) mModifiers.write(stream);
+  }
 
   if (mKineticLaw != NULL) mKineticLaw->write(stream);
 

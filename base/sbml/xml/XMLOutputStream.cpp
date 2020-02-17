@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -45,6 +49,9 @@
 #include <sbml/common/common.h>
 #include <sbml/common/libsbml-version.h>
 #include <sbml/SBMLNamespaces.h>
+#if defined CYGWIN
+#include <string.h>
+#endif
 
 using namespace std;
 
@@ -173,6 +180,21 @@ bool hasPredefinedEntity(const std::string &chars, size_t index)
 }   
 
 
+// boolean indicating whether the comment on the top of the file is
+// written (enabled by default)
+bool XMLOutputStream::mWriteComment = true;
+
+// boolean indicating whether a timestamp will be generated at the time
+// of writing (enabled by default)
+bool XMLOutputStream::mWriteTimestamp = true;
+
+// the name of the library writing the file (i.e: libSBML)
+std::string XMLOutputStream::mLibraryName = "libSBML";
+
+// the version of the library writing the file
+std::string XMLOutputStream::mLibraryVersion = getLibSBMLDottedVersion();
+
+
 /**
  * Copy Constructor, made private so as to notify users, that copying an input stream is not supported. 
  */
@@ -193,7 +215,7 @@ XMLOutputStream::XMLOutputStream (const XMLOutputStream& other)
 /**
  * Assignment operator, made private so as to notify users, that copying an input stream is not supported. 
  */
-XMLOutputStream& XMLOutputStream::operator=(const XMLOutputStream& other)
+XMLOutputStream& XMLOutputStream::operator=(const XMLOutputStream& /*other*/)
 {
   return *this;
 }
@@ -203,10 +225,10 @@ XMLOutputStream& XMLOutputStream::operator=(const XMLOutputStream& other)
  * Creates a new XMLOutputStream that wraps stream.
  */
 XMLOutputStream::XMLOutputStream (  std::ostream&       stream
-                                  , const std::string&  encoding
+                                  , const std::string  encoding
                                   , bool                writeXMLDecl
-                                  , const std::string&  programName
-                                  , const std::string&  programVersion) :
+                                  , const std::string  programName
+                                  , const std::string  programVersion) :
    mStream  ( stream   )
  , mEncoding( encoding )
  , mInStart ( false    )
@@ -221,7 +243,7 @@ XMLOutputStream::XMLOutputStream (  std::ostream&       stream
   unsetStringStream();
   mStream.imbue( locale::classic() );
   if (writeXMLDecl) this->writeXMLDecl();
-  this->writeComment(programName, programVersion);
+  if (mWriteComment) this->writeComment(programName, programVersion, mWriteTimestamp);
 }
 
 
@@ -229,7 +251,7 @@ XMLOutputStream::XMLOutputStream (  std::ostream&       stream
  * Writes the given XML end element name to this XMLOutputStream.
  */
 void
-XMLOutputStream::endElement (const std::string& name, const std::string& prefix)
+XMLOutputStream::endElement (const std::string& name, const std::string prefix)
 {
 
   if (mInStart)
@@ -262,7 +284,7 @@ XMLOutputStream::endElement (const std::string& name, const std::string& prefix)
  * XMLOutputStream.
  */
 void
-XMLOutputStream::endElement (const XMLTriple& triple)
+XMLOutputStream::endElement (const XMLTriple& triple, bool text)
 {
 
   if (mInStart)
@@ -270,7 +292,7 @@ XMLOutputStream::endElement (const XMLTriple& triple)
     mInStart = false;
     mStream << '/' << '>';
   }
-  else if (mInText)
+  else if (mInText || text)
   {
     mInText = false;
     mSkipNextIndent = false;
@@ -304,7 +326,7 @@ XMLOutputStream::setAutoIndent (bool indent)
  * Writes the given XML start element name to this XMLOutputStream.
  */
 void
-XMLOutputStream::startElement (const std::string& name, const std::string& prefix)
+XMLOutputStream::startElement (const std::string& name, const std::string prefix)
 {
 
   if (mInStart)
@@ -363,7 +385,7 @@ XMLOutputStream::startElement (const XMLTriple& triple)
  * Writes the given XML start and end element name to this XMLOutputStream.
  */
 void
-XMLOutputStream::startEndElement (const std::string& name, const std::string& prefix)
+XMLOutputStream::startEndElement (const std::string& name, const std::string prefix)
 {
 
   if (mInStart)
@@ -788,7 +810,7 @@ XMLOutputStream::writeChars (const std::string& chars)
  * Outputs name.
  */
 void
-XMLOutputStream::writeName (const std::string& name, const std::string &prefix)
+XMLOutputStream::writeName (const std::string& name, const std::string prefix)
 {
   if ( !prefix.empty() )
   {
@@ -911,13 +933,13 @@ XMLOutputStream::writeValue (const unsigned int& value)
 void
 XMLOutputStream::setStringStream()
 {
-  mStringStream = true;
+    mStringStream = true;
 }
 
 void
 XMLOutputStream::unsetStringStream()
 {
-  mStringStream = false;
+    mStringStream = false;
 }
 
 
@@ -944,28 +966,48 @@ XMLOutputStream::writeXMLDecl ()
  */
 void
 XMLOutputStream::writeComment (const std::string& programName, 
-                               const std::string& programVersion)
+                               const std::string& programVersion,
+                               bool writeTimestamp)
 {
-  char formattedDateAndTime[17];
-  time_t tim=time(NULL);
-  tm *now=localtime(&tim);
+  // don't write without program name
+  if (programName.empty())
+    return;
 
-  sprintf(formattedDateAndTime, "%d-%02d-%02d %02d:%02d",
-    now->tm_year+1900, now->tm_mon+1, now->tm_mday, 
-    now->tm_hour, now->tm_min);
+  mStream << "<!-- Created by " << programName;
 
-  if (programName != "")
+  // only write program version if we have it
+  if (!programVersion.empty())
   {
-    mStream << "<!-- Created by " << programName;
-    if (programVersion != "")
-    {
-      mStream << " version " << programVersion;
-    }
-    mStream << " on " << formattedDateAndTime;
-    mStream << " with libSBML version " << getLibSBMLDottedVersion();
-    mStream << ". -->";
-    mStream << endl;
+    mStream << " version " << programVersion;
   }
+
+  // only compute timestamp if we need to
+  if (writeTimestamp)
+  {
+    char formattedDateAndTime[17];
+    time_t tim=time(NULL);
+    tm *now=localtime(&tim);
+
+    sprintf(formattedDateAndTime, "%d-%02d-%02d %02d:%02d",
+            now->tm_year+1900, now->tm_mon+1, now->tm_mday,
+            now->tm_hour, now->tm_min);
+    mStream << " on " << formattedDateAndTime;
+  }
+
+  // write library information
+  if (!mLibraryName.empty())
+  {
+    mStream << " with " << mLibraryName;
+
+    if (!mLibraryVersion.empty())
+    {
+      mStream << " version " << mLibraryVersion;
+    }
+  }
+
+  mStream << ". -->";
+  mStream << endl;
+
 }
 
 
@@ -1072,6 +1114,56 @@ XMLOutputStream::setSBMLNamespaces(SBMLNamespaces * sbmlns)
     mSBMLns = NULL;
 }
 
+bool XMLOutputStream::getWriteComment()
+{
+  return mWriteComment;
+}
+
+void XMLOutputStream::setWriteComment(bool writeComment)
+{
+  mWriteComment = writeComment;
+}
+
+bool XMLOutputStream::getWriteTimestamp()
+{
+  return mWriteTimestamp;
+}
+
+void XMLOutputStream::setWriteTimestamp(bool writeTimestamp)
+{
+  mWriteTimestamp = writeTimestamp;
+}
+
+string XMLOutputStream::getLibraryName()
+{
+  return mLibraryName;
+}
+
+void XMLOutputStream::setLibraryName(const string& libraryName)
+{
+  mLibraryName = libraryName;
+}
+
+string XMLOutputStream::getLibraryVersion()
+{
+  return mLibraryVersion;
+}
+
+void XMLOutputStream::setLibraryVersion(const string& libraryVersion)
+{
+  mLibraryVersion = libraryVersion;
+}
+
+unsigned int XMLOutputStream::getIndent()
+{
+  return mIndent;
+}
+
+void XMLOutputStream::setIndent(unsigned int indent)
+{
+  mIndent = indent;
+}
+
 XMLOutputStream::~XMLOutputStream()
 {
   if (mSBMLns != NULL) 
@@ -1081,10 +1173,10 @@ XMLOutputStream::~XMLOutputStream()
 
 
 XMLOutputStringStream::XMLOutputStringStream (  std::ostringstream& stream
-                   , const std::string&  encoding
+                   , const std::string  encoding
                    , bool                writeXMLDecl
-                   , const std::string&  programName
-                   , const std::string&  programVersion):
+                   , const std::string  programName
+                   , const std::string  programVersion):
   XMLOutputStream(stream, encoding, writeXMLDecl, 
                     programName, programVersion)
     , mString(stream)
@@ -1099,10 +1191,10 @@ XMLOutputStringStream::getString()
   return mString;
 }
 
-XMLOwningOutputStringStream::XMLOwningOutputStringStream (  const std::string&  encoding
+XMLOwningOutputStringStream::XMLOwningOutputStringStream (const std::string  encoding
                                , bool                writeXMLDecl
-                               , const std::string&  programName
-                               , const std::string&  programVersion)
+                               , const std::string  programName
+                               , const std::string  programVersion)
   : XMLOutputStringStream(*(new std::ostringstream), encoding, writeXMLDecl, programName, programVersion)
 {
   
@@ -1114,11 +1206,11 @@ XMLOwningOutputStringStream::~XMLOwningOutputStringStream()
 }
 
 
-XMLOutputFileStream::XMLOutputFileStream (  std::ofstream& stream
-                   , const std::string&  encoding
+XMLOutputFileStream::XMLOutputFileStream (std::ofstream& stream
+                   , const std::string  encoding
                    , bool                writeXMLDecl
-                   , const std::string&  programName
-                   , const std::string&  programVersion)
+                   , const std::string  programName
+                   , const std::string  programVersion)
   : XMLOutputStream(stream, encoding, writeXMLDecl, 
                     programName, programVersion)
 {
@@ -1126,10 +1218,10 @@ XMLOutputFileStream::XMLOutputFileStream (  std::ofstream& stream
 
 XMLOwningOutputFileStream::XMLOwningOutputFileStream (  
                                const std::string&  filename
-                             , const std::string&  encoding
+                             , const std::string  encoding
                              , bool                writeXMLDecl
-                             , const std::string&  programName
-                             , const std::string&  programVersion)
+                             , const std::string  programName
+                             , const std::string  programVersion)
   : XMLOutputFileStream( *(new std::ofstream(filename.c_str(), std::ios::out)), 
                          encoding, writeXMLDecl, programName, programVersion)
 {

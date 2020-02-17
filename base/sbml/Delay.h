@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -58,7 +62,7 @@
  * numerical value computed by the Delay's "math" expression are @em
  * required to be in units of time, or the model is considered to have a
  * unit consistency error.  In Level&nbsp;2 Version&nbsp;4 as well as SBML
- * Level&nbsp;3 Version&nbsp;1 Core, this requirement is relaxed; these
+ * Level&nbsp;3, this requirement is relaxed; these
  * specifications only stipulate that the units of the numerical value
  * computed by a Delay instance's "math" expression @em should match the
  * model's units of time (meaning the definition of the @c time units in
@@ -128,7 +132,7 @@
  * content of a @c cn element.  The attribute is named @c units but,
  * because it appears inside MathML element (which is in the XML namespace
  * for MathML and not the namespace for SBML), it must always be prefixed
- * with an XML namespace prefix for the SBML Level&nbsp;3 Version&nbsp;1
+ * with an XML namespace prefix for an SBML Level&nbsp;3
  * namespace.  The following is an example of this approach:
  * @verbatim
 <model timeUnits="second" ...>
@@ -148,6 +152,14 @@
     ...
 </model>
 @endverbatim
+ *
+ * @section delay-restrictions Restrictions relaxed in SBML Level&nbsp;3 Version&nbsp;2
+ * 
+ * In SBML Level&nbsp;3 Version&nbsp;2, the requirement that a Delay
+ * have a "math" subelement was relaxed, making it optional.  In
+ * this case, the Delay remains undefined, and unless that information
+ * is provided in some other form (such as with an SBML Level&nbsp;3
+ * package), the Event behaves as if it had no Delay.
  */
 
 /**
@@ -165,7 +177,7 @@
  * with SBML Level&nbsp;2 Version&nbsp;2, the units of that time are
  * calculated based on the mathematical expression and the model quantities
  * referenced by <code>&lt;ci&gt;</code> elements used within that
- * expression.  (In SBML Level &nbsp;2 Version&nbsp;1, there exists an
+ * expression.  (In SBML Level&nbsp;2 Version&nbsp;1, there exists an
  * attribute on Event called "timeUnits".  This attribute can be used to set
  * the units of the Delay expression explicitly.)  The method
  * Delay::getDerivedUnitDefinition() returns what libSBML computes the units
@@ -219,10 +231,10 @@ public:
    * Creates a new Delay using the given SBML @p level and @p version
    * values.
    *
-   * @param level an unsigned int, the SBML Level to assign to this Delay
+   * @param level an unsigned int, the SBML Level to assign to this Delay.
    *
    * @param version an unsigned int, the SBML Version to assign to this
-   * Delay
+   * Delay.
    *
    * @copydetails doc_throw_exception_lv
    *
@@ -263,7 +275,7 @@ public:
   /**
    * Assignment operator for Delay.
    *
-   * @param rhs The object whose values are used as the basis of the
+   * @param rhs the object whose values are used as the basis of the
    * assignment.
    */
   Delay& operator=(const Delay& rhs);
@@ -293,9 +305,9 @@ public:
    * Get the mathematical formula for the delay and return it
    * as an AST.
    * 
-   * @return the math of this Delay.
+   * @return the math of this Delay, or @c NULL if the math is not set.
    */
-  const ASTNode* getMath () const;
+  virtual const ASTNode* getMath () const;
 
 
   /**
@@ -317,7 +329,7 @@ public:
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
    * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
    */
-  int setMath (const ASTNode* math);
+  virtual int setMath (const ASTNode* math);
 
 
   /**
@@ -447,7 +459,7 @@ public:
   /** @cond doxygenLibsbmlInternal */
   /**
    * Subclasses should override this method to write out their contained
-   * SBML objects as XML elements.  Be sure to call your parents
+   * SBML objects as XML elements.  Be sure to call your parent's
    * implementation of this method as well.
    */
   virtual void writeElements (XMLOutputStream& stream) const;
@@ -460,7 +472,8 @@ public:
    * have been set.
    *
    * @note The required elements for a Delay object are:
-   * @li "math"
+   * @li "math" inSBML Level&nbsp;2 and Level&nbsp;3 Version&nbsp;1.  
+   *     (In SBML Level&nbsp;3 Version&nbsp;2+, it is no longer required.)
    *
    * @return a boolean value indicating whether all the required
    * elements for this object have been defined.
@@ -511,13 +524,293 @@ public:
   /** @endcond */
 
 
+
+
+  #ifndef SWIG
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Delay.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, bool& value)
+    const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Delay.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Delay.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           double& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Delay.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           unsigned int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Delay.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           std::string& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Delay.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  //virtual int getAttribute(const std::string& attributeName,
+  //                         const char* value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Predicate returning @c true if this Delay's attribute "attributeName" is
+   * set.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @return @c true if this Delay's attribute "attributeName" has been set,
+   * otherwise @c false is returned.
+   */
+  virtual bool isSetAttribute(const std::string& attributeName) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Delay.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, bool value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Delay.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Delay.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, double value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Delay.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           unsigned int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Delay.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           const std::string& value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Delay.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  //virtual int setAttribute(const std::string& attributeName, const char*
+  //  value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Unsets the value of the "attributeName" attribute of this Delay.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int unsetAttribute(const std::string& attributeName);
+
+  /** @endcond */
+
+
+
+
+  #endif /* !SWIG */
+
+
 protected:
   /** @cond doxygenLibsbmlInternal */
   /**
    * Subclasses should override this method to read (and store) XHTML,
    * MathML, etc. directly from the XMLInputStream.
    *
-   * @return true if the subclass read from the stream, false otherwise.
+   * @return @c true if the subclass read from the stream, @c false otherwise.
    */
   virtual bool readOtherXML (XMLInputStream& stream);
 
@@ -542,7 +835,7 @@ protected:
   /**
    * Subclasses should override this method to read values from the given
    * XMLAttributes set into their specific fields.  Be sure to call your
-   * parents implementation of this method as well.
+   * parent's implementation of this method as well.
    */
   virtual void readAttributes (const XMLAttributes& attributes,
                                const ExpectedAttributes& expectedAttributes);
@@ -554,7 +847,7 @@ protected:
 
   /**
    * Subclasses should override this method to write their XML attributes
-   * to the XMLOutputStream.  Be sure to call your parents implementation
+   * to the XMLOutputStream.  Be sure to call your parent's implementation
    * of this method as well.
    */
   virtual void writeAttributes (XMLOutputStream& stream) const;
@@ -601,20 +894,14 @@ BEGIN_C_DECLS
  * and @p version values.
  *
  * @param level an unsigned int, the SBML Level to assign to this
- * Delay_t
+ * Delay_t.
  *
  * @param version an unsigned int, the SBML Version to assign to this
- * Delay_t
+ * Delay_t.
  *
  * @return a pointer to the newly created Delay_t structure.
  *
- * @note Once a Delay_t has been added to an SBMLDocument_t, the @p
- * level and @p version for the document @em override those used to create
- * the Delay_t.  Despite this, the ability to supply the values at
- * creation time is an important aid to creating valid SBML.  Knowledge of
- * the intended SBML Level and Version  determine whether it is valid to
- * assign a particular value to an attribute, or whether it is valid to add
- * a structure to an existing SBMLDocument_t.
+ * @copydetails doc_note_setting_lv
  *
  * @memberof Delay_t
  */
@@ -628,17 +915,11 @@ Delay_create (unsigned int level, unsigned int version);
  * SBMLNamespaces_t structure.
  *
  * @param sbmlns SBMLNamespaces_t, a pointer to an SBMLNamespaces_t structure
- * to assign to this Delay_t
+ * to assign to this Delay_t.
  *
  * @return a pointer to the newly created Delay_t structure.
  *
- * @note Once a Delay_t has been added to an SBMLDocument_t, the
- * @p sbmlns namespaces for the document @em override those used to create
- * the Delay_t.  Despite this, the ability to supply the values at creation time
- * is an important aid to creating valid SBML.  Knowledge of the intended SBML
- * Level and Version determine whether it is valid to assign a particular value
- * to an attribute, or whether it is valid to add a structure to an existing
- * SBMLDocument_t.
+ * @copydetails doc_note_setting_lv
  *
  * @memberof Delay_t
  */
@@ -662,7 +943,7 @@ Delay_free (Delay_t *d);
 /**
  * Creates and returns a deep copy of the given Delay_t structure.
  *
- * @param d the Delay_t structure to copy. 
+ * @param d the Delay_t structure to copy.
  *
  * @return a (deep) copy of the given Delay_t structure @p t.
  *
@@ -677,7 +958,7 @@ Delay_clone (const Delay_t *d);
  * Returns a list of XMLNamespaces_t associated with this Delay_t
  * structure.
  *
- * @param d the Delay_t structure
+ * @param d the Delay_t structure.
  * 
  * @return pointer to the XMLNamespaces_t structure associated with 
  * this structure
@@ -708,10 +989,10 @@ Delay_getMath (const Delay_t *d);
  * Predicate to test whether the formula for the given Delay_t structure
  * is set.
  *
- * @param d the Delay_t structure to query
+ * @param d the Delay_t structure to query.
  *
- * @return @c true if the formula (meaning the @c math subelement) of
- * this Delay_t is set, @c false otherwise.
+ * @return @c 1 (true) if the formula (meaning the @c math subelement) of
+ * this Delay_t is set, @c 0 (false) otherwise.
  *
  * @memberof Delay_t
  */
@@ -766,15 +1047,15 @@ Delay_getDerivedUnitDefinition(Delay_t *d);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether 
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether 
  * the math expression of this Delay_t contains
  * parameters/numbers with undeclared units.
  * 
- * @return @c true if the math expression of this Delay_t
+ * @return @c 1 (true) if the math expression of this Delay_t
  * includes parameters/numbers 
- * with undeclared units, @c false otherwise.
+ * with undeclared units, @c 0 (false) otherwise.
  *
- * @note a return value of @c true indicates that the UnitDefinition_t
+ * @note a return value of @c 1 (true) indicates that the UnitDefinition_t
  * returned by the getDerivedUnitDefinition function may not 
  * accurately represent the units of the expression.
  *

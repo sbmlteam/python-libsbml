@@ -9,7 +9,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -99,7 +103,7 @@ UnitsBase::getPreamble ()
   * Checks that the units of the result of the assignment rule
   * are consistent with variable being assigned
   *
-  * @return true if units are consistent, false otherwise.
+  * @return @c true if units are consistent, false otherwise.
   */
 void
 UnitsBase::check_ (const Model& m, const Model& )
@@ -128,7 +132,8 @@ UnitsBase::check_ (const Model& m, const Model& )
     }
     for (sr = 0; sr < m.getReaction(n)->getNumProducts(); sr++)
     {
-      if (m.getReaction(n)->getProduct(sr)->isSetStoichiometryMath())
+      if (m.getReaction(n)->getProduct(sr)->isSetStoichiometryMath() && 
+        m.getReaction(n)->getProduct(sr)->getStoichiometryMath()->isSetMath())
       {
         checkUnits(m, 
           *m.getReaction(n)->getProduct(sr)->getStoichiometryMath()->getMath(), 
@@ -137,7 +142,8 @@ UnitsBase::check_ (const Model& m, const Model& )
     }
     for (sr = 0; sr < m.getReaction(n)->getNumReactants(); sr++)
     {
-      if (m.getReaction(n)->getReactant(sr)->isSetStoichiometryMath())
+      if (m.getReaction(n)->getReactant(sr)->isSetStoichiometryMath() &&
+        m.getReaction(n)->getReactant(sr)->getStoichiometryMath()->isSetMath())
       {
         checkUnits(m, 
           *m.getReaction(n)->getReactant(sr)->getStoichiometryMath()->getMath(), 

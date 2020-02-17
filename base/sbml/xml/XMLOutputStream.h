@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -265,11 +269,11 @@ public:
    *
    * @ifnot hasDefaultArgs @htmlinclude warn-default-args-in-docs.html @endif@~
    */
-  XMLOutputStream (  std::ostream&       stream
-                   , const std::string&  encoding       = "UTF-8"
+  XMLOutputStream (std::ostream&       stream
+                   , const std::string  encoding       = "UTF-8"
                    , bool                writeXMLDecl   = true
-                   , const std::string&  programName    = ""
-                   , const std::string&  programVersion = "");
+                   , const std::string  programName    = ""
+                   , const std::string  programVersion = "");
 
 
   /**
@@ -289,15 +293,16 @@ public:
    *
    * @ifnot hasDefaultArgs @htmlinclude warn-default-args-in-docs.html @endif@~
    */
-  void endElement (const std::string& name, const std::string& prefix = "");
+  void endElement (const std::string& name, const std::string prefix = "");
 
 
   /**
    * Writes the given element to the stream.
    *
    * @param triple the XML element to write.
+   * @param text the text to put
    */
-  void endElement (const XMLTriple& triple);
+  void endElement (const XMLTriple& triple, bool text = false);
 
 
   /**
@@ -319,7 +324,7 @@ public:
    *
    * @ifnot hasDefaultArgs @htmlinclude warn-default-args-in-docs.html @endif@~
    */
-  void startElement (const std::string& name, const std::string& prefix = "");
+  void startElement (const std::string& name, const std::string prefix = "");
 
 
   /**
@@ -342,7 +347,7 @@ public:
    *
    * @ifnot hasDefaultArgs @htmlinclude warn-default-args-in-docs.html @endif@~
    */
-  void startEndElement (const std::string& name, const std::string& prefix = "");
+  void startEndElement (const std::string& name, const std::string prefix = "");
 
 
   /**
@@ -630,15 +635,19 @@ on yyyy-MM-dd HH:mm with libSBML version <libsbml version>. -->
    *
    * @param programVersion an optional version identification string to write
    * as a comment in the output stream.
+   *
+   * @param writeTimestamp an optional flag indicating that a timestamp should
+   * be written.
    */
   void writeComment (const std::string& programName,
-                     const std::string& programVersion);
+                     const std::string& programVersion,
+                     bool writeTimestamp = true);
 
 
   /**
    * Writes the given characters to the underlying stream.
    *
-   * @param chars the characters to write
+   * @param chars the characters to write.
    */
   XMLOutputStream& operator<< (const std::string& chars);
 
@@ -646,7 +655,7 @@ on yyyy-MM-dd HH:mm with libSBML version <libsbml version>. -->
   /**
    * Writes the given double-type number to the underlying stream.
    *
-   * @param value the value to write
+   * @param value the value to write.
    */
   XMLOutputStream& operator<< (const double& value);
 
@@ -654,7 +663,7 @@ on yyyy-MM-dd HH:mm with libSBML version <libsbml version>. -->
   /**
    * Outputs the given long-type number to the underlying stream.
    *
-   * @param value the value to write
+   * @param value the value to write.
    */
   XMLOutputStream& operator<< (const long& value);
 
@@ -708,10 +717,69 @@ on yyyy-MM-dd HH:mm with libSBML version <libsbml version>. -->
   void setSBMLNamespaces(SBMLNamespaces * sbmlns);
 
 
+  /**
+   * @return a boolean, whether the output stream will write an XML
+   * comment at the top of the file. (Enabled by default.)
+   */
+  static bool getWriteComment();
+  /**
+   * sets a flag, whether the output stream will write an XML
+   * comment at the top of the file. (Enabled by default.)
+   *
+   * @param writeComment the flag.
+   */
+  static void setWriteComment(bool writeComment);
+
+  /**
+   * @return a boolean, whether the output stream will write an XML
+   * comment with a timestamp at the top of the file. (Enabled by default.)
+   */
+  static bool getWriteTimestamp();
+  /**
+   * sets a flag, whether the output stream will write an XML
+   * comment with a timestamp at the top of the file. (Enabled by default.)
+   *
+   * @param writeTimestamp the flag.
+   */
+  static void setWriteTimestamp(bool writeTimestamp);
+
+
+  /**
+   * @return the name of the library to be used in comments ('libSBML' by default).
+   */
+  static std::string getLibraryName();
+
+  /**
+   * sets the name of the library writing the XML
+
+   * @param libraryName the name of the library to be used in comments.
+   */
+  static void setLibraryName(const std::string& libraryName);
+
+  /**
+   * @return a string representing the version of the library writing the output.
+   *         This is the value of getLibSBMLDottedVersion() by default.
+   */
+  static std::string getLibraryVersion();
+
+  /**
+   * sets the name of the library writing the output
+   *
+   * @param libraryVersion the version information as string.
+   */
+  static void setLibraryVersion(const std::string& libraryVersion);
+
+  /** @cond doxygenLibsbmlInternal */
+  unsigned int getIndent();
+  void setIndent(unsigned int indent);
+  /** @endcond */
+
 private:
   /** @cond doxygenLibsbmlInternal */
   /**
    * Copy Constructor, made private so as to notify users, that copying an input stream is not supported.
+   *
+   * @param other the instance to copy.
    */
   XMLOutputStream (const XMLOutputStream& other);
 
@@ -749,7 +817,7 @@ protected:
   /**
    * Outputs name.
    */
-  void writeName (const std::string& name, const std::string& prefix = "");
+  void writeName (const std::string& name, const std::string prefix = "");
 
 
   /**
@@ -815,6 +883,20 @@ protected:
 
   SBMLNamespaces* mSBMLns;
 
+  // boolean indicating whether the comment on the top of the file is
+  // written (enabled by default)
+  static bool mWriteComment;
+
+  // boolean indicating whether a timestamp will be generated at the time
+  // of writing (enabled by default)
+  static bool mWriteTimestamp;
+
+  // the name of the library writing the file (i.e: libSBML)
+  static std::string mLibraryName;
+
+  // the version of the library writing the file
+  static std::string mLibraryVersion;
+
   /* this is needed for the derived classes used to create the C wrapper */
   bool mStringStream;
   void setStringStream();
@@ -835,10 +917,10 @@ public:
    * @ifnot hasDefaultArgs @htmlinclude warn-default-args-in-docs.html @endif@~
    */
   XMLOutputStringStream (  std::ostringstream& stream
-                         , const std::string&  encoding     = "UTF-8"
+                         , const std::string  encoding     = "UTF-8"
                          , bool                writeXMLDecl = true
-                         , const std::string&  programName  = ""
-                         , const std::string&  programVersion = "");
+                         , const std::string  programName  = ""
+                         , const std::string  programVersion = "");
 
   std::ostringstream& getString();
 
@@ -859,10 +941,10 @@ public:
    *
    * @ifnot hasDefaultArgs @htmlinclude warn-default-args-in-docs.html @endif@~
    */
-  XMLOwningOutputStringStream (  const std::string&  encoding     = "UTF-8"
+  XMLOwningOutputStringStream (  const std::string  encoding     = "UTF-8"
                                , bool                writeXMLDecl = true
-                               , const std::string&  programName  = ""
-                               , const std::string&  programVersion = "");
+                               , const std::string  programName  = ""
+                               , const std::string  programVersion = "");
 
   virtual ~XMLOwningOutputStringStream();
 
@@ -880,10 +962,10 @@ public:
    * @ifnot hasDefaultArgs @htmlinclude warn-default-args-in-docs.html @endif@~
    */
   XMLOutputFileStream (  std::ofstream&      stream
-                       , const std::string&  encoding     = "UTF-8"
+                       , const std::string  encoding     = "UTF-8"
                        , bool                writeXMLDecl = true
-                       , const std::string&  programName  = ""
-                       , const std::string&  programVersion = "");
+                       , const std::string  programName  = ""
+                       , const std::string  programVersion = "");
 
 };
 /** @endcond */
@@ -899,11 +981,11 @@ public:
    *
    * @ifnot hasDefaultArgs @htmlinclude warn-default-args-in-docs.html @endif@~
    */
-  XMLOwningOutputFileStream (  const std::string&  filename
-                             , const std::string&  encoding     = "UTF-8"
+  XMLOwningOutputFileStream (const std::string&  filename
+                             , const std::string  encoding     = "UTF-8"
                              , bool                writeXMLDecl = true
-                             , const std::string&  programName  = ""
-                             , const std::string&  programVersion = "");
+                             , const std::string  programName  = ""
+                             , const std::string  programVersion = "");
 
   virtual ~XMLOwningOutputFileStream();
 
@@ -926,7 +1008,7 @@ BEGIN_C_DECLS
 /**
  * Creates a new XMLOutputStream_t that wraps std output stream.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 XMLOutputStream_t *
@@ -955,7 +1037,7 @@ XMLOutputStream_createAsStdout (const char * encoding, int writeXMLDecl);
  * @param programVersion an optional version identification string to write
  * as a comment in the output stream.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 XMLOutputStream_t *
@@ -968,7 +1050,7 @@ XMLOutputStream_createAsStdoutWithProgramInfo (const char * encoding,
 /**
  * Creates a new XMLOutputStream_t instance for use as a string
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 XMLOutputStream_t *
@@ -979,7 +1061,7 @@ XMLOutputStream_createAsString (const char * encoding, int writeXMLDecl);
  * Creates a new XMLOutputStream_t that wraps std string output stream
  * and adds program information as a comment.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 XMLOutputStream_t *
@@ -992,7 +1074,7 @@ XMLOutputStream_createAsStringWithProgramInfo (const char * encoding,
 /**
  * Creates a new XMLOutputStream_t that wraps std file output stream.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 XMLOutputStream_t *
@@ -1003,7 +1085,7 @@ XMLOutputStream_createFile (const char * filename, const char * encoding, int wr
  * Creates a new XMLOutputStream_t that wraps std file output stream
  * and adds program information as a comment.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 XMLOutputStream_t *
@@ -1015,7 +1097,7 @@ XMLOutputStream_createFileWithProgramInfo (const char * filename, const char * e
 /**
  * Deletes this XMLOutputStream_t.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 void
@@ -1026,7 +1108,7 @@ XMLOutputStream_free (XMLOutputStream_t *stream);
  * Writes the XML declaration:
  * <?xml version="1.0" encoding="..."?>
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 void
@@ -1036,7 +1118,7 @@ XMLOutputStream_writeXMLDecl (XMLOutputStream_t *stream);
 /**
  * Increases the indentation level for this XMLOutputStream_t.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 void
@@ -1046,7 +1128,7 @@ XMLOutputStream_upIndent(XMLOutputStream_t *stream);
 /**
  * Decreases the indentation level for this XMLOutputStream_t.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 void
@@ -1056,7 +1138,7 @@ XMLOutputStream_downIndent(XMLOutputStream_t *stream);
 /**
  * Writes the given XML end element name to this XMLOutputStream_t.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 void
@@ -1067,7 +1149,7 @@ XMLOutputStream_endElement (XMLOutputStream_t *stream, const char* name);
  * Writes the given XML end element 'prefix:name' to this
  * XMLOutputStream_t.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 void
@@ -1078,7 +1160,7 @@ XMLOutputStream_endElementTriple (XMLOutputStream_t *stream,
 /**
  * Turns automatic indentation on or off for this XMLOutputStream_t.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 void
@@ -1088,7 +1170,7 @@ XMLOutputStream_setAutoIndent (XMLOutputStream_t *stream, int indent);
 /**
  * Writes the given XML start element name to this XMLOutputStream_t.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 void
@@ -1099,7 +1181,7 @@ XMLOutputStream_startElement (XMLOutputStream_t *stream, const char* name);
  * Writes the given XML start element 'prefix:name' to this
  * XMLOutputStream_t.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 void
@@ -1110,7 +1192,7 @@ XMLOutputStream_startElementTriple (XMLOutputStream_t *stream,
 /**
  * Writes the given XML start and end element name to this XMLOutputStream_t.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 void
@@ -1121,7 +1203,7 @@ XMLOutputStream_startEndElement (XMLOutputStream_t *stream, const char* name);
  * Writes the given XML start and end element 'prefix:name' to this
  * XMLOutputStream_t.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 void
@@ -1132,7 +1214,7 @@ XMLOutputStream_startEndElementTriple (XMLOutputStream_t *stream,
 /**
  * Writes the given attribute, name="value" to this XMLOutputStream_t.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 void
@@ -1144,7 +1226,7 @@ XMLOutputStream_writeAttributeChars (XMLOutputStream_t *stream,
  * Writes the given attribute, prefix:name="value" to this
  * XMLOutputStream_t.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 void
@@ -1156,7 +1238,7 @@ XMLOutputStream_writeAttributeCharsTriple (XMLOutputStream_t *stream,
  * Writes the given attribute, name="true" or name="false" to this
  * XMLOutputStream_t.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 void
@@ -1168,7 +1250,7 @@ XMLOutputStream_writeAttributeBool (XMLOutputStream_t *stream,
  * Writes the given attribute, prefix:name="true" or prefix:name="false"
  * to this XMLOutputStream_t.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 void
@@ -1180,7 +1262,7 @@ XMLOutputStream_writeAttributeBoolTriple (XMLOutputStream_t *stream,
 /**
  * Writes the given attribute, name="value" to this XMLOutputStream_t.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 void
@@ -1192,7 +1274,7 @@ XMLOutputStream_writeAttributeDouble (XMLOutputStream_t *stream,
 /**
  * Writes the given attribute, prefix:name="value" to this XMLOutputStream_t.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 void
@@ -1204,7 +1286,7 @@ XMLOutputStream_writeAttributeDoubleTriple (XMLOutputStream_t *stream,
 /**
  * Writes the given attribute, name="value" to this XMLOutputStream_t.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 void
@@ -1216,7 +1298,7 @@ XMLOutputStream_writeAttributeLong (XMLOutputStream_t *stream,
 /**
  * Writes the given attribute, prefix:name="value" to this XMLOutputStream_t.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 void
@@ -1228,7 +1310,7 @@ XMLOutputStream_writeAttributeLongTriple (XMLOutputStream_t *stream,
 /**
  * Writes the given attribute, name="value" to this XMLOutputStream_t.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 void
@@ -1240,7 +1322,7 @@ XMLOutputStream_writeAttributeInt (XMLOutputStream_t *stream,
 /**
  * Writes the given attribute, prefix:name="value" to this XMLOutputStream_t.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 void
@@ -1252,7 +1334,7 @@ XMLOutputStream_writeAttributeIntTriple (XMLOutputStream_t *stream,
 /**
  * Writes the given attribute, name="value" to this XMLOutputStream_t.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 void
@@ -1264,7 +1346,7 @@ XMLOutputStream_writeAttributeUInt (XMLOutputStream_t *stream,
 /**
  * Writes the given attribute, prefix:name="value" to this XMLOutputStream_t.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 void
@@ -1276,7 +1358,7 @@ XMLOutputStream_writeAttributeUIntTriple (XMLOutputStream_t *stream,
 /**
  * Outputs the given characters to the underlying stream.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 void
@@ -1286,7 +1368,7 @@ XMLOutputStream_writeChars (XMLOutputStream_t *stream, const char* chars);
 /**
  * Outputs the given double to the underlying stream.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 void
@@ -1296,7 +1378,7 @@ XMLOutputStream_writeDouble (XMLOutputStream_t *stream, const double value);
 /**
  * Outputs the given long to the underlying stream.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 void
@@ -1306,7 +1388,7 @@ XMLOutputStream_writeLong (XMLOutputStream_t *stream, const long value);
 /**
  * Returns the given string associated to the underlying string stream.
  *
- * @memberof XMLTriple_t
+ * @memberof XMLOutputStream_t
  */
 LIBLAX_EXTERN
 const char *

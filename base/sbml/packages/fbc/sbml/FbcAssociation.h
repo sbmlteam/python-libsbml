@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -43,6 +47,39 @@
  * @copydetails doc_note_fbcv2_annotation_replacement
  *
  * @see ListOfFbcAssociations
+ * @see FbcAnd
+ * @see FbcOr
+ * @see GeneProductRef
+ *
+ * <!-- ------------------------------------------------------------------- -->
+ * @class ListOfFbcAssociations
+ * @sbmlbrief{fbc} A list of FbcAssociation objects.
+ *
+ * @htmlinclude not-sbml-warning.html
+ *
+ * The ListOfFbcAssociations is a container of FbcAssociation objects for the
+ * FbcAnd and FbcOr classes.  Unlike the ListOf___ classes in SBML, the
+ * ListOfFbcAssociations is not a class that appears in the &ldquo;fbc&rdquo;
+ * Version&nbsp;2 specification, and instead is used internally in libSBML as
+ * a convenience class to store arbitrary numbers of FbcAssociation objects.
+ * Also unlike other ListOf___ classes, the FbcAnd and FbcOr classes require
+ * at least two child FbcAssociation objects, so valid ListOfFbcAssociations
+ * libsbml objects will always contain two or more children.  These children
+ * will have element names associated with their derived class, not the base
+ * FbcAssociation class: <code>&lt;fbc:and&gt;</code>,
+ * <code>&lt;fbc:or&gt;</code>, and <code>&lt;fbc:geneProductRef&gt;</code>.
+ *
+ * @copydetails doc_note_fbcv2_annotation_replacement
+ *
+ * @warning It is important to be clear that <em>ListOfFbcAssociations is not
+ * written out in the XML output produced by libSBML</em>&mdash;the
+ * constructs only exist in software to enable software applications to
+ * manipulate FbcAssociation objects in a way that mirrors how other lists of
+ * components in SBML are manipulated.  ListOfFbcAssociations is abstracted
+ * away when an SBML &ldquo;fbc&rdquo; model file is actually written out in
+ * the final XML form.
+ *
+ * @see FbcAssociation
  * @see FbcAnd
  * @see FbcOr
  * @see GeneProductRef
@@ -91,13 +128,15 @@ public:
    * &ldquo;fbc&rdquo;package version.
    *
    * @param level an unsigned int, the SBML Level to assign to this
-   * FbcAssociation
+   * FbcAssociation.
    *
    * @param version an unsigned int, the SBML Version to assign to this
-   * FbcAssociation
+   * FbcAssociation.
    *
    * @param pkgVersion an unsigned int, the SBML &ldquo;fbc&rdquo; package
-   * Version to assign to this FbcAssociation
+   * Version to assign to this FbcAssociation.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   FbcAssociation(unsigned int level      = FbcExtension::getDefaultLevel(),
                  unsigned int version    = FbcExtension::getDefaultVersion(),
@@ -107,7 +146,11 @@ public:
   /**
    * Creates a new FbcAssociation with the given FbcPkgNamespaces object.
    *
-   * @param fbcns the FbcPkgNamespaces object
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param fbcns the FbcPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   FbcAssociation(FbcPkgNamespaces* fbcns);
 
@@ -115,7 +158,7 @@ public:
    /**
    * Copy constructor for FbcAssociation.
    *
-   * @param orig; the FbcAssociation instance to copy.
+   * @param orig the FbcAssociation instance to copy.
    */
   FbcAssociation(const FbcAssociation& orig);
 
@@ -123,8 +166,8 @@ public:
    /**
    * Assignment operator for FbcAssociation.
    *
-   * @param rhs; the object whose values are used as the basis
-   * of the assignment
+   * @param rhs the object whose values are used as the basis
+   * of the assignment.
    */
   FbcAssociation& operator=(const FbcAssociation& rhs);
 
@@ -144,28 +187,28 @@ public:
 
 
    /**
-   * Returns @c true, if this abstract "FbcAssociation" is of type FbcAnd.
+   * Returns @c true, if this abstract FbcAssociation is of type FbcAnd.
    *
-   * @return @c true, if this abstract "FbcAssociation" is of type FbcAnd.
+   * @return @c true, if this abstract FbcAssociation is of type FbcAnd.
    *
    */
   virtual bool isFbcAnd() const;
 
 
   /**
-   * Returns @c true, if this abstract "FbcAssociation" is of type FbcOr.
+   * Returns @c true, if this abstract FbcAssociation is of type FbcOr.
    *
-   * @return @c true, if this abstract "FbcAssociation" is of type FbcOr.
+   * @return @c true, if this abstract FbcAssociation is of type FbcOr.
    *
    */
   virtual bool isFbcOr() const;
 
 
   /**
-   * Returns @c true, if this abstract "FbcAssociation" is of type
+   * Returns @c true, if this abstract FbcAssociation is of type
    * GeneProductRef.
    *
-   * @return @c true, if this abstract "FbcAssociation" is of type
+   * @return @c true, if this abstract FbcAssociation is of type
    * GeneProductRef.
    *
    */
@@ -215,12 +258,12 @@ public:
 
   /**
    * Subclasses should override this method to write out their contained
-   * SBML objects as XML elements.  Be sure to call your parents
+   * SBML objects as XML elements.  Be sure to call your parent's
    * implementation of this method as well.
    */
   virtual void writeElements (XMLOutputStream& stream) const;
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -230,7 +273,7 @@ public:
    */
   virtual bool accept (SBMLVisitor& v) const;
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /**
@@ -243,18 +286,30 @@ public:
   (b2422) and (b2425) and (b2423) and (b2424) or (b2422) and (b2423) and (b2424) and (b2413) and (b3917)
 @endverbatim
   *
+  * The 'and' operator takes precedence over the 'or' operator, meaning that
+  * the above input string would turn into two groups of gene names: either
+  * "b2422, b2425, b2423, and b2424" or "b2422, b2423, b2424, b2413, and b3917".
+  * Parentheses may be added to make things more clear, and to encode
+  * alternative schemes.
+  * 
   * This method also creates missing GeneProduct objects, in case the unique
   * reference does not yet exist.
   *
   * @param association the string to parse.
-  * @param plugin the FbcModelPlugin on which to add the geneProduct elements
+  * @param plugin the FbcModelPlugin on which to add the geneProduct elements.
+  * @param usingId boolean indicating whether the infix assumes identifiers (@c true)
+  * or labels (@c false default).
+  * @param addMissingGP boolean indicating whether to add missing geneProducts 
+  * (@c true default) or not (@c false).
   *
   * @return the parsed association, or @c NULL in case of an error.
   *
   * @copydetails doc_note_static_methods
   */
   static FbcAssociation* parseFbcInfixAssociation(const std::string& association,
-                                                  FbcModelPlugin* plugin);
+                                                  FbcModelPlugin* plugin,
+                                                  bool usingId=false, 
+                                                  bool addMissingGP=true);
 
 
   /**
@@ -262,7 +317,7 @@ public:
   *
   * @return the association as infix string.
   */
-  virtual std::string toInfix() const;
+  virtual std::string toInfix(bool usingId=false) const;
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -272,7 +327,7 @@ public:
    */
   virtual void setSBMLDocument (SBMLDocument* d);
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -283,13 +338,251 @@ public:
   virtual void enablePackageInternal(const std::string& pkgURI,
                const std::string& pkgPrefix, bool flag);
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
-  virtual void setElementName(const std::string& name);
+  #ifndef SWIG
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Association.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, bool& value)
+    const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Association.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Association.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           double& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Association.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           unsigned int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Association.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           std::string& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Predicate returning @c true if this Association's attribute
+   * "attributeName" is set.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @return @c true if this Association's attribute "attributeName" has been
+   * set, otherwise @c false is returned.
+   */
+  virtual bool isSetAttribute(const std::string& attributeName) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Association.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, bool value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Association.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Association.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, double value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Association.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           unsigned int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Association.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           const std::string& value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Unsets the value of the "attributeName" attribute of this Association.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int unsetAttribute(const std::string& attributeName);
+
+  /** @endcond */
+
+
+
+
+  #endif /* !SWIG */
+
 
 
 protected:
+
+    virtual void setElementName(const std::string& name);
 
   /** @cond doxygenLibsbmlInternal */
 
@@ -298,7 +591,7 @@ protected:
    */
   virtual void addExpectedAttributes(ExpectedAttributes& attributes);
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -309,7 +602,7 @@ protected:
   virtual void readAttributes (const XMLAttributes& attributes,
                                const ExpectedAttributes& expectedAttributes);
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -319,45 +612,12 @@ protected:
    */
   virtual void writeAttributes (XMLOutputStream& stream) const;
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
-
+  friend class GeneProductAssociation;
 
 };
 
-/**
- * @class ListOfFbcAssociations
- * @sbmlbrief{fbc} A list of FbcAssociation objects.
- *
- * @htmlinclude not-sbml-warning.html
- *
- * The ListOfFbcAssociations is a container of FbcAssociation objects for the
- * FbcAnd and FbcOr classes.  Unlike the ListOf___ classes in SBML, the
- * ListOfFbcAssociations is not a class that appears in the &ldquo;fbc&rdquo;
- * Version&nbsp;2 specification, and instead is used internally in libSBML as
- * a convenience class to store arbitrary numbers of FbcAssociation objects.
- * Also unlike other ListOf___ classes, the FbcAnd and FbcOr classes require
- * at least two child FbcAssociation objects, so valid ListOfFbcAssociations
- * libsbml objects will always contain two or more children.  These children
- * will have element names associated with their derived class, not the base
- * FbcAssociation class: <code>&lt;fbc:and&gt;</code>,
- * <code>&lt;fbc:or&gt;</code>, and <code>&lt;fbc:geneProductRef&gt;</code>.
- *
- * @copydetails doc_note_fbcv2_annotation_replacement
- *
- * @warning It is important to be clear that <em>ListOfFbcAssociations is not
- * written out in the XML output produced by libSBML</em>&mdash;the
- * constructs only exist in software to enable software applications to
- * manipulate FbcAssociation objects in a way that mirrors how other lists of
- * components in SBML are manipulated.  ListOfFbcAssociations is abstracted
- * away when an SBML &ldquo;fbc&rdquo; model file is actually written out in
- * the final XML form.
- *
- * @see FbcAssociation
- * @see FbcAnd
- * @see FbcOr
- * @see GeneProductRef
- */
 class LIBSBML_EXTERN ListOfFbcAssociations : public ListOf
 {
 
@@ -368,13 +628,15 @@ public:
    * and &ldquo;fbc&rdquo;package version.
    *
    * @param level an unsigned int, the SBML Level to assign to this
-   * ListOfFbcAssociations
+   * ListOfFbcAssociations.
    *
    * @param version an unsigned int, the SBML Version to assign to this
-   * ListOfFbcAssociations
+   * ListOfFbcAssociations.
    *
    * @param pkgVersion an unsigned int, the SBML &ldquo;fbc&rdquo; package
-   * Version to assign to this ListOfFbcAssociations
+   * Version to assign to this ListOfFbcAssociations.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   ListOfFbcAssociations(unsigned int level      = FbcExtension::getDefaultLevel(),
                         unsigned int version    = FbcExtension::getDefaultVersion(),
@@ -385,7 +647,11 @@ public:
    * Creates a new ListOfFbcAssociations with the given FbcPkgNamespaces
    * object.
    *
-   * @param fbcns the FbcPkgNamespaces object
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param fbcns the FbcPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   ListOfFbcAssociations(FbcPkgNamespaces* fbcns);
 
@@ -404,6 +670,7 @@ public:
    * @param n the index number of the FbcAssociation to get.
    *
    * @return the nth FbcAssociation in this ListOfFbcAssociations.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    * @see getNumFbcAssociations()
@@ -417,6 +684,7 @@ public:
    * @param n the index number of the FbcAssociation to get.
    *
    * @return the nth FbcAssociation in this ListOfFbcAssociations.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    * @see getNumFbcAssociations()
@@ -432,7 +700,7 @@ public:
    * get.
    *
    * @return FbcAssociation in this ListOfFbcAssociations with the given id
-   * or NULL if no such FbcAssociation exists.
+   * or @c NULL if no such FbcAssociation exists.
    *
    * @see get(unsigned int n)
    * @see size()
@@ -448,7 +716,7 @@ public:
    * get.
    *
    * @return FbcAssociation in this ListOfFbcAssociations with the given id
-   * or NULL if no such FbcAssociation exists.
+   * or @c NULL if no such FbcAssociation exists.
    *
    * @see get(unsigned int n)
    * @see size()
@@ -460,12 +728,9 @@ public:
    * Adds a copy the given FbcAssociation object to this
    * ListOfFbcAssociations.
    *
-   * @param fa; the FbcAssociation object to add
+   * @param fa the FbcAssociation object to add.
    *
-   * @return integer value indicating success/failure of the
-   * function.  @if clike The value is drawn from the
-   * enumeration #OperationReturnValues_t. @endif The possible values
-   * returned by this function are:
+   * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
    * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
    */
@@ -476,7 +741,7 @@ public:
    * Get the number of FbcAssociation objects in this ListOfFbcAssociations.
    *
    * @return the number of FbcAssociation objects in this
-   * ListOfFbcAssociations
+   * ListOfFbcAssociations.
    */
   unsigned int getNumFbcAssociations() const;
 
@@ -488,7 +753,7 @@ public:
    * it to the ListOfFbcAssociations, and returns the FbcAssociation object
    * created.
    *
-   * @return a new FbcAssociation object instance
+   * @return a new FbcAssociation object instance.
    *
    * @see createOr()
    * @see createGeneProductRef()
@@ -504,7 +769,7 @@ public:
    * it to the ListOfFbcAssociations, and returns the FbcAssociation object
    * created.
    *
-   * @return a new FbcAssociation object instance
+   * @return a new FbcAssociation object instance.
    *
    * @see createAnd()
    * @see createGeneProductRef()
@@ -520,7 +785,7 @@ public:
    * GeneProductRef, adds it to the ListOfFbcAssociations, and returns the
    * FbcAssociation object created.
    *
-   * @return a new FbcAssociation object instance
+   * @return a new FbcAssociation object instance.
    *
    * @see createOr()
    * @see createAnd()
@@ -608,7 +873,7 @@ protected:
    */
   virtual SBase* createObject(XMLInputStream& stream);
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   /** @cond doxygenLibsbmlInternal */
@@ -618,7 +883,7 @@ protected:
    */
   virtual void writeXMLNS(XMLOutputStream& stream) const;
 
-  /** @endcond doxygenLibsbmlInternal */
+  /** @endcond */
 
 
   virtual bool isValidTypeForList(SBase * item);
@@ -642,13 +907,16 @@ BEGIN_C_DECLS
 
 /**
  * Creates a new FbcAssociation_t structure using the given SBML @p level and
- * @p version values.
+ * @p version, and the @p pkgVersion package version.
  *
  * @param level an unsigned int, the SBML level to assign to this
  * FbcAssociation_t structure.
  *
  * @param version an unsigned int, the SBML version to assign to this
  * FbcAssociation_t structure.
+ *
+ * @param pkgVersion an unsigned int, the version of the package to assign
+ * to this FbcAssociation_t structure.
  *
  * @returns the newly-created FbcAssociation_t structure, or a null pointer if
  * an error occurred during construction.
@@ -691,32 +959,105 @@ FbcAssociation_clone(FbcAssociation_t * fa);
 
 
 /**
- * Predicate returning @c 1 or *c 0 depending on whether all the required
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether all the required
  * attributes of the given FbcAssociation_t structure have been set.
  *
  * @param fa the FbcAssociation_t structure to check.
  *
- * @return @c 1 if all the required attributes for this
- * structure have been defined, @c 0 otherwise.
+ * @return @c 1 (true) if all the required attributes for this
+ * structure have been defined, @c 0 (false) otherwise.
  *
- * @member of FbcAssociation_t
+ * @memberof FbcAssociation_t
  */
 LIBSBML_EXTERN
 int
 FbcAssociation_hasRequiredAttributes(const FbcAssociation_t * fa);
 
 
+
+/**
+ * Return the structure indicated by the given @p sid.
+ *
+ * @param lo the ListOf_t structure to use.
+ *
+ * @param sid a string matching the "id" attribute of the element sought.
+ *
+ * @return the structure for the given variable, or @c NULL if no such
+ * object exists in the list.
+ *
+ * @memberof ListOfFbcAssociations_t
+ */
 LIBSBML_EXTERN
 FbcAssociation_t *
 ListOfFbcAssociations_getById(ListOf_t * lo, const char * sid);
 
 
+/**
+ * Removes the structure with the given @p sid
+ * from the given ListOf_t structure and returns a pointer to it.
+ *
+ * * The caller owns the returned structure and is responsible for deleting it.
+ *
+ * @param lo the ListOf_t structure.
+ * @param sid the string of the "id" attribute of the sought structure.
+ *
+ * @return the structure removed.  As mentioned above, the
+ * caller owns the returned structure. @c NULL is returned if no 
+ * structure with the "id" attribute exists in the given ListOf_t structure.
+ *
+ * @memberof ListOfFbcAssociations_t
+ */
 LIBSBML_EXTERN
 FbcAssociation_t *
 ListOfFbcAssociations_removeById(ListOf_t * lo, const char * sid);
 
 
+/**
+ * Converts this FbcAssociation_t into an infix string representation.
+ *
+ * @param fa the FbcAssociation_t structure to convert.
+ *
+ * @return the association as infix string.
+ *
+ * @memberof FbcAssociation_t
+ */
+LIBSBML_EXTERN
+char *
+FbcAssociation_toInfix(const FbcAssociation_t * fa);
 
+/**
+ * Parses a gene association in infix format and returns a corresponding
+ * Association object.
+ *
+ * This parses a string that has a list of gene names and conjunctions
+ * or disjunctions.  For example:
+ * @verbatim
+ (b2422) and (b2425) and (b2423) and (b2424) or (b2422) and (b2423) and (b2424) and (b2413) and (b3917)
+@endverbatim
+ *
+ * The 'and' operator takes precedence over the 'or' operator, meaning that
+ * the above input string would turn into two groups of gene names: either
+ * "b2422, b2425, b2423, and b2424" or "b2422, b2423, b2424, b2413, and b3917".
+ * Parentheses may be added to make things more clear, and to encode
+ * alternative schemes.
+ * 
+ * This method also creates missing GeneProduct objects, in case the unique
+ * reference does not yet exist.
+ * 
+ * Note that the function assumes that the infix contains identifiers and not
+ * labels, and that any missing geneProducts are to be added.
+ *
+ * @param infix the string to parse.
+ * @param plugin the FbcModelPlugin on which to add the geneProduct elements.
+ *
+ * @return the parsed association, or @c NULL in case of an error.
+ *
+ * @copydetails doc_note_static_methods
+ * @memberof FbcAssociation_t
+ */
+LIBSBML_EXTERN
+FbcAssociation_t*
+FbcAssociation_parseFbcInfixAssociation(const char * infix, SBasePlugin_t* plugin);
 
 END_C_DECLS
 LIBSBML_CPP_NAMESPACE_END

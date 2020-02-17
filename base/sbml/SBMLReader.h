@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -37,19 +41,17 @@
  *
  * The SBMLReader class provides the main interface for reading SBML content
  * from files and strings.  The methods for reading SBML all return an
- * @if python @link libsbml.SBMLDocument SBMLDocument@endlink@else SBMLDocument@endif@~
- * object representing the results.  In the case of failures (such as if the
- * SBML contains errors or a file cannot be read), the errors will be
- * recorded with the SBMLErrorLog object kept in the
- * @if python @link libsbml.SBMLDocument SBMLDocument@endlink@else SBMLDocument@endif@~
+ * SBMLDocument object representing the results.  In the case of failures
+ * (such as if the SBML contains errors or a file cannot be read), the errors
+ * will be recorded with the SBMLErrorLog object kept in the SBMLDocument
  * returned by SBMLReader.  Consequently, immediately after calling a method
  * on SBMLReader, callers should always check for errors and warnings using
- * the methods for this purpose provided by @if python @link
- * libsbml.SBMLDocument SBMLDocument@endlink@else SBMLDocument@endif.
+ * the methods for this purpose provided by SBMLDocument.
  *
  * For convenience as well as easy access from other languages besides C++,
- * this file also defines two global functions, @sbmlfunction{readSBML,
- * String} and @sbmlfunction{readSBMLFromString, String}.  They are
+ * this file also defines two global functions,
+ * @sbmlglobalfunction{readSBML, String} and
+ * @sbmlglobalfunction{readSBMLFromString, String}.  They are
  * equivalent to creating an SBMLReader object and then calling the
  * @if python @link SBMLReader::readSBML() SBMLReader.readSBML()@endlink@endif@if java SBMLReader::readSBML(String)@endif@if cpp SBMLReader::readSBML()@endif@if csharp SBMLReader.readSBML()@endif@~ and
  * @if python @link SBMLReader::readSBMLFromString() SBMLReader.readSBMLFromString()@endlink@endif@if java SBMLReader::readSBMLFromString(String)@endif@if cpp SBMLReader::readSBMLFromString()@endif@if csharp SBMLReader.readSBMLFromString()@endif@~ methods, respectively.
@@ -96,8 +98,8 @@
  * @class doc_sbmlreader_if_compressed
  *
  * @par
- * If the given filename ends with the suffix @c ".gz" (for example, @c
- * "myfile.xml.gz"), the file is assumed to be compressed in @em gzip
+ * If the given filename ends with the suffix @c ".gz" (for example,
+ * @c "myfile.xml.gz"), the file is assumed to be compressed in @em gzip
  * format and will be automatically decompressed upon reading.
  * Similarly, if the given filename ends with @c ".zip" or @c ".bz2", the
  * file is assumed to be compressed in @em zip or @em bzip2 format
@@ -130,21 +132,29 @@
  *
  * Reads an SBML document from the given file.
  *
- * If the file named @p filename does not exist or its content is not
- * valid SBML, one or more errors will be logged with the
- * @if python @link libsbml.SBMLDocument SBMLDocument@endlink@else SBMLDocument@endif@~
- * object returned by this method.  Callers can use the methods on
- * @if python @link libsbml.SBMLDocument SBMLDocument@endlink@else SBMLDocument@endif@~ such as
- * @if python @link libsbml.SBMLDocument.getNumErrors() SBMLDocument.getNumErrors()@endlink@else SBMLDocument::getNumErrors()@endif@~
+ * If the file named @p filename does not exist or its content is not valid
+ * SBML, one or more errors will be logged with the SBMLDocument object
+ * returned by this method.  Callers can use the methods on SBMLDocument such
+ * as
+ * @if python @link libsbml.SBMLDocument.getNumErrors() SBMLDocument.getNumErrors()@endlink@endif,
+ * @if conly SBMLDocument_getNumErrors() @else SBMLDocument::getNumErrors()@endif@~
  * and
- * @if python @link libsbml.SBMLDocument.getError() SBMLDocument.getError()@endlink@endif@if java SBMLDocument::getError(long)@endif@if cpp SBMLDocument::getError()@endif@if csharp SBMLDocument::getError()@endif@~
+ * @if python @link libsbml.SBMLDocument.getError() SBMLDocument.getError()@endlink@endif
+ * @if java SBMLDocument::getError(long)@endif
+ * @if cpp SBMLDocument::getError()@endif
+ * @if csharp SBMLDocument::getError()@endif
+ * @if conly SBMLDocument_getError()@endif@~
  * to get the errors.  The object returned by
- * @if python @link libsbml.SBMLDocument.getError() SBMLDocument.getError()@endlink@endif@if java SBMLDocument::getError(long)@endif@if cpp SBMLDocument::getError()@endif@if csharp SBMLDocument::getError()@endif@~
+ * @if python @link libsbml.SBMLDocument.getError() SBMLDocument.getError()@endlink@endif
+ * @if java SBMLDocument::getError(long)@endif
+ * @if cpp SBMLDocument::getError()@endif
+ * @if csharp SBMLDocument::getError()@endif
+ * @if conly SBMLDocument_getError()@endif@~
  * is an SBMLError object, and it has methods to get the error code,
  * category, and severity level of the problem, as well as a textual
  * description of the problem.  The possible severity levels range from
  * informational messages to fatal errors; see the documentation for
- * @if python @link libsbml.SBMLError SBMLError@endlink@else SBMLError@endif@~
+ * @if conly SBMLError_t @else SBMLError@endif@~
  * for more information.
  *
  * If the file @p filename could not be read, the file-reading error will
@@ -152,7 +162,7 @@
  * enumeration #XMLErrorCode_t)@endif@~ can provide a clue about what
  * happened.  For example, a file might be unreadable (either because it does
  * not actually exist or because the user does not have the necessary access
- * priviledges to read it) or some sort of file operation error may have been
+ * privileges to read it) or some sort of file operation error may have been
  * reported by the underlying operating system.  Callers can check for these
  * situations using a program fragment such as the following:
  * @if cpp
@@ -284,8 +294,11 @@ if (doc.getNumErrors() > 0)
  *
  * This method will log a fatal error if the content given in the parameter
  * @p xml is not in SBML format.  See the method documentation for
- * SBMLReader::readSBML(@if java String@endif) for an example of code for
- * testing the returned error code.
+ * @if conly SBMLReader_readSBML() 
+ * @elseif java SBMLReader::readSBML( String )
+ * @else SBMLReader::readSBML()
+ * @endif
+ * for an example of code for testing the returned error code.
  *
  * <!-- ------------------------------------------------------------------- -->
  * @class doc_note_reading_comp
@@ -295,8 +308,11 @@ if (doc.getNumErrors() > 0)
  * location cannot be set automatically. Thus, if the model contains
  * references to ExternalModelDefinition objects, it will be necessary to
  * manually set the document URI location
- * (SBMLDocument::setLocationURI(@if java String@endif) in order to facilitate
- * resolving these models.
+ * (@if conly SBMLDocument_setLocationURI()
+ * @elseif java SBMLDocument::setLocationURI( String ) 
+ * @else SBMLDocument::setLocationURI()
+ * @endif
+ * ) in order to facilitate resolving these models.
  */
 
 #ifndef SBMLReader_h
@@ -380,10 +396,10 @@ public:
   /**
    * @copydoc doc_readsbmlfromstring
    *
-   * @param xml a string containing a full SBML model
+   * @param xml a string containing a full SBML model.
    *
    * @return a pointer to the SBMLDocument created from the SBML content,
-   * or a null pointer if @p xml is null.
+   * or a null pointer if @p xml is @c NULL.
    *
    * @copydetails doc_note_reading_comp
    *
@@ -475,7 +491,7 @@ SBMLReader_free (SBMLReader_t *sr);
  *
  * This function is identical to SBMLReader_readSBMLFromFile().
  *
- * @param sr The SBMLReader_t structure to use.
+ * @param sr the SBMLReader_t structure to use.
  *
  * @param filename a string giving the path to a file where the XML
  * content is to be found.
@@ -499,7 +515,7 @@ SBMLReader_readSBML (SBMLReader_t *sr, const char *filename);
  *
  * This function is identical to SBMLReader_readSBML().
  *
- * @param sr The SBMLReader_t structure to use.
+ * @param sr the SBMLReader_t structure to use.
  *
  * @param filename a string giving the path to a file where the XML
  * content is to be found.
@@ -521,7 +537,7 @@ SBMLReader_readSBMLFromFile (SBMLReader_t *sr, const char *filename);
 /**
  * @copydoc doc_readsbmlfromstring
  *
- * @param sr the SBMLReader_t structure to use
+ * @param sr the SBMLReader_t structure to use.
  *
  * @param xml the input xml string.
  *
@@ -539,14 +555,14 @@ SBMLReader_readSBMLFromString (SBMLReader_t *sr, const char *xml);
 
 
 /**
- * Returns @c true if the underlying libSBML supports @em gzip and @em zlib
+ * Returns @c 1 (true) if the underlying libSBML supports @em gzip and @em zlib
  * format compression.
  *
  * This predicate tests whether the underlying copy of the libSBML library
  * has been linked with the necessary libraries to support @em zlib
  * compression.
  *
- * @return @c non-zero if libSBML is linked with zlib, @c zero otherwise.
+ * @return @c 1 (true) if libSBML is linked with zlib, @c 0 (false) otherwise.
  *
  * @if conly
  * @memberof SBMLReader_t
@@ -558,14 +574,14 @@ SBMLReader_hasZlib ();
 
 
 /**
- * Returns @c true if the underlying libSBML supports @em bzip2 format
+ * Returns @c 1 (true) if the underlying libSBML supports @em bzip2 format
  * compression.
  *
  * This predicate tests whether the underlying copy of the libSBML library
  * has been linked with the necessary libraries to support @em bzip2
  * compression.
  *
- * @return @c non-zero if libSBML is linked with bzip2, @c zero otherwise.
+ * @return @c 1 (true) if libSBML is linked with bzip2, @c 0 (false) otherwise.
  *
  * @if conly
  * @memberof SBMLReader_t
@@ -610,7 +626,7 @@ readSBMLFromFile (const char *filename);
 /**
  * @copydoc doc_readsbmlfromstring
  *
- * @param xml a string containing a full SBML model
+ * @param xml a string containing a full SBML model.
  *
  * @return a pointer to the SBMLDocument structure created from the SBML
  * content in @p xml.

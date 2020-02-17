@@ -1,6 +1,4 @@
 /**
- * @cond doxygenLibsbmlInternal
- *
  * @file    CompBase.h
  * @brief   Definition of CompBase, the base class of extension entities
  *          plugged in SBase derived classes in the SBML Core package.
@@ -10,7 +8,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -29,6 +31,8 @@
  * @class CompBase
  * @sbmlbrief{comp} Convenience class for SBase-derived classes.
  *
+ * @htmlinclude not-sbml-warning.html
+ *
  * The CompBase class derives from SBase, and defines a few functions and
  * features common to all SBase-derived classes in the SBML Level&nbsp;3
  * @ref comp (&ldquo;comp&rdquo;) package.
@@ -43,6 +47,7 @@
 #include <sbml/extension/SBMLExtension.h>
 #include <sbml/extension/SBMLExtensionNamespaces.h>
 #include <sbml/packages/comp/extension/CompExtension.h>
+#include <sbml/packages/comp/validator/CompSBMLError.h>
 #include <sbml/SBase.h>
 
 #ifdef __cplusplus
@@ -56,9 +61,11 @@ public:
   /**
    * Creates a new CompBase with the given level, version, and package version.
    *
-   * @param level the SBML Level
-   * @param version the Version within the SBML Level
-   * @param pkgVersion the version of the package
+   * @param level the SBML Level.
+   * @param version the Version within the SBML Level.
+   * @param pkgVersion the version of the package.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   CompBase(unsigned int level        = CompExtension::getDefaultLevel(), 
            unsigned int version      = CompExtension::getDefaultVersion(), 
@@ -68,7 +75,11 @@ public:
   /**
    * Creates a new CompBase with the given SBMLExtensionNamespaces object.
    *
-   * @param compns the namespace object.
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param compns the CompPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   CompBase(CompPkgNamespaces* compns);
 
@@ -83,13 +94,16 @@ public:
 
   /**
    * Assignment operator.
+   *
+   * @param source the object whose values are used as the basis of the
+   * assignment.
    */
   CompBase& operator=(const CompBase& source);
 
 
   /**
    * Destructor.
-   */ 
+   */
   virtual ~CompBase ();
 
 
@@ -131,15 +145,16 @@ protected:
   /**
    * Subclasses should override this method to read values from the given
    * XMLAttributes set into their specific fields.  Be sure to call your
-   * parents implementation of this method as well.
+   * parent's implementation of this method as well.
    */
   virtual void readAttributes (const XMLAttributes& attributes,
-                               const ExpectedAttributes& expectedAttributes);
+                               const ExpectedAttributes& expectedAttributes,
+                               bool hasCompIdName, bool idRequired, CompSBMLErrorCode_t errcode);
 
 
   /**
    * Subclasses should override this method to write their XML attributes
-   * to the XMLOutputStream.  Be sure to call your parents implementation
+   * to the XMLOutputStream.  Be sure to call your parent's implementation
    * of this method as well.  For example:
    *
    *   SBase::writeAttributes(stream);
@@ -175,7 +190,7 @@ protected:
    */
   virtual void logInvalidId(const std::string& attribute,
                             const std::string& wrongattribute,
-                            const std::string& object = "");
+                            const std::string object = "");
 
 
 
@@ -198,9 +213,6 @@ protected:
    * <li> Level&nbsp;3 Version&nbsp;1 Package&nbsp;Version&nbsp;1: <code>"http://www.sbml.org/sbml/level3/version1/comp/version1"</code>
    * </ul>
    *
-   * @param typecode the typecode for this element
-   * @param xmlns the namespaces used by this element.
-   *
    * @note  This function is provided as convenience method to be called from constructors. This 
    *        allows to use it in scenarios where the namespaces or typecode have not yet been initialized. 
    * 
@@ -222,6 +234,7 @@ protected:
   friend class CompModelPlugin;
 
 
+  /** @cond doxygenLibsbmlInternal */
   /**
    * DEPRECATED FUNCTION:  DO NOT USE
    *
@@ -229,18 +242,20 @@ protected:
    * because the program might later attempt to delete any removed Port.
    */
   int removeFromParentAndPorts(SBase* todelete);
+  /** @endcond */
 
 private:
 
+  /** @cond doxygenLibsbmlInternal */
   //
   // An SBMLExtension derived object of corresponding package extension
   // The owner of this object is SBMLExtensionRegistry class.
   //
   const SBMLExtension  *mSBMLExt;
+  /** @endcond */
 };
 
 LIBSBML_CPP_NAMESPACE_END
 
 #endif  /* __cplusplus */
 #endif  /* CompBase_h */
-/** @endcond */

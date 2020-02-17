@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -100,6 +104,9 @@
 #include <sbml/validator/L3v1CompatibilityValidator.h>
 #include <sbml/validator/InternalConsistencyValidator.h>
 
+#include <sbml/util/ElementFilter.h>
+#include <sbml/util/IdList.h>
+
 
 #ifdef __cplusplus
 
@@ -144,7 +151,7 @@ public:
   /**
    * Assignment operator for SBMLLevelVersionConverter.
    *
-   * @param rhs The object whose values are used as the basis of the
+   * @param rhs the object whose values are used as the basis of the
    * assignment.
    */
   SBMLLevelVersionConverter& operator=(const SBMLLevelVersionConverter& rhs);
@@ -273,7 +280,21 @@ private:
    */
   bool performConversion(bool strict, bool strictUnits, bool duplicateAnn);
 
+  void updatePackages(unsigned int targetVersion);
+
   unsigned int validateConvertedDocument();
+
+  bool has_fatal_errors(unsigned int level, unsigned int version);
+
+  // functions to check we have not used a speciesReference id in math when converting
+  // to levels/versions that have no speciesReference ids
+  bool speciesReferenceIdUsed();
+
+  IdList* collectSpeciesReferenceIds();
+  void populateMathElements();
+
+  IdList* mSRIds;
+  List* mMathElements;
 
   /** @endcond */
 };

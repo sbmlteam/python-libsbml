@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -48,14 +52,14 @@
  * and "multiplier".  It represents a (possibly transformed) reference to a
  * base unit.  The attribute "kind" on Unit indicates the chosen base unit.
  * Its value must be one of the text strings listed below; this list
- * corresponds to SBML Level&nbsp;3 Version&nbsp;1 Core:
+ * corresponds to SBML Level&nbsp;3:
  *
  * @copydetails doc_base_units
  *
  * A few small differences exist between the Level&nbsp;3 list of base
  * units and the list defined in other Level/Version combinations of SBML.
- * Specifically, Levels of SBML before Level&nbsp;3 do not define @c
- * avogadro; conversely, Level&nbsp;2 Version&nbsp;1 defines @c Celsius,
+ * Specifically, Levels of SBML before Level&nbsp;3 do not define
+ * @c avogadro; conversely, Level&nbsp;2 Version&nbsp;1 defines @c Celsius,
  * and Level&nbsp;1 defines @c celsius, @c meter, and @c liter, none of
  * which are available in Level&nbsp;3.  In libSBML, each of the predefined
  * base unit names is represented by an enumeration value @if clike in
@@ -79,7 +83,7 @@
  * define @c foot as a measure of length in terms of a @c metre.  The
  * "multiplier" attribute is optional in SBML Level&nbsp;2, where it has a
  * default value of @c 1 (one); in SBML Level&nbsp;3, the attribute is
- * mandatory and has not default value.
+ * mandatory and has no default value.
  *
  * @if clike
  * <h3><a class="anchor" name="UnitKind_t">UnitKind_t</a></h3>
@@ -100,17 +104,17 @@
  * convenience and as a way to provide backward compatibility to previous
  * SBML Level/Version specifications.  (The removal in SBML Level&nbsp;2
  * Version&nbsp;3 of the enumeration @c UnitKind was also accompanied by
- * the redefinition of the data type @c UnitSId to include the previous @c
- * UnitKind values as reserved symbols in the @c UnitSId space.  This
+ * the redefinition of the data type @c UnitSId to include the previous
+ * @c UnitKind values as reserved symbols in the @c UnitSId space.  This
  * change has no net effect on permissible models, their representation or
  * their syntax.  The purpose of the change in the SBML specification was
  * simply to clean up an inconsistency about the contexts in which these
  * values were usable.)
  * @endif@if java In SBML Level&nbsp;2 Versions before
- * Version&nbsp;3, there existed an enumeration of units called @c
- * UnitKind.  In Version&nbsp;3, this enumeration was removed and the
- * identifier class @c UnitSId redefined to include the previous @c
- * UnitKind values as reserved symbols.  This change has no net effect on
+ * Version&nbsp;3, there existed an enumeration of units called
+ * @c UnitKind.  In Version&nbsp;3, this enumeration was removed and the
+ * identifier class @c UnitSId redefined to include the previous
+ * @c UnitKind values as reserved symbols.  This change has no net effect on
  * permissible models, their representation or their syntax.  The purpose
  * of the change in the SBML specification was simply to clean up an
  * inconsistency about the contexts in which these values were usable.
@@ -119,10 +123,10 @@
  * <code>UNIT_KIND_</code>.  These constants are defined in the class
  * <code><a href="libsbmlConstants.html">libsbmlConstants</a></code>.
  * @endif@if python In SBML Level&nbsp;2 Versions before
- * Version&nbsp;3, there existed an enumeration of units called @c
- * UnitKind.  In Version&nbsp;3, this enumeration was removed and the
- * identifier class @c UnitSId redefined to include the previous @c
- * UnitKind values as reserved symbols.  This change has no net effect on
+ * Version&nbsp;3, there existed an enumeration of units called
+ * @c UnitKind.  In Version&nbsp;3, this enumeration was removed and the
+ * identifier class @c UnitSId redefined to include the previous
+ * @c UnitKind values as reserved symbols.  This change has no net effect on
  * permissible models, their representation or their syntax.  The purpose
  * of the change in the SBML specification was simply to clean up an
  * inconsistency about the contexts in which these values were usable.
@@ -148,7 +152,7 @@
  * SBML Level&nbsp;1 models.
  *
  * <li> The unit @c "Celsius" is included because of its presence in
- * specifications of SBML prior to SBML Level&nbsp;2 Version&nbsp;3.
+ * specifications of SBML prior to SBML Level&nbsp;2 Version&nbsp;2.
  *
  * <li> The unit @c avogadro was introduced in SBML Level&nbsp;3, and
  * is only permitted for use in SBML Level&nbsp;3 models.
@@ -226,10 +230,10 @@ public:
    * Creates a new Unit using the given SBML @p level and @p version
    * values.
    *
-   * @param level an unsigned int, the SBML Level to assign to this Unit
+   * @param level an unsigned int, the SBML Level to assign to this Unit.
    *
    * @param version an unsigned int, the SBML Version to assign to this
-   * Unit
+   * Unit.
    *
    * @copydetails doc_throw_exception_lv
    *
@@ -270,7 +274,7 @@ public:
   /**
    * Assignment operator.
    *
-   * @param rhs The object whose values are used as the basis of the
+   * @param rhs the object whose values are used as the basis of the
    * assignment.
    */
   Unit& operator=(const Unit& rhs);
@@ -429,8 +433,8 @@ public:
    * @warning <span class="warning">The predefined unit @c Celsius was
    * removed from the list of predefined units in SBML Level&nbsp;2
    * Version&nbsp;2 at the same time that the "offset" attribute was removed
-   * from Unit definitions.  LibSBML methods such as this one related to @c
-   * Celsius are retained in order to support SBML Level&nbsp;2
+   * from Unit definitions.  LibSBML methods such as this one related to
+   * @c Celsius are retained in order to support SBML Level&nbsp;2
    * Version&nbsp;1, but their use is strongly discouraged.</span>
    */
   bool isCelsius () const;
@@ -446,11 +450,10 @@ public:
 
 
   /**
-   * Predicate for testing whether this Unit is of the kind @c
-   * dimensionless.
+   * Predicate for testing whether this Unit is of the kind
+   * @c dimensionless.
    *
    * @return @c true if the kind of this Unit is @c dimensionless, @c false
-   * 
    * otherwise.
    */
   bool isDimensionless () const;
@@ -549,9 +552,8 @@ public:
   /**
    * Predicate for testing whether this Unit is of the kind @c litre
    *
-   * @return @c true if the kind of this Unit is @c litre or 'liter', @c
-   * false 
-   * otherwise.
+   * @return @c true if the kind of this Unit is @c litre or 'liter',
+   * @c false otherwise.
    */
   bool isLitre () const;
 
@@ -577,8 +579,8 @@ public:
   /**
    * Predicate for testing whether this Unit is of the kind @c metre
    *
-   * @return @c true if the kind of this Unit is @c metre or 'meter', @c
-   * false 
+   * @return @c true if the kind of this Unit is @c metre or 'meter',
+   * @c false 
    * otherwise.
    */
   bool isMetre () const;
@@ -704,8 +706,8 @@ public:
   /**
    * Predicate to test whether the "kind" attribute of this Unit is set.
    * 
-   * @return @c true if the "kind" attribute of this Unit is set, @c
-   * false otherwise.
+   * @return @c true if the "kind" attribute of this Unit is set,
+   * @c false otherwise.
    */
   bool isSetKind () const;
 
@@ -777,7 +779,7 @@ public:
   /**
    * Sets the "exponent" attribute value of this Unit.
    *
-   * @param value the integer to which the attribute "exponent" should be set
+   * @param value the integer to which the attribute "exponent" should be set.
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -789,7 +791,7 @@ public:
   /**
    * Sets the "exponent" attribute value of this Unit.
    *
-   * @param value the double to which the attribute "exponent" should be set
+   * @param value the double to which the attribute "exponent" should be set.
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -800,7 +802,7 @@ public:
   /**
    * Sets the "scale" attribute value of this Unit.
    *
-   * @param value the integer to which the attribute "scale" should be set
+   * @param value the integer to which the attribute "scale" should be set.
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -812,7 +814,7 @@ public:
    * Sets the "multipler" attribute value of this Unit.
    *
    * @param value the floating-point value to which the attribute
-   * "multiplier" should be set
+   * "multiplier" should be set.
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -824,8 +826,8 @@ public:
   /**
    * Sets the "offset" attribute value of this Unit.
    *
-   * @param value the float-point value to which the attribute "offset"
-   * should set
+   * @param value the floating point value to which the attribute "offset"
+   * should set.
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -915,7 +917,7 @@ public:
   /** @cond doxygenLibsbmlInternal */
   /**
    * Subclasses should override this method to write out their contained
-   * SBML objects as XML elements.  Be sure to call your parents
+   * SBML objects as XML elements.  Be sure to call your parent's
    * implementation of this method as well.
    */
   virtual void writeElements (XMLOutputStream& stream) const;
@@ -923,21 +925,20 @@ public:
 
 
   /**
-   * Predicate to test whether a given string is the name of a
-   * predefined SBML unit.
+   * Predicate to test whether a given string is the name of a built-in SBML
+   * unit, depending on the SBML level, since new predefined units were added
+   * between level 2 versions 1 and 2, and then all predefined units were removed
+   * again in SBML Level 3.
    *
-   * @param name a string to be tested against the predefined unit names
+   * @param name a string to be tested against the built-in unit names.
+   * @param level the level of SBML one is checking.
    *
-   * @param level the Level of SBML for which the determination should be
-   * made.  This is necessary because there are a few small differences
-   * in allowed units between SBML Level&nbsp;1 and Level&nbsp;2.
-   * 
-   * @return @c true if @p name is one of the five SBML predefined unit
-   * identifiers (@c "substance", @c "volume", @c "area", @c "length" or @c
-   * "time"), @c false otherwise.
+   * @return @c true if @p name is one of @c "substance", @c "volume",
+   * or @c "time" and the @p level is @c 1; or if @p name is one of
+   * @c "substance", @c "volume", @c "area", @c "length", or @c "time" and
+   * the @p level is @c 2; @c false otherwise (including all values when
+   * @p level is @c 3).
    *
-   * @note The predefined unit identifiers @c "length" and @c "area" were
-   * added in Level&nbsp;2 Version&nbsp;1.
    *
    * @copydetails doc_note_static_methods
    */
@@ -957,15 +958,15 @@ public:
    * compatibility and support for reading models in older Versions of
    * Level&nbsp;2.
    *
-   * @param name a string to be tested
+   * @param name a string to be tested.
    * 
    * @param level an unsigned int representing the SBML specification
-   * Level 
+   * Level.
    * 
    * @param version an unsigned int representing the SBML specification
-   * Version
+   * Version.
    * 
-   * @return @c true if name is a valid SBML UnitKind, @c false otherwise
+   * @return @c true if name is a valid SBML UnitKind, @c false otherwise.
    *
    * @note The allowed unit names differ between SBML Levels&nbsp;1
    * and&nbsp;2 and again slightly between Level&nbsp;2 Versions&nbsp;1
@@ -986,8 +987,8 @@ public:
    * Unit u1, %Unit u2@endif), which compares Unit objects only with respect
    * to certain attributes.)
    *
-   * @param unit1 the first Unit object to compare
-   * @param unit2 the second Unit object to compare
+   * @param unit1 the first Unit object to compare.
+   * @param unit2 the second Unit object to compare.
    *
    * @return @c true if all the attributes of unit1 are identical
    * to the attributes of unit2, @c false otherwise.
@@ -1010,12 +1011,12 @@ public:
    * areIdentical(@if java Unit, %Unit@endif), which compares Unit objects with respect to all
    * attributes, not just the "kind" and "exponent".)
    *
-   * @param unit1 the first Unit object to compare
-   * @param unit2 the second Unit object to compare
+   * @param unit1 the first Unit object to compare.
+   * @param unit2 the second Unit object to compare.
    *
    * @return @c true if the "kind" and "exponent" attributes of unit1 are
-   * identical to the kind and exponent attributes of unit2, @c false
-   * otherwise.
+   * identical to the kind and exponent attributes of unit2, or if the kind
+   * attributes of both are @c dimensionless; @c false otherwise.
    *
    * @copydetails doc_note_static_methods
    * 
@@ -1028,14 +1029,14 @@ public:
    * Manipulates the attributes of the Unit to express the unit with the 
    * value of the scale attribute reduced to zero.
    *
-   * For example, 1 millimetre can be expressed as a Unit with kind=@c
-   * "metre" multiplier=@c "1" scale=@c "-3" exponent=@c "1". It can also be
+   * For example, 1 millimetre can be expressed as a Unit with kind=
+   * @c "metre" multiplier=@c "1" scale=@c "-3" exponent=@c "1". It can also be
    * expressed as a Unit with kind=@c "metre"
    * multiplier=<code>"0.001"</code> scale=@c "0" exponent=@c "1".
    *
    * @param unit the Unit object to manipulate.
    *
-   * @copydetails doc_returns_success_code
+   * @copydetails doc_returns_one_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
    *
    * @copydetails doc_note_static_methods
@@ -1064,7 +1065,7 @@ public:
    * left as a new version of this unit, modified in-place.  Not modified if
    * the two units have different kinds.
    * 
-   * @param unit2 the second Unit object to merge with the first
+   * @param unit2 the second Unit object to merge with the first.
    *
    * @copydetails doc_note_static_methods
    * 
@@ -1083,7 +1084,7 @@ public:
    * hertz is identical to 1&nbsp;sec<sup>-1</sup>, one litre is equivalent
    * to 1 cubic decametre, and so on.
    *
-   * @param unit the Unit object to convert to SI
+   * @param unit the Unit object to convert to SI.
    *
    * @return a UnitDefinition object containing the SI unit.
    *
@@ -1111,10 +1112,290 @@ public:
   virtual bool hasRequiredAttributes() const ;
 
 
-protected:
+
+
+
+
+  #ifndef SWIG
+
+
+
   /** @cond doxygenLibsbmlInternal */
-  void setExponentUnitChecking (double value); 
-                                           
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Unit.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, bool& value)
+    const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Unit.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName, int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Unit.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           double& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Unit.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           unsigned int& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Unit.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int getAttribute(const std::string& attributeName,
+                           std::string& value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Gets the value of the "attributeName" attribute of this Unit.
+   *
+   * @param attributeName, the name of the attribute to retrieve.
+   *
+   * @param value, the address of the value to record.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  //virtual int getAttribute(const std::string& attributeName,
+  //                         const char* value) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Predicate returning @c true if this Unit's attribute "attributeName" is
+   * set.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @return @c true if this Unit's attribute "attributeName" has been set,
+   * otherwise @c false is returned.
+   */
+  virtual bool isSetAttribute(const std::string& attributeName) const;
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Unit.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, bool value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Unit.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Unit.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName, double value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Unit.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           unsigned int value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Unit.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int setAttribute(const std::string& attributeName,
+                           const std::string& value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Sets the value of the "attributeName" attribute of this Unit.
+   *
+   * @param attributeName, the name of the attribute to set.
+   *
+   * @param value, the value of the attribute to set.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  //virtual int setAttribute(const std::string& attributeName, const char*
+  //  value);
+
+  /** @endcond */
+
+
+
+  /** @cond doxygenLibsbmlInternal */
+
+  /**
+   * Unsets the value of the "attributeName" attribute of this Unit.
+   *
+   * @param attributeName, the name of the attribute to query.
+   *
+   * @copydetails doc_returns_success_code
+   * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+   * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+   */
+  virtual int unsetAttribute(const std::string& attributeName);
+
+  /** @endcond */
+
+
+
+
+  #endif /* !SWIG */
+
+  /** @cond doxygenLibsbmlInternal */
+  void setExponentUnitChecking(double value);
+
   double getExponentUnitChecking();
 
   double getExponentUnitChecking() const;
@@ -1123,6 +1404,11 @@ protected:
 
   bool isUnitChecking() const;
 
+  /** @endcond */
+
+
+protected:
+  /** @cond doxygenLibsbmlInternal */
   /**
    * Subclasses should override this method to get the list of
    * expected attributes.
@@ -1135,7 +1421,7 @@ protected:
   /**
    * Subclasses should override this method to read values from the given
    * XMLAttributes set into their specific fields.  Be sure to call your
-   * parents implementation of this method as well.
+   * parent's implementation of this method as well.
    */
   virtual void readAttributes (const XMLAttributes& attributes,
                                const ExpectedAttributes& expectedAttributes);
@@ -1149,7 +1435,7 @@ protected:
 
   /**
    * Subclasses should override this method to write their XML attributes
-   * to the XMLOutputStream.  Be sure to call your parents implementation
+   * to the XMLOutputStream.  Be sure to call your parent's implementation
    * of this method as well.
    */
   virtual void writeAttributes (XMLOutputStream& stream) const;
@@ -1159,45 +1445,45 @@ protected:
    * Predicate to test whether a given string is the name of a valid
    * base unit in SBML Level 1 (such as @c "gram" or @c "mole")
    *
-   * @param name a string to be tested
+   * @param name a string to be tested.
    * 
-   * @return @c true if name is a valid SBML UnitKind, @c false otherwise
+   * @return @c true if name is a valid SBML UnitKind, @c false otherwise.
    */
   static bool isL1UnitKind (const std::string& name);
 
 
   /**
    * Predicate to test whether a given string is the name of a valid base
-   * unit in SBML Level&nbsp;2 Version&nbsp;1 (such as @c "gram" or @c
-   * "mole")
+   * unit in SBML Level&nbsp;2 Version&nbsp;1 (such as @c "gram" or
+   * @c "mole")
    *
-   * @param name a string to be tested
+   * @param name a string to be tested.
    * 
-   * @return @c true if name is a valid SBML UnitKind, @c false otherwise
+   * @return @c true if name is a valid SBML UnitKind, @c false otherwise.
    */
   static bool isL2V1UnitKind (const std::string& name);
 
 
   /**
    * Predicate to test whether a given string is the name of a valid base
-   * unit in SBML Level&nbsp;2 Version&nbsp;2, 3 or 4 (such as @c "gram" or @c
-   * "mole")
+   * unit in SBML Level&nbsp;2 Version&nbsp;2, 3 or 4 (such as @c "gram" or
+   * @c "mole")
    *
-   * @param name a string to be tested
+   * @param name a string to be tested.
    * 
-   * @return @c true if name is a valid SBML UnitKind, @c false otherwise
+   * @return @c true if name is a valid SBML UnitKind, @c false otherwise.
    */
   static bool isL2UnitKind (const std::string& name);
 
 
   /**
    * Predicate to test whether a given string is the name of a valid base
-   * unit in SBML Level&nbsp;3 Version&nbsp;1 (such as @c "gram" or @c
-   * "mole")
+   * unit in SBML Level&nbsp;3 (such as @c "gram" or
+   * @c "mole")
    *
-   * @param name a string to be tested
+   * @param name a string to be tested.
    * 
-   * @return @c true if name is a valid SBML UnitKind, @c false otherwise
+   * @return @c true if name is a valid SBML UnitKind, @c false otherwise.
    */
   static bool isL3UnitKind (const std::string& name);
 
@@ -1247,6 +1533,7 @@ protected:
   friend class UnitConsistencyValidator;
   friend class UnitFormulaFormatter;
   friend class UnitDefinition;
+  friend class ASTBasePlugin;
 
 
   /** @endcond */
@@ -1264,9 +1551,9 @@ public:
    * The object is constructed such that it is valid for the given SBML
    * Level and Version combination.
    *
-   * @param level the SBML Level
+   * @param level the SBML Level.
    * 
-   * @param version the Version within the SBML Level
+   * @param version the Version within the SBML Level.
    *
    * @copydetails doc_throw_exception_lv
    *
@@ -1331,6 +1618,7 @@ public:
    * @param n the index number of the Unit to get.
    * 
    * @return the nth Unit in this ListOfUnits.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -1343,6 +1631,7 @@ public:
    * @param n the index number of the Unit to get.
    * 
    * @return the nth Unit in this ListOfUnits.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -1355,7 +1644,7 @@ public:
    *
    * The caller owns the returned item and is responsible for deleting it.
    *
-   * @param n the index of the item to remove
+   * @param n the index of the item to remove.
    *
    * @see size()
    */
@@ -1404,20 +1693,14 @@ BEGIN_C_DECLS
  * and @p version values.
  *
  * @param level an unsigned int, the SBML Level to assign to this
- * Unit_t
+ * Unit_t.
  *
  * @param version an unsigned int, the SBML Version to assign to this
- * Unit_t
+ * Unit_t.
  *
  * @return a pointer to the newly created Unit_t structure.
  *
- * @note Once a Unit_t has been added to an SBMLDocument_t, the @p
- * level and @p version for the document @em override those used to create
- * the Unit_t.  Despite this, the ability to supply the values at
- * creation time is an important aid to creating valid SBML.  Knowledge of
- * the intended SBML Level and Version  determine whether it is valid to
- * assign a particular value to an attribute, or whether it is valid to add
- * a structure to an existing SBMLDocument_t.
+ * @copydetails doc_note_setting_lv
  *
  * @memberof Unit_t
  */
@@ -1431,17 +1714,11 @@ Unit_create (unsigned int level, unsigned int version);
  * SBMLNamespaces_t structure.
  *
  * @param sbmlns SBMLNamespaces, a pointer to an SBMLNamespaces_t structure
- * to assign to this Unit_t
+ * to assign to this Unit_t.
  *
  * @return a pointer to the newly created Unit_t structure.
  *
- * @note Once a Unit_t has been added to an SBMLDocument_t, the
- * @p sbmlns namespaces for the document @em override those used to create
- * the Unit_t.  Despite this, the ability to supply the values at creation time
- * is an important aid to creating valid SBML.  Knowledge of the intended SBML
- * Level and Version determine whether it is valid to assign a particular value
- * to an attribute, or whether it is valid to add a structure to an existing
- * SBMLDocument_t.
+ * @copydetails doc_note_setting_lv
  *
  * @memberof Unit_t
  */
@@ -1465,7 +1742,7 @@ Unit_free (Unit_t *u);
 /**
  * Creates a deep copy of the given Unit_t structure
  * 
- * @param u the Unit_t structure to be copied
+ * @param u the Unit_t structure to be copied.
  * 
  * @return a (deep) copy of the given Unit_t structure.
  *
@@ -1497,7 +1774,7 @@ Unit_initDefaults (Unit_t *u);
  * Returns a list of XMLNamespaces_t associated with this Unit_t
  * structure.
  *
- * @param u the Unit_t structure
+ * @param u the Unit_t structure.
  * 
  * @return pointer to the XMLNamespaces_t structure associated with 
  * this structure.
@@ -1526,7 +1803,7 @@ Unit_getKind (const Unit_t *u);
  * Returns the value of the "exponent" attribute of the given Unit_t
  * structure @p u.
  *
- * @param u a Unit_t structure
+ * @param u a Unit_t structure.
  *
  * @return the "exponent" value of this Unit_t structure, as an integer.
  *
@@ -1541,7 +1818,7 @@ Unit_getExponent (const Unit_t *u);
  * Returns the value of the "exponent" attribute of the given Unit_t
  * structure @p u.
  *
- * @param u a Unit_t structure
+ * @param u a Unit_t structure.
  *
  * @return the "exponent" value of this Unit_t structure, as a double.
  *
@@ -1556,7 +1833,7 @@ Unit_getExponentAsDouble (const Unit_t *u);
  * Returns the value of the "scale" attribute of the given Unit_t structure
  * @p u.
  *
- * @param u a Unit_t structure
+ * @param u a Unit_t structure.
  *
  * @return the "scale" value of this Unit_t, as an integer.
  *
@@ -1571,7 +1848,7 @@ Unit_getScale (const Unit_t *u);
  * Returns the value of the "multiplier" attribute of the given Unit_t
  * structure @p u.
  * 
- * @param u a Unit_t structure
+ * @param u a Unit_t structure.
  *
  * @return the "multiplier" value of this Unit_t, as a double
  *
@@ -1586,7 +1863,7 @@ Unit_getMultiplier (const Unit_t *u);
  * Returns the value of the "offset" attribute of the given Unit_t
  * structure @p u.
  * 
- * @param u a Unit_t structure
+ * @param u a Unit_t structure.
  *
  * @return the "offset" value of this Unit_t, as a double
  *
@@ -1611,10 +1888,10 @@ Unit_getOffset (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c ampere.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "ampere", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "ampere", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -1627,10 +1904,10 @@ Unit_isAmpere (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c becquerel.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "becquerel", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "becquerel", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -1643,10 +1920,10 @@ Unit_isBecquerel (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c candela.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "candela", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "candela", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -1659,13 +1936,13 @@ Unit_isCandela (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c Celsius.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "Celsius", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "Celsius", @c 0 (false) otherwise.
  *
  * @warning The predefined unit @c Celsius was removed from the list of
- * predefined units in SBML Level 2 Version 3 at the same time that the
+ * predefined units in SBML Level 2 Version 2 at the same time that the
  * "offset" attribute was removed from Unit definitions.  LibSBML functions
  * such as this one related to @c Celsius are retained for compatibility
  * with earlier versions of SBML Level 2, but their use is strongly
@@ -1682,10 +1959,10 @@ Unit_isCelsius (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c coulomb.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "coulomb", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "coulomb", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -1698,10 +1975,10 @@ Unit_isCoulomb (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c dimensionless.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "dimensionless", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "dimensionless", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -1714,10 +1991,10 @@ Unit_isDimensionless (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c farad.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "farad", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "farad", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -1730,10 +2007,10 @@ Unit_isFarad (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c gram.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "gram", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "gram", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -1746,10 +2023,10 @@ Unit_isGram (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c gray.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "gray", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "gray", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -1762,10 +2039,10 @@ Unit_isGray (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c henry.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "henry", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "henry", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -1778,10 +2055,10 @@ Unit_isHenry (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c hertz.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "hertz", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "hertz", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -1794,10 +2071,10 @@ Unit_isHertz (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c item.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "item", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "item", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -1810,10 +2087,10 @@ Unit_isItem (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c joule.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "joule", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "joule", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -1826,10 +2103,10 @@ Unit_isJoule (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c katal.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "katal", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "katal", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -1842,10 +2119,10 @@ Unit_isKatal (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c kelvin.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "kelvin", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "kelvin", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -1858,10 +2135,10 @@ Unit_isKelvin (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c kilogram.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "kilogram", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "kilogram", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -1874,10 +2151,10 @@ Unit_isKilogram (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c litre or @c liter.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given Unit_t
- * structure is set to @c "litre" or @c "liter", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given Unit_t
+ * structure is set to @c "litre" or @c "liter", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -1890,10 +2167,10 @@ Unit_isLitre (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c lumen.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "lumen", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "lumen", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -1906,10 +2183,10 @@ Unit_isLumen (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c lux.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "lux", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "lux", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -1922,10 +2199,10 @@ Unit_isLux (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c metre or @c meter.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given Unit_t
- * structure is set to @c "metre" or @c "meter", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given Unit_t
+ * structure is set to @c "metre" or @c "meter", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -1938,10 +2215,10 @@ Unit_isMetre (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c mole.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "mole", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "mole", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -1954,10 +2231,10 @@ Unit_isMole (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c newton.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "newton", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "newton", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -1970,10 +2247,10 @@ Unit_isNewton (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c ohm.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "ohm", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "ohm", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -1986,10 +2263,10 @@ Unit_isOhm (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c pascal.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "pascal", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "pascal", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -2002,10 +2279,10 @@ Unit_isPascal (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c radian.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "radian", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "radian", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -2018,10 +2295,10 @@ Unit_isRadian (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c second.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "second", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "second", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -2034,10 +2311,10 @@ Unit_isSecond (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c siemens.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "siemens", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "siemens", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -2050,10 +2327,10 @@ Unit_isSiemens (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c sievert.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "sievert", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "sievert", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -2066,10 +2343,10 @@ Unit_isSievert (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c steradian.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "steradian", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "steradian", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -2082,10 +2359,10 @@ Unit_isSteradian (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c tesla.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "tesla", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "tesla", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -2098,10 +2375,10 @@ Unit_isTesla (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c volt.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "volt", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "volt", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -2114,10 +2391,10 @@ Unit_isVolt (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c watt.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "watt", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "watt", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -2130,10 +2407,10 @@ Unit_isWatt (const Unit_t *u);
  * Predicate for testing whether the given Unit_t structure represents a
  * unit of the kind @c weber.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set to @c "weber", zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set to @c "weber", @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -2146,10 +2423,10 @@ Unit_isWeber (const Unit_t *u);
  * Predicate to test whether the "kind" attribute of the given Unit_t
  * structure @p u is set.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "kind" attribute of the given
- * Unit_t structure is set, zero (0) otherwise.
+ * @return @c 1 (true) if the "kind" attribute of the given
+ * Unit_t structure is set, @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -2162,10 +2439,10 @@ Unit_isSetKind (const Unit_t *u);
  * Predicate to test whether the "exponent" attribute of the given Unit_t
  * structure @p u is set.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "exponent" attribute of the given
- * Unit_t structure is set, zero (0) otherwise.
+ * @return @c 1 (true) if the "exponent" attribute of the given
+ * Unit_t structure is set, @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -2178,10 +2455,10 @@ Unit_isSetExponent (const Unit_t *u);
  * Predicate to test whether the "multiplier" attribute of the given Unit_t
  * structure @p u is set.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "multiplier" attribute of the given
- * Unit_t structure is set, zero (0) otherwise.
+ * @return @c 1 (true) if the "multiplier" attribute of the given
+ * Unit_t structure is set, @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -2194,10 +2471,10 @@ Unit_isSetMultiplier (const Unit_t *u);
  * Predicate to test whether the "scale" attribute of the given Unit_t
  * structure @p u is set.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "scale" attribute of the given
- * Unit_t structure is set, zero (0) otherwise.
+ * @return @c 1 (true) if the "scale" attribute of the given
+ * Unit_t structure is set, @c 0 (false) otherwise.
  *
  * @memberof Unit_t
  */
@@ -2210,10 +2487,10 @@ Unit_isSetScale (const Unit_t *u);
  * Predicate to test whether the "scale" attribute of the given Unit_t
  * structure @p u is set.
  *
- * @param u the Unit_t structure to query
+ * @param u the Unit_t structure to query.
  * 
- * @return nonzero (for true) if the "scale" attribute of the given
- * Unit_t structure is set, zero (0) otherwise.
+ * @return @c 1 (true) if the "scale" attribute of the given
+ * Unit_t structure is set, @c 0 (false) otherwise.
  *
  * @warning The "offset" attribute is only available in SBML Level 2
  * Version 1.  This attribute is not present in SBML Level 2 Version 2 or
@@ -2235,8 +2512,8 @@ Unit_isSetOffset (const Unit_t *u);
  * Sets the kind of the given Unit_t structure @p u to the given
  * UnitKind_t value.
  *
- * @param u the Unit_t structure whose value is to be set
- * @param kind a value from the UnitKind_t enumeration 
+ * @param u the Unit_t structure whose value is to be set.
+ * @param kind a value from the UnitKind_t enumeration.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -2252,11 +2529,12 @@ Unit_setKind (Unit_t *u, UnitKind_t kind);
 /**
  * Sets the "exponent" attribute value of the given Unit_t structure @p u.
  *
- * @param u the Unit_t structure whose value is to be set
- * @param value the integer to which the attribute "exponent" should be set
+ * @param u the Unit_t structure whose value is to be set.
+ * @param value the integer to which the attribute "exponent" should be set.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
  *
  * @memberof Unit_t
  */
@@ -2268,11 +2546,12 @@ Unit_setExponent (Unit_t *u, int value);
 /**
  * Sets the "exponent" attribute value of the given Unit_t structure @p u.
  *
- * @param u the Unit_t structure whose value is to be set
- * @param value the double to which the attribute "exponent" should be set
+ * @param u the Unit_t structure whose value is to be set.
+ * @param value the double to which the attribute "exponent" should be set.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
  *
  * @memberof Unit_t
  */
@@ -2284,11 +2563,12 @@ Unit_setExponentAsDouble (Unit_t *u, double value);
 /**
  * Sets the "scale" attribute value of the given Unit_t structure @p u.
  *
- * @param u the Unit_t structure whose value is to be set
- * @param value the integer to which the attribute "scale" should be set
+ * @param u the Unit_t structure whose value is to be set.
+ * @param value the integer to which the attribute "scale" should be set.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
  *
  * @memberof Unit_t
  */
@@ -2300,8 +2580,8 @@ Unit_setScale (Unit_t *u, int value);
 /**
  * Sets the "multiplier" attribute value of the given Unit_t structure @p u.
  *
- * @param u the Unit_t structure whose value is to be set
- * @param value the integer to which the attribute "multiplier" should be set
+ * @param u the Unit_t structure whose value is to be set.
+ * @param value the integer to which the attribute "multiplier" should be set.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -2317,8 +2597,8 @@ Unit_setMultiplier (Unit_t *u, double value);
 /**
  * Sets the "offset" attribute value of the given Unit_t structure @p u.
  * 
- * @param u the Unit_t structure whose value is to be set
- * @param value the integer to which the attribute "offset" should be set
+ * @param u the Unit_t structure whose value is to be set.
+ * @param value the integer to which the attribute "offset" should be set.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -2343,7 +2623,7 @@ Unit_setOffset (Unit_t *u, double value);
 /**
  * Unsets the kind of the given Unit_t structure @p u.
  *
- * @param u the Unit_t structure whose value is to be set
+ * @param u the Unit_t structure whose value is to be set.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -2359,10 +2639,11 @@ Unit_unsetKind (Unit_t *u);
 /**
  * Unsets the "exponent" attribute value of the given Unit_t structure @p u.
  *
- * @param u the Unit_t structure whose value is to be set
+ * @param u the Unit_t structure whose value is to be set.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
  *
  * @memberof Unit_t
  */
@@ -2374,10 +2655,11 @@ Unit_unsetExponent (Unit_t *u);
 /**
  * Unsets the "scale" attribute value of the given Unit_t structure @p u.
  *
- * @param u the Unit_t structure whose value is to be set
+ * @param u the Unit_t structure whose value is to be set.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
  *
  * @memberof Unit_t
  */
@@ -2389,7 +2671,7 @@ Unit_unsetScale (Unit_t *u);
 /**
  * Unsets the "multiplier" attribute value of the given Unit_t structure @p u.
  *
- * @param u the Unit_t structure whose value is to be set
+ * @param u the Unit_t structure whose value is to be set.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -2405,7 +2687,7 @@ Unit_unsetMultiplier (Unit_t *u);
 /**
  * Unsets the "offset" attribute value of the given Unit_t structure @p u.
  * 
- * @param u the Unit_t structure whose value is to be set
+ * @param u the Unit_t structure whose value is to be set.
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -2428,7 +2710,7 @@ Unit_unsetOffset (Unit_t *u);
 
 
 /**
- * Predicate returning @c true or @c false depending on whether
+ * Predicate returning @c 1 (true) or @c 0 (false) depending on whether
  * all the required attributes for this Unit_t structure
  * have been set.
  *
@@ -2450,17 +2732,18 @@ Unit_hasRequiredAttributes(Unit_t *u);
 
 /**
  * Predicate to test whether a given string is the name of a built-in SBML
- * unit, depending on the SBML level, since new units were added between
- * levels 2 and 3.
+ * unit, depending on the SBML level, since new predefined units were added 
+ * between level 2 versions 1 and 2, and then all predefined units were removed
+ * again in SBML Level 3.
  *
- * @param name a string to be tested against the built-in unit names
- * @param level the level of SBML one is checking. 
+ * @param name a string to be tested against the built-in unit names.
+ * @param level the level of SBML one is checking.
  *
- * @return nonzero (for true) if @p name is one of the five SBML
- * built-in Unit names (@c "substance", @c "volume, @c "area", @c "length"
- * or @c "time"), zero (0) otherwise
- *
- * @note: @c "length" and @c "area" were added in Level 2 Version 1
+ * @return @c 1 (true) if @p name is one of @c "substance", @c "volume",
+ * or @c "time" and the @p level is @c 1; or if @p name is one of 
+ * @c "substance", @c "volume", @c "area", @c "length", or @c "time" and
+ * the @p level is @c 2; @c 0 (false) otherwise (including all values when
+ * @p level is @c 3).
  *
  * @memberof Unit_t
  */
@@ -2469,19 +2752,19 @@ int
 Unit_isBuiltIn (const char *name, unsigned int level);
 
 /** 
- * Predicate returning @c true (non-zero) if two
+ * Predicate returning @c 1 (true) if two
  * Unit_t structures are identical.
  *
  * Two Unit_t structures are considered to be @em identical if they match in
- * all attributes.  (Contrast this to the method areEquivalent(), which 
+ * all attributes.  (Contrast this to the method Unit_areEquivalent(), which 
  * compares Unit_t structures only with respect
  * to certain attributes.)
  *
- * @param unit1 the first Unit_t structure to compare
- * @param unit2 the second Unit_t structure to compare
+ * @param unit1 the first Unit_t structure to compare.
+ * @param unit2 the second Unit_t structure to compare.
  *
- * @return @c true if all the attributes of unit1 are identical
- * to the attributes of unit2, @c false otherwise.
+ * @return @c 1 (true) if all the attributes of unit1 are identical
+ * to the attributes of unit2, @c 0 (false) otherwise.
  *
  * @see Unit_areEquivalent()
  *
@@ -2499,15 +2782,15 @@ Unit_areIdentical(Unit_t * unit1, Unit_t * unit2);
  * have a "kind" attribute value of @c dimensionless, or (2) their "kind",
  * "exponent" and (for SBML Level&nbsp;2 Version&nbsp;1) "offset"
  * attribute values are equal. (Contrast this to the method
- * areIdentical(), which compares Unit_t structures with respect to all
+ * Unit_areIdentical(), which compares Unit_t structures with respect to all
  * attributes, not just the "kind" and "exponent".)
  *
- * @param unit1 the first Unit_t structure to compare
- * @param unit2 the second Unit_t structure to compare
+ * @param unit1 the first Unit_t structure to compare.
+ * @param unit2 the second Unit_t structure to compare.
  *
- * @return @c true if the "kind" and "exponent" attributes of unit1 are
- * identical to the kind and exponent attributes of unit2, @c false
- * otherwise.
+ * @return @c 1 (true) if the "kind" and "exponent" attributes of unit1 are
+ * identical to the kind and exponent attributes of unit2, or if the kind attributes
+ * of both are @c dimensionless; @c 0 (false) otherwise.
  * 
  * @see Unit_areIdentical()
  *
@@ -2521,8 +2804,8 @@ Unit_areEquivalent(Unit_t * unit1, Unit_t * unit2);
  * Manipulates the attributes of the Unit_t to express the unit with the 
  * value of the scale attribute reduced to zero.
  *
- * For example, 1 millimetre can be expressed as a Unit_t with kind=@c
- * "metre" multiplier=@c "1" scale=@c "-3" exponent=@c "1". It can also be
+ * For example, 1 millimetre can be expressed as a Unit_t with kind=
+ * @c "metre" multiplier=@c "1" scale=@c "-3" exponent=@c "1". It can also be
  * expressed as a Unit_t with kind=@c "metre"
  * multiplier=<code>"0.001"</code> scale=@c "0" exponent=@c "1".
  *
@@ -2530,6 +2813,7 @@ Unit_areEquivalent(Unit_t * unit1, Unit_t * unit2);
  *
  * @copydetails doc_returns_success_code
  * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
  *
  * @see Unit_convertToSI()
  * @see Unit_merge()
@@ -2558,7 +2842,7 @@ Unit_removeScale(Unit_t * unit);
  * left as a new version of this unit, modified in-place.  Not modified if
  * the two units have different kinds.
  * 
- * @param unit2 the second Unit_t structure to merge with the first
+ * @param unit2 the second Unit_t structure to merge with the first.
  * 
  * @see Unit_convertToSI()
  * @see Unit_removeScale()
@@ -2578,7 +2862,7 @@ Unit_merge(Unit_t * unit1, Unit_t * unit2);
  * hertz is identical to 1&nbsp;sec<sup>-1</sup>, one litre is equivalent
  * to 1 cubic decametre, and so on.
  *
- * @param unit the Unit_t structure to convert to SI
+ * @param unit the Unit_t structure to convert to SI.
  *
  * @return a UnitDefinition_t structure containing the SI unit.
  *

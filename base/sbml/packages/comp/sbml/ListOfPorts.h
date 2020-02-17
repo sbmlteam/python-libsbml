@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -72,9 +76,11 @@ public:
   /**
    * Creates a new ListOfPorts with the given level, version, and package version.
    *
-   * @param level the SBML Level
-   * @param version the Version within the SBML Level
-   * @param pkgVersion the version of the package
+   * @param level the SBML Level.
+   * @param version the Version within the SBML Level.
+   * @param pkgVersion the version of the package.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   ListOfPorts(unsigned int level      = CompExtension::getDefaultLevel(), 
               unsigned int version    = CompExtension::getDefaultVersion(), 
@@ -84,7 +90,11 @@ public:
   /**
    * Creates a new ListOfPorts with the given CompPkgNamespaces object.
    *
-   * @param compns the namespace to use
+   * @copydetails doc_what_are_sbml_package_namespaces
+   *
+   * @param compns the CompPkgNamespaces object.
+   *
+   * @copydetails doc_note_setting_lv_pkg
    */
   ListOfPorts(CompPkgNamespaces* compns);
 
@@ -95,6 +105,7 @@ public:
    * @param n the index number of the Port to get.
    * 
    * @return the nth Port in this ListOfPorts.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -107,6 +118,7 @@ public:
    * @param n the index number of the Port to get.
    * 
    * @return the nth Port in this ListOfPorts.
+   * If the index @p n is invalid, @c NULL is returned.
    *
    * @see size()
    */
@@ -153,7 +165,7 @@ public:
    *
    * The caller owns the returned item and is responsible for deleting it.
    *
-   * @param sid string representing the id of the Port to remove
+   * @param sid string representing the id of the Port to remove.
    *
    * @see size()
    */
@@ -166,7 +178,7 @@ public:
    *
    * The caller owns the returned item and is responsible for deleting it.
    *
-   * @param n the index of the item to remove
+   * @param n the index of the item to remove.
    *
    * @see size()
    */
@@ -203,7 +215,7 @@ public:
    * id of Port objects are in the PortSId namespace, no Port object is
    * returned by this function.
    *
-   * @param id string representing the id of objects to find
+   * @param id string representing the id of the object to find.
    *
    * @return a pointer to the SBase element with the given @p id.
    */
@@ -217,7 +229,7 @@ protected:
    * Create and return an SBML object of this class, if present.
    *
    * @return the SBML object corresponding to next XMLToken in the
-   * XMLInputStream or NULL if the token was not recognized.
+   * XMLInputStream or @c NULL if the token was not recognized.
    */
   virtual SBase* createObject (XMLInputStream& stream);
 
@@ -236,9 +248,82 @@ LIBSBML_CPP_NAMESPACE_END
 LIBSBML_CPP_NAMESPACE_BEGIN
 BEGIN_C_DECLS
 
-//
-// C API will be added here.
-//
+
+/**
+ * Get a Port_t from the ListOf_t.
+ *
+ * @param lo the ListOf_t structure to search.
+ *
+ * @param n an unsigned int representing the index of the Port_t to retrieve.
+ *
+ * @return the nth Port_t in this ListOf_t.
+ * If the index @p n is invalid, @c NULL is returned.
+ *
+ * @copydetails doc_returned_unowned_pointer
+ *
+ * @memberof ListOfPorts_t
+ */
+LIBSBML_EXTERN
+Port_t*
+ListOfPorts_getPort(ListOf_t* lo, unsigned int n);
+
+
+/**
+ * Get a Port_t from the ListOf_t based on its identifier.
+ *
+ * @param lo the ListOf_t structure to search.
+ *
+ * @param sid a string representing the identifier of the Port_t to retrieve.
+ *
+ * @return the Port_t in this ListOf_t with the given @p sid or @c NULL if no
+ * such Port_t exists.
+ *
+ * @copydetails doc_returned_unowned_pointer
+ *
+ * @memberof ListOfPorts_t
+ */
+LIBSBML_EXTERN
+Port_t*
+ListOfPorts_getById(ListOf_t* lo, const char *sid);
+
+
+/**
+ * Removes the nth Port_t from this ListOf_t and returns a pointer to it.
+ *
+ * @param lo the ListOf_t structure to search.
+ *
+ * @param n an unsigned int representing the index of the Port_t to remove.
+ *
+ * @return a pointer to the nth Port_t in this ListOf_t.
+ *
+ * @copydetails doc_warning_returns_owned_pointer
+ *
+ * @memberof ListOfPorts_t
+ */
+LIBSBML_EXTERN
+Port_t*
+ListOfPorts_remove(ListOf_t* lo, unsigned int n);
+
+
+/**
+ * Removes the Port_t from this ListOf_t based on its identifier and returns a
+ * pointer to it.
+ *
+ * @param lo the ListOf_t structure to search.
+ *
+ * @param sid a string representing the identifier of the Port_t to remove.
+ *
+ * @return the Port_t in this ListOf_t based on the identifier or NULL if no
+ * such Port_t exists.
+ *
+ * @copydetails doc_warning_returns_owned_pointer
+ *
+ * @memberof ListOfPorts_t
+ */
+LIBSBML_EXTERN
+Port_t*
+ListOfPorts_removeById(ListOf_t* lo, const char* sid);
+
 
 END_C_DECLS
 LIBSBML_CPP_NAMESPACE_END

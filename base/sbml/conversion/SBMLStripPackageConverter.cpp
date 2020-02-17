@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -35,6 +39,7 @@
 #include <sbml/conversion/SBMLConverterRegistry.h>
 #include <sbml/conversion/SBMLConverterRegister.h>
 #include <sbml/extension/SBasePlugin.h>
+#include <sbml/util/IdList.h>
 
 #ifdef __cplusplus
 
@@ -138,6 +143,10 @@ SBMLStripPackageConverter::stripPackage(const std::string& packageToStrip)
   const std::string& pkgURI =
     mDocument->getSBMLNamespaces()->getNamespaces()->getURI(packageToStrip);
 
+  if (pkgURI.empty()) // the package is not enabled --> success
+    return true;
+    
+    
   // TO DO - SK Comment
   // pass control to package code to see if needs to do more 
   // additional boolean flag is to do with preseving info
@@ -146,15 +155,12 @@ SBMLStripPackageConverter::stripPackage(const std::string& packageToStrip)
   //                                       ->stripPackage(packageToStrip, false);
 
 
-  if (pkgURI.empty() == false)
-  {
-    // disabling the package will literally strip the pkg info
-    mDocument->enablePackage(pkgURI, packageToStrip, false);
+  // disabling the package will literally strip the pkg info
+  mDocument->enablePackage(pkgURI, packageToStrip, false);
 
-    // check it is disabled
-    if (mDocument->isPkgEnabled(packageToStrip) == false)
-      conversion = true;
-  }
+  // check it is disabled
+  if (mDocument->isPkgEnabled(packageToStrip) == false)
+    conversion = true;
 
   return conversion;
 }
@@ -180,33 +186,43 @@ SBMLStripPackageConverter::convert()
     }
   }
 
-  std::string packageToStrip = getPackageToStrip();
+  IdList packagesToStrip(getPackageToStrip());
 
-  if (packageToStrip.empty())
+  if (packagesToStrip.empty())
   {
     return LIBSBML_OPERATION_SUCCESS;
   }
   
-  if (mDocument->isPkgEnabled(packageToStrip) == false)
+  
+  std::vector<std::string>::const_iterator it = packagesToStrip.begin();
+  
+  bool conversion = true; // all good so far
+  
+  for (; it != packagesToStrip.end(); ++it)
   {
-    std::string pkgURI = mDocument->getSBMLNamespaces()
-                         ->getNamespaces()->getURI(packageToStrip);
-    if (mDocument->isIgnoredPackage(pkgURI) == false)
-    {
-      return LIBSBML_CONV_PKG_CONSIDERED_UNKNOWN;
-    }
+  
+    const std::string& packageToStrip = *it;
+    //if (mDocument->isPkgEnabled(packageToStrip) == false)
+    //{
+    //  std::string pkgURI = mDocument->getSBMLNamespaces()
+    //                       ->getNamespaces()->getURI(packageToStrip);
+    //  if (mDocument->isIgnoredPackage(pkgURI) == false)
+    //  {
+    //    return LIBSBML_CONV_PKG_CONSIDERED_UNKNOWN;
+    //  }
+    //}
+
+    
+    conversion |= stripPackage(packageToStrip);
+    
   }
-
-  bool conversion = stripPackage(packageToStrip);
-
-// TO DO - SK Comment
-  // test that package is stripped
 
   if (conversion)
     // disabling the package will literally strip the pkg info
     return LIBSBML_OPERATION_SUCCESS;
-  else
-    return LIBSBML_OPERATION_FAILED;
+
+  return LIBSBML_OPERATION_FAILED;
+  
 }
   
 

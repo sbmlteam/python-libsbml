@@ -8,7 +8,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -28,8 +32,8 @@
  * @sbmlbrief{comp} Extension of Model.
  *
  * The CompModelPlugin class inherits from the SBMLSBasePlugin class, and
- * codifies the extentions to the Model class defined in the SBML
- * Level&nbsp;3 @ref comp (&ldquo;comp&rdquo;) package.  This extention
+ * codifies the extensions to the Model class defined in the SBML
+ * Level&nbsp;3 @ref comp (&ldquo;comp&rdquo;) package.  This extension
  * allows a Model to define Submodels (other Models that are instantiated as
  * new parts of the parent Model), and Ports, a defined interface for
  * including the given Model as a Submodel of a different Model.
@@ -88,7 +92,18 @@ protected:
 public:
 
   /**
-   * Constructor.
+   * Creates a new CompModelPlugin object using the given parameters.
+   *
+   * @copydetails doc_what_are_xmlnamespaces
+   *
+   * @copydetails doc_what_are_sbmlnamespaces
+   *
+   * @param uri the URI of the SBML Level&nbsp;3 package implemented by
+   * this libSBML package extension.
+   *
+   * @param prefix the XML namespace prefix being used for the package.
+   *
+   * @param compns the namespaces object for the package.
    */
   CompModelPlugin (const std::string &uri, const std::string &prefix,
                    CompPkgNamespaces *compns);
@@ -96,6 +111,8 @@ public:
 
   /**
    * Copy constructor. Creates a copy of this CompModelPlugin object.
+   *
+   * @param orig the instance to copy.
    */
   CompModelPlugin(const CompModelPlugin& orig);
 
@@ -108,6 +125,9 @@ public:
 
   /**
    * Assignment operator for CompModelPlugin.
+   *
+   * @param orig the object whose values are used as the basis of the
+   * assignment.
    */
   CompModelPlugin& operator=(const CompModelPlugin& orig);
 
@@ -115,7 +135,7 @@ public:
   /**
    * Creates and returns a deep copy of this CompModelPlugin object.
    * 
-   * @return a (deep) copy of this CompModelPlugin object
+   * @return a (deep) copy of this CompModelPlugin object.
    */
   virtual CompModelPlugin* clone () const;
 
@@ -125,7 +145,7 @@ public:
    * Create and return an SBML object of this class, if present.
    *
    * @return the SBML object corresponding to next XMLToken in the
-   * XMLInputStream or NULL if the token was not recognized.
+   * XMLInputStream or @c NULL if the token was not recognized.
    */
   virtual SBase* createObject (XMLInputStream& stream);
   /** @endcond */
@@ -146,7 +166,7 @@ public:
    * Returns the first child element found that has the given @p id in the
    * model-wide SId namespace, or @c NULL if no such object is found.
    *
-   * @param id a string representing the id of objects to find.
+   * @param id a string representing the id of the object to find.
    *
    * @return a pointer to the SBase element with the given @p id.
    */
@@ -158,7 +178,7 @@ public:
    * identifier, or itself if it has the given @p metaid, or @c NULL if no
    * such object is found.
    *
-   * @param metaid a string representing the metaid of objects to find.
+   * @param metaid a string representing the metaid of the object to find.
    *
    * @return a pointer to the SBase element with the given @p metaid.
    */
@@ -169,17 +189,47 @@ public:
    * Returns a List of all child SBase objects, including those nested to an
    * arbitrary depth.
    *
+   * @param filter a pointer to an ElementFilter, which causes the function 
+   * to return only elements that match a particular set of constraints.  
+   * If NULL (the default), the function will return all child objects.
+   *
    * @return a List of pointers to all children objects.
    */
   virtual List* getAllElements(ElementFilter* filter=NULL);
   
   
  /**
-   * Returns the ListOf object that holds all submodels.
-   *
-   * @return the ListOf object that holds all submodels.
-   */ 
+  * Returns the ListOfSubmodels from this CompModelPlugin.
+  *
+  * @return the ListOfSubmodels from this CompModelPlugin.
+  *
+  * @copydetails doc_returned_unowned_pointer
+  *
+  * @see addSubmodel(const Submodel* object)
+  * @see createSubmodel()
+  * @see getSubmodel(const std::string& sid)
+  * @see getSubmodel(unsigned int n)
+  * @see getNumSubmodels()
+  * @see removeSubmodel(unsigned int n)
+  */
   const ListOfSubmodels* getListOfSubmodels () const;
+
+
+  /**
+   * Returns the ListOfSubmodels from this CompModelPlugin.
+   *
+   * @return the ListOfSubmodels from this CompModelPlugin.
+   *
+   * @copydetails doc_returned_unowned_pointer
+   *
+   * @see addSubmodel(const Submodel* object)
+   * @see createSubmodel()
+   * @see getSubmodel(const std::string& sid)
+   * @see getSubmodel(unsigned int n)
+   * @see getNumSubmodels()
+   * @see removeSubmodel(unsigned int n)
+   */
+  ListOfSubmodels* getListOfSubmodels();
 
 
   /**
@@ -188,8 +238,9 @@ public:
    *
    * @param n the index number of the Submodel to get.
    *
-   * @return the nth Submodel in the ListOfSubmodels.
-   */ 
+   * @return the nth Submodel in the ListOfSubmodels or @c NULL if 
+   * no such object exists.
+   */
   Submodel* getSubmodel (unsigned int n);
 
 
@@ -200,7 +251,7 @@ public:
    *
    * @return the nth Submodel in the ListOfSubmodels.  If the index @p n is
    * invalid, @c NULL is returned.
-   */ 
+   */
   const Submodel* getSubmodel (unsigned int n) const;
 
 
@@ -211,7 +262,7 @@ public:
    *
    * @return the Submodel in the ListOfSubmodels with the given identifier.
    * If no such submodel with identifier @p id exists, @c NULL is returned.
-   */ 
+   */
   Submodel* getSubmodel (std::string id);
 
 
@@ -224,7 +275,7 @@ public:
    * identifier. If no submodel with identifier @p id exists, @c NULL is
    * returned.
 
-   */ 
+   */
   const Submodel* getSubmodel (std::string id) const;
 
 
@@ -261,7 +312,7 @@ public:
    * submodel objects list and returns a pointer to the newly
    * created object.
    *
-   * @return a newly created Submodel object
+   * @return a newly created Submodel object.
    */
   Submodel* createSubmodel ();
 
@@ -269,8 +320,9 @@ public:
   /**
    * Removes the submodel with the given index.
    * A pointer to the submodel that was removed is returned.
+   * The caller owns the returned item and is responsible for deleting it.
    * 
-   * @param index the index of the Submodel object to remove
+   * @param index the index of the Submodel object to remove.
    *
    * @return the Submodel object removed.  As mentioned above, the caller
    * owns the returned object. @c NULL is returned if the given @p index is
@@ -280,11 +332,37 @@ public:
 
 
   /**
-   * Returns the ListOf object that holds all ports.
-   *
-   * @return the ListOf object that holds all ports.
-   */ 
-  const ListOfPorts* getListOfPorts () const;
+  * Returns the ListOfPorts from this CompModelPlugin.
+  *
+  * @return the ListOfPorts from this CompModelPlugin.
+  *
+  * @copydetails doc_returned_unowned_pointer
+  *
+  * @see addPort(const Port* object)
+  * @see createPort()
+  * @see getPort(const std::string& sid)
+  * @see getPort(unsigned int n)
+  * @see getNumPorts()
+  * @see removePort(unsigned int n)
+  */
+  const ListOfPorts* getListOfPorts() const;
+
+
+  /**
+  * Returns the ListOfPorts from this CompModelPlugin.
+  *
+  * @return the ListOfPorts from this CompModelPlugin.
+  *
+  * @copydetails doc_returned_unowned_pointer
+  *
+  * @see addPort(const Port* object)
+  * @see createPort()
+  * @see getPort(const std::string& sid)
+  * @see getPort(unsigned int n)
+  * @see getNumPorts()
+  * @see removePort(unsigned int n)
+  */
+  ListOfPorts* getListOfPorts();
 
 
   /**
@@ -294,7 +372,7 @@ public:
    *
    * @return the nth Port in the ListOfPorts.  If the index @p n is invalid,
    * @c NULL is returned.
-   */ 
+   */
   Port* getPort (unsigned int n);
 
 
@@ -305,7 +383,7 @@ public:
    *
    * @return the nth Port in the ListOfPorts. If the index @p n is invalid,
    * @c NULL is returned.
-   */ 
+   */
   const Port* getPort (unsigned int n) const;
 
 
@@ -316,7 +394,7 @@ public:
    *
    * @return the Port in the ListOfPorts with the given identifier.  If the
    * identifier is invalid, @c NULL is returned.
-   */ 
+   */
   Port* getPort (std::string id);
 
 
@@ -327,7 +405,7 @@ public:
    *
    * @return the Port in the ListOfPorts with the given identifier.  If the
    * identifier is invalid, @c NULL is returned.
-   */ 
+   */
   const Port* getPort (std::string id) const;
 
 
@@ -361,15 +439,16 @@ public:
    * port objects list and returns a pointer to the newly
    * created object.
    *
-   * @return a newly created Port object
+   * @return a newly created Port object.
    */
   Port* createPort ();
 
 
   /**
    * Removes the port with the given index.
+   * The caller owns the returned item and is responsible for deleting it.
    *
-   * @param index the index of the Port object to remove
+   * @param index the index of the Port object to remove.
    *
    * @return the Port object removed.  As mentioned above, 
    * the caller owns the returned object. @c NULL is returned if 
@@ -402,6 +481,8 @@ public:
    * (&quot;<code>__</code>&quot;) by default, and can be overridden
    * with the setDivider() function.
    *
+   * @return the divider that will be used by any call to flattenModel().
+   *
    * @see setDivider(const std::string& divider)
    */
   std::string getDivider();
@@ -414,7 +495,7 @@ public:
    * Subclasses which contain one or more SBase derived elements must
    * override this function.
    *
-   * @param d the SBMLDocument object to use
+   * @param d the SBMLDocument object to use.
    *
    * @see connectToParent
    * @see enablePackageInternal
@@ -444,7 +525,7 @@ public:
    * addXXX, createXXX, and connectToChild functions of the
    * parent element).
    *
-   * @param parent the SBML object to use
+   * @param parent the SBML object to use.
    */
   void connectToParent (SBase* parent);
   /** @endcond */
@@ -483,6 +564,8 @@ public:
    *       take ownership of it. Thus the calling program is responsible of 
    *       freeing the transformer when no longer needed (i.e after the 
    *       SBML document has been deleted)
+   *
+   * @param transformer the prefix transformer to use.
    *      
    */
   void setTransformer(PrefixTransformer* transformer);
@@ -493,7 +576,7 @@ public:
   PrefixTransformer* getTransformer() const;
   
   /**
-   * @return an indicator, whether a custom transformer has been set. 
+   * @return an indicator, whether a custom transformer has been set.
    */
   bool isSetTransformer() const;
 
@@ -516,23 +599,25 @@ protected:
    *@return a Model object with no submodels.  On failure, return @c NULL.
    */
   virtual Model* flattenModel() const;
-  friend class CompFlatteningConverter;
 
+  /** @cond doxygenLibsbmlInternal */
   /**
    * Deletes any elements in 'toremove' that do not already exist in 'removed', 
    * while taking care to not double-delete any element.  Intended for use with
-   * collectDeletionsAndDeleteCompConstructs and 
-   * collectRenameAndConvertReplacements.
+   * collectDeletionsAndDeleteCompConstructs() and 
+   * collectRenameAndConvertReplacements().
    */
   virtual int removeCollectedElements(std::set<SBase*>* removed, std::set<SBase*>* toremove);
-  friend class ReplacedElement;
+  /** @endcond */
 
   /**
    * Loop through all Submodels in this Model, instantiate all of them,
    * perform all deletions, and synchronize all replacements, including using
    * any conversion factors that may exist.  The resulting models are stored
    * in the Submodel objects, and available from
-   * 'Submodel::getInstantiation()'
+   * 'Submodel::getInstantiation()'.  This may be useful if separate simulation
+   * or analysis of submodels is desired, as opposed to using flattenModel()
+   * to get a single SBML model.
    *
    * @copydetails doc_returns_success_code
    * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
@@ -545,9 +630,11 @@ protected:
 
   /** @cond doxygenLibsbmlInternal */
   std::set<SBase*>* getRemovedSet();
-  friend class Replacing;
-  friend class SBaseRef;
   friend class CompBase;
+  friend class CompFlatteningConverter;
+  friend class Replacing;
+  friend class ReplacedElement;
+  friend class SBaseRef;
   /** @endcond */
 
 private:
@@ -664,7 +751,7 @@ virtual int collectDeletionsAndDeleteSome(std::set<SBase*>* removed,
 
   /** @cond doxygenLibsbmlInternal */
   protected:
-  virtual int saveAllReferencedElements(std::set<SBase*> uniqueRefs, std::set<SBase*> replacedBys);
+  virtual int saveAllReferencedElements(std::set<SBase*> uniqueRefs, std::set<SBase*> replacedBys, SBMLDocument* doc);
   /** @endcond */
 
 };
@@ -679,20 +766,283 @@ LIBSBML_CPP_NAMESPACE_END
 LIBSBML_CPP_NAMESPACE_BEGIN
 BEGIN_C_DECLS
 
+
 /**
- * Creates a new, empty Submodel_t structure, adds it to the given
- * CompModelPlugin_t, and returns the Submodel_t.
+ * Creates a new Submodel_t, adds it to this CompModelPlugin_t
+ * and returns the Submodel_t created.
  *
- * @param modelPlug the CompModelPlugin_t structure to which the Submodel_t should be
- * added
+ * @param cmp the CompModelPlugin_t structure to which the Submodel_t should be
+ * added.
  *
- * @return the newly-created empty Submodel_t.
+ * @return a new Submodel_t instance.
+ *
+ * @copydetails doc_returned_unowned_pointer
  *
  * @memberof CompModelPlugin_t
  */
 LIBSBML_EXTERN
-Submodel_t *
-CompModelPlugin_createSubmodel(CompModelPlugin_t * modelPlug);
+Submodel_t*
+CompModelPlugin_createSubmodel(CompModelPlugin_t* cmp);
+
+
+/**
+ * Returns a ListOf_t * containing Submodel_t objects from this
+ * CompModelPlugin_t.
+ *
+ * @param cmp the CompModelPlugin_t structure whose ListOfSubmodels is sought.
+ *
+ * @return the ListOfSubmodels from this CompModelPlugin_t as a ListOf_t *.
+ *
+ * @copydetails doc_returned_unowned_pointer
+ *
+ * @see CompModelPlugin_addSubmodel()
+ * @see CompModelPlugin_createSubmodel()
+ * @see CompModelPlugin_getSubmodelById()
+ * @see CompModelPlugin_getSubmodel()
+ * @see CompModelPlugin_getNumSubmodels()
+ * @see CompModelPlugin_removeSubmodel()
+ *
+ * @memberof CompModelPlugin_t
+ */
+LIBSBML_EXTERN
+ListOf_t*
+CompModelPlugin_getListOfSubmodels(CompModelPlugin_t* cmp);
+
+
+/**
+ * Get a Submodel_t from the CompModelPlugin_t.
+ *
+ * @param cmp the CompModelPlugin_t structure to search.
+ *
+ * @param n an unsigned int representing the index of the Submodel_t to
+ * retrieve.
+ *
+ * @return the nth Submodel_t in the ListOfSubmodels within this
+ * CompModelPlugin or @c NULL if no such object exists.
+ *
+ * @copydetails doc_returned_unowned_pointer
+ *
+ * @memberof CompModelPlugin_t
+ */
+LIBSBML_EXTERN
+Submodel_t*
+CompModelPlugin_getSubmodel(CompModelPlugin_t* cmp, unsigned int n);
+
+
+/**
+ * Get a Submodel_t from the CompModelPlugin_t based on its identifier.
+ *
+ * @param cmp the CompModelPlugin_t structure to search.
+ *
+ * @param sid a string representing the identifier of the Submodel_t to
+ * retrieve.
+ *
+ * @return the Submodel_t in the ListOfSubmodels within this CompModelPlugin
+ * with the given @p sid or @c NULL if no such Submodel_t exists.
+ *
+ * @copydetails doc_returned_unowned_pointer
+ *
+ * @memberof CompModelPlugin_t
+ */
+LIBSBML_EXTERN
+Submodel_t*
+CompModelPlugin_getSubmodelById(CompModelPlugin_t* cmp, const char *sid);
+
+
+/**
+ * Adds a copy of the given Submodel_t to this CompModelPlugin_t.
+ *
+ * @param cmp the CompModelPlugin_t structure to which the Submodel_t should be
+ * added.
+ *
+ * @param s the Submodel_t object to add.
+ *
+ * @copydetails doc_returns_success_code
+ * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_LEVEL_MISMATCH, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_VERSION_MISMATCH, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_PKG_VERSION_MISMATCH, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_DUPLICATE_OBJECT_ID, OperationReturnValues_t}
+ *
+ * @memberof CompModelPlugin_t
+ */
+LIBSBML_EXTERN
+int
+CompModelPlugin_addSubmodel(CompModelPlugin_t* cmp, const Submodel_t* s);
+
+
+/**
+ * Get the number of Submodel_t objects in this CompModelPlugin_t.
+ *
+ * @param cmp the CompModelPlugin_t structure to query.
+ *
+ * @return the number of Submodel_t objects in this CompModelPlugin_t.
+ *
+ * @memberof CompModelPlugin_t
+ */
+LIBSBML_EXTERN
+unsigned int
+CompModelPlugin_getNumSubmodels(CompModelPlugin_t* cmp);
+
+
+/**
+ * Removes the nth Submodel_t from this CompModelPlugin_t and returns a pointer
+ * to it.
+ *
+ * @param cmp the CompModelPlugin_t structure to search.
+ *
+ * @param n an unsigned int representing the index of the Submodel_t to remove.
+ *
+ * @return a pointer to the nth Submodel_t in this CompModelPlugin_t.
+ *
+ * @copydetails doc_warning_returns_owned_pointer
+ *
+ * @memberof CompModelPlugin_t
+ */
+LIBSBML_EXTERN
+Submodel_t*
+CompModelPlugin_removeSubmodel(CompModelPlugin_t* cmp, unsigned int n);
+
+
+/**
+ * Returns a ListOf_t * containing Port_t objects from this CompModelPlugin_t.
+ *
+ * @param cmp the CompModelPlugin_t structure whose ListOfPorts is sought.
+ *
+ * @return the ListOfPorts from this CompModelPlugin_t as a ListOf_t *.
+ *
+ * @copydetails doc_returned_unowned_pointer
+ *
+ * @see CompModelPlugin_addPort()
+ * @see CompModelPlugin_createPort()
+ * @see CompModelPlugin_getPortById()
+ * @see CompModelPlugin_getPort()
+ * @see CompModelPlugin_getNumPorts()
+ * @see CompModelPlugin_removePort()
+ *
+ * @memberof CompModelPlugin_t
+ */
+LIBSBML_EXTERN
+ListOf_t*
+CompModelPlugin_getListOfPorts(CompModelPlugin_t* cmp);
+
+
+/**
+ * Get a Port_t from the CompModelPlugin_t.
+ *
+ * @param cmp the CompModelPlugin_t structure to search.
+ *
+ * @param n an unsigned int representing the index of the Port_t to retrieve.
+ *
+ * @return the nth Port_t in the ListOfPorts within this CompModelPlugin
+ * or @c NULL if no such object exists.
+ *
+ * @copydetails doc_returned_unowned_pointer
+ *
+ * @memberof CompModelPlugin_t
+ */
+LIBSBML_EXTERN
+Port_t*
+CompModelPlugin_getPort(CompModelPlugin_t* cmp, unsigned int n);
+
+
+/**
+ * Get a Port_t from the CompModelPlugin_t based on its identifier.
+ *
+ * @param cmp the CompModelPlugin_t structure to search.
+ *
+ * @param sid a string representing the identifier of the Port_t to retrieve.
+ *
+ * @return the Port_t in the ListOfPorts within this CompModelPlugin with the
+ * given @p sid or @c NULL if no such Port_t exists.
+ *
+ * @copydetails doc_returned_unowned_pointer
+ *
+ * @memberof CompModelPlugin_t
+ */
+LIBSBML_EXTERN
+Port_t*
+CompModelPlugin_getPortById(CompModelPlugin_t* cmp, const char *sid);
+
+
+/**
+ * Adds a copy of the given Port_t to this CompModelPlugin_t.
+ *
+ * @param cmp the CompModelPlugin_t structure to which the Port_t should be
+ * added.
+ *
+ * @param p the Port_t object to add.
+ *
+ * @copydetails doc_returns_success_code
+ * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_INVALID_OBJECT, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_LEVEL_MISMATCH, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_VERSION_MISMATCH, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_PKG_VERSION_MISMATCH, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_DUPLICATE_OBJECT_ID, OperationReturnValues_t}
+ *
+ * @memberof CompModelPlugin_t
+ */
+LIBSBML_EXTERN
+int
+CompModelPlugin_addPort(CompModelPlugin_t* cmp, const Port_t* p);
+
+
+/**
+ * Get the number of Port_t objects in this CompModelPlugin_t.
+ *
+ * @param cmp the CompModelPlugin_t structure to query.
+ *
+ * @return the number of Port_t objects in this CompModelPlugin_t.
+ *
+ * @memberof CompModelPlugin_t
+ */
+LIBSBML_EXTERN
+unsigned int
+CompModelPlugin_getNumPorts(CompModelPlugin_t* cmp);
+
+
+/**
+ * Creates a new Port_t object, adds it to this CompModelPlugin_t object and
+ * returns the Port_t object created.
+ *
+ * @param cmp the CompModelPlugin_t structure to which the Port_t should be
+ * added.
+ *
+ * @return a new Port_t object instance.
+ *
+ * @copydetails doc_returned_unowned_pointer
+ *
+ * @memberof CompModelPlugin_t
+ */
+LIBSBML_EXTERN
+Port_t*
+CompModelPlugin_createPort(CompModelPlugin_t* cmp);
+
+
+/**
+ * Removes the nth Port_t from this CompModelPlugin_t and returns a pointer to
+ * it.
+ *
+ * @param cmp the CompModelPlugin_t structure to search.
+ *
+ * @param n an unsigned int representing the index of the Port_t to remove.
+ *
+ * @return a pointer to the nth Port_t in this CompModelPlugin_t.
+ *
+ * @copydetails doc_warning_returns_owned_pointer
+ *
+ * @memberof CompModelPlugin_t
+ */
+LIBSBML_EXTERN
+Port_t*
+CompModelPlugin_removePort(CompModelPlugin_t* cmp, unsigned int n);
+
+
+
 
 END_C_DECLS
 LIBSBML_CPP_NAMESPACE_END

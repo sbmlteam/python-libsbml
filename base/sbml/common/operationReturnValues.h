@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -157,6 +161,14 @@ typedef enum
     /*!< The requested action cannot be performed as the target object does not have 
      * the metaid attribute set. */
      
+     , LIBSBML_DEPRECATED_ATTRIBUTE   = -15
+    /*!< The attribute that is the subject of this operation has been deprecated
+     * for the combination of SBML Level and Version for the underlying
+     * object. */
+     
+     , LIBSBML_USE_ID_ATTRIBUTE_FUNCTION   = -16
+    /*!< For L3V2 use the IdAttribute functions. */
+     
    /* ---------------------------------------------------------------------------
     *   
     *              Return codes for package extension
@@ -267,7 +279,7 @@ typedef enum
  * This method takes an SBML operation return value and returns a string representing
  * the code.
  *
- * @param returnValue the operation return value to convert to a string
+ * @param returnValue the operation return value to convert to a string.
  *
  * @return a human readable name for the given
  * @if clike #OperationReturnValues_t value@else operation return value @endif.

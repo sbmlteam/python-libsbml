@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -57,6 +61,17 @@
  * illustrated by the following (for SBML Level&nbsp;2 Version&nbsp;4):
  *
  * @htmlinclude listof-illustration.html
+ *
+ * SBML Level&nbsp;3 Version&nbsp;1 has essentially the same structure as 
+ * Level&nbsp;2 Version&nbsp;4, depicted above, but SBML Level&nbsp;3 
+ * Version&nbsp;2 allows
+ * containers to contain zero or more of the relevant object, instead of 
+ * requiring at least one.  As such, libsbml will write out an 
+ * otherwise-empty ListOf___ element that has any optional attribute set 
+ * (such as 'id' or 'metaid'), that has an optional child (such 
+ * as a 'notes' or 'annotation'), or that has attributes or children set
+ * from any SBML Level&nbsp;3 package, whether or not the ListOf___ has 
+ * any other children.
  *
  * Readers may wonder about the motivations for using the ListOf___
  * containers in SBML.  A simpler approach in XML might be to place the
@@ -118,6 +133,19 @@
  * as needed to object constructors that accept SBMLNamespaces as arguments.
  *
  * <!-- ------------------------------------------------------------------- -->
+ * @class doc_what_are_sbml_package_namespaces
+ *
+ * @par
+ * The package namespaces object used in this constructor is derived from a
+ * SBMLNamespaces object, which encapsulates SBML Level/Version/namespaces
+ * information.  It is used to communicate the SBML Level, Version, and 
+ * package version and name information used in addition to SBML Level&nbsp;3 Core.  A
+ * common approach to using libSBML's SBMLNamespaces facilities is to create an
+ * package namespace object somewhere in a program once, then hand that object
+ * as needed to object constructors of that package that accept it as and
+ * argument, such as this one.
+ *
+ * <!-- ------------------------------------------------------------------- -->
  * @class doc_what_is_SBMLDocument
  *
  * @par
@@ -146,8 +174,8 @@
  * and does @em not depend on the actual presence or absence of particular
  * package constructs in a given SBML document: in other words, if the
  * package specification defines any construct that can change the model's
- * meaning, the value of the "required" attribute must always be set to @c
- * true in any SBML document that uses the package.
+ * meaning, the value of the "required" attribute must always be set to
+ * @c true in any SBML document that uses the package.
  *
  * The XML namespace declaration for an SBML Level&nbsp;3 package is an
  * indication that a model makes use of features defined by that package,
@@ -202,7 +230,7 @@
  * introduced for attribute values that refer to <code>SId</code> values; in
  * previous Levels of SBML, this data type did not exist and attributes were
  * simply described to as "referring to an identifier", but the effective
- * data type was the same as <code>SIdRef</code>in Level&nbsp;3.  These and
+ * data type was the same as <code>SIdRef</code> in Level&nbsp;3.  These and
  * other methods of libSBML refer to the type <code>SIdRef</code> for all
  * Levels of SBML, even if the corresponding SBML specification did not
  * explicitly name the data type.
@@ -233,27 +261,218 @@
  * SBML-defined type <code>SIdRef</code>.
  *
  * <!-- ------------------------------------------------------------------- -->
- * @class doc_id_syntax
+ * @class doc_id_attribute
  *
  * @par
- * SBML has strict requirements for the syntax of identifiers, that is, the
- * values of the "id" attribute present on most types of SBML objects.
- * The following is a summary of the definition of the SBML identifier type
- * <code>SId</code>, which defines the permitted syntax of identifiers.  We
- * express the syntax using an extended form of BNF notation:
- * <pre style="margin-left: 2em; border: none; font-weight: bold; font-size: 13px; color: black">
- * letter ::= 'a'..'z','A'..'Z'
- * digit  ::= '0'..'9'
- * idChar ::= letter | digit | '_'
- * SId    ::= ( letter | '_' ) idChar*</pre>
- * The characters <code>(</code> and <code>)</code> are used for grouping, the
- * character <code>*</code> "zero or more times", and the character
- * <code>|</code> indicates logical "or".  The equality of SBML identifiers is
- * determined by an exact character sequence match; i.e., comparisons must be
- * performed in a case-sensitive manner.  In addition, there are a few
- * conditions for the uniqueness of identifiers in an SBML model.  Please
- * consult the SBML specifications for the exact details of the uniqueness
- * requirements.
+ * The identifier given by an object's "id" attribute value
+ * is used to identify the object within the SBML model definition.
+ * Other objects can refer to the component using this identifier.  The
+ * data type of "id" is always <code>SId</code> or a type derived
+ * from that, such as <code>UnitSId</code>, depending on the object in 
+ * question.  All data types are defined as follows:
+ * <pre style="margin-left: 2em; border: none; font-weight: bold; color: black">
+ *   letter ::= 'a'..'z','A'..'Z'
+ *   digit  ::= '0'..'9'
+ *   idChar ::= letter | digit | '_'
+ *   SId    ::= ( letter | '_' ) idChar*
+ * </pre>
+ * The characters <code>(</code> and <code>)</code> are used for grouping,
+ * the character <code>*</code> "zero or more times", and the character
+ * <code>|</code> indicates logical "or".  The equality of SBML identifiers
+ * is determined by an exact character sequence match; i.e., comparisons must
+ * be performed in a case-sensitive manner.  This applies to all uses of
+ * <code>SId</code>, <code>SIdRef</code>, and derived types.
+ *
+ * Users need to be aware of some important API issues that are the result of
+ * the history of SBML and libSBML.  Prior to SBML Level&nbsp;3
+ * Version&nbsp;2, SBML defined "id" and "name" attributes on only a subset
+ * of SBML objects.  To simplify the work of programmers, libSBML's API
+ * provided get, set, check, and unset on the SBase object class itself
+ * instead of on individual subobject classes. This made the
+ * get/set/etc. methods uniformly available on all objects in the libSBML
+ * API.  LibSBML simply returned empty strings or otherwise did not act when
+ * the methods were applied to SBML objects that were not defined by the SBML
+ * specification to have "id" or "name" attributes.  Additional complications
+ * arose with the rule and assignment objects: InitialAssignment,
+ * EventAssignment, AssignmentRule, and RateRule.  In early versions of SBML,
+ * the rule object hierarchy was different, and in addition, then as now,
+ * they possess different attributes: "variable" (for the rules and event
+ * assignments), "symbol" (for initial assignments), or neither (for
+ * algebraic rules).  Prior to SBML Level&nbsp;3 Version&nbsp;2, getId()
+ * would always return an empty string, and isSetId() would always return @c
+ * false for objects of these classes.
+ *
+ * With the addition of "id" and "name" attributes on SBase in Level&nbsp;3
+ * Version&nbsp;2, it became necessary to introduce a new way to interact
+ * with the attributes more consistently in libSBML to avoid breaking
+ * backward compatibility in the behavior of the original "id" methods.  For
+ * this reason, libSBML provides four functions (getIdAttribute(),
+ * setIdAttribute(@if java String@endif), isSetIdAttribute(), and
+ * unsetIdAttribute()) that always act on the actual "id" attribute inherited
+ * from SBase, regardless of the object's type.  <strong>These new methods
+ * should be used instead of the older getId()/setId()/etc. methods</strong>
+ * unless the old behavior is somehow necessary.  Regardless of the Level and
+ * Version of the SBML, these functions allow client applications to use more
+ * generalized code in some situations (for instance, when manipulating
+ * objects that are all known to have identifiers).  If the object in
+ * question does not posess an "id" attribute according to the SBML
+ * specification for the Level and Version in use, libSBML will not allow the
+ * identifier to be set, nor will it read or write "id" attributes for those
+ * objects.
+ *
+ * <!-- ------------------------------------------------------------------- -->
+ * @class doc_name_attribute
+ *
+ * @par
+ * In SBML Level&nbsp;3 Version&nbsp;2, the "id" and "name" attributes were
+ * moved to SBase directly, instead of being defined individually for many
+ * (but not all) objects.  LibSBML has for a long time provided functions
+ * defined on SBase itself to get, set, and unset those attributes, which 
+ * would fail or otherwise return empty strings if executed on any object 
+ * for which those attributes were not defined.  Now that all SBase objects 
+ * define those attributes, those functions now succeed for any object with 
+ * the appropriate level and version.
+ *
+ * The "name" attribute is
+ * optional and is not intended to be used for cross-referencing purposes
+ * within a model.  Its purpose instead is to provide a human-readable
+ * label for the component.  The data type of "name" is the type
+ * <code>string</code> defined in XML Schema.  SBML imposes no
+ * restrictions as to the content of "name" attributes beyond those
+ * restrictions defined by the <code>string</code> type in XML Schema.
+ *
+ * The recommended practice for handling "name" is as follows.  If a
+ * software tool has the capability for displaying the content of "name"
+ * attributes, it should display this content to the user as a
+ * component's label instead of the component's "id".  If the user
+ * interface does not have this capability (e.g., because it cannot
+ * display or use special characters in symbol names), or if the "name"
+ * attribute is missing on a given component, then the user interface
+ * should display the value of the "id" attribute instead.  (Script
+ * language interpreters are especially likely to display "id" instead of
+ * "name".)
+ * 
+ * As a consequence of the above, authors of systems that automatically
+ * generate the values of "id" attributes should be aware some systems
+ * may display the "id"'s to the user.  Authors therefore may wish to
+ * take some care to have their software create "id" values that are: (a)
+ * reasonably easy for humans to type and read; and (b) likely to be
+ * meaningful, for example by making the "id" attribute be an abbreviated
+ * form of the name attribute value.
+ * 
+ * An additional point worth mentioning is although there are
+ * restrictions on the uniqueness of "id" values, there are no
+ * restrictions on the uniqueness of "name" values in a model.  This
+ * allows software applications leeway in assigning component identifiers.
+ *
+ * Regardless of the level and version of the SBML, these functions allow
+ * client applications to use more generalized code in some situations 
+ * (for instance, when manipulating objects that are all known to have 
+ * names).  If the object in question does not posess a "name" attribute 
+ * according to the SBML specification for the Level and Version in use,
+ * libSBML will not allow the name to be set, nor will it read or 
+ * write "name" attributes for those objects.
+ *
+ * <!-- ------------------------------------------------------------------- -->
+ * @class doc_get_name
+ *
+ * @copydetails doc_name_attribute
+ *
+ * @return the name of this SBML object, or the empty string if not set or unsettable.
+ *
+ * @see getIdAttribute()
+ * @see isSetName()
+ * @see setName(const std::string& sid)
+ * @see unsetName()
+ * 
+ * <!-- ------------------------------------------------------------------- -->
+ * @class doc_set_id
+ *
+ * @par
+ * The string @p sid is copied.
+ *
+ * @copydetails doc_id_attribute
+ * 
+ * @param sid the string to use as the identifier of this object.
+ *
+ * @copydetails doc_returns_success_code
+ * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_UNEXPECTED_ATTRIBUTE, OperationReturnValues_t}
+ *
+ * @see getIdAttribute()
+ * @see setIdAttribute(const std::string& sid)
+ * @see isSetIdAttribute()
+ * @see unsetIdAttribute()
+ * 
+ * <!-- ------------------------------------------------------------------- -->
+ * @class doc_set_name
+ *
+ * @par
+ *
+ * The string in @p name is copied.
+ *
+ * @param name the new name for the SBML object.
+ *
+ * @copydetails doc_returns_success_code
+ * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_INVALID_ATTRIBUTE_VALUE, OperationReturnValues_t}
+ *
+ * <!-- ------------------------------------------------------------------- -->
+ * @class doc_isset_id
+ *
+ * @copydetails doc_id_attribute
+ *
+ * @return @c true if the "id" attribute of this SBML object is
+ * set, @c false otherwise.
+ *
+ * @note Because of the inconsistent behavior of this function with
+ * respect to assignments and rules, it is recommended that callers
+ * use isSetIdAttribute() instead.
+ *
+ * @see getIdAttribute()
+ * @see setIdAttribute(const std::string& sid)
+ * @see unsetIdAttribute()
+ * @see isSetIdAttribute()
+ *
+ * <!-- ------------------------------------------------------------------- -->
+ * @class doc_isset_name
+ *
+ * @copydetails doc_name_attribute
+ * 
+ * @return @c true if the "name" attribute of this SBML object is
+ * set, @c false otherwise.
+ *
+ * @see getName()
+ * @see setName(const std::string& sid)
+ * @see unsetName()
+ *
+ * <!-- ------------------------------------------------------------------- -->
+ * @class doc_unset_id
+ *
+ * @copydetails doc_id_attribute
+ * 
+ * @copydetails doc_returns_success_code
+ * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+ *
+ * @see getIdAttribute()
+ * @see setIdAttribute(const std::string& sid)
+ * @see isSetIdAttribute()
+ * @see unsetIdAttribute()
+ *
+ * <!-- ------------------------------------------------------------------- -->
+ * @class doc_unset_name
+ *
+ * @copydetails doc_name_attribute
+ * 
+ * @copydetails doc_returns_success_code
+ * @li @sbmlconstant{LIBSBML_OPERATION_SUCCESS, OperationReturnValues_t}
+ * @li @sbmlconstant{LIBSBML_OPERATION_FAILED, OperationReturnValues_t}
+ *
+ * @see getName()
+ * @see setName(const std::string& sid)
+ * @see isSetName()
  *
  * <!-- ------------------------------------------------------------------- -->
  * @class doc_base_units
@@ -301,16 +520,31 @@
  * static integer constants in the interface class
  * @link libsbmlcs.libsbml@endlink.@endif@~  Note that different Level&nbsp;3
  * package plug-ins may use overlapping type codes; to identify the package
- * to which a given object belongs, call the <code>getPackageName()</code>
+ * to which a given object belongs, call the 
+ * <code>@if conly SBase_getPackageName()
+ * @else SBase::getPackageName()
+ * @endif</code>
  * method on the object.
+ *
+ * The exception to this is lists:  all SBML-style list elements have the type 
+ * @sbmlconstant{SBML_LIST_OF, SBMLTypeCode_t}, regardless of what package they 
+ * are from.
  *
  * <!-- ------------------------------------------------------------------- -->
  * @class doc_warning_typecodes_not_unique
  *
  * @warning <span class="warning">The specific integer values of the possible
- * type codes may be reused by different Level&nbsp;3 package plug-ins.
- * Thus, to identifiy the correct code, <strong>it is necessary to invoke
- * both getTypeCode() and getPackageName()</strong>.</span>
+ * type codes may be reused by different libSBML plug-ins for SBML Level&nbsp;3.
+ * packages,  To fully identify the correct code, <strong>it is necessary to
+ * invoke both getPackageName() and getTypeCode()</strong> (or 
+ * ListOf::getItemTypeCode()).</span>
+ *
+ * <!-- ------------------------------------------------------------------- -->
+ * @class doc_warning_deprecated_constructor
+ *
+ * @warning <span class="warning">This constructor is deprecated. The new
+ * libSBML API uses constructors that either take the SBML Level and Version,
+ * @em or take an SBMLNamespaces object.</span>
  *
  * <!-- ------------------------------------------------------------------- -->
  * @class doc_what_are_plugins
@@ -337,7 +571,7 @@
  * If a plugin is <em>disabled</em>, the package information it contains is
  * no longer considered to be part of the SBML document for the purposes of
  * searching the document or writing out the document.  However, the information
- * is still retained, so if the plugin is enabled again, the same information 
+ * is still retained, so if the plugin is enabled again, the same information
  * will once again be available, and will be written out to the final model.
  *
  * <!-- ------------------------------------------------------------------- -->
@@ -367,7 +601,7 @@
  * appropriate <a target="_blank"
  * href="http://sbml.org/Documents/Specifications">SBML specification
  * document</a> for the Level and Version of their model for more in-depth
- * explanations of using "notes" in SBML.  The SBML Level&nbsp;2 and &nbsp;3
+ * explanations of using "notes" in SBML.  The SBML Level&nbsp;2 and&nbsp;3
  * specifications have considerable detail about how "notes" element content
  * must be structured.
  *
@@ -505,8 +739,8 @@
  * @li If the node is a lambda expression, its type will be
  * @sbmlconstant{AST_LAMBDA, ASTNodeType_t}.
  *
- * @li If the node is a predefined constant (@c "ExponentialE", @c "Pi", @c
- * "True" or @c "False"), then the node's type will be
+ * @li If the node is a predefined constant (@c "ExponentialE", @c "Pi",
+ * @c "True" or @c "False"), then the node's type will be
  * @sbmlconstant{AST_CONSTANT_E, ASTNodeType_t},
  * @sbmlconstant{AST_CONSTANT_PI, ASTNodeType_t},
  * @sbmlconstant{AST_CONSTANT_TRUE, ASTNodeType_t}, or
@@ -520,9 +754,21 @@
  * the fact that @c time is a single variable, whereas @c delay is actually a
  * function taking arguments.)
  *
- * @li (Level&nbsp;3 only) If the node is the special MathML csymbol @c
- * avogadro, the value of the node will be
+ * @li (Level&nbsp;3 only) If the node is the special MathML csymbol
+ * @c avogadro, the value of the node will be
  * @sbmlconstant{AST_NAME_AVOGADRO, ASTNodeType_t}.
+ *
+ * @li (Level&nbsp;3 Version&nbsp;2+ only) If the node is the special MathML
+ * csymbol @c rateOf, the value of the node will be
+ * @sbmlconstant{AST_FUNCTION_RATE_OF, ASTNodeType_t}.
+ *
+ * @li (Level&nbsp;3 Version&nbsp;2+ only) If the node is a MathML 
+ * operator that originates in a package, it is included in the
+ * ASTNodeType_t list, but may not be legally used in an SBML document
+ * that does not include that package.  This includes the node types from
+ * the 'Distributions' package (@sbmlconstant{AST_DISTRIB_FUNCTION_NORMAL,
+ * ASTNodeType_t}, @sbmlconstant{AST_DISTRIB_FUNCTION_UNIFORM, ASTNodeType_t},
+ * etc.), and elements from MathML that were not included in core.
  *
  * @li If the node contains a numerical value, its type will be
  * @sbmlconstant{AST_INTEGER, ASTNodeType_t},
@@ -532,12 +778,12 @@
  *
  * <!-- ------------------------------------------------------------------- -->
  * @class doc_summary_of_astnode_methods
- * 
+ *
  * @par
  * There are a number of methods for interrogating the type of an ASTNode and
  * for testing whether a node belongs to a general category of constructs.
  * The methods on ASTNode for this purpose are the following:
- * 
+ *
  * @if cpp
  * @li <code>ASTNodeType_t @link ASTNode::getType() getType()@endlink</code>
  * returns the type of this AST node.
@@ -545,9 +791,9 @@
  * returns @c true if this AST node is a MathML constant (@c true, @c false,
  * @c pi, @c exponentiale), @c false otherwise.
  * @li <code>bool @link ASTNode::isBoolean() isBoolean()@endlink</code>
- * returns @c true if this AST node returns a boolean value (by being either a
- * logical operator, a relational operator, or the constant @c true or @c
- * false).
+ * returns @c true if this AST node returns a Boolean value (by being either a
+ * logical operator, a relational operator, or the constant @c true or
+ * @c false).
  * @li <code>bool @link ASTNode::isFunction() isFunction()@endlink</code>
  * returns @c true if this AST node is a function (i.e., a MathML defined
  * function such as @c exp or else a function defined by a FunctionDefinition
@@ -565,13 +811,13 @@
  * that its type is @c AST_FUNCTION_LOG and it has two children, the first of
  * which is an integer equal to 10.
  * @li <code>bool @link ASTNode::isLogical() isLogical()@endlink</code>
- * returns @c true if this AST node is a logical operator (@c and, @c or, @c
- * not, @c xor).
- * @li <code>bool @link ASTNode::isName() isName()@endlink</code> returns @c
- * true if this AST node is a user-defined name or (in SBML Levels&nbsp;2
+ * returns @c true if this AST node is a logical operator (@c and, @c or,
+ * @c not, @c xor).
+ * @li <code>bool @link ASTNode::isName() isName()@endlink</code> returns
+ * @c true if this AST node is a user-defined name or (in SBML Levels&nbsp;2
  * and&nbsp;3) one of the two special @c csymbol constructs "delay" or "time".
- * @li <code>bool @link ASTNode::isNaN() isNaN()@endlink</code> returns @c
- * true if this AST node has the special IEEE 754 value "not a number" (NaN).
+ * @li <code>bool @link ASTNode::isNaN() isNaN()@endlink</code> returns
+ * @c true if this AST node has the special IEEE 754 value "not a number" (NaN).
  * @li <code>bool @link ASTNode::isNegInfinity() isNegInfinity()
  * @endlink</code> returns @c true if this AST node has the special IEEE 754
  * value of negative infinity.
@@ -582,13 +828,13 @@
  * @li <code>bool @link ASTNode::isRational() isRational()@endlink</code>
  * returns @c true if this AST node is a rational number having a numerator
  * and a denominator.
- * @li <code>bool @link ASTNode::isReal() isReal()@endlink</code> returns @c
- * true if this AST node is a real number (specifically, @c AST_REAL_E or
+ * @li <code>bool @link ASTNode::isReal() isReal()@endlink</code> returns
+ * @c true if this AST node is a real number (specifically, @c AST_REAL_E or
  * @c AST_RATIONAL).
  * @li <code>bool @link ASTNode::isRelational() isRelational()@endlink</code>
  * returns @c true if this AST node is a relational operator.
- * @li <code>bool @link ASTNode::isSqrt() isSqrt()@endlink</code> returns @c
- * true if this AST node is the square-root operator
+ * @li <code>bool @link ASTNode::isSqrt() isSqrt()@endlink</code> returns
+ * @c true if this AST node is the square-root operator
  * @li <code>bool @link ASTNode::isUMinus() isUMinus()@endlink</code> returns
  * @c true if this AST node is a unary minus.
  * @li <code>bool @link ASTNode::isUnknown() isUnknown()@endlink</code>
@@ -601,7 +847,7 @@
  * AST node is a MathML constant (@c True, @c False, @c pi, @c exponentiale),
  * @c False otherwise.
  * @li <code>bool</code> @link libsbml.ASTNode.isBoolean() ASTNode.isBoolean()@endlink returns @c True if this
- * AST node returns a boolean value (by being either a logical operator, a
+ * AST node returns a Boolean value (by being either a logical operator, a
  * relational operator, or the constant @c True or @c False).
  * @li <code>bool</code> @link libsbml.ASTNode.isFunction() ASTNode.isFunction()@endlink returns @c True if this
  * AST node is a function (i.e., a MathML defined function such as @c exp or
@@ -648,104 +894,104 @@
  * @li <code>ASTNodeType_t ASTNode_getType()</code>
  * returns the type of this AST node.
  * @li <code>bool ASTNode_isConstant()</code>
- * returns @c 1 if this AST node is a MathML constant (@c true, @c false,
- * @c pi, @c exponentiale), @c 0 otherwise.
+ * returns @c 1 (true) if this AST node is a MathML constant (@c true, @c false,
+ * @c pi, @c exponentiale), @c 0 (false) otherwise.
  * @li <code>bool ASTNode_isBoolean()</code>
- * returns @c 1 if this AST node returns a boolean value (by being either a
- * logical operator, a relational operator, or the constant @c true or @c
- * false).
+ * returns @c 1 (true) if this AST node returns a Boolean value (by being either a
+ * logical operator, a relational operator, or the constant @c true or
+ * @c false).
  * @li <code>bool ASTNode_isFunction()</code>
- * returns @c 1 if this AST node is a function (i.e., a MathML defined
+ * returns @c 1 (true) if this AST node is a function (i.e., a MathML defined
  * function such as @c exp or else a function defined by a FunctionDefinition
  * in the Model).
  * @li <code>bool ASTNode_isInfinity()</code>
- * returns @c 1 if this AST node is the special IEEE 754 value infinity.
+ * returns @c 1 (true) if this AST node is the special IEEE 754 value infinity.
  * @li <code>bool ASTNode_isInteger()</code>
- * returns @c 1 if this AST node is holding an integer value.
+ * returns @c 1 (true) if this AST node is holding an integer value.
  * @li <code>bool ASTNode_isNumber()</code> returns
- * @c 1 if this AST node is holding any number.
+ * @c 1 (true) if this AST node is holding any number.
  * @li <code>bool ASTNode_isLambda()</code> returns
- * @c 1 if this AST node is a MathML @c lambda construct.
+ * @c 1 (true) if this AST node is a MathML @c lambda construct.
  * @li <code>bool ASTNode_isLog10()</code> returns
- * @c 1 if this AST node represents the @c log10 function, specifically,
+ * @c 1 (true) if this AST node represents the @c log10 function, specifically,
  * that its type is @c AST_FUNCTION_LOG and it has two children, the first of
  * which is an integer equal to 10.
  * @li <code>bool ASTNode_isLogical()</code>
- * returns @c 1 if this AST node is a logical operator (@c and, @c or, @c
- * not, @c xor).
- * @li <code>bool ASTNode_isName()</code> returns @c
- * true if this AST node is a user-defined name or (in SBML Levels&nbsp;2
+ * returns @c 1 (true) if this AST node is a logical operator (@c and, @c or,
+ * @c not, @c xor).
+ * @li <code>bool ASTNode_isName()</code> returns
+ * @c true if this AST node is a user-defined name or (in SBML Levels&nbsp;2
  * and&nbsp;3) one of the two special @c csymbol constructs "delay" or "time".
- * @li <code>bool ASTNode_isNaN()</code> returns @c
- * true if this AST node has the special IEEE 754 value "not a number" (NaN).
- * @li <code>bool ASTNode_isNegInfinity()</code> returns @c 1 if this AST node has the special IEEE 754
+ * @li <code>bool ASTNode_isNaN()</code> returns
+ * @c true if this AST node has the special IEEE 754 value "not a number" (NaN).
+ * @li <code>bool ASTNode_isNegInfinity()</code> returns @c 1 (true) if this AST node has the special IEEE 754
  * value of negative infinity.
  * @li <code>bool ASTNode_isOperator()</code>
- * returns @c 1 if this AST node is an operator (e.g., @c +, @c -, etc.)
+ * returns @c 1 (true) if this AST node is an operator (e.g., @c +, @c -, etc.)
  * @li <code>bool ASTNode_isPiecewise()</code>
- * returns @c 1 if this AST node is the MathML @c piecewise function.
+ * returns @c 1 (true) if this AST node is the MathML @c piecewise function.
  * @li <code>bool ASTNode_isRational()</code>
- * returns @c 1 if this AST node is a rational number having a numerator
+ * returns @c 1 (true) if this AST node is a rational number having a numerator
  * and a denominator.
- * @li <code>bool ASTNode_isReal()</code> returns @c
- * true if this AST node is a real number (specifically, @c AST_REAL_E or
+ * @li <code>bool ASTNode_isReal()</code> returns
+ * @c true if this AST node is a real number (specifically, @c AST_REAL_E or
  * @c AST_RATIONAL).
  * @li <code>bool ASTNode_isRelational()</code>
- * returns @c 1 if this AST node is a relational operator.
- * @li <code>bool ASTNode_isSqrt()</code> returns @c
- * true if this AST node is the square-root operator
+ * returns @c 1 (true) if this AST node is a relational operator.
+ * @li <code>bool ASTNode_isSqrt()</code> returns
+ * @c true if this AST node is the square-root operator
  * @li <code>bool ASTNode_isUMinus()</code> returns
- * @c 1 if this AST node is a unary minus.
+ * @c 1 (true) if this AST node is a unary minus.
  * @li <code>bool ASTNode_isUnknown()</code>
- * returns @c 1 if this AST node's type is unknown.
+ * returns @c 1 (true) if this AST node's type is unknown.
  * @endif
- * 
+ *
  * Programs manipulating AST node structures should check the type of a given
  * node before calling methods that return a value from the node.  The
  * following are the ASTNode object methods available for returning values
  * from nodes:
- * 
+ *
  * @if cpp
- * @li <code>long @link ASTNode::getInteger() getInteger()@endlink</code> 
- * @li <code>char @link ASTNode::getCharacter() getCharacter()@endlink</code> 
- * @li <code>const char* @link ASTNode::getName() getName()@endlink</code> 
- * @li <code>long @link ASTNode::getNumerator() getNumerator()@endlink</code> 
+ * @li <code>long @link ASTNode::getInteger() getInteger()@endlink</code>
+ * @li <code>char @link ASTNode::getCharacter() getCharacter()@endlink</code>
+ * @li <code>const char* @link ASTNode::getName() getName()@endlink</code>
+ * @li <code>long @link ASTNode::getNumerator() getNumerator()@endlink</code>
  * @li <code>long @link ASTNode::getDenominator() getDenominator()@endlink</code>
- * @li <code>double @link ASTNode::getReal() getReal()@endlink</code> 
- * @li <code>double @link ASTNode::getMantissa() getMantissa()@endlink</code> 
- * @li <code>long @link ASTNode::getExponent() getExponent()@endlink</code> 
+ * @li <code>double @link ASTNode::getReal() getReal()@endlink</code>
+ * @li <code>double @link ASTNode::getMantissa() getMantissa()@endlink</code>
+ * @li <code>long @link ASTNode::getExponent() getExponent()@endlink</code>
  * @endif
  * @if python
- * @li <code>long</code> @link libsbml.ASTNode.getInteger() ASTNode.getInteger()@endlink 
- * @li <code>char</code> @link libsbml.ASTNode.getCharacter() ASTNode.getCharacter()@endlink 
- * @li <code>string</code> @link libsbml.ASTNode.getName() ASTNode.getName()@endlink 
- * @li <code>long</code> @link libsbml.ASTNode.getNumerator() ASTNode.getNumerator()@endlink 
- * @li <code>long</code> @link libsbml.ASTNode.getDenominator() ASTNode.getDenominator()@endlink 
- * @li <code>float</code> @link libsbml.ASTNode.getReal() ASTNode.getReal()@endlink 
- * @li <code>float</code> @link libsbml.ASTNode.getMantissa() ASTNode.getMantissa()@endlink 
- * @li <code>long</code> @link libsbml.ASTNode.getExponent() ASTNode.getExponent()@endlink 
+ * @li <code>long</code> @link libsbml.ASTNode.getInteger() ASTNode.getInteger()@endlink
+ * @li <code>char</code> @link libsbml.ASTNode.getCharacter() ASTNode.getCharacter()@endlink
+ * @li <code>string</code> @link libsbml.ASTNode.getName() ASTNode.getName()@endlink
+ * @li <code>long</code> @link libsbml.ASTNode.getNumerator() ASTNode.getNumerator()@endlink
+ * @li <code>long</code> @link libsbml.ASTNode.getDenominator() ASTNode.getDenominator()@endlink
+ * @li <code>float</code> @link libsbml.ASTNode.getReal() ASTNode.getReal()@endlink
+ * @li <code>float</code> @link libsbml.ASTNode.getMantissa() ASTNode.getMantissa()@endlink
+ * @li <code>long</code> @link libsbml.ASTNode.getExponent() ASTNode.getExponent()@endlink
  * @endif
  * @if conly
- * @li <code>long ASTNode_getInteger()</code> 
- * @li <code>char ASTNode_getCharacter()</code> 
- * @li <code>const char* ASTNode_getName()</code> 
- * @li <code>long ASTNode_getNumerator()</code> 
+ * @li <code>long ASTNode_getInteger()</code>
+ * @li <code>char ASTNode_getCharacter()</code>
+ * @li <code>const char* ASTNode_getName()</code>
+ * @li <code>long ASTNode_getNumerator()</code>
  * @li <code>long ASTNode_getDenominator()</code>
- * @li <code>double ASTNode_getReal()</code> 
- * @li <code>double ASTNode_getMantissa()</code> 
- * @li <code>long ASTNode_getExponent()</code> 
+ * @li <code>double ASTNode_getReal()</code>
+ * @li <code>double ASTNode_getMantissa()</code>
+ * @li <code>long ASTNode_getExponent()</code>
  * @endif
- * 
+ *
  * Of course, all of this would be of little use if libSBML didn't also
  * provide methods for @em setting the values of AST node objects!  And it
  * does.  The methods are the following:
- * 
+ *
  * @if cpp
  * @li <code>void @link ASTNode::setCharacter(char value) setCharacter(char
  * value)@endlink</code> sets the value of this ASTNode to the given
- * character <code>value</code>.  If character is one of @c +, @c -, @c *, @c
- * / or @c ^, the node type will be to the appropriate operator type.  For all
- * other characters, the node type will be set to @c AST_UNKNOWN.
+ * character <code>value</code>.  If character is one of @c +, @c -, @c *,
+ * @c / or @c ^, the node type will be to the appropriate operator type.  For all
+ * other characters, the node type will be set to @sbmlconstant{AST_UNKNOWN, ASTNodeType_t}.
  * @li <code>void @link ASTNode::setName(const char *name) setName(const char
  * *name)@endlink</code> sets the value of this AST node to the given
  * <code>name</code>.  The node type will be set (to @c AST_NAME) <em>only
@@ -773,9 +1019,9 @@
  * @endif
  * @if python
  * @li @link libsbml.ASTNode.setCharacter() ASTNode.setCharacter(char)@endlink sets the value of
- * this ASTNode to the given character.  If character is one of @c +, @c -, @c
- * *, @c / or @c ^, the node type will be to the appropriate operator type.
- * For all other characters, the node type will be set to @c AST_UNKNOWN.
+ * this ASTNode to the given character.  If character is one of @c +, @c -,
+ * @c *, @c / or @c ^, the node type will be to the appropriate operator type.
+ * For all other characters, the node type will be set to @sbmlconstant{AST_UNKNOWN, ASTNodeType_t}.
  * @li @link libsbml.ASTNode.setName() ASTNode.setName(string)@endlink sets the value of
  * this AST node to the given name.  The node type will be set (to @c AST_NAME)
  * <em>only if</em> the AST node was previously an operator
@@ -796,21 +1042,21 @@
  * @endif
  * @if conly
  * @li <code>void ASTNode_setCharacter(ASTNode_t *node, char value)</code> sets the value of this
- * ASTNode to the given character <code>value</code>.  If character is one of @c
- * +, @c -, @c *, @c / or @c ^, the node type will be to the appropriate
- * operator type.  For all other characters, the node type will be set to @c
- * AST_UNKNOWN.
+ * ASTNode to the given character <code>value</code>.  If character is one of
+ * @c +, @c -, @c *, @c / or @c ^, the node type will be to the appropriate
+ * operator type.  For all other characters, the node type will be set to
+ * @c AST_UNKNOWN.
  * @li <code>void ASTNode_setName(ASTNode_t *node, const char *name)</code> sets the value of
  * this AST node to the given <code>name</code>.  The node type will be set (to
  * @c AST_NAME) <em>only if</em> the AST node was previously an operator
  * (<code>isOperator(node) != 0</code>) or number (<code>isNumber(node) !=
  * 0</code>).  This allows names to be set for @c AST_FUNCTIONs and the like.
  * @li <code>void ASTNode_setInteger(ASTNode_t *node, long value)</code> sets the value of the node
- * to the given integer <code>value</code>.  
+ * to the given integer <code>value</code>.
  * @li <code>void ASTNode_setRational(ASTNode_t *node, long numerator, long denominator)</code> sets
  * the value of this ASTNode to the given rational <code>value</code> in two
- * parts: the numerator and denominator.  The node type is set to @c
- * AST_RATIONAL.
+ * parts: the numerator and denominator.  The node type is set to
+ * @c AST_RATIONAL.
  * @li <code>void ASTNode_setReal(ASTNode_t *node, double value)</code> sets the value of this
  * ASTNode to the given real (double) <code>value</code> and sets the node type
  * to @c AST_REAL.
@@ -818,15 +1064,15 @@
  * the value of this ASTNode to a real (double) using the two parts given: the
  * mantissa and the exponent.  The node type is set to @c AST_REAL_E.
  * @endif
- * 
+ *
  * Finally, ASTNode also defines some miscellaneous methods for manipulating
  * ASTs:
- * 
+ *
  * @if cpp
  * @li <code>ASTNode* @link ASTNode::ASTNode(ASTNodeType_t type)
  * ASTNode(ASTNodeType_t type)@endlink</code> creates a new ASTNode object
  * and returns a pointer to it.  The returned node will have the given
- * <code>type</code>, or a type of @c AST_UNKNOWN if no argument
+ * <code>type</code>, or a type of @sbmlconstant{AST_UNKNOWN, ASTNodeType_t} if no argument
  * <code>type</code> is explicitly given or the type code is unrecognized.
  * @li <code>unsigned int @link ASTNode::getNumChildren() getNumChildren()
  * @endlink</code> returns the number of children of this AST node or
@@ -858,7 +1104,7 @@
  * @if python
  * @li <code>ASTNode</code> @link libsbml.ASTNode(long) ASTNode(long)@endlink creates a new ASTNode object
  * and returns a pointer to it.  The returned node will have the type
- * identified by the code passed as the argument, or a type of @c AST_UNKNOWN if
+ * identified by the code passed as the argument, or a type of @sbmlconstant{AST_UNKNOWN, ASTNodeType_t} if
  * no type is explicitly given or the type code is unrecognized.
  * @li <code>unsigned int</code> @link libsbml.ASTNode.getNumChildren() ASTNode.getNumChildren()@endlink returns the number
  * of children of this AST node or 0 is this node has no children.
@@ -879,13 +1125,13 @@
  * children of this ASTNode with the children of @c that ASTNode.
  * @li @link libsbml.ASTNode.setType() ASTNode.setType(long)@endlink
  * sets the type of this ASTNode to the type identified by the
- * type code passed as argument, or to @c AST_UNKNOWN if the type
+ * type code passed as argument, or to @sbmlconstant{AST_UNKNOWN, ASTNodeType_t} if the type
  * is unrecognized.
  * @endif
  * @if conly
  * @li <code>ASTNode_t* ASTNode_createWithType(ASTNodeType_t type)</code> creates a new
  * ASTNode object and returns a pointer to it.  The returned node will have the
- * given <code>type</code>, or a type of @c AST_UNKNOWN if no argument
+ * given <code>type</code>, or a type of @sbmlconstant{AST_UNKNOWN, ASTNodeType_t} if no argument
  * <code>type</code> is explicitly given or the type code is unrecognized.
  * @li <code>unsigned int ASTNode_getNumChildren(const ASTNode_t *node)</code> returns the number of
  * children of this AST node or <code>0</code> is this node has no children.
@@ -910,15 +1156,15 @@
  *
  * <!-- ------------------------------------------------------------------- -->
  * @class doc_summary_of_writing_mathml_directly
- * 
+ *
  * @par
  * As mentioned above, applications often can avoid working with raw MathML by
  * using either libSBML's text-string interface or the AST API.  However, when
  * needed, reading MathML content directly and creating ASTs is easily done in
  * libSBML using a method designed for this purpose:
- * 
+ *
  * @if cpp
- * @li <code>ASTNode_t* @sbmlfunction{readMathMLFromString, String}</code> reads raw
+ * @li <code>ASTNode_t* readMathMLFromString() </code> reads raw
  * MathML from a text string, constructs an AST from it, then returns the root
  * ASTNode of the resulting expression tree.
  * @endif
@@ -928,16 +1174,16 @@
  * ASTNode of the resulting expression tree.
  * @endif
  * @if conly
- * @li <code>ASTNode_t* @sbmlfunction{readMathMLFromString, String}</code> reads raw
+ * @li <code>ASTNode_t* readMathMLFromString() </code> reads raw
  * MathML from a text string, constructs an AST from it, then returns the root
  * ASTNode_t of the resulting expression tree.
  * @endif
- * 
+ *
  * Similarly, writing out Abstract Syntax Tree structures is easily done using
  * the following method:
- * 
+ *
  * @if cpp
- * @li <code>char* @sbmlfunction{writeMathMLToString, ASTNode}</code> writes an
+ * @li <code>char* writeMathMLToString() </code> writes an
  * AST to a string.  The caller owns the character string returned and should free
  * it after it is no longer needed.
  * @endif
@@ -947,7 +1193,7 @@
  * after it is no longer needed.
  * @endif
  * @if conly
- * @li <code>char* @sbmlfunction{writeMathMLToString, ASTNode}</code> writes an
+ * @li <code>char* writeMathMLToString() </code> writes an
  * AST to a string.  The caller owns the character string returned and should free
  * it after it is no longer needed.
  * @endif
@@ -1039,7 +1285,7 @@
  * @sbmlfunction{formulaToL3String, ASTNode}.
  *
  * The following lists the main differences in the formula syntax supported by
- * the "Level 3" or L3 versions of the formula parsers and formatters,
+ * the Level 3 ("L3") versions of the formula parsers and formatters,
  * compared to what is supported by the Level&nbsp;1-oriented
  * @sbmlfunction{parseFormula, String} and
  * @sbmlfunction{formulaToString, ASTNode}:
@@ -1059,12 +1305,14 @@
  * and <span class="code" style="background-color: #edd">unit</span>
  * is optional.
  *
- * @li The Boolean function symbols @c &&, @c ||, @c !, and @c != may be
- * used.
+ * @li The Boolean function symbols @c && (@em and), @c || (@em or), @c ! (@em not),
+ * and @c != (@em not @em equals) may be used.
  *
  * @li The @em modulo operation is allowed as the symbol @c @% and will
  * produce a <code>&lt;piecewise&gt;</code> function in the corresponding
- * MathML output.
+ * MathML output by default, or can produce the MathML function @c rem, 
+ * depending on the L3ParserSettings object (see 
+ * L3ParserSettings_setParseModuloL3v2() ).
  *
  * @li All inverse trigonometric functions may be defined in the infix either
  * using @c arc as a prefix or simply @c a; in other words, both @c arccsc
@@ -1109,13 +1357,26 @@
  * <li style="margin-bottom: 0.5em"> The string @c avogadro can be parsed as
  * a MathML @em csymbol or as an identifier.
  *
+ * <li style="margin-bottom: 0.5em"> The string @% can be parsed either as a 
+ * piecewise function or as the 'rem' function:  <code>a @% b</code> will either
+ * become
+ *
+ * <code>piecewise(a - b*ceil(a/b), xor((a < 0), (b < 0)), a - b*floor(a/b))</code>
+ *
+ * or 
+ *
+ * <code>rem(a, b)</code>.
+ *
+ * The latter is simpler, but the @c rem MathML is only allowed
+ * as of SBML Level&nbsp;3 Version&nbsp;2.</li>
+ *
  * <li style="margin-bottom: 0.5em"> A Model object may optionally be
  * provided to the parser using the variant function call
  * @sbmlfunction{parseL3FormulaWithModel, String\, Model} or
  * stored in a L3ParserSettings object passed to the variant function
  * @sbmlfunction{parseL3FormulaWithSettings, String\,
  * L3ParserSettings}.  When a Model object is provided, identifiers
- * (values of type @c SId) from that model are used in preference to
+ * (values of type @c SId ) from that model are used in preference to
  * pre-defined MathML definitions for both symbols and functions.
  * More precisely:
  * <ul style="list-style-type: square">
@@ -1218,8 +1479,8 @@
  * &quot;<code>log</code>&quot; is interpreted as the base&nbsp;10 logarithm,
  * and @em not as the natural logarithm.  However, you can change the
  * interpretation to be base-10 log, natural log, or as an error; since the
- * name "log" by itself is ambiguous, you require that the parser uses @c
- * log10 or @c ln instead, which are more clear.  Please refer to
+ * name "log" by itself is ambiguous, you require that the parser uses
+ * @c log10 or @c ln instead, which are more clear.  Please refer to
  * @sbmlfunction{parseL3FormulaWithSettings, String\,
  * L3ParserSettings}.
  *
@@ -1279,7 +1540,7 @@
  * @sbmlconstant{AST_NAME, ASTNodeType_t}.
  * @li Strings that match built-in functions and constants can either be parsed
  * as a match regardless of capitalization, or may be required to be
- * all-lower-case to be considered a match.  
+ * all-lower-case to be considered a match.
  * @li LibSBML plug-ins implementing support for SBML Level&nbsp;3 packages
  * may introduce extensions to the syntax understood by the parser.  The
  * precise nature of the extensions will be documented by the individual
@@ -1297,7 +1558,7 @@
  * @sbmlfunction{parseL3Formula, String} and
  * @sbmlfunction{formulaToL3String, ASTNode}.  The Level&nbsp;1-oriented
  * system (i.e., what is provided by @sbmlfunction{formulaToString, String}
- * and @sbmlfunction{parseFormula, ASTNode}) is provided 
+ * and @sbmlfunction{parseFormula, ASTNode}) is provided
  * untouched for backwards compatibility.
  *
  * <!-- ------------------------------------------------------------------- -->
@@ -1407,6 +1668,22 @@
  * statements that contain the symbol in their "math" subelement expressions.
  * This graph must be acyclic.
  *
+ * Similarly, the combined set of RateRule and Reaction objects constitute 
+ * a set of definitions for the rates of change of various model entities 
+ * (namely, the objects identified by the values of the 'variable' attributes 
+ * of the RateRule objects, and the 'species' attributes of the SpeciesReference 
+ * objects in each Reaction).  In SBML Level&nbsp;3 Version&nbsp;2, these rates 
+ * of change may be referenced directly 
+ * using the <em>rateOf</em> csymbol, but may not thereby contain algebraic 
+ * loops---dependency chains between these statements must terminate.  More 
+ * formally, consider a directed graph in which the nodes are the definitions 
+ * of different variables' rates of change, and directed arcs exist for each 
+ * occurrence of a variable referenced by a <em>rateOf</em> csymbol from any 
+ * RateRule or KineticLaw object in the model.  Let the directed arcs point 
+ * from the variable referenced by the <em>rateOf</em> csymbol (call it 
+ * <em>x</em>) to the variable(s) determined by the 'math' expression in which
+ * <em>x</em> appears.  This graph must be acyclic.
+ *
  * SBML does not specify when or how often rules should be evaluated.
  * Eliminating algebraic loops ensures that assignment statements can be
  * evaluated any number of times without the result of those evaluations
@@ -1423,11 +1700,11 @@
  * @subsection rules-not-overdetermined A model must not be overdetermined
  *
  * An SBML model must not be overdetermined; that is, a model must not
- * define more equations than there are unknowns in a model.  An SBML model
+ * define more equations than there are unknowns in a model.  A valid SBML model
  * that does not contain AlgebraicRule structures cannot be overdetermined.
  *
  * LibSBML implements the static analysis procedure described in
- * Appendix&nbsp;B of the SBML Level&nbsp;3 Version&nbsp;1 Core
+ * Appendix&nbsp;B of the SBML Level&nbsp;3
  * specification for assessing whether a model is overdetermined.
  *
  * (In summary, assessing whether a given continuous, deterministic,
@@ -1696,6 +1973,27 @@ void example (SBase sb)
  * particular value to an attribute.
  *
  * <!-- ------------------------------------------------------------------- -->
+ * @class doc_note_setting_lv_pkg
+ *
+ * @note Attempting to add an object to an SBMLDocument having a different
+ * combination of SBML Level, Version and XML namespaces than the object
+ * itself will result in an error at the time a caller attempts to make the
+ * addition.  A parent object must have compatible Level, Version and XML
+ * namespaces.  (Strictly speaking, a parent may also have more XML
+ * namespaces than a child, but the reverse is not permitted.)  The
+ * restriction is necessary to ensure that an SBML model has a consistent
+ * overall structure.  This requires callers to manage their objects
+ * carefully, but the benefit is increased flexibility in how models can be
+ * created by permitting callers to create objects bottom-up if desired.  In
+ * situations where objects are not yet attached to parents (e.g.,
+ * SBMLDocument), knowledge of the intented SBML Level and Version help
+ * libSBML determine such things as whether it is valid to assign a
+ * particular value to an attribute.  For packages, this means that the 
+ * parent object to which this package element is being added must have
+ * been created with the package namespace, or that the package namespace
+ * was added to it, even if that parent is not a package object itself.
+ *
+ * <!-- ------------------------------------------------------------------- -->
  * @class doc_what_is_user_data
  *
  * @par
@@ -1718,8 +2016,8 @@ void example (SBase sb)
  * matching values are replaced with @p newid.  The method does @em not
  * descend into child elements.
  *
- * @param oldid the old identifier
- * @param newid the new identifier
+ * @param oldid the old identifier.
+ * @param newid the new identifier.
  *
  * <!-- ------------------------------------------------------------------- -->
  * @class doc_renameunitsidref_common
@@ -1735,8 +2033,8 @@ void example (SBase sb)
  * are found, the matching values are replaced with @p newid.  The method
  * does @em not descend into child elements.
  *
- * @param oldid the old identifier
- * @param newid the new identifier
+ * @param oldid the old identifier.
+ * @param newid the new identifier.
  *
  * <!-- ------------------------------------------------------------------- -->
  * @class doc_renamemetasidref_common
@@ -1751,8 +2049,8 @@ void example (SBase sb)
  * found, the matching identifiers are replaced with @p newid.  The method
  * does @em not descend into child elements.
  *
- * @param oldid the old identifier
- * @param newid the new identifier
+ * @param oldid the old identifier.
+ * @param newid the new identifier.
  *
  * <!-- ------------------------------------------------------------------- -->
  * @class doc_section_using_sbml_converters
@@ -1762,7 +2060,7 @@ void example (SBase sb)
  * The use of all the converters follows a similar approach.  First, one
  * creates a ConversionProperties object and calls
  * ConversionProperties::addOption(@if java ConversionOption@endif)
- * on this object with one arguments: a text string that identifies the desired
+ * on this object with one argument: a text string that identifies the desired
  * converter.  (The text string is specific to each converter; consult the
  * documentation for a given converter to find out how it should be enabled.)
  *
@@ -1782,8 +2080,8 @@ void example (SBase sb)
  * @subsection converter-example Example of invoking an SBML converter
  *
  * The following code fragment illustrates an example using
- * SBMLReactionConverter, which is invoked using the option string @c
- * "replaceReactions":
+ * SBMLReactionConverter, which is invoked using the option string
+ * @c "replaceReactions":
  *
  * @if cpp
  * @code{.cpp}
@@ -1912,6 +2210,33 @@ if (config != None) {
  * @copydetails doc_list_of_libsbml_converters
  *
  * <!-- ------------------------------------------------------------------- -->
+ * @class doc_list_of_libsbml_converters_backup 
+ * The actual doc_list_of_libsbml_converters is supposed to be auto-generated
+ * by the makefiles in docs/src/ in the file generate-converters-list from 
+ * the file class-list, but this does not always get populated; hence this
+ * backup list which is accurate as of March 2016.
+ *
+ * @par 
+ * <ul>
+ * <li> CobraToFbcConverter
+ * <li> CompFlatteningConverter
+ * <li> FbcToCobraConverter
+ * <li> FbcV1ToV2Converter
+ * <li> FbcV2ToV1Converter
+ * <li> SBMLFunctionDefinitionConverter
+ * <li> SBMLIdConverter
+ * <li> SBMLInferUnitsConverter
+ * <li> SBMLInitialAssignmentConverter
+ * <li> SBMLLevel1Version1Converter
+ * <li> SBMLLevelVersionConverter
+ * <li> SBMLLocalParameterConverter
+ * <li> SBMLReactionConverter
+ * <li> SBMLRuleConverter
+ * <li> SBMLStripPackageConverter
+ * <li> SBMLUnitsConverter
+ * </ul>
+ *
+ * <!-- ------------------------------------------------------------------- -->
  * @class doc_formulaunitsdata
  *
  * @par The first element of the list of FormulaUnitsData refers to the default
@@ -1932,6 +2257,15 @@ if (config != None) {
  * function.  @if clike The value is drawn from the
  * enumeration #OperationReturnValues_t. @endif@~ The possible values
  * returned by this function are:
+ *
+ * <!-- ------------------------------------------------------------------- -->
+ * @class doc_returns_one_success_code
+ *
+ * @return integer value indicating success/failure of the
+ * function.  @if clike The value is drawn from the
+ * enumeration #OperationReturnValues_t. @endif@~ This particular
+ * function only does one thing irrespective of user input or 
+ * object state, and thus will only return a single value:
  *
  * <!-- ------------------------------------------------------------------- -->
  * @class doc_extension_sbmlextension
@@ -1987,7 +2321,7 @@ unsigned int GroupsExtension::getDefaultPackageVersion()
  * combination for which the package can be used.  For instance, if a package
  * is only usable in SBML Level&nbsp;3 Version&nbsp;1, and the libSBML
  * extension for the package implements version&nbsp;1 of the package, the
- * necessary method is <code>getXmlnsL3V1V1()</code>.  
+ * necessary method is <code>getXmlnsL3V1V1()</code>.
 @code{.cpp}
 const std::string& GroupsExtension::getXmlnsL3V1V1 ()
 {
@@ -3174,7 +3508,7 @@ if (lmp != null)
  * in SBML Level&nbsp;3 Version&nbsp;2, but since that specfication has not yet been
  * released or finalized, libsbml itself might not yet implement support for
  * this.</b>
- * 
+ *
  * <!-- ------------------------------------------------------------------- -->
  * @class doc_throw_exception_lv
  *
@@ -3208,7 +3542,7 @@ if (lmp != null)
  * validation interface so that user programs and SBML Level&nbsp;3 package
  * authors may use the facilities to implement new validators.  There are
  * two main interfaces to libSBML's validation facilities, based on the
- * classes Validator and ValidatingVisitor.
+ * classes Validator and SBMLValidator.
  *
  * <!-- ------------------------------------------------------------------- -->
  * @class doc_section_package_validators_general_info
@@ -3248,29 +3582,354 @@ if (lmp != null)
  * @see SBMLDocument::checkConsistency()
  * @see SBMLDocument::checkInternalConsistency()
  * @see SBMLDocument::setConsistencyChecks(@if java int categ, boolean onoff@endif)
- */
-
-/* <!-- -------------------------------------------------------------------
- * Temporarily removed text from Lucian bout l3v2 things that are not yet
- * official.  This came from the section on "a model must not contain
- * algebraic loops".
  *
- * @copydetails doc_l3v2_specific_addition
+ * <!-- ------------------------------------------------------------------- -->
+ * @class doc_group_semantics
  *
- * Similarly, the combined set of RateRule and Reaction objects constitute 
- * a set of definitions for the rates of change of various model entities 
- * (namely, the objects identified by the values of the 'variable' attributes 
- * of the RateRule objects, and the 'species' attributes of the SpeciesReference 
- * objects in each Reaction).  These rates of change may be referenced directly 
- * using the <em>rateOf</em> csymbol, but may not thereby contain algebraic 
- * loops---dependency chains between these statements must terminate.  More 
- * formally, consider a directed graph in which the nodes are the definitions 
- * of different variables' rates of change, and directed arcs exist for each 
- * occurrence of a variable referenced by a <em>rateOf</em> csymbol from any 
- * RateRule or KineticLaw object in the model.  Let the directed arcs point 
- * from the variable referenced by the <em>rateOf</em> csymbol (call it 
- * <em>x</em>) to the variable(s) determined by the 'math' expression in which
- * <em>x</em> appears.  This graph must be acyclic.
+ * @par
+ * If a Member object within a Group object's ListOfMembers references
+ * another Group object, it is the <em>referenced Group itself</em> that is
+ * considered to be a member of the parent Group, @em not the corresponding
+ * referenced model component(s).  This is true regardless of whether those
+ * components themselves happen to point to other components using some
+ * mechanism defined by another SBML Level&nbsp;3 package (as happens, for
+ * example, in the SBML Level&nbsp;3 Hierarchical %Model Composition package
+ * and its use of SBaseRef).  However, if instead a Member object references
+ * a ListOfMembers object (using the "id" attribute permitted on
+ * ListOfMembers objects), it is the components of that ListOfMembers that
+ * are considered to be part of the parent Group.  In other words: if in some
+ * Group @em G, a Member @em M references another Group, that Group is the
+ * member of @em G; if @em M references a ListOfMembers, it is the entities
+ * referenced by the Member objects within the ListOfMembers that are
+ * the members of @em G and not the ListOfMembers object itself.
  *
- * -->
+ * The implication of this is that any rule that applies to members of a
+ * group (such the meaning of the "kind" attribute, or the restrictions on
+ * the application of "sboTerm" attributes on a ListOfMembers) applies to the
+ * child group when referenced by the Group "id", and to the members of the
+ * child group when referenced by the ListOfMembers "id". In an example
+ * situation where a parent group includes two Species plus a Group which
+ * itself contains three other Species, if the parent group's ListOfMembers
+ * is given an "sboTerm" attribute value, that SBO term applies to the two
+ * species and the group, not to the three child species members of the
+ * second group.  (Note also that in such a case, the parent group's "kind"
+ * attribute value would almost certainly be @c "collection" or
+ * @c "partonomy", and not @c "classification", as two species and a group are
+ * very unlikely to be classified as the same thing.)  In contrast, in the
+ * situation where a parent group includes two Species plus a ListOfMembers
+ * which contains three other Species, the parent group's ListOfMembers
+ * "sboTerm" would apply to the five Species, and could be more reasonably
+ * marked as a @c "classification".
+ *
+ * In a future version of this SBML Level&nbsp;3 Groups specification, it may
+ * be possible to perform set operations on groups, but for now, this type of
+ * union is the only set operation that is possible.
+ *
+ * Groups are not permitted to be circular: no Member may reference itself,
+ * its parent ListOfMembers, nor its parent Group. If a Member references a
+ * Group, the same restrictions apply to that subgroup's children: they may
+ * not reference the Member, its parent ListOfMembers, nor its parent Group,
+ * and if any of those children reference a Group, the same restrictions apply
+ * to them, etc.
+ *
+ * If a Member has a "idRef" or "metaIdRef" attribute which references an
+ * object from a namespace that is not understood by the interpreter of the
+ * SBML model, that Member must be ignored. The referenced object will not be
+ * understood by the interpreter, and therefore has no need to become a
+ * member of the group. If an interpreter cannot tell whether a referenced
+ * object does not exist or if exists in an unparsed namespace, it may choose
+ * to produce a warning.
+ *
+ * <!-- ------------------------------------------------------------------- -->
+ * @class doc_fast_attribute_removed
+ *
+ * @par
+ * In SBML Level&nbsp;3 Version&nbsp;2, the "fast" attribute was 
+ * removed.  All reactions are assumed to be equivalent to reactions
+ * in previous levels/versions that have a "fast" attribute value
+ * of @c false.  Users should be aware that even for previous
+ * levels/versions of the specification, "fast" attribute values of
+ * @c true never achieved widespread support, and many software
+ * packages may ignore it.  To achieve the same or similar 
+ * effects as setting the fast attribute to @c true for a given 
+ * reaction, the KineticLaw attribute should be constructed to 
+ * produce a value in the desired time scale, or else the 
+ * reaction could be replaced with an AssignmentRule or 
+ * AlgebraicRule.
+ *
+ * <!-- ------------------------------------------------------------------- -->
+ * @class doc_note_fluxbound_v1_only
+ *
+ * @note FluxBound objects are only defined for version&nbsp;1
+ * of the "Flux Balance Constraints" specification, and are
+ * replaced in version&nbsp;2 by the "upperFluxBound" and
+ * "lowerFluxBound" attributes of the FbcReactionPlugin.
+ *
+ * <!-- ------------------------------------------------------------------- -->
+ * @class doc_note_geneproduct_v2_only
+ *
+ * @note GeneProduct objects are only defined for version&nbsp;2
+ * of the "Flux Balance Constraints" specification, and have no
+ * equivalent in version&nbsp;1 of the specification.
+ *
+ * <!-- ------------------------------------------------------------------- -->
+ * @class doc_note_strict_v2_only
+ *
+ * @note The 'strict' attribute of the FbcModelPlugin is only defined for 
+ * version&nbsp;2 of the "Flux Balance Constraints" specification, and has no
+ * equivalent in version&nbsp;1 of the specification.
+ *
+ * <!-- ------------------------------------------------------------------- -->
+ * @class doc_note_fluxbound_v2_only
+ *
+ * @note The 'upperFluxBound' and 'lowerFluxBound' attributes of the 
+ * FbcReactionPlugin are only defined for version&nbsp;2 of the "Flux 
+ * Balance Constraints" specification.  In version&nbsp;1, this information
+ * was encoded in the FluxBound children of the FbcModelPlugin.
+ *
+ * <!-- ------------------------------------------------------------------- -->
+ * @class doc_note_geneassociation_not_fbc
+ *
+ * @note GeneAssociation objects are not defined in any version of the
+ * "Flux Balance Constraints" specification, and can only be used for
+ * annotation purposes.  Version&nbsp;2 instead defines the 
+ * GeneProduct and GeneProductAssociation classes to cover the information
+ * otherwise encoded here.
+ *
+ * <!-- ------------------------------------------------------------------- -->
+ * @class doc_sbo_terms
+ *
+ * @par
+ * Beginning with SBML Level 2 Version 2, objects derived from SBase have
+ * an optional attribute named "sboTerm" for supporting the use of the
+ * Systems Biology Ontology.  In SBML proper, the data type of the
+ * attribute is a string of the form "SBO:NNNNNNN", where "NNNNNNN" is a
+ * seven digit integer number; libSBML simplifies the representation by
+ * only storing the "NNNNNNN" integer portion.  Thus, in libSBML, the
+ * "sboTerm" attribute on SBase has data type @c int, and SBO identifiers
+ * are stored simply as integers.
+ *
+ * <!-- ------------------------------------------------------------------- -->
+ * @class doc_sbo_terms_addendum
+ *
+ * @par
+ * SBO terms are a type of optional annotation, and each different class
+ * of SBML object derived from SBase imposes its own requirements about
+ * the values permitted for "sboTerm". More details can be found in SBML
+ * specifications for Level&nbsp;2 Version&nbsp;2 and above.
+ *
+ * <!-- ------------------------------------------------------------------- -->
+ * @class doc_returned_unowned_pointer
+ *
+ * @note
+ * The pointer that is returned by this function is not owned by the caller,
+ * but may be queried and modified.  Any changes made will be reflected in any
+ * resulting SBML document containing the pointer's parent.
+ *
+ * <!-- ------------------------------------------------------------------- -->
+ * @class doc_returned_unowned_char
+ *
+ * @note
+ * The string returned by this function is a pointer to a string literal
+ * defined in the libSBML library, and may not be modified or deleted.
+ *
+ * <!-- ------------------------------------------------------------------- -->
+ * @class doc_warning_returns_owned_pointer
+ *
+ * @warning
+ * <span class="warning">The pointer that is returned by this function is owned
+ * by the caller, who is responsible for deleting it.  Any changes made to the
+ * element will not be reflected in any resulting SBML document unless the
+ * element is added to an SBML Document.  Even in this case, the element's
+ * deletion is still the responsibility of the caller with two exceptions: if
+ * it is used as the "disownedItem" in the @if conly ListOf_appendAndOwn() or
+ * ListOf_insertAndOwn() @elseif java
+ * ListOf::appendAndOwn(SBase) or ListOf::insertAndOwn(int, SBase) @else
+ * ListOf::appendAndOwn() or ListOf::insertAndOwn() @endif
+ * functions.  All other functions in libsbml add a copy of the element,
+ * and do not transfer ownership of the pointer.</span>
+ *
+ * <!-- ------------------------------------------------------------------- -->
+ * @class doc_warning_returns_owned_char
+ *
+ * @warning
+ * <span class="warning">The string returned by this function is owned by the
+ * caller, who is responsible for deleting it.  Any changes made to the string
+ * will not be reflected in any resulting SBML document unless the string
+ * is added to an SBML Document.  Even in this case, the string should be
+ * deleted, as adding a string to an SBML Document adds a copy of the string,
+ * and does not transfer ownership of that string.</span>
+ *
+ * <!-- ------------------------------------------------------------------- -->
+ * @class doc_use_param_in_l2
+ *
+ * @par
+ * This function should be used for SBML Level&nbsp;1 and Level&nbsp;2 documents, 
+ * as the equivalent constructs in Level&nbsp;3 are LocalParameter objects instead.
+ *
+ * <!-- ------------------------------------------------------------------- -->
+ * @class doc_use_localparam_in_l3
+ *
+ * @par
+ * This function should be used for SBML Level&nbsp;3 documents, as the equivalent 
+ * constructs in Level&nbsp;2 and Level&nbsp;1 are Parameter objects instead.
+ *
+ * <!-- ------------------------------------------------------------------- -->
+ *
+ * @class doc_render_font_weight
+ *
+ * @par
+ * The attribute "font-weight" is used to specify whether 
+ * the text is to be "normal" or "bold".  If omitted, the text may be rendered
+ * in either way.
+ * In the SBML
+ * Level&nbsp;3 Version&nbsp;1 Render specification, the following are the
+ * allowable values for "font-weight":
+ * <ul>
+ * <li> @c "bold", darker and/or thicker than normal print.
+ *
+ * <li> @c "normal", the typical print weight; lighter and/or thinner than "bold".
+ *
+ * </ul>
+ * <!-- ------------------------------------------------------------------- -->
+ *
+ * @class doc_render_font_style
+ *
+ * @par
+ * The attribute "font-style" is used to specify whether 
+ * the text is to be "normal" or "italic".  If omitted, the text may be rendered
+ * in either way.
+ * In the SBML
+ * Level&nbsp;3 Version&nbsp;1 Render specification, the following are the
+ * allowable values for "font-style":
+ * <ul>
+ * <li> @c "italic", slanted print
+ *
+ * <li> @c "normal", upright print
+ *
+ * </ul>
+ * <!-- ------------------------------------------------------------------- -->
+ *
+ * @class doc_render_text_anchor
+ *
+ * @par
+ * The attribute "text-anchor" is used to specify the 
+ * horizontal alignment of the text.  If omitted, the text may be aligned
+ * in any way.
+ * In the SBML
+ * Level&nbsp;3 Version&nbsp;1 Render specification, the following are the
+ * allowable values for "text-anchor":
+ * <ul>
+ * <li> @c "start", the start of the text is aligned to the  horizontal center 
+ * of the box.
+ *
+ * <li> @c "middle", the horizontal center of the text is aligned to the
+ * horizontal center of the box.
+ *
+ * <li> @c "end", the end of the text is aligned to the horizontal center of 
+ * the box.
+ *
+ * </ul>
+ * <!-- ------------------------------------------------------------------- -->
+ *
+ * @class doc_render_vtext_anchor
+ *
+ * @par
+ * The attribute "vtext-anchor" is used to specify the 
+ * vertical alignment of the text.  If omitted, the text may be aligned
+ * in any way.
+ * In the SBML
+ * Level&nbsp;3 Version&nbsp;1 Render specification, the following are the
+ * allowable values for "vtext-anchor":
+ * <ul>
+ * <li> @c "top", the top of the text is aligned to the vertical center of
+ * the box.
+ *
+ * <li> @c "middle", the vertical center of the text is aligned with the 
+ * vertical center of the box.
+ *
+ * <li> @c "bottom", the bottom of the text (i.e. the very bottom of any 
+ * descending letter like 'y' or 'p') is aligned with the vertical 
+ * center of the box.
+ *
+ * <li> @c "baseline", the baseline of the text (i.e. the bottom of any 
+ * non-descending letter like 'a' or e') is aligned with the vertical center
+ * of the box.
+ *
+ * </ul>
+ * <!-- ------------------------------------------------------------------- -->
+ *
+ * @class doc_render_fill_rule
+ *
+ * @par
+ * The attribute "fill-rule" is used to define how polygons should be filled.
+ * In the SBML Level&nbsp;3 Version&nbsp;1 Render specification, the 
+ * following are the allowable values for "fill-rule":
+ * <ul>
+ * <li> @c "nonzero": This value determines the "insideness" of a point in 
+ * the shape by drawing a ray from that point to infinity in any direction 
+ * and then examining the places where a segment of the shape crosses the ray. 
+ * Starting with a count of zero, add one each time a path segment crosses 
+ * the ray from left to right and subtract one each time a path segment crosses 
+ * the ray from right to left. After counting the crossings, if the result is 
+ * zero then the point is outside the path. Otherwise, it is inside.
+ *
+ * <li> @c "evenodd":  This value determines the "insideness" of a point in 
+ * the shape by drawing a ray from that point to infinity in any direction 
+ * and counting the number of path segments from the given shape that the ray
+ * crosses. If this number is odd, the point is inside; if even, the point is 
+ * outside.
+ *
+ * <li> @c "inherit": This value declares the "insideness" of a point 
+ * in the shape by declaring that the property takes the same computed value 
+ * as the property for the element's parent. The inherited value, which is 
+ * normally only used as a fallback value, can be clarified by setting 
+ * 'inherit' explicitly.  NOTE:  This value is NOT in the Level&nbsp;3 
+ * Version&nbsp;1 Render specification, but was left out due to an oversight:
+ * the value has long been part of the codebase.  It is provided here as
+ * a convenience.  Elements with a fill-rule set to "inherit" actually
+ * behave identicaly to elements without a fill-rule attribute at all, since
+ * this attribute always takes the value of a parent element if not 
+ * defined explicitly.
+ *
+ * </ul>
+ * <!-- ------------------------------------------------------------------- -->
+ *
+ * @class doc_render_style_type
+ *
+ * @par
+ * The attribute "typeList" for LocalStyle and GlobalStyle objects contains
+ * a list of StyleType entries that describe what sorts of object to apply
+ * the style to.
+ * In the SBML
+ * Level&nbsp;3 Version&nbsp;1 Render specification, the following are the
+ * allowable entries in a whitespace-separated "typeList":
+ * <ul>
+ * <li> @c "COMPARTMENTGLYPH": The style is to be applied to all compartment
+ * glyphs.
+ *
+ * <li> @c "SPECIESGLYPH": The style is to be applied to all species
+ * glyphs.
+ *
+ * <li> @c "REACTIONGLYPH": The style is to be applied to all reaction
+ * glyphs.
+ *
+ * <li> @c "SPECIESREFERENCEGLYPH": The style is to be applied to all
+ * species reference glyphs.
+ *
+ * <li> @c "TEXTGLYPH": The style is to be applied to all text
+ * glyphs.
+ *
+ * <li> @c "GENERALGLYPH": The style is to be applied to all general
+ * glyphs.
+ *
+ * <li> @c "GRAPHICALOBJECT": The style is to be applied to all graphical
+ * objects.
+ *
+ * <li> @c "ANY": The style is to be applied to any and all glyphs and 
+ * graphical objects.  Equivalent to explicitly listing all other keywords.
+ *
+ * </ul>
+ * <!-- ------------------------------------------------------------------- -->
+ *
  */

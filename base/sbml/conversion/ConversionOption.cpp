@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -44,9 +48,9 @@
 using namespace std;
 LIBSBML_CPP_NAMESPACE_BEGIN
 
-ConversionOption::ConversionOption(const std::string& key, const std::string& value, 
+ConversionOption::ConversionOption(const std::string& key, const std::string value, 
     ConversionOptionType_t type, 
-    const std::string& description) : 
+    const std::string description) : 
     mKey(key)
   , mValue(value)
   , mType(type)
@@ -55,7 +59,7 @@ ConversionOption::ConversionOption(const std::string& key, const std::string& va
 }
 
 ConversionOption::ConversionOption(const std::string& key, const char* value, 
-  const std::string& description) : 
+  const std::string description) : 
     mKey(key)
   , mValue(value)
   , mType(CNV_TYPE_STRING)
@@ -64,7 +68,7 @@ ConversionOption::ConversionOption(const std::string& key, const char* value,
 }
 
 ConversionOption::ConversionOption(const std::string& key, bool value, 
-  const std::string& description) : 
+  const std::string description) : 
     mKey(key)
   , mValue("")
   , mType(CNV_TYPE_STRING)
@@ -74,7 +78,7 @@ ConversionOption::ConversionOption(const std::string& key, bool value,
 }
 
 ConversionOption::ConversionOption(const std::string& key, double value, 
-  const std::string& description): 
+  const std::string description): 
     mKey(key)
   , mValue("")
   , mType(CNV_TYPE_STRING)
@@ -84,7 +88,7 @@ ConversionOption::ConversionOption(const std::string& key, double value,
 }
 
 ConversionOption::ConversionOption(const std::string& key, float value, 
-  const std::string& description) : 
+  const std::string description) : 
     mKey(key)
   , mValue("")
   , mType(CNV_TYPE_STRING)
@@ -94,7 +98,7 @@ ConversionOption::ConversionOption(const std::string& key, float value,
 }
 
 ConversionOption::ConversionOption(const std::string& key, int value, 
-  const std::string& description) : 
+  const std::string description) : 
     mKey(key)
   , mValue("")
   , mType(CNV_TYPE_STRING)

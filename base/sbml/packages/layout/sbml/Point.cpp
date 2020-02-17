@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -116,14 +120,14 @@ Point& Point::operator=(const Point& orig)
 
 
 /*
- * Creates a new point with the given ccordinates.
+ * Creates a new point with the given coordinates.
  */ 
 Point::Point(LayoutPkgNamespaces* layoutns, double x, double y, double z)
   : SBase  (layoutns)
   , mXOffset(x)
   , mYOffset(y)
   , mZOffset(z)
-  , mZOffsetExplicitlySet (true)
+  , mZOffsetExplicitlySet (z != 0.0)
   , mElementName("point")  
 {
   //
@@ -380,7 +384,7 @@ Point::getZOffsetExplicitlySet() const
 /** @cond doxygenLibsbmlInternal */
 /*
  * Subclasses should override this method to write out their contained
- * SBML objects as XML elements.  Be sure to call your parents
+ * SBML objects as XML elements.  Be sure to call your parent's
  * implementation of this method as well.  For example:
  *
  *   SBase::writeElements(stream);
@@ -606,7 +610,7 @@ void Point::writeAttributes (XMLOutputStream& stream) const
   //
   // (TODO) default value should be allowd in package of Level 3?
   //
-  if(this->mZOffset!=0.0)
+  if(this->mZOffset!=0.0 || (getLevel() > 2 && mZOffsetExplicitlySet))
   {
     stream.writeAttribute("z", getPrefix(), mZOffset);
   }

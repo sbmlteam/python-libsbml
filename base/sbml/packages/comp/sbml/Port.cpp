@@ -7,7 +7,11 @@
  * This file is part of libSBML.  Please visit http://sbml.org for more
  * information about SBML, and the latest version of libSBML.
  *
- * Copyright (C) 2013-2016 jointly by the following organizations:
+ * Copyright (C) 2019 jointly by the following organizations:
+ *     1. California Institute of Technology, Pasadena, CA, USA
+ *     2. University of Heidelberg, Heidelberg, Germany
+ *
+ * Copyright (C) 2013-2018 jointly by the following organizations:
  *     1. California Institute of Technology, Pasadena, CA, USA
  *     2. EMBL European Bioinformatics Institute (EMBL-EBI), Hinxton, UK
  *     3. University of Heidelberg, Heidelberg, Germany
@@ -45,16 +49,16 @@ LIBSBML_CPP_NAMESPACE_BEGIN
 
 Port::Port (unsigned int level, unsigned int version, unsigned int pkgVersion) 
   : SBaseRef (level,version, pkgVersion)
-  , mId("")
-  , mName("")
+//  , mId("")
+//  , mName("")
 {
 }
 
 
 Port::Port(CompPkgNamespaces* compns)
   : SBaseRef(compns, true)
-  , mId("")
-  , mName("")
+//  , mId("")
+//  , mName("")
 {
   loadPlugins(compns);
 }
@@ -220,7 +224,7 @@ Port::readAttributes (const XMLAttributes& attributes,
           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownPackageAttribute);
         getErrorLog()->logPackageError("comp", CompLOPortsAllowedAttributes,
-          getPackageVersion(), sbmlLevel, sbmlVersion, details);
+          getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
       } 
       else if (getErrorLog()->getError((unsigned int)n)->getErrorId() == UnknownCoreAttribute)
       {
@@ -228,51 +232,20 @@ Port::readAttributes (const XMLAttributes& attributes,
           getErrorLog()->getError((unsigned int)n)->getMessage();
         getErrorLog()->remove(UnknownCoreAttribute);
         getErrorLog()->logPackageError("comp", CompLOPortsAllowedAttributes,
-          getPackageVersion(), sbmlLevel, sbmlVersion, details);
+          getPackageVersion(), sbmlLevel, sbmlVersion, details, getLine(), getColumn());
       } 
     }
   }
 
 
-  SBaseRef::readAttributes(attributes,expectedAttributes);
+  SBaseRef::readAttributes(attributes,expectedAttributes, true, true, CompPortAllowedAttributes);
 
   if ( sbmlLevel > 2 )
   {
-    XMLTriple tripleId("id", mURI, getPrefix());
-    bool assigned = attributes.readInto(tripleId, mId, getErrorLog(), 
-                                        false, getLine(), getColumn());
-    if (assigned == false)
-    {
-      logMissingAttribute("id", "<Port>");
-    }
-    else if (assigned == true && mId.size() == 0)
-    {
-      logEmptyString("id", "<Port>");
-    }
-    else 
-    {
-      if (!SyntaxChecker::isValidSBMLSId(mId)) 
-      {
-        logInvalidId("comp:id", mId);
-      }
-    }
-
-    XMLTriple tripleName("name", mURI, getPrefix());
-    assigned = attributes.readInto(tripleName, mName, getErrorLog(), 
-                                   false, getLine(), getColumn());
-    
-    if (assigned == true)
-    {
-      if (mName.empty()) 
-      {
-        logEmptyString("name", "<Port>");
-      }
-    }
-
     if (isSetPortRef() == true)
     {
       getErrorLog()->logPackageError("comp", CompPortAllowedAttributes,
-        getPackageVersion(), sbmlLevel, sbmlVersion);
+        getPackageVersion(), sbmlLevel, sbmlVersion, "", getLine(), getColumn());
       unsetPortRef();
     }
   }
@@ -493,28 +466,6 @@ int
 Port_hasRequiredAttributes(Port_t * p)
 {
   return (p != NULL) ? static_cast<int>(p->hasRequiredAttributes()) : 0;
-}
-
-
-LIBSBML_EXTERN
-Port_t *
-ListOfPorts_getById(ListOf_t * lo, const char * sid)
-{
-  if (lo == NULL)
-    return NULL;
-
-  return (sid != NULL) ? static_cast <ListOfPorts *>(lo)->get(sid) : NULL;
-}
-
-
-LIBSBML_EXTERN
-Port_t *
-ListOfPorts_removeById(ListOf_t * lo, const char * sid)
-{
-  if (lo == NULL)
-    return NULL;
-
-  return (sid != NULL) ? static_cast <ListOfPorts *>(lo)->remove(sid) : NULL;
 }
 /** @endcond */
 LIBSBML_CPP_NAMESPACE_END
