@@ -1,7 +1,7 @@
 language: python
-python: 3.5
+python: 3.7
 sudo: required
-dist: trusty
+dist: bionic
 services: docker
 env:
   global:
@@ -31,6 +31,12 @@ matrix:
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.6
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.7
+    - os: linux
+      env:
+        - MB_PYTHON_VERSION=3.8
     - os: osx
       language: objective-c
       env:
@@ -47,6 +53,14 @@ matrix:
       language: objective-c
       env:
         - MB_PYTHON_VERSION=3.6
+    - os: osx
+      language: objective-c
+      env:
+        - MB_PYTHON_VERSION=3.7
+    - os: osx
+      language: objective-c
+      env:
+        - MB_PYTHON_VERSION=3.8
 
 before_install:
   - (travis_retry git clone https://github.com/matthew-brett/multibuild.git && cd multibuild && git checkout e6ebbfa);
