@@ -1,3 +1,4 @@
+include LICENSE.txt
 include README.md
 graft script
 graft base
