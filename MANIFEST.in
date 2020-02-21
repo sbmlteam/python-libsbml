@@ -1,3 +1,4 @@
+include LICENSE.txt
 recursive-include script *.py
 recursive-include base *.h *.cpp *.cxx
 recursive-include swig *.h *.cpp
