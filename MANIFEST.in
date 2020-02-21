@@ -1,3 +1,4 @@
-recursive-include script *.py
-recursive-include base *.h *.cpp *.cxx
-recursive-include swig *.h *.cpp
+include README.md
+graft script
+graft base
+graft swig
