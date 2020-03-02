@@ -28,7 +28,9 @@
 import glob
 import os
 import platform
+from distutils.core import setup, Extension
 from distutils.sysconfig import get_config_vars
+
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -39,7 +41,7 @@ if opt:
         flag for flag in opt.split() if flag != "-Wstrict-prototypes"
     )
 
-# figure out the os
+# Define macros based on the platform.
 basepath = "./base/"
 current_os = "LINUX"
 package_name = '"libsbml"'
@@ -73,7 +75,7 @@ definitions = definitions + [
 
 cfiles = [basepath + "libsbml_wrap.cpp"]
 
-# add dependencies
+# Add all source files.
 cfiles = cfiles + glob.glob(basepath + "*.c")
 
 for root, dirs, files in os.walk(basepath + "sbml"):
@@ -81,22 +83,11 @@ for root, dirs, files in os.walk(basepath + "sbml"):
         if file.endswith(".c") or file.endswith(".cpp"):
             cfiles.append(os.path.join(root, file))
 
-from distutils.core import setup, Extension
-
-# try:
-#  from setuptools import setup, Extension, Command
-# except ImportError:
-#  from distutils.core import setup, Extension
-# try:
-#  import distutils.command.bdist_conda
-# except:
-#  pass
 
 setup(
     version="5.18.0",
     packages=["libsbml"],
     package_dir={"libsbml": "libsbml"},
-    # data_files       = [('lib/site-packages', ['libsbml.pth'])],
     ext_package="libsbml",
     ext_modules=[
         Extension(
