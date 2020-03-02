@@ -44,9 +44,6 @@ if opt:
 # Define macros based on the platform.
 basepath = join(current_dir, "base")
 current_os = "LINUX"
-inc_dirs = []
-lib_dirs = []
-libs = []
 definitions = []
 packages = [
     ("USE_COMP", None),
@@ -62,20 +59,15 @@ if platform.system() == "Darwin":
     current_os = "DARWIN"
 elif platform.system() == "Windows":
     current_os = "WIN32"
-    definitions = [("LIBSBML_EXPORTS", None), ("LIBLAX_STATIC", None)]
+    definitions.extend([("LIBSBML_EXPORTS", None), ("LIBLAX_STATIC", None)])
 
-definitions = definitions + [
-    ("BZIP2_STATIC", None),
-    ("HAVE_MEMMOVE", None),
-    ("_LIB", None),
-]
-
-
-cfiles = [join(basepath, "libsbml_wrap.cpp")]
+definitions.extend(
+    [("BZIP2_STATIC", None), ("HAVE_MEMMOVE", None), ("_LIB", None)]
+)
 
 # Add all source files.
-cfiles = cfiles + glob(join(basepath, "*.c"))
-
+cfiles = [join(basepath, "libsbml_wrap.cpp")]
+cfiles.extend(glob(join(basepath, "*.c")))
 for root, dirs, files in os.walk(join(basepath, "sbml")):
     for file in files:
         if file.endswith(".c") or file.endswith(".cpp"):
@@ -99,8 +91,7 @@ setup(
                 ("USE_BZ2", None),
             ]
             + packages,
-            include_dirs=inc_dirs
-            + [
+            include_dirs=[
                 basepath + "/",
                 basepath + "/sbml",
                 basepath + "/sbml/compress",
@@ -109,8 +100,6 @@ setup(
                 basepath + "/sbml/packages/comp/validator/constraints",
                 ".",
             ],
-            libraries=libs,
-            library_dirs=lib_dirs,
         )
     ],
 )
