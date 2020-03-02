@@ -42,7 +42,7 @@ if opt:
     )
 
 # Define macros based on the platform.
-basepath = join(current_dir, "base")
+basepath = join(current_dir, "src", "base")
 current_os = "LINUX"
 definitions = []
 packages = [
@@ -77,7 +77,7 @@ for root, dirs, files in os.walk(join(basepath, "sbml")):
 setup(
     version="5.18.0",
     packages=["libsbml"],
-    package_dir={"libsbml": "libsbml"},
+    package_dir={"libsbml": "src/libsbml"},
     ext_package="libsbml",
     ext_modules=[
         Extension(

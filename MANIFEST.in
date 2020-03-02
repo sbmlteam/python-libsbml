@@ -1,5 +1,4 @@
 include LICENSE.txt
 include README.md
-graft script
-graft base
-graft swig
+graft src/base
+graft src/swig
