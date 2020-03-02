@@ -25,16 +25,18 @@
 # and also available online as http://sbml.org/software/libsbml/license.html
 
 
+"""Set up the python-libsbml package."""
+
+
 import os
 import platform
 from distutils.core import Extension, setup
 from glob import glob
 from os.path import dirname, join, realpath
 
-current_dir = dirname(realpath(__file__))
 
 # Define macros based on the platform.
-basepath = join(current_dir, "src", "base")
+basepath = join(dirname(realpath(__file__)), "src", "base")
 current_os = "LINUX"
 definitions = []
 packages = [
@@ -53,34 +55,32 @@ elif platform.system() == "Windows":
     current_os = "WIN32"
     definitions.extend([("LIBSBML_EXPORTS", None), ("LIBLAX_STATIC", None)])
 
-definitions.extend(
-    [("BZIP2_STATIC", None), ("HAVE_MEMMOVE", None), ("_LIB", None)]
-)
+definitions.extend([
+    ("BZIP2_STATIC", None), ("HAVE_MEMMOVE", None), ("_LIB", None)
+])
+definitions.extend([
+    (current_os, None), ("USE_EXPAT", None), ("USE_ZLIB", None), ("USE_BZ2", None)
+])
+definitions.extend(packages)
 
 # Add all source files.
-cfiles = [join(basepath, "libsbml_wrap.cpp")]
-cfiles.extend(glob(join(basepath, "*.c")))
+sources = [join(basepath, "libsbml_wrap.cpp")]
+sources.extend(glob(join(basepath, "*.c")))
 for root, dirs, files in os.walk(join(basepath, "sbml")):
     for file in files:
         if file.endswith(".c") or file.endswith(".cpp"):
-            cfiles.append(join(root, file))
+            sources.append(join(root, file))
 
 
+# All other arguments are defined in `setup.cfg`.
 setup(
     version="5.18.0",
     ext_package="libsbml",
     ext_modules=[
         Extension(
             "_libsbml",
-            sources=cfiles,
-            define_macros=definitions
-            + [
-                (current_os, None),
-                ("USE_EXPAT", None),
-                ("USE_ZLIB", None),
-                ("USE_BZ2", None),
-            ]
-            + packages,
+            sources=sources,
+            define_macros=definitions,
             include_dirs=[basepath],
             # Remove the `-Wstrict-prototypes` compiler flag.
             extra_compile_args=["-Wno-strict-prototypes"],
