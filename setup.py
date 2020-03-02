@@ -27,8 +27,6 @@
 
 import glob
 import os
-import sys
-import shutil
 import platform
 from distutils.sysconfig import get_config_vars
 
@@ -39,23 +37,6 @@ current_dir = os.path.dirname(os.path.realpath(__file__))
 if opt:
     os.environ["OPT"] = " ".join(
         flag for flag in opt.split() if flag != "-Wstrict-prototypes"
-    )
-
-# we need to switch the __init__.py file based on the python version
-# as python 3 uses a different syntax for metaclasses
-if sys.version_info >= (3, 0):
-    # this is python 3.x
-    if os.path.exists(current_dir + "/libsbml/__init__.py"):
-        os.remove(current_dir + "/libsbml/__init__.py")
-    shutil.copyfile(
-        current_dir + "/script/libsbml3.py", current_dir + "/libsbml/__init__.py"
-    )
-else:
-    # this is an older python
-    if os.path.exists(current_dir + "/libsbml/__init__.py"):
-        os.remove(current_dir + "/libsbml/__init__.py")
-    shutil.copyfile(
-        current_dir + "/script/libsbml2.py", current_dir + "/libsbml/__init__.py"
     )
 
 # figure out the os
