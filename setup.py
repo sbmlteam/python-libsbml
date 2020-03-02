@@ -30,9 +30,10 @@
 
 import os
 import platform
-from distutils.core import Extension, setup
 from glob import glob
 from os.path import dirname, join, realpath
+
+from setuptools import Extension, setup
 
 
 # Define macros based on the platform.
