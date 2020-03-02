@@ -92,13 +92,7 @@ setup(
             ]
             + packages,
             include_dirs=[
-                basepath + "/",
-                basepath + "/sbml",
-                basepath + "/sbml/compress",
-                basepath + "/sbml/validator/constraints",
-                basepath + "/sbml/packages/comp/validator",
-                basepath + "/sbml/packages/comp/validator/constraints",
-                ".",
+                basepath,
             ],
         )
     ],
