@@ -34,9 +34,9 @@ from distutils.sysconfig import get_config_vars
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
 
-# remove -Wstrict-prototypes
+# Remove the `-Wstrict-prototypes` compiler flag.
 (opt,) = get_config_vars("OPT")
-if opt != None:
+if opt:
     os.environ["OPT"] = " ".join(
         flag for flag in opt.split() if flag != "-Wstrict-prototypes"
     )
