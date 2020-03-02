@@ -35,118 +35,112 @@ from distutils.sysconfig import get_config_vars
 current_dir = os.path.dirname(os.path.realpath(__file__))
 
 # remove -Wstrict-prototypes
-(opt,) = get_config_vars('OPT')
+(opt,) = get_config_vars("OPT")
 if opt != None:
-  os.environ['OPT'] = " ".join(
-      flag for flag in opt.split() if flag != '-Wstrict-prototypes'
-  )
+    os.environ["OPT"] = " ".join(
+        flag for flag in opt.split() if flag != "-Wstrict-prototypes"
+    )
 
 # we need to switch the __init__.py file based on the python version
 # as python 3 uses a different syntax for metaclasses
-if sys.version_info >= (3,0):
-  # this is python 3.x
-  if (os.path.exists(current_dir + '/libsbml/__init__.py')):
-    os.remove(current_dir + '/libsbml/__init__.py')
-  shutil.copyfile(current_dir + '/script/libsbml3.py', current_dir + '/libsbml/__init__.py')
+if sys.version_info >= (3, 0):
+    # this is python 3.x
+    if os.path.exists(current_dir + "/libsbml/__init__.py"):
+        os.remove(current_dir + "/libsbml/__init__.py")
+    shutil.copyfile(
+        current_dir + "/script/libsbml3.py", current_dir + "/libsbml/__init__.py"
+    )
 else:
-  # this is an older python
-  if (os.path.exists(current_dir + '/libsbml/__init__.py')):
-    os.remove(current_dir + '/libsbml/__init__.py')
-  shutil.copyfile(current_dir + '/script/libsbml2.py', current_dir + '/libsbml/__init__.py')
+    # this is an older python
+    if os.path.exists(current_dir + "/libsbml/__init__.py"):
+        os.remove(current_dir + "/libsbml/__init__.py")
+    shutil.copyfile(
+        current_dir + "/script/libsbml2.py", current_dir + "/libsbml/__init__.py"
+    )
 
 # figure out the os
-basepath = './base/'
-current_os = 'LINUX'
+basepath = "./base/"
+current_os = "LINUX"
 package_name = '"libsbml"'
 inc_dirs = []
 lib_dirs = []
 libs = []
 definitions = []
 packages = [
-  ('USE_COMP', None),
-  ('USE_QUAL', None),
-  ('USE_FBC', None),
-  ('USE_LAYOUT', None),
-  ('USE_GROUPS', None),
-  ('USE_MULTI', None),
-  ('USE_RENDER', None),
-  ('USE_L3V2EXTENDEDMATH', None)
+    ("USE_COMP", None),
+    ("USE_QUAL", None),
+    ("USE_FBC", None),
+    ("USE_LAYOUT", None),
+    ("USE_GROUPS", None),
+    ("USE_MULTI", None),
+    ("USE_RENDER", None),
+    ("USE_L3V2EXTENDEDMATH", None),
 ]
-if platform.system() == 'Darwin':
-  current_os = 'DARWIN'
-elif platform.system() == 'Windows':
-  current_os = 'WIN32'
-  package_name = '\\"libsbml\\"'
-  definitions = [
-    ('LIBSBML_EXPORTS', None),
-	('LIBLAX_STATIC', None)
-  ]
+if platform.system() == "Darwin":
+    current_os = "DARWIN"
+elif platform.system() == "Windows":
+    current_os = "WIN32"
+    package_name = '\\"libsbml\\"'
+    definitions = [("LIBSBML_EXPORTS", None), ("LIBLAX_STATIC", None)]
 
-definitions = definitions  + [
-  ('BZIP2_STATIC', None),
-  ('HAVE_MEMMOVE', None),
-  ('_LIB', None)
-  ]
+definitions = definitions + [
+    ("BZIP2_STATIC", None),
+    ("HAVE_MEMMOVE", None),
+    ("_LIB", None),
+]
 
 
-cfiles = [ basepath + 'libsbml_wrap.cpp' ]
+cfiles = [basepath + "libsbml_wrap.cpp"]
 
 # add dependencies
-cfiles = cfiles + glob.glob(basepath + "*.c");
+cfiles = cfiles + glob.glob(basepath + "*.c")
 
-for root, dirs, files in os.walk(basepath + 'sbml'):
-  for file in files:
-    if file.endswith('.c') or file.endswith('.cpp'):
-      cfiles.append(os.path.join(root, file))
+for root, dirs, files in os.walk(basepath + "sbml"):
+    for file in files:
+        if file.endswith(".c") or file.endswith(".cpp"):
+            cfiles.append(os.path.join(root, file))
 
 from distutils.core import setup, Extension
 
-#try:
+# try:
 #  from setuptools import setup, Extension, Command
-#except ImportError:
+# except ImportError:
 #  from distutils.core import setup, Extension
-#try:
+# try:
 #  import distutils.command.bdist_conda
-#except:
+# except:
 #  pass
 
-setup(name             = "python-libsbml",
-      version          = "5.18.0",
-      description      = "LibSBML Python API",
-      long_description = ("LibSBML is a library for reading, writing and "+
-                          "manipulating the Systems Biology Markup Language "+
-                          "(SBML).  It is written in ISO C and C++, supports "+
-                          "SBML Levels 1, 2 and 3, and runs on Linux, Microsoft "+
-                          "Windows, and Apple MacOS X.  For more information "+
-                          "about SBML, please see http://sbml.org."),
-      license          = "LGPL",
-      author           = "SBML Team",
-      author_email     = "libsbml-team@googlegroups.com",
-      url              = "http://sbml.org",
-      packages         = ["libsbml"],
-      package_dir      = {'libsbml': 'libsbml'},
-      #data_files       = [('lib/site-packages', ['libsbml.pth'])],
-      ext_package      = "libsbml",
-      ext_modules      = [Extension("_libsbml",
-                            sources = cfiles,
-                            define_macros =  definitions
-							  +  [(current_os, None),
-                              ('USE_EXPAT', None),
-                              ('USE_ZLIB', None),
-                              ('USE_BZ2', None)
-                              ]
-							  + packages,
-                            include_dirs = inc_dirs +
-							  [
-                              basepath + "/",
-                              basepath + "/sbml",
-                              basepath + "/sbml/compress",
-                              basepath + "/sbml/validator/constraints",
-                              basepath + "/sbml/packages/comp/validator",
-                              basepath + "/sbml/packages/comp/validator/constraints",
-                              "."],
-                            libraries = libs,
-                            library_dirs = lib_dirs
-                            )
-                         ]
+setup(
+    version="5.18.0",
+    packages=["libsbml"],
+    package_dir={"libsbml": "libsbml"},
+    # data_files       = [('lib/site-packages', ['libsbml.pth'])],
+    ext_package="libsbml",
+    ext_modules=[
+        Extension(
+            "_libsbml",
+            sources=cfiles,
+            define_macros=definitions
+            + [
+                (current_os, None),
+                ("USE_EXPAT", None),
+                ("USE_ZLIB", None),
+                ("USE_BZ2", None),
+            ]
+            + packages,
+            include_dirs=inc_dirs
+            + [
+                basepath + "/",
+                basepath + "/sbml",
+                basepath + "/sbml/compress",
+                basepath + "/sbml/validator/constraints",
+                basepath + "/sbml/packages/comp/validator",
+                basepath + "/sbml/packages/comp/validator/constraints",
+                ".",
+            ],
+            libraries=libs,
+            library_dirs=lib_dirs,
+        )
+    ],
 )
