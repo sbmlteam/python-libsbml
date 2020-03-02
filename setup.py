@@ -25,14 +25,14 @@
 # and also available online as http://sbml.org/software/libsbml/license.html
 
 
-import glob
 import os
 import platform
-from distutils.core import setup, Extension
+from distutils.core import Extension, setup
 from distutils.sysconfig import get_config_vars
+from glob import glob
+from os.path import dirname, join, realpath
 
-
-current_dir = os.path.dirname(os.path.realpath(__file__))
+current_dir = dirname(realpath(__file__))
 
 # Remove the `-Wstrict-prototypes` compiler flag.
 (opt,) = get_config_vars("OPT")
@@ -42,7 +42,7 @@ if opt:
     )
 
 # Define macros based on the platform.
-basepath = "./base/"
+basepath = join(current_dir, "base")
 current_os = "LINUX"
 package_name = '"libsbml"'
 inc_dirs = []
@@ -73,15 +73,15 @@ definitions = definitions + [
 ]
 
 
-cfiles = [basepath + "libsbml_wrap.cpp"]
+cfiles = [join(basepath, "libsbml_wrap.cpp")]
 
 # Add all source files.
-cfiles = cfiles + glob.glob(basepath + "*.c")
+cfiles = cfiles + glob(join(basepath, "*.c"))
 
-for root, dirs, files in os.walk(basepath + "sbml"):
+for root, dirs, files in os.walk(join(basepath, "sbml")):
     for file in files:
         if file.endswith(".c") or file.endswith(".cpp"):
-            cfiles.append(os.path.join(root, file))
+            cfiles.append(join(root, file))
 
 
 setup(
