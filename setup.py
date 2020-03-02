@@ -28,18 +28,10 @@
 import os
 import platform
 from distutils.core import Extension, setup
-from distutils.sysconfig import get_config_var
 from glob import glob
 from os.path import dirname, join, realpath
 
 current_dir = dirname(realpath(__file__))
-
-# Remove the `-Wstrict-prototypes` compiler flag.
-opt = get_config_var("OPT")
-if opt:
-    os.environ["OPT"] = " ".join(
-        flag for flag in opt.split() if flag != "-Wstrict-prototypes"
-    )
 
 # Define macros based on the platform.
 basepath = join(current_dir, "src", "base")
@@ -89,9 +81,9 @@ setup(
                 ("USE_BZ2", None),
             ]
             + packages,
-            include_dirs=[
-                basepath,
-            ],
+            include_dirs=[basepath],
+            # Remove the `-Wstrict-prototypes` compiler flag.
+            extra_compile_args=["-Wno-strict-prototypes"],
         )
     ],
 )
