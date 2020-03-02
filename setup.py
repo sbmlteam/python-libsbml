@@ -44,7 +44,6 @@ if opt:
 # Define macros based on the platform.
 basepath = join(current_dir, "base")
 current_os = "LINUX"
-package_name = '"libsbml"'
 inc_dirs = []
 lib_dirs = []
 libs = []
@@ -63,7 +62,6 @@ if platform.system() == "Darwin":
     current_os = "DARWIN"
 elif platform.system() == "Windows":
     current_os = "WIN32"
-    package_name = '\\"libsbml\\"'
     definitions = [("LIBSBML_EXPORTS", None), ("LIBLAX_STATIC", None)]
 
 definitions = definitions + [
