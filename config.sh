@@ -9,7 +9,7 @@ function pre_build {
         export CXX=clang++
         export CFLAGS="-fPIC -O3 -arch i386 -arch x86_64 -g -DNDEBUG -mmacosx-version-min=10.6"
     else
-        yum install -y pcre-devel
+        yum install -y pcre-devel swig cmake subversion expat-devel
 	fi
 }
 
