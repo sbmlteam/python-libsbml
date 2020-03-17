@@ -6,6 +6,7 @@ services: docker
 env:
   global:
   - PLAT=x86_64
+  - LIBSBML_SRC_DIR=$HOME/build/sbmlteam/python-libsbml/libsbml
 
 git:
   depth: 1
@@ -23,62 +24,50 @@ matrix:
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
-        - LIBSBML_SRC_DIR=/home/travis/libsbml
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.4
-        - LIBSBML_SRC_DIR=/home/travis/libsbml
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.5
-        - LIBSBML_SRC_DIR=/home/travis/libsbml
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.6
-        - LIBSBML_SRC_DIR=/home/travis/libsbml
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.7
-        - LIBSBML_SRC_DIR=/home/travis/libsbml
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.8
-        - LIBSBML_SRC_DIR=/home/travis/libsbml
     - os: osx
       language: objective-c
       env:
         - MB_PYTHON_VERSION=2.7
-        - LIBSBML_SRC_DIR=/Users/travis/libsbml
     - os: osx
       language: objective-c
       env:
         - MB_PYTHON_VERSION=3.4
-        - LIBSBML_SRC_DIR=/Users/travis/libsbml
     - os: osx
       language: objective-c
       env:
         - MB_PYTHON_VERSION=3.5
-        - LIBSBML_SRC_DIR=/Users/travis/libsbml
     - os: osx
       language: objective-c
       env:
         - MB_PYTHON_VERSION=3.6
-        - LIBSBML_SRC_DIR=/Users/travis/libsbml
     - os: osx
       language: objective-c
       env:
         - MB_PYTHON_VERSION=3.7
-        - LIBSBML_SRC_DIR=/Users/travis/libsbml
     - os: osx
       language: objective-c
       env:
         - MB_PYTHON_VERSION=3.8
-        - LIBSBML_SRC_DIR=/Users/travis/libsbml
 
 before_install:
   - (travis_retry git clone https://github.com/matthew-brett/multibuild.git && cd multibuild && git checkout e6ebbfa);
   - TEST_DEPENDS="nose"
-  - (svn co -q https://svn.code.sf.net/p/sbml/code/trunk/libsbml && echo $PWD)
+  - svn co https://svn.code.sf.net/p/sbml/code/trunk/libsbml
   - source multibuild/common_utils.sh
   - source multibuild/travis_steps.sh
   - before_install
@@ -86,13 +75,13 @@ before_install:
   
 
 install:
-  - (echo $PWD && build_wheel . $PLAT)
+  - build_wheel . $PLAT
 
 before_cache:
   - set +e
 
 script:
-  - (echo $PWD && install_run $PLAT)
+  - install_run $PLAT
 
 deploy:
   provider: script
