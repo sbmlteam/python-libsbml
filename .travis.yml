@@ -78,7 +78,7 @@ matrix:
 before_install:
   - (travis_retry git clone https://github.com/matthew-brett/multibuild.git && cd multibuild && git checkout e6ebbfa);
   - TEST_DEPENDS="nose"
-  - svn co https://svn.code.sf.net/p/sbml/code/trunk/libsbml
+  - svn co -q https://svn.code.sf.net/p/sbml/code/trunk/libsbml
   - source multibuild/common_utils.sh
   - source multibuild/travis_steps.sh
   - before_install
