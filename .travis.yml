@@ -6,7 +6,6 @@ services: docker
 env:
   global:
   - PLAT=x86_64
-  - LIBSBML_SRC_DIR=$HOME/libsbml
 
 git:
   depth: 1
@@ -24,45 +23,57 @@ matrix:
     - os: linux
       env:
         - MB_PYTHON_VERSION=2.7
+        - LIBSBML_SRC_DIR=/home/travis/libsbml
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.4
+        - LIBSBML_SRC_DIR=/home/travis/libsbml
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.5
+        - LIBSBML_SRC_DIR=/home/travis/libsbml
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.6
+        - LIBSBML_SRC_DIR=/home/travis/libsbml
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.7
+        - LIBSBML_SRC_DIR=/home/travis/libsbml
     - os: linux
       env:
         - MB_PYTHON_VERSION=3.8
+        - LIBSBML_SRC_DIR=/home/travis/libsbml
     - os: osx
       language: objective-c
       env:
         - MB_PYTHON_VERSION=2.7
+        - LIBSBML_SRC_DIR=/Users/travis/libsbml
     - os: osx
       language: objective-c
       env:
         - MB_PYTHON_VERSION=3.4
+        - LIBSBML_SRC_DIR=/Users/travis/libsbml
     - os: osx
       language: objective-c
       env:
         - MB_PYTHON_VERSION=3.5
+        - LIBSBML_SRC_DIR=/Users/travis/libsbml
     - os: osx
       language: objective-c
       env:
         - MB_PYTHON_VERSION=3.6
+        - LIBSBML_SRC_DIR=/Users/travis/libsbml
     - os: osx
       language: objective-c
       env:
         - MB_PYTHON_VERSION=3.7
+        - LIBSBML_SRC_DIR=/Users/travis/libsbml
     - os: osx
       language: objective-c
       env:
         - MB_PYTHON_VERSION=3.8
+        - LIBSBML_SRC_DIR=/Users/travis/libsbml
 
 before_install:
   - (travis_retry git clone https://github.com/matthew-brett/multibuild.git && cd multibuild && git checkout e6ebbfa);
