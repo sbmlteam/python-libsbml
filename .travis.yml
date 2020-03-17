@@ -6,6 +6,7 @@ services: docker
 env:
   global:
   - PLAT=x86_64
+  - LIBSBML_SRC_DIR=$HOME/libsbml
 
 git:
   depth: 1
