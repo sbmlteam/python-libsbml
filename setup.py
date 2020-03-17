@@ -24,94 +24,188 @@
 ## in the file named "LICENSE.txt" included with this software distribution
 ## and also available online as http://sbml.org/software/libsbml/license.html
 ##----------------------------------------------------------------------- -->*/
-
-import glob
 import os
 import sys
 import shutil
 import platform
-from distutils.sysconfig import get_config_vars
 
-current_dir = os.path.dirname(os.path.realpath(__file__))
+try:
+  import pathlib
+except:
+  pass
 
-# remove -Wstrict-prototypes
-(opt,) = get_config_vars('OPT')
-if opt != None:
-  os.environ['OPT'] = " ".join(
-      flag for flag in opt.split() if flag != '-Wstrict-prototypes'
-  )
+from setuptools import setup, Extension
+from setuptools.command.build_ext import build_ext as build_ext_orig
 
-# we need to switch the __init__.py file based on the python version
-# as python 3 uses a different syntax for metaclasses
-if sys.version_info >= (3,0):
-  # this is python 3.x
-  if (os.path.exists(current_dir + '/libsbml/__init__.py')):
-    os.remove(current_dir + '/libsbml/__init__.py')
-  shutil.copyfile(current_dir + '/script/libsbml3.py', current_dir + '/libsbml/__init__.py')
-else:
-  # this is an older python
-  if (os.path.exists(current_dir + '/libsbml/__init__.py')):
-    os.remove(current_dir + '/libsbml/__init__.py')
-  shutil.copyfile(current_dir + '/script/libsbml2.py', current_dir + '/libsbml/__init__.py')
-
-# figure out the os
-basepath = './base/'
-current_os = 'LINUX'
-package_name = '"libsbml"'
-inc_dirs = []
-lib_dirs = []
-libs = []
-definitions = []
-packages = [
-  ('USE_COMP', None),
-  ('USE_QUAL', None),
-  ('USE_FBC', None),
-  ('USE_LAYOUT', None),
-  ('USE_GROUPS', None),
-  ('USE_MULTI', None),
-  ('USE_RENDER', None),
-  ('USE_L3V2EXTENDEDMATH', None)
-]
-if platform.system() == 'Darwin':
-  current_os = 'DARWIN'
-elif platform.system() == 'Windows':
-  current_os = 'WIN32'
-  package_name = '\\"libsbml\\"'
-  definitions = [
-    ('LIBSBML_EXPORTS', None),
-	('LIBLAX_STATIC', None)
-  ]
-
-definitions = definitions  + [
-  ('BZIP2_STATIC', None),
-  ('HAVE_MEMMOVE', None),
-  ('_LIB', None)
-  ]
+def get_dir_if_exists(variable, default):
+  value = os.getenv(variable, default)
+  value = os.path.abspath(value)
+  if not os.path.exists(value):
+    return None
+  return value
 
 
-cfiles = [ basepath + 'libsbml_wrap.cpp' ]
+SRC_DIR=get_dir_if_exists('LIBSBML_SRC_DIR', '../libsbml')
+DEP_DIR=get_dir_if_exists('LIBSBML_DEP_DIR', '../libsbml_dependencies/')
+DEP_DIR32=get_dir_if_exists('LIBSBML_DEP_DIR_32', '../win_libsbml_dependencies_32/')
+DEP_DIR64=get_dir_if_exists('LIBSBML_DEP_DIR_64', '../win_libsbml_dependencies_64/')
 
-# add dependencies
-cfiles = cfiles + glob.glob(basepath + "*.c");
 
-for root, dirs, files in os.walk(basepath + 'sbml'):
-  for file in files:
-    if file.endswith('.c') or file.endswith('.cpp'):
-      cfiles.append(os.path.join(root, file))
+if not SRC_DIR:
+  raise ValueError("SRC_DIR not specified or not present, define LIBSBML_SRC_DIR.")
 
-from distutils.core import setup, Extension
+print ("Using libSBML from: {0}".format(SRC_DIR))
 
-#try:
-#  from setuptools import setup, Extension, Command
-#except ImportError:
-#  from distutils.core import setup, Extension
-#try:
-#  import distutils.command.bdist_conda
-#except:
-#  pass
+with open(os.path.join(SRC_DIR, 'VERSION.TXT'), 'r') as version_file: 
+  VERSION = version_file.readline().strip()
+
+print ("Version is: {0}".format(VERSION))
+
+if not os.path.exists('libsbml'):
+  os.makedirs('libsbml')
+
+class CMakeExtension(Extension):
+
+    def __init__(self, name):
+        # don't invoke the original build_ext for this special extension
+        try:
+          super().__init__(name, sources=[])
+        except:
+          Extension.__init__(self, name, sources=[])
+        
+
+
+class build_ext(build_ext_orig):
+
+    def run(self):
+        for ext in self.extensions:
+            self.build_cmake(ext)
+        try:
+          super().run()
+        except:
+          build_ext_orig.run(self)
+
+    def build_cmake(self, ext):
+        try:
+          cwd = pathlib.Path().absolute()
+          # these dirs will be created in build_py, so if you don't have
+          # any python sources to bundle, the dirs will be missing
+          
+          build_temp = pathlib.Path(self.build_temp)
+          build_temp.mkdir(parents=True, exist_ok=True)
+          extdir = pathlib.Path(self.get_ext_fullpath(ext.name))
+          extdir.parent.mkdir(parents=True, exist_ok=True)
+          
+          target_dir_path = str(extdir.parent.absolute())
+          target_lib_path = str(extdir.absolute())
+          name = str(extdir.name)
+        except:
+          cwd = os.path.abspath('.')
+          build_temp = self.build_temp
+          extdir = self.get_ext_fullpath(ext.name)
+          if not os.path.exists(build_temp):
+            os.makedirs(build_temp)
+          target_lib_path = os.path.abspath(extdir)
+          name = os.path.split(target_lib_path)[1]
+          target_dir_path = os.path.split(target_lib_path)[0]
+          if not os.path.exists(target_dir_path):
+            os.makedirs(target_dir_path)
+
+        if not os.path.exists(os.path.join(cwd, 'libsbml')):
+            os.makedirs(os.path.join(cwd, 'libsbml'))
+
+        # example of cmake args
+        config = 'Debug' if self.debug else 'Release'
+        print ('name: {0}, tmp: {1}'.format(name, build_temp))
+        is_osx = platform.system() == 'Darwin'
+        is_win = platform.system() == 'Windows'
+        is_win_32 = is_win and ('win32' in name or 'win32' in str(build_temp))
+
+        cmake_args = [
+            '-DCMAKE_BUILD_TYPE=' + config, 
+            '-DCMAKE_BUILD_PARALLEL_LEVEL=4',
+            
+            '-DENABLE_COMP=ON',
+            '-DENABLE_FBC=ON',
+            '-DENABLE_LAYOUT=ON',
+            '-DENABLE_QUAL=ON',
+            '-DENABLE_GROUPS=ON',
+            '-DENABLE_MULTI=ON',
+            '-DENABLE_RENDER=ON',
+            
+            '-DWITH_EXPAT=ON',
+            '-DWITH_LIBXML=OFF',
+            '-DWITH_SWIG=ON',
+            '-DWITH_ZLIB=ON',
+            '-DWITH_PYTHON=ON',
+            '-DWITH_STATIC_RUNTIME=ON',
+            '-DPYTHON_EXECUTABLE=' + sys.executable
+        ]
+        
+        
+        if DEP_DIR:
+          cmake_args.append('-DLIBSBML_DEPENDENCY_DIR=' + DEP_DIR)
+          cmake_args.append('-DLIBEXPAT_INCLUDE_DIR=' + os.path.join(DEP_DIR, 'include'))
+
+        if is_win_32:
+          cmake_args.append('-A')
+          cmake_args.append('win32')
+          if DEP_DIR32:
+            cmake_args.append('-DLIBSBML_DEPENDENCY_DIR=' + DEP_DIR32)
+            cmake_args.append('-DLIBEXPAT_INCLUDE_DIR=' + os.path.join(DEP_DIR32, 'include'))
+        elif is_win:
+          if DEP_DIR64:
+            cmake_args.append('-DLIBSBML_DEPENDENCY_DIR=' + DEP_DIR64)
+            cmake_args.append('-DLIBEXPAT_INCLUDE_DIR=' + os.path.join(DEP_DIR64, 'include'))
+        elif is_osx: 
+          cmake_args.append('-DCLANG_USE_LIBCPP=ON')
+          cmake_args.append('-DCMAKE_OSX_DEPLOYMENT_TARGET=10.9')
+
+        # example of build args
+        build_args = [
+            '--config', config,
+            '--'
+        ]
+
+        os.chdir(str(build_temp))
+        self.spawn(['cmake', str(SRC_DIR)] + cmake_args)
+        if not self.dry_run:
+            self.spawn(['cmake', '--build', '.', '--target', 'binding_python_lib'] + build_args)
+        
+            # at this point the build should be complete, and we have all the files 
+            # neeed in the temp build_folder
+            
+            init_py2 = None
+            init_py3 = None
+            dst_file = os.path.join(target_dir_path, '__init__.py')
+            
+            for root, dirs, files in os.walk(".", topdown=False):
+              for name in files:
+                # 1. find pyd and copy to target_lib_path
+                if name.endswith('.pyd') or name == '_libsbml.so' or name == '_libsbml.dylib':
+                  pyd_file = os.path.join(root, name)
+                  print('copying pyd file to output file')
+                  shutil.copyfile(pyd_file, target_lib_path)
+                # 2. get scripts and copy to target_lib_path.parent.__init__.py corresponding to version 
+                if name == 'libsbml.py':
+                  src_file = os.path.join(root, name)
+                  shutil.copyfile(src_file, dst_file)
+                if name == 'libsbml2.py':
+                  init_py2 = os.path.join(root, name)
+                if name == 'libsbml3.py':
+                  init_py3 = os.path.join(root, name)
+
+            if os.path.exists(init_py2) and sys.version_info.major == 2: 
+                  shutil.copyfile(init_py2, dst_file)
+            
+            if os.path.exists(init_py3) and sys.version_info.major == 3:
+                  shutil.copyfile(init_py3, dst_file)
+        
+        os.chdir(str(cwd))
+
 
 setup(name             = "python-libsbml",
-      version          = "5.18.0",
+      version          = VERSION,
       description      = "LibSBML Python API",
       long_description = ("LibSBML is a library for reading, writing and "+
                           "manipulating the Systems Biology Markup Language "+
@@ -125,28 +219,9 @@ setup(name             = "python-libsbml",
       url              = "http://sbml.org",
       packages         = ["libsbml"],
       package_dir      = {'libsbml': 'libsbml'},
-      #data_files       = [('lib/site-packages', ['libsbml.pth'])],
       ext_package      = "libsbml",
-      ext_modules      = [Extension("_libsbml",
-                            sources = cfiles,
-                            define_macros =  definitions
-							  +  [(current_os, None),
-                              ('USE_EXPAT', None),
-                              ('USE_ZLIB', None),
-                              ('USE_BZ2', None)
-                              ]
-							  + packages,
-                            include_dirs = inc_dirs +
-							  [
-                              basepath + "/",
-                              basepath + "/sbml",
-                              basepath + "/sbml/compress",
-                              basepath + "/sbml/validator/constraints",
-                              basepath + "/sbml/packages/comp/validator",
-                              basepath + "/sbml/packages/comp/validator/constraints",
-                              "."],
-                            libraries = libs,
-                            library_dirs = lib_dirs
-                            )
-                         ]
+      ext_modules=[CMakeExtension('_libsbml')],
+      cmdclass={
+        'build_ext': build_ext,
+      }
 )
