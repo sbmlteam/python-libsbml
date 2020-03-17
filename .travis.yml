@@ -75,13 +75,13 @@ before_install:
   
 
 install:
-  - build_wheel . $PLAT
+  - (echo $PWD && build_wheel . $PLAT)
 
 before_cache:
   - set +e
 
 script:
-  - install_run $PLAT
+  - (echo $PWD && install_run $PLAT)
 
 deploy:
   provider: script
