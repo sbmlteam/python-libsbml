@@ -34,7 +34,7 @@ jobs:
         - python -m pip install --upgrade pip
       env: 
         - PATH=/c/Python38:/c/Python38/Scripts:$PATH
-        - LIBSBML_SRC_DIR=/Users/travis/build/sbmlteam/python-libsbml/libsbml_trunk
+        - LIBSBML_SRC_DIR=/c/Users/travis/build/sbmlteam/python-libsbml/libsbml_trunk
 
 script:
   #- (svn co -q https://svn.code.sf.net/p/sbml/code/trunk/libsbml libsbml_trunk && echo $PWD)
