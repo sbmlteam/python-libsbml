@@ -12,7 +12,7 @@ This is used to create a standalone module for Python.  The module consists of [
 
 *Developers' discussion group*: [https://groups.google.com/forum/#!forum/libsbml-development](https://groups.google.com/forum/#!forum/libsbml-development)
 
-*License*: For full license information, please refer to the file [../LICENSE.txt](https://raw.githubusercontent.com/sbmlteam/moccasin/master/LICENSE.txt) for details.
+*License*: For full license information, please refer to the file [../LICENSE.txt](https://raw.githubusercontent.com/sbmlteam/python-libsbml/master/LICENSE.txt) for details.
 
 
 ♥️ Please cite the libSBML paper and the version you use
@@ -34,6 +34,30 @@ Benjamin J. Bornstein, Sarah M. Keating, Akira Jouraku, and Michael Hucka (2008)
 
 This repository contains code to generate a standalone Python module wrapping [libSBML](http://sbml.org/Software/libSBML) with a Python API.  The API is the standard Python API implemented with the help of [SWIG](http://swig.org) and provided in the libSBML distribution.
 
+Preparing the package build
+------------
+First you will have a compiler compatible with your python version installed, as well as a recent version of: 
+
+* cmake
+* swig
+
+In order to to build the python package, you will have to manually check out the libSBML repository (or download one of the [official source releases](https://sourceforge.net/projects/sbml/files/libsbml/)). 
+
+	svn co https://svn.code.sf.net/p/sbml/code/trunk/libsbml
+
+The source directory will be picked up automatically, if it is located relative to this directory in `../libsbml`. Otherwise define an environment variable `LIBSBML_SRC_DIR` containing the full path to it.
+
+In case you are building on windows you might want to consider getting the libSBML-dependency package, ensuring that at least `expat` is built with the same compiler / configuration you'll use later to build the python package.
+
+	git clone https://github.com/sbmlteam/libSBML-dependencies 
+
+[Binaries for Visual Studio](https://sourceforge.net/projects/sbml/files/libsbml/win-dependencies/) are also available. They will be picked up automatically from the folders `../libsbml_dependencies/`, `../win_libsbml_dependencies_32/` and `../win_libsbml_dependencies_64/`, otherwise from the environment variables `LIBSBML_DEP_DIR`, `LIBSBML_DEP_DIR_32` or `LIBSBML_DEP_DIR_64`.
+
+Building the package
+------------
+Once those steps are done, the library can be build using the `setup.py` script.
+
+	python setup.py build
 
 ⁇ Getting Help
 ------------
@@ -44,7 +68,7 @@ The [libSBML](http://sbml.org/Software/libSBML) library, and associated utilitie
 ☮ Copyright and license
 ---------------------
 
-Please see the file [../LICENSE.txt](https://raw.githubusercontent.com/sbmlteam/sbml-test-suite/develop/src/misc/graphics-originals/Official-sbml-supported-70.jpg) for copyright and license details.
+Please see the file [../LICENSE.txt](https://raw.githubusercontent.com/sbmlteam/python-libsbml/master/LICENSE.txt) for copyright and license details.
 
 
 More information
