@@ -15,6 +15,7 @@ jobs:
       env: LIBSBML_SRC_DIR=/home/travis/build/sbmlteam/python-libsbml/libsbml_trunk
       before_install:
         - pip install -U pip setuptools wheel tox
+        
     - name: "Python 3.7.4 on macOS"
       os: osx
       osx_image: xcode11.2  # Python 3.7.4 running on macOS 10.14.4
@@ -23,6 +24,7 @@ jobs:
       before_install:
         - brew install swig
         - pip install -U pip setuptools wheel tox
+        
     - name: "Python 3.8.0 on Windows"
       os: windows           # Windows 10.0.17134 N/A Build 17134
       language: shell       # 'language: python' is an error on Travis CI Windows
@@ -30,10 +32,9 @@ jobs:
         - choco install python --version 3.8.0
         - choco install -y swig
         - python -m pip install --upgrade pip
-        #- (svn co -q https://svn.code.sf.net/p/sbml/code/trunk/libsbml libsbml_trunk && echo $PWD)
-        - (git clone https://github.com/fbergmann/libsbml_test libsbml_trunk && echo $PWD)
       env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
 
 script:
+  #- (svn co -q https://svn.code.sf.net/p/sbml/code/trunk/libsbml libsbml_trunk && echo $PWD)
   - (git clone https://github.com/fbergmann/libsbml_test libsbml_trunk && echo $PWD)
   - python3 setup.py build || python setup.py build
