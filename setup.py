@@ -52,7 +52,11 @@ DEP_DIR64=get_dir_if_exists('LIBSBML_DEP_DIR_64', '../win_libsbml_dependencies_6
 
 
 if not SRC_DIR:
-  raise ValueError("SRC_DIR not specified or not present, define LIBSBML_SRC_DIR.")
+  src_defined = os.getenv('LIBSBML_SRC_DIR')
+  if src_defined:
+    raise ValueError("LibSBML Source defined as: {0}, but coun't be found".format(src_defined))
+  else:
+    raise ValueError("LibSBML Source not specified or not present, define LIBSBML_SRC_DIR.")
 
 print ("Using libSBML from: {0}".format(SRC_DIR))
 
