@@ -68,15 +68,14 @@ print ("Version is: {0}".format(VERSION))
 if not os.path.exists('libsbml'):
   os.makedirs('libsbml')
 
-class CMakeExtension(Extension):
 
-    def __init__(self, name):
-        # don't invoke the original build_ext for this special extension
-        try:
-          super().__init__(name, sources=[])
-        except:
-          Extension.__init__(self, name, sources=[])
-        
+class CMakeExtension(Extension):
+    """Override the default setuptools extension building."""
+
+    def __init__(self, name, sources=(), **kwargs):
+        """Initialize by passing on arguments."""
+        # Don't invoke the original `build_ext` for this special extension.
+        super(CMakeExtension, self).__init__(name=name, sources=list(sources), **kwargs)
 
 
 class build_ext(build_ext_orig):
