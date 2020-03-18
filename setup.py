@@ -35,7 +35,7 @@ except:
   pass
 
 from setuptools import setup, Extension
-from setuptools.command.build_ext import build_ext as build_ext_orig
+from setuptools.command.build_ext import build_ext
 
 def get_dir_if_exists(variable, default):
   value = os.getenv(variable, default)
@@ -78,15 +78,19 @@ class CMakeExtension(Extension):
         super(CMakeExtension, self).__init__(name=name, sources=list(sources), **kwargs)
 
 
-class build_ext(build_ext_orig):
+class CMakeBuild(build_ext):
+    """Override `build_ext` to then register it in the command classes."""
 
     def run(self):
+        """
+        Call Cmake and build every extension.
+
+        Overrides parent's method.
+
+        """
         for ext in self.extensions:
             self.build_cmake(ext)
-        try:
-          super().run()
-        except:
-          build_ext_orig.run(self)
+        super(CMakeBuild, self).run()
 
     def build_cmake(self, ext):
         try:
@@ -225,6 +229,6 @@ setup(name             = "python-libsbml",
       ext_package      = "libsbml",
       ext_modules=[CMakeExtension('_libsbml')],
       cmdclass={
-        'build_ext': build_ext,
+        'build_ext': CMakeBuild,
       }
 )
