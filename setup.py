@@ -78,12 +78,12 @@ if not SRC_DIR:
 
 print ("Using libSBML from: {0}".format(SRC_DIR))
 
-version_file_name = join(SRC_DIR, 'VERSION.TXT')
+version_file_name = join(SRC_DIR, 'VERSION.txt')
 print ("Using VERSION.txt: {0}".format(version_file_name))
 
 if not exists(version_file_name):
   print(os.listdir(SRC_DIR))
-  raise ValueError("Invalid libSBML Source directory, no VERSION.TXT file")
+  raise ValueError("Invalid libSBML Source directory, no VERSION.txt file")
 
 with open(version_file_name, 'r') as version_file:
   VERSION = version_file.readline().strip()
