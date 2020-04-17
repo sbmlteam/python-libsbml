@@ -61,8 +61,9 @@ def get_dir_if_exists(variable, default):
     return None
   return value
 
-
+global SRC_DIR
 SRC_DIR = get_dir_if_exists('LIBSBML_SRC_DIR', './libsbml_source')
+global DEP_DIR
 DEP_DIR = get_dir_if_exists('LIBSBML_DEP_DIR', '../libsbml_dependencies/')
 DEP_DIR32 = get_dir_if_exists('LIBSBML_DEP_DIR_32', '../win_libsbml_dependencies_32/')
 DEP_DIR64 = get_dir_if_exists('LIBSBML_DEP_DIR_64', '../win_libsbml_dependencies_64/')
@@ -141,6 +142,7 @@ class CMakeBuild(build_ext):
             '--'
         ]
 
+        global DEP_DIR
         if not DEP_DIR and not self.dry_run:
             print("compiling dependencies")
             makedirs('./build_dependencies')
@@ -158,7 +160,6 @@ class CMakeBuild(build_ext):
                        )
             self.spawn(['cmake', '--build', '.', '--target', 'install'] + build_args)
             os.chdir('..')
-            global DEP_DIR
             DEP_DIR = abspath('./install_dependencies')
 
         libsbml_args = [
