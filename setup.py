@@ -119,7 +119,10 @@ class CMakeBuild(build_ext):
         """
         for ext in self.extensions:
             self.build_cmake(ext)
-        super(CMakeBuild, self).run()
+        try: 
+            super(CMakeBuild, self).run()
+        except:
+            build_ext.run(self)
 
     def build_cmake(self, extension):
         """Configure `extension` with CMake and build modules."""
