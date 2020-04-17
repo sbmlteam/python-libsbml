@@ -35,7 +35,7 @@ jobs:
         
       env: 
         - PATH=/c/Python38:/c/Python38/Scripts:$PATH
-        - CMAKE_GENERATOR=Visual Studio 15 2017 Win64
+        - CMAKE_GENERATOR="Visual Studio 15 2017 Win64"
 
 script:
   - python3 setup.py build || python setup.py build
