@@ -62,10 +62,10 @@ def get_dir_if_exists(variable, default):
   return value
 
 
-SRC_DIR=get_dir_if_exists('LIBSBML_SRC_DIR', './libsbml_source')
-DEP_DIR=get_dir_if_exists('LIBSBML_DEP_DIR', './libsbml_dependencies/')
-DEP_DIR32=get_dir_if_exists('LIBSBML_DEP_DIR_32', '../win_libsbml_dependencies_32/')
-DEP_DIR64=get_dir_if_exists('LIBSBML_DEP_DIR_64', '../win_libsbml_dependencies_64/')
+SRC_DIR = get_dir_if_exists('LIBSBML_SRC_DIR', './libsbml_source')
+DEP_DIR = get_dir_if_exists('LIBSBML_DEP_DIR', '../libsbml_dependencies/')
+DEP_DIR32 = get_dir_if_exists('LIBSBML_DEP_DIR_32', '../win_libsbml_dependencies_32/')
+DEP_DIR64 = get_dir_if_exists('LIBSBML_DEP_DIR_64', '../win_libsbml_dependencies_64/')
 
 
 if not SRC_DIR:
@@ -83,7 +83,7 @@ print ("Version is: {0}".format(VERSION))
 print ("building for python: {0}".format(sys.version))
 
 if not exists('libsbml'):
-  os.makedirs('libsbml')
+  makedirs('libsbml')
 
 
 class CMakeExtension(Extension):
@@ -133,7 +133,35 @@ class CMakeBuild(build_ext):
         cmake_args = [
             '-DCMAKE_BUILD_TYPE=' + config, 
             '-DCMAKE_BUILD_PARALLEL_LEVEL=4',
-            
+        ]
+
+        # example of build args
+        build_args = [
+            '--config', config,
+            '--'
+        ]
+
+        if not DEP_DIR and not self.dry_run:
+            print("compiling dependencies")
+            makedirs('./build_dependencies')
+            os.chdir('./build_dependencies')
+            self.spawn(['cmake', '../libsbml_dependencies/'] + cmake_args
+                       + [
+                           '-DCMAKE_INSTALL_PREFIX=../install_dependencies',
+                           '-DWITH_BZIP2=ON',
+                           '-DWITH_CHECK=OFF',
+                           '-DWITH_EXPAT=ON',
+                           '-DWITH_XERCES=OFF',
+                           '-DWITH_ICONV=OFF',
+                           '-DWITH_LIBXML=OFF',
+                       ]
+                       )
+            self.spawn(['cmake', '--build', '.', '--target', 'install'] + build_args)
+            os.chdir('..')
+            global DEP_DIR
+            DEP_DIR = abspath('./install_dependencies')
+
+        libsbml_args = [
             '-DENABLE_COMP=ON',
             '-DENABLE_FBC=ON',
             '-DENABLE_LAYOUT=ON',
@@ -141,7 +169,7 @@ class CMakeBuild(build_ext):
             '-DENABLE_GROUPS=ON',
             '-DENABLE_MULTI=ON',
             '-DENABLE_RENDER=ON',
-            
+
             '-DWITH_EXPAT=ON',
             '-DWITH_LIBXML=OFF',
             '-DWITH_SWIG=ON',
@@ -150,7 +178,8 @@ class CMakeBuild(build_ext):
             '-DWITH_STATIC_RUNTIME=ON',
             '-DPYTHON_EXECUTABLE=' + sys.executable
         ]
-        
+
+        cmake_args = cmake_args + libsbml_args
         
         if DEP_DIR:
           cmake_args.append('-DLIBSBML_DEPENDENCY_DIR=' + DEP_DIR)
@@ -169,12 +198,6 @@ class CMakeBuild(build_ext):
         elif is_osx: 
           cmake_args.append('-DCLANG_USE_LIBCPP=ON')
           cmake_args.append('-DCMAKE_OSX_DEPLOYMENT_TARGET=10.9')
-
-        # example of build args
-        build_args = [
-            '--config', config,
-            '--'
-        ]
 
         os.chdir(build_temp)
         self.spawn(['cmake', SRC_DIR] + cmake_args)
