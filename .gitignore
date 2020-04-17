@@ -188,6 +188,7 @@ $RECYCLE.BIN/
 .idea
 .tmp*
 /build
-/build
+/build*
+/install*
 /spam/__pycache__
 /*.bak
