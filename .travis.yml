@@ -31,7 +31,6 @@ jobs:
         - choco install python --version 3.8.0
         - choco install -y swig
         - choco install -y conan
-        - refreshenv
         - python -m pip install --upgrade pip
         
       env: 
