@@ -168,6 +168,7 @@ class CMakeBuild(build_ext):
         cmake_args = [
             '-DCMAKE_BUILD_TYPE=' + config, 
             '-DCMAKE_BUILD_PARALLEL_LEVEL=4',
+            '-DWITH_STATIC_RUNTIME=ON'
         ]
 
         cmake_args = prepend_variables(cmake_args, [
@@ -220,7 +221,6 @@ class CMakeBuild(build_ext):
             '-DWITH_SWIG=ON',
             '-DWITH_ZLIB=ON',
             '-DWITH_PYTHON=ON',
-            '-DWITH_STATIC_RUNTIME=ON',
             '-DPYTHON_EXECUTABLE=' + sys.executable
         ]
 
