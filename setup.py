@@ -128,6 +128,10 @@ class CMakeBuild(build_ext):
         """Configure `extension` with CMake and build modules."""
         cwd = os.getcwd()
         build_temp = self.build_temp
+        suffix = build_temp[build_temp.find('temp.') + 5:]
+        if '/' in suffix:
+          suffix = suffix[:suffix.rfind('/')]
+        
         ext_dir = self.get_ext_fullpath(extension.name)
         makedirs(build_temp)
         target_lib_path = abspath(ext_dir)
@@ -164,11 +168,14 @@ class CMakeBuild(build_ext):
         global DEP_DIR
         if not DEP_DIR and not self.dry_run:
             print("compiling dependencies")
-            makedirs('./build_dependencies')
-            os.chdir('./build_dependencies')
-            self.spawn(['cmake', '../libsbml_dependencies/'] + cmake_args
+            dep_build_dir = os.path.join(cwd, 'build_dependencies_' + suffix)
+            dep_inst_dir = os.path.join(cwd, 'install_dependencies_' + suffix)
+            dep_src_dir = os.path.join(cwd, 'libsbml_dependencies')
+            makedirs(dep_build_dir)
+            os.chdir(dep_build_dir)
+            self.spawn(['cmake', dep_src_dir] + cmake_args
                        + [
-                           '-DCMAKE_INSTALL_PREFIX=../install_dependencies',
+                           '-DCMAKE_INSTALL_PREFIX=' + dep_inst_dir,
                            '-DWITH_BZIP2=ON',
                            '-DWITH_CHECK=OFF',
                            '-DWITH_EXPAT=ON',
@@ -178,8 +185,8 @@ class CMakeBuild(build_ext):
                        ]
                        )
             self.spawn(['cmake', '--build', '.', '--target', 'install'] + build_args)
-            os.chdir('..')
-            DEP_DIR = abspath('./install_dependencies')
+            os.chdir(cwd)
+            DEP_DIR = dep_inst_dir
 
         libsbml_args = [
             '-DENABLE_COMP=ON',
