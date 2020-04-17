@@ -25,7 +25,7 @@
 ## and also available online as http://sbml.org/software/libsbml/license.html
 ##----------------------------------------------------------------------- -->*/
 
-
+import errno
 import os
 import sys
 import shutil
@@ -36,6 +36,24 @@ from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 
 
+def makedirs(folder, *args, **kwargs):
+  try:
+    return os.makedirs(folder, exist_ok=True, *args, **kwargs)
+  except TypeError: 
+    # Unexpected arguments encountered 
+    pass
+
+  try:
+    # Should work is TypeError was caused by exist_ok, eg., Py2
+    return os.makedirs(folder, *args, **kwargs)
+  except OSError as e:
+    if e.errno != errno.EEXIST:
+      raise
+
+    if os.path.isfile(folder):
+      # folder is a file, raise OSError just like os.makedirs() in Py3
+      raise
+
 def get_dir_if_exists(variable, default):
   value = os.getenv(variable, default)
   value = abspath(value)
@@ -44,8 +62,8 @@ def get_dir_if_exists(variable, default):
   return value
 
 
-SRC_DIR=get_dir_if_exists('LIBSBML_SRC_DIR', '../libsbml')
-DEP_DIR=get_dir_if_exists('LIBSBML_DEP_DIR', '../libsbml_dependencies/')
+SRC_DIR=get_dir_if_exists('LIBSBML_SRC_DIR', './libsbml_source')
+DEP_DIR=get_dir_if_exists('LIBSBML_DEP_DIR', './libsbml_dependencies/')
 DEP_DIR32=get_dir_if_exists('LIBSBML_DEP_DIR_32', '../win_libsbml_dependencies_32/')
 DEP_DIR64=get_dir_if_exists('LIBSBML_DEP_DIR_64', '../win_libsbml_dependencies_64/')
 
@@ -58,11 +76,11 @@ if not SRC_DIR:
     raise ValueError("LibSBML Source not specified or not present, define LIBSBML_SRC_DIR.")
 
 print ("Using libSBML from: {0}".format(SRC_DIR))
-
 with open(join(SRC_DIR, 'VERSION.TXT'), 'r') as version_file:
   VERSION = version_file.readline().strip()
 
 print ("Version is: {0}".format(VERSION))
+print ("building for python: {0}".format(sys.version))
 
 if not exists('libsbml'):
   os.makedirs('libsbml')
@@ -74,7 +92,10 @@ class CMakeExtension(Extension):
     def __init__(self, name, sources=(), **kwargs):
         """Initialize by passing on arguments."""
         # Don't invoke the original `build_ext` for this special extension.
-        super(CMakeExtension, self).__init__(name=name, sources=list(sources), **kwargs)
+        try: 
+          super(CMakeExtension, self).__init__(name=name, sources=list(sources), **kwargs)
+        except:
+          Extension.__init__(self, name, list(sources), **kwargs)
 
 
 class CMakeBuild(build_ext):
@@ -96,11 +117,11 @@ class CMakeBuild(build_ext):
         cwd = os.getcwd()
         build_temp = self.build_temp
         ext_dir = self.get_ext_fullpath(extension.name)
-        os.makedirs(build_temp, exist_ok=True)
+        makedirs(build_temp)
         target_lib_path = abspath(ext_dir)
         name, target_dir_path = split(target_lib_path)
-        os.makedirs(target_dir_path, exist_ok=True)
-        os.makedirs(join(cwd, 'libsbml'), exist_ok=True)
+        makedirs(target_dir_path)
+        makedirs(join(cwd, 'libsbml'))
 
         # example of cmake args
         config = 'Debug' if self.debug else 'Release'
