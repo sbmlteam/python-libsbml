@@ -77,6 +77,10 @@ if not SRC_DIR:
     raise ValueError("LibSBML Source not specified or not present, define LIBSBML_SRC_DIR.")
 
 print ("Using libSBML from: {0}".format(SRC_DIR))
+
+if not exists(join(SRC_DIR, 'VERSION.TXT')):
+  raise ValueError("Invalid libSBML Source directory, no VERSION.TXT file")
+
 with open(join(SRC_DIR, 'VERSION.TXT'), 'r') as version_file:
   VERSION = version_file.readline().strip()
 
