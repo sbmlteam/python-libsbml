@@ -128,9 +128,17 @@ class CMakeBuild(build_ext):
         ext_dir = self.get_ext_fullpath(extension.name)
         makedirs(build_temp)
         target_lib_path = abspath(ext_dir)
-        name, target_dir_path = split(target_lib_path)
+        target_dir_path, name = split(target_lib_path)
         makedirs(target_dir_path)
         makedirs(join(cwd, 'libsbml'))
+
+        print ('name: {0}'.format(name))
+        print ('build temp: {0}'.format(build_temp))
+        print ('extension name: {0}'.format(extension.name))
+        print ('extension dir: {0}'.format(ext_dir))
+        print ('target_dir_path: {0}'.format(target_dir_path))
+        print ('target_lib_path: {0}'.format(target_lib_path))
+        print ('cwd: {0}'.format(cwd))
 
         # example of cmake args
         config = 'Debug' if self.debug else 'Release'
@@ -236,10 +244,10 @@ class CMakeBuild(build_ext):
                 if name == 'libsbml3.py':
                   init_py3 = join(root, name)
 
-            if exists(init_py2) and sys.version_info.major == 2:
+            if init_py2 and exists(init_py2) and sys.version_info.major == 2:
                   shutil.copyfile(init_py2, dst_file)
             
-            if exists(init_py3) and sys.version_info.major == 3:
+            if init_py3 and exists(init_py3) and sys.version_info.major == 3:
                   shutil.copyfile(init_py3, dst_file)
         
         os.chdir(cwd)
