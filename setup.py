@@ -36,6 +36,17 @@ from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 
 
+def prepend_variables(args, variables):
+  for var in variables: 
+    temp = os.getenv(var)
+    if temp:
+      if var == 'CMAKE_GENERATOR':
+        args = ['-G', temp] + args
+      else:
+        args.insert(0, '-D' + var + '=' +temp)
+  return args
+
+
 def makedirs(folder, *args, **kwargs):
   try:
     return os.makedirs(folder, exist_ok=True, *args, **kwargs)
@@ -159,6 +170,13 @@ class CMakeBuild(build_ext):
             '-DCMAKE_BUILD_PARALLEL_LEVEL=4',
         ]
 
+        cmake_args = prepend_variables(cmake_args, [
+          'CMAKE_CXX_COMPILER', 
+          'CMAKE_C_COMPILER', 
+          'CMAKE_LINKER', 
+          'CMAKE_GENERATOR'
+        ])
+
         # example of build args
         build_args = [
             '--config', config,
@@ -213,8 +231,9 @@ class CMakeBuild(build_ext):
           cmake_args.append('-DLIBEXPAT_INCLUDE_DIR=' + join(DEP_DIR, 'include'))
 
         if is_win_32:
-          cmake_args.append('-A')
-          cmake_args.append('win32')
+          if not 'CMAKE_GENERATOR' in str(cmake_args):
+            cmake_args.append('-A')
+            cmake_args.append('win32')
           if DEP_DIR32:
             cmake_args.append('-DLIBSBML_DEPENDENCY_DIR=' + DEP_DIR32)
             cmake_args.append('-DLIBEXPAT_INCLUDE_DIR=' + join(DEP_DIR32, 'include'))
