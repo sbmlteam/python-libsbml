@@ -142,7 +142,9 @@ class CMakeBuild(build_ext):
         suffix = build_temp[build_temp.find('temp.') + 5:]
         if '/' in suffix:
           suffix = suffix[:suffix.rfind('/')]
-        
+        if '\\' in suffix:
+          suffix = suffix[:suffix.rfind('\\')]
+          
         ext_dir = self.get_ext_fullpath(extension.name)
         makedirs(build_temp)
         target_lib_path = abspath(ext_dir)
@@ -156,6 +158,7 @@ class CMakeBuild(build_ext):
         print ('extension dir: {0}'.format(ext_dir))
         print ('target_dir_path: {0}'.format(target_dir_path))
         print ('target_lib_path: {0}'.format(target_lib_path))
+        print ('suffix: {0}'.format(suffix))
         print ('cwd: {0}'.format(cwd))
 
         # example of cmake args
@@ -224,6 +227,14 @@ class CMakeBuild(build_ext):
             '-DPYTHON_EXECUTABLE=' + sys.executable
         ]
 
+        libsbml_args = prepend_variables(libsbml_args, [
+          'SWIG_DIR',
+          'SWIG_EXECUTABLE'
+        ])
+
+        if not is_win:
+          libsbml_args.append('-DPYTHON_USE_DYNAMIC_LOOKUP=ON')
+
         cmake_args = cmake_args + libsbml_args
         
         if DEP_DIR:
@@ -231,7 +242,7 @@ class CMakeBuild(build_ext):
           cmake_args.append('-DLIBEXPAT_INCLUDE_DIR=' + join(DEP_DIR, 'include'))
 
         if is_win_32:
-          if not 'CMAKE_GENERATOR' in str(cmake_args):
+          if not '-G' in str(cmake_args):
             cmake_args.append('-A')
             cmake_args.append('win32')
           if DEP_DIR32:
