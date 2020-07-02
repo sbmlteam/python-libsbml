@@ -43,7 +43,7 @@ First you will have a compiler compatible with your python version installed, as
 
 In order to to build the python package, you will have to manually check out the libSBML repository (or download one of the [official source releases](https://sourceforge.net/projects/sbml/files/libsbml/)). 
 
-	svn co https://svn.code.sf.net/p/sbml/code/trunk/libsbml
+	git clone https://github.com/sbmlteam/libsbml
 
 The source directory will be picked up automatically, if it is located relative to this directory in `../libsbml`. Otherwise define an environment variable `LIBSBML_SRC_DIR` containing the full path to it.
 
@@ -58,6 +58,8 @@ Building the package
 Once those steps are done, the library can be build using the `setup.py` script.
 
 	python setup.py build
+
+to build the experimental package, all that needs to be done is to set the environment variable `LIBSBML_EXPERIMENTAL=1` prior to building
 
 ⁇ Getting Help
 ------------

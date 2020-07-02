@@ -86,6 +86,12 @@ DEP_DIR = get_dir_if_exists('LIBSBML_DEP_DIR', '../libsbml_dependencies/')
 DEP_DIR32 = get_dir_if_exists('LIBSBML_DEP_DIR_32', '../win_libsbml_dependencies_32/')
 DEP_DIR64 = get_dir_if_exists('LIBSBML_DEP_DIR_64', '../win_libsbml_dependencies_64/')
 
+packages = ['comp', 'fbc', 'layout', 'qual', 'groups', 'multi', 'render']
+if not os.getenv('LIBSBML_EXPERIMENTAL'):
+  package_name = 'python-libsbml'
+else: 
+  package_name = 'python-libsbml-experimental'
+  packages += ['arrays', 'distrib', 'dyn', 'requiredelements', 'spatial']
 
 if not SRC_DIR:
   src_defined = os.getenv('LIBSBML_SRC_DIR')
@@ -106,6 +112,7 @@ if not exists(version_file_name):
 with open(version_file_name, 'r') as version_file:
   VERSION = version_file.readline().strip()
 
+print ("Creating: {0}".format(package_name))
 print ("Version is: {0}".format(VERSION))
 print ("building for python: {0}".format(sys.version))
 
@@ -227,14 +234,6 @@ class CMakeBuild(build_ext):
             DEP_DIR = dep_inst_dir
 
         libsbml_args = [
-            '-DENABLE_COMP=ON',
-            '-DENABLE_FBC=ON',
-            '-DENABLE_LAYOUT=ON',
-            '-DENABLE_QUAL=ON',
-            '-DENABLE_GROUPS=ON',
-            '-DENABLE_MULTI=ON',
-            '-DENABLE_RENDER=ON',
-
             '-DWITH_EXPAT=ON',
             '-DWITH_LIBXML=OFF',
             '-DWITH_SWIG=ON',
@@ -243,6 +242,9 @@ class CMakeBuild(build_ext):
             '-DPYTHON_EXECUTABLE=' + sys.executable,
             '-DPYTHON_INCLUDE_DIR=' + sysconfig.get_paths()['include']
         ]
+
+        for package in packages:
+          libsbml_args.append('-DENABLE_{0}=ON'.format(package.upper()))
 
         libsbml_args = prepend_variables(libsbml_args, [
           'SWIG_DIR',
@@ -304,7 +306,7 @@ class CMakeBuild(build_ext):
         os.chdir(cwd)
 
 
-setup(name             = "python-libsbml",
+setup(name             = package_name,
       version          = VERSION,
       description      = "LibSBML Python API",
       long_description = ("LibSBML is a library for reading, writing and "+
