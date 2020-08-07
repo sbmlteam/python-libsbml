@@ -36,6 +36,12 @@ from os.path import abspath, exists, join, split
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 
+def get_python_include():
+  path = sysconfig.get_paths()['include']
+  if exists(path): 
+    return path
+  # for whatever reason 2.7 on centos returns a wrong path here 
+  return sysconfig.get_config_vars()['INCLUDEPY']
 
 def prepend_variables(args, variables):
   for var in variables: 
@@ -241,7 +247,7 @@ class CMakeBuild(build_ext):
             '-DWITH_ZLIB=ON',
             '-DWITH_PYTHON=ON',
             '-DPYTHON_EXECUTABLE=' + sys.executable,
-            '-DPYTHON_INCLUDE_DIR=' + sysconfig.get_paths()['include']
+            '-DPYTHON_INCLUDE_DIR=' + get_python_include()
         ]
 
         for package in packages:
