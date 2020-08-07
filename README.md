@@ -41,17 +41,12 @@ First you will have a compiler compatible with your python version installed, as
 * cmake
 * swig
 
-In order to to build the python package, you will have to manually check out the libSBML repository (or download one of the [official source releases](https://sourceforge.net/projects/sbml/files/libsbml/)). 
+In order to to build the python package, you will have to check out the repository, including its submodules, from there on all dependencies, libsbml and the python bindings will be built: 
 
-	git clone https://github.com/sbmlteam/libsbml
+	git clone https://github.com/sbmlteam/python-libsbml
+	cd python-libsbml
+	git submodule update --init
 
-The source directory will be picked up automatically, if it is located relative to this directory in `../libsbml`. Otherwise define an environment variable `LIBSBML_SRC_DIR` containing the full path to it.
-
-In case you are building on windows you might want to consider getting the libSBML-dependency package, ensuring that at least `expat` is built with the same compiler / configuration you'll use later to build the python package.
-
-	git clone https://github.com/sbmlteam/libSBML-dependencies 
-
-[Binaries for Visual Studio](https://sourceforge.net/projects/sbml/files/libsbml/win-dependencies/) are also available. They will be picked up automatically from the folders `../libsbml_dependencies/`, `../win_libsbml_dependencies_32/` and `../win_libsbml_dependencies_64/`, otherwise from the environment variables `LIBSBML_DEP_DIR`, `LIBSBML_DEP_DIR_32` or `LIBSBML_DEP_DIR_64`.
 
 Building the package
 ------------
