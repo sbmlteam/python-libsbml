@@ -215,22 +215,23 @@ class CMakeBuild(build_ext):
             dep_suffix = sysconfig.get_platform()
             dep_build_dir = os.path.join(cwd, 'build_dependencies_' + dep_suffix)
             dep_inst_dir = os.path.join(cwd, 'install_dependencies_' + dep_suffix)
-            dep_src_dir = os.path.join(cwd, 'libsbml_dependencies')
-            makedirs(dep_build_dir)
-            os.chdir(dep_build_dir)
-            self.spawn(['cmake', dep_src_dir] + cmake_args
-                       + [
-                           '-DCMAKE_INSTALL_PREFIX=' + dep_inst_dir,
-                           '-DWITH_BZIP2=ON',
-                           '-DWITH_CHECK=OFF',
-                           '-DWITH_EXPAT=ON',
-                           '-DWITH_XERCES=OFF',
-                           '-DWITH_ICONV=OFF',
-                           '-DWITH_LIBXML=OFF',
-                       ]
-                       )
-            self.spawn(['cmake', '--build', '.', '--target', 'install'] + build_args)
-            os.chdir(cwd)
+            if not exists(dep_inst_dir):
+              dep_src_dir = os.path.join(cwd, 'libsbml_dependencies')
+              makedirs(dep_build_dir)
+              os.chdir(dep_build_dir)
+              self.spawn(['cmake', dep_src_dir] + cmake_args
+                         + [
+                             '-DCMAKE_INSTALL_PREFIX=' + dep_inst_dir,
+                             '-DWITH_BZIP2=ON',
+                             '-DWITH_CHECK=OFF',
+                             '-DWITH_EXPAT=ON',
+                             '-DWITH_XERCES=OFF',
+                             '-DWITH_ICONV=OFF',
+                             '-DWITH_LIBXML=OFF',
+                         ]
+                         )
+              self.spawn(['cmake', '--build', '.', '--target', 'install'] + build_args)
+              os.chdir(cwd)
             DEP_DIR = dep_inst_dir
 
         libsbml_args = [
