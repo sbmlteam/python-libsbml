@@ -264,8 +264,14 @@ class CMakeBuild(build_ext):
         cmake_args = cmake_args + libsbml_args
         
         if DEP_DIR:
+          zlib = get_lib_full_path(os.path.join(DEP_DIR, 'lib'), 'zlib')
+          if not zlib: 
+            zlib = get_lib_full_path(os.path.join(DEP_DIR, 'lib'), 'zdll')
           cmake_args.append('-DLIBSBML_DEPENDENCY_DIR=' + DEP_DIR)
           cmake_args.append('-DLIBEXPAT_INCLUDE_DIR=' + join(DEP_DIR, 'include'))
+          cmake_args.append('-DLIBEXPAT_LIBRARY=' + get_lib_full_path(os.path.join(DEP_DIR, 'lib'), 'expat'))
+          cmake_args.append('-DLIBZ_LIBRARY=' + zlib)
+          cmake_args.append('-DLIBBZ_LIBRARY=' + get_lib_full_path(os.path.join(dep_inst_dir, 'lib'), 'bz2'))
 
         if is_win_32:
           if DEP_DIR32:
