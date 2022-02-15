@@ -92,12 +92,12 @@ DEP_DIR = get_dir_if_exists('LIBSBML_DEP_DIR', '../libsbml_dependencies/')
 DEP_DIR32 = get_dir_if_exists('LIBSBML_DEP_DIR_32', '../win_libsbml_dependencies_32/')
 DEP_DIR64 = get_dir_if_exists('LIBSBML_DEP_DIR_64', '../win_libsbml_dependencies_64/')
 
-packages = ['comp', 'fbc', 'layout', 'qual', 'groups', 'multi', 'render']
+packages = ['comp', 'fbc', 'layout', 'qual', 'groups', 'multi', 'render', 'distrib']
 if not os.getenv('LIBSBML_EXPERIMENTAL'):
   package_name = 'python-libsbml'
 else: 
   package_name = 'python-libsbml-experimental'
-  packages += ['arrays', 'distrib', 'dyn', 'requiredelements', 'spatial']
+  packages += ['arrays', 'dyn', 'requiredelements', 'spatial']
 
 if not SRC_DIR:
   src_defined = os.getenv('LIBSBML_SRC_DIR')
