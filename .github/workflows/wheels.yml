@@ -1,4 +1,4 @@
-name: Build Wheels
+name: Build python-libsbml Wheels
 
 on:
   workflow_dispatch:
