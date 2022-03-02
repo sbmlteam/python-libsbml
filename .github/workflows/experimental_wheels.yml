@@ -1,0 +1,51 @@
+name: Build python-libsbml-experimental Wheels
+
+on:
+  workflow_dispatch:
+  
+
+env:
+  LIBSBML_EXPERIMENTAL: 1
+
+  
+jobs:
+  make_sdist:
+    name: Make SDist
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Optional, use if you use setuptools_scm
+        submodules: true  # Optional, use if you have submodules
+
+    - name: Build SDist
+      run: pipx run build --sdist
+
+    - uses: actions/upload-artifact@v2
+      with:
+        path: dist/*.tar.gz
+        name: sdist
+  
+  build_wheels:
+    name: Wheel on ${{ matrix.os }} for ${{ matrix.python_version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-20.04, windows-2019, macos-10.15]
+        python_version: ['cp37-*', 'cp38-*', 'cp39-*', 'cp310-*']
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        submodules: true
+
+    - uses: pypa/cibuildwheel@v2.3.1
+      env:
+          CIBW_BUILD: ${{ matrix.python_version }}
+          CIBW_ARCHS_MACOS: x86_64 arm64
+
+    - name: Upload wheels
+      uses: actions/upload-artifact@v2
+      with:
+        path: wheelhouse/*.whl      
