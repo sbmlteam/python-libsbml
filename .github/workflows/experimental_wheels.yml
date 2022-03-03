@@ -44,6 +44,7 @@ jobs:
       env:
           CIBW_BUILD: ${{ matrix.python_version }}
           CIBW_ARCHS_MACOS: x86_64 arm64
+          CIBW_ENVIRONMENT: LIBSBML_EXPERIMENTAL=1
 
     - name: Upload wheels
       uses: actions/upload-artifact@v2
