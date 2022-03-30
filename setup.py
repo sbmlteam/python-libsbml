@@ -205,9 +205,14 @@ class CMakeBuild(build_ext):
           if not '-G' in str(cmake_args):
             cmake_args.append('-A')
             cmake_args.append('win32')
+
         if is_osx: 
-          cmake_args.append('-DCLANG_USE_LIBCPP=ON')
-          cmake_args.append('-DCMAKE_OSX_DEPLOYMENT_TARGET=10.9')
+          #cmake_args.append('-DCLANG_USE_LIBCPP=ON')
+          #cmake_args.append('-DCMAKE_OSX_DEPLOYMENT_TARGET=10.9')
+          if 'arm64' in suffix: 
+            cmake_args.append('-DCMAKE_OSX_ARCHITECTURES=arm64')
+          else:
+            cmake_args.append('-DCMAKE_OSX_ARCHITECTURES=x86_64')
 
         # example of build args
         build_args = [
