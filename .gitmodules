@@ -1,7 +1,7 @@
 [submodule "libsbml_source"]
 	path = libsbml_source
 	url = https://github.com/sbmlteam/libsbml.git
-	branch = fbc-v3-fix
+	branch = development
 [submodule "libsbml_dependencies"]
 	path = libsbml_dependencies
 	url = https://github.com/sbmlteam/libSBML-dependencies.git
