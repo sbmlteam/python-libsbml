@@ -45,9 +45,12 @@ def get_python_include():
 
 def get_win_python_lib():
   vars = sysconfig.get_config_vars()
-  path = os.path.join(vars['prefix'], 'libs', 'python' + vars['py_version_nodot'] + '.lib')
-  if os.path.exists(path):
-    return path
+  for k in ['prefix', 'installed_base', 'installed_platbase']:
+    if k not in vars:
+      continue
+    path = os.path.join(vars[k], 'libs', 'python' + vars['py_version_nodot'] + '.lib')
+    if os.path.exists(path):
+      return path
   return None
 
 def prepend_variables(args, variables):
