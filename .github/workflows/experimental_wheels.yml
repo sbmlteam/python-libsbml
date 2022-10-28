@@ -33,14 +33,14 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-20.04, windows-2019, macos-10.15]
-        python_version: ['cp37-*', 'cp38-*', 'cp39-*', 'cp310-*']
+        python_version: ['cp37-*', 'cp38-*', 'cp39-*', 'cp310-*', 'cp311-*']
 
     steps:
     - uses: actions/checkout@v1
       with:
         submodules: recursive
 
-    - uses: pypa/cibuildwheel@v2.3.1
+    - uses: pypa/cibuildwheel@v2.11.2
       env:
           CIBW_BUILD: ${{ matrix.python_version }}
           CIBW_ARCHS_MACOS: x86_64 arm64
