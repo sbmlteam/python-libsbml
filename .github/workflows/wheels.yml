@@ -35,7 +35,7 @@ jobs:
       with:
         submodules: recursive
 
-    - uses: pypa/cibuildwheel@v2.3.1
+    - uses: pypa/cibuildwheel@v2.11.2
       env:
           CIBW_BUILD: ${{ matrix.python_version }}
           CIBW_ARCHS_MACOS: x86_64 arm64
