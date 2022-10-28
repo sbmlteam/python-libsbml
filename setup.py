@@ -43,6 +43,13 @@ def get_python_include():
   # for whatever reason 2.7 on centos returns a wrong path here 
   return sysconfig.get_config_vars()['INCLUDEPY']
 
+def get_win_python_lib():
+  vars = sysconfig.get_config_vars()
+  path = os.path.join(vars['prefix'], 'libs', 'python' + vars['py_version_nodot'] + '.lib')
+  if os.path.exists(path):
+    return path
+  return None
+
 def prepend_variables(args, variables):
   for var in variables: 
     temp = os.getenv(var)
@@ -252,6 +259,7 @@ class CMakeBuild(build_ext):
             '-DPYTHON_INCLUDE_DIR=' + get_python_include()
         ]
 
+
         for package in packages:
           libsbml_args.append('-DENABLE_{0}=ON'.format(package.upper()))
 
@@ -262,6 +270,11 @@ class CMakeBuild(build_ext):
 
         if not is_win:
           libsbml_args.append('-DPYTHON_USE_DYNAMIC_LOOKUP=ON')
+        else:
+          lib_path = get_win_python_lib()
+          if lib_path is not None:
+            libsbml_args.append('-DPYTHON_LIBRARY={0}'.format(lib_path))
+            
 
         cmake_args = cmake_args + libsbml_args
         
