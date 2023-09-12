@@ -47,6 +47,14 @@ In order to to build the python package, you will have to check out the reposito
 	cd python-libsbml
 	git submodule update --init
 
+By default, we track the latest release of the [libSBML](https://github.com/sbmlteam/libsbml) project via submodule in `libsbml_source` the version number is also read from the `VERSION.txt`
+file from the submodule. So if another version of libSBML should be built, the submodule has to 
+updated. For example manually like so to follow the latest development: 
+
+	cd libsbml_source
+	git checkout development
+	git pull origin development
+
 
 Building the package
 ------------
