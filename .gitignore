@@ -192,3 +192,5 @@ $RECYCLE.BIN/
 /install*
 /spam/__pycache__
 /*.bak
+*.bak
+/test/
