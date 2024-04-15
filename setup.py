@@ -37,6 +37,10 @@ from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 
 def get_python_include():
+  temp = os.getenv('PYTHON_INCLUDE_DIR')
+  if temp:
+    return temp
+
   path = sysconfig.get_paths()['include']
   if exists(path): 
     return path
