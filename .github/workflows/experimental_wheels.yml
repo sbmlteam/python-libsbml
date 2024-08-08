@@ -21,7 +21,7 @@ jobs:
     - name: Build SDist
       run: pipx run build --sdist
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         path: dist/*.tar.gz
         name: sdist
@@ -29,24 +29,34 @@ jobs:
   build_wheels:
     name: Wheel on ${{ matrix.os }} for ${{ matrix.python_version }}
     runs-on: ${{ matrix.os }}
+    needs: make_sdist
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, windows-2019, macos-11]
-        python_version: ['cp37-*', 'cp38-*', 'cp39-*', 'cp310-*', 'cp311-*', 'cp312-*']
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python_version: ['cp38-*', 'cp39-*', 'cp310-*', 'cp311-*', 'cp312-*']
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: recursive
+      - uses: actions/download-artifact@v4
+        with:
+          name: sdist
 
-    - uses: pypa/cibuildwheel@v2.16.2
-      env:
-          CIBW_BUILD: ${{ matrix.python_version }}
-          CIBW_ARCHS_MACOS: x86_64 arm64
-          CIBW_ENVIRONMENT: LIBSBML_EXPERIMENTAL=1
+      - name: Extract sdist into the current directory
+        shell: bash
+        run: |
+          tar zxf *.tar.gz --strip-components=1
 
-    - name: Upload wheels
-      uses: actions/upload-artifact@v3
-      with:
-        path: wheelhouse/*.whl      
+      - name: install swig on macos
+        if: matrix.os == 'macos-latest'
+        run: brew install swig
+
+      - uses: pypa/cibuildwheel@v2.16.5
+        env:
+            CIBW_BUILD: ${{ matrix.python_version }}
+            CIBW_ARCHS_MACOS: x86_64 arm64
+            CIBW_ENVIRONMENT: LIBSBML_EXPERIMENTAL=1
+
+      - name: Upload wheels
+        uses: actions/upload-artifact@v3
+        with:
+          path: wheelhouse/*.whl      
