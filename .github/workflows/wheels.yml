@@ -39,9 +39,7 @@ jobs:
       - name: Extract sdist into the current directory
         shell: bash
         run: |
-          ls -R
           tar zxf *.tar.gz --strip-components=1
-          ls -R
 
       - name: install swig on macos
         if: matrix.os == 'macos-latest'
