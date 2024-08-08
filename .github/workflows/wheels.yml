@@ -37,10 +37,15 @@ jobs:
           name: sdist
 
       - name: Extract sdist into the current directory
+        shell: bash
         run: |
           ls -R
           tar zxf *.tar.gz --strip-components=1
           ls -R
+
+      - name: install swig on macos
+        if: matrix.os == 'macos-latest'
+        run: brew install swig
 
       - uses: pypa/cibuildwheel@v2.16.2
         env:
