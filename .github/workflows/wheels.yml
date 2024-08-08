@@ -28,19 +28,19 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-20.04, windows-2019, macos-11]
-        python_version: ['cp37-*', 'cp38-*', 'cp39-*', 'cp310-*', 'cp311-*', 'cp312-*']
+        python_version: ['cp38-*', 'cp39-*', 'cp310-*', 'cp311-*', 'cp312-*']
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: recursive
+      - uses: actions/download-artifact@main
+        with:
+          name: sdist
 
-    - uses: pypa/cibuildwheel@v2.16.2
-      env:
-          CIBW_BUILD: ${{ matrix.python_version }}
-          CIBW_ARCHS_MACOS: x86_64 arm64
+      - uses: pypa/cibuildwheel@v2.16.2
+        env:
+            CIBW_BUILD: ${{ matrix.python_version }}
+            CIBW_ARCHS_MACOS: x86_64 arm64
 
-    - name: Upload wheels
-      uses: actions/upload-artifact@v3
-      with:
-        path: wheelhouse/*.whl      
+      - name: Upload wheels
+        uses: actions/upload-artifact@v3
+        with:
+          path: wheelhouse/*.whl      
