@@ -29,7 +29,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        python_version: ['cp38-*', 'cp39-*', 'cp310-*', 'cp311-*', 'cp312-*']
+        python_version: ['cp39-*', 'cp310-*', 'cp311-*', 'cp312-*', 'cp313-*']
 
     steps:
       - uses: actions/download-artifact@v4
@@ -45,7 +45,7 @@ jobs:
         if: matrix.os == 'macos-latest'
         run: brew install swig
 
-      - uses: pypa/cibuildwheel@v2.16.5
+      - uses: pypa/cibuildwheel@v2.21.3
         env:
             CIBW_BUILD: ${{ matrix.python_version }}
             CIBW_ARCHS_MACOS: x86_64 arm64
