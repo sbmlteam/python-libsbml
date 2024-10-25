@@ -11,7 +11,11 @@ jobs:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0  # Optional, use if you use setuptools_scm
-        submodules: recursive  # Optional, use if you have submodules
+        
+    - name: checkout needed submodules
+      shell: bash
+      run: |
+        ./.github/workflows/checkout-submodules.sh
 
     - name: Build SDist
       run: pipx run build --sdist
