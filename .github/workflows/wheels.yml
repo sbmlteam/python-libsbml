@@ -66,7 +66,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: wheelhouse/*.whl
-          name: libSBML-${{ matrix.os }}-${{ matrix.python_version }}-${{ strategy.job-index }}
+          name: libSBML-${{ matrix.os }}-${{ strategy.job-index }}
 
   merge_wheels:
     needs: [build_wheels]
