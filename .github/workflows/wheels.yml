@@ -23,7 +23,7 @@ jobs:
     - uses: actions/upload-artifact@v4
       with:
         path: dist/*.tar.gz
-        name: sdist
+        name: libSBML-sdist
   
   build_wheels:
     name: Wheel on ${{ matrix.os }} for ${{ matrix.python_version }}
@@ -38,23 +38,54 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: sdist
+          name: libSBML-sdist
 
       - name: Extract sdist into the current directory
         shell: bash
         run: |
           tar zxf *.tar.gz --strip-components=1
 
-      - name: install swig on macos
-        if: matrix.os == 'macos-latest'
-        run: brew install swig
+      - name: Install cibuildwheel
+        run: |
+          python -m pip install cibuildwheel==2.23.2 swig==4.2.1 cmake==3.31.6
+  
+          # print versions
+          python --version
+          cmake --version
+          swig -version
 
-      - uses: pypa/cibuildwheel@v2.21.3
+
+      - name: Build Wheels
+        run: |
+          python -m cibuildwheel --output-dir wheelhouse
         env:
             CIBW_BUILD: ${{ matrix.python_version }}
             CIBW_ARCHS_MACOS: x86_64 arm64
 
       - name: Upload wheels
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          path: wheelhouse/*.whl      
+          path: wheelhouse/*.whl
+          name: libSBML-${{ matrix.os }}-${{ matrix.python_version }}-${{ strategy.job-index }}
+
+  merge_wheels:
+    needs: [build_wheels]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/download-artifact@v4
+      with:
+        pattern: libSBML-*
+        path: dist
+    
+    - name: Move wheels from dist subfolder to dist folder
+      run: |
+        find dist -name "*.whl" -exec mv {} dist/ \;
+        find dist -name "*.tar.gz" -exec mv {} dist/ \;
+        find dist -type d -empty -delete
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: libSBML-combined
+        path: dist
+        
+        

@@ -354,6 +354,7 @@ setup(name             = package_name,
       ext_modules=[CMakeExtension('_libsbml')],
       cmdclass={
         'build_ext': CMakeBuild,
-      }
+      },
+      setup_requires=['cmake==3.31.6', 'swig==4.2.1']
 )
 
