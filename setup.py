@@ -139,6 +139,15 @@ print ("building for python: {0}".format(sys.version))
 if not exists('libsbml'):
   makedirs('libsbml')
 
+SETUP_REQUIRES = []
+# test whether cmake is in the PATH
+if shutil.which('cmake') is None:
+  SETUP_REQUIRES.append('cmake')
+
+# test whether swig is in the PATH
+if shutil.which('swig') is None:
+  SETUP_REQUIRES.append('swig')
+
 
 class CMakeExtension(Extension):
     """Override the default setuptools extension building."""
@@ -355,6 +364,6 @@ setup(name             = package_name,
       cmdclass={
         'build_ext': CMakeBuild,
       },
-      setup_requires=['cmake', 'swig']
+      setup_requires=SETUP_REQUIRES
 )
 
