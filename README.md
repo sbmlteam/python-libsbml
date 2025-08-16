@@ -45,7 +45,7 @@ In order to to build the python package, you will have to check out the reposito
 
 	git clone https://github.com/sbmlteam/python-libsbml
 	cd python-libsbml
-	git submodule update --init
+	git submodule update --init --recursive
 
 By default, we track the latest release of the [libSBML](https://github.com/sbmlteam/libsbml) project via submodule in `libsbml_source` the version number is also read from the `VERSION.txt`
 file from the submodule. So if another version of libSBML should be built, the submodule has to 
