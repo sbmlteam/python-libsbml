@@ -59,10 +59,27 @@ updated. For example manually like so to follow the latest development:
 Building the package
 ------------
 Once those steps are done, the library can be build using the `setup.py` script.
+If you want to create virtual environment on other directory, not equal python-libsbml, you need to set SWIG_EXECUTABLE environment variable.
 
-	python setup.py build
+    python -m venv /path/to/your/venv
+
+    source /path/to/your/venv/bin/activate
+
+    pip install --upgrade pip setuptools wheel cmake swig
+
+	export SWIG_EXECUTABLE=$(which swig) && python setup.py build
 
 to build the experimental package, all that needs to be done is to set the environment variable `LIBSBML_EXPERIMENTAL=1` prior to building
+
+Install the package into the virtual environment:
+------------
+This is main part of the process, you can install the build package into the virtual environment using the following command:
+
+    source /path/to/your/venv/bin/activate # Activate the virtual environment
+
+    python setup.py bdist_wheel
+
+    pip install dist/python_libsbml-*.whl
 
 ⁇ Getting Help
 ------------
