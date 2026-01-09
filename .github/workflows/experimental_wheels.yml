@@ -46,7 +46,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: libSBML-sdist
+          name: libSBML-experimental-sdist
 
       - name: Extract sdist into the current directory
         shell: bash
@@ -80,7 +80,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: wheelhouse/*.whl
-          name: libSBML-${{ matrix.os }}-${{ strategy.job-index }}
+          name: libSBML-experimental-${{ matrix.os }}-${{ strategy.job-index }}
 
   merge_wheels:
     needs: [build_wheels]
@@ -99,6 +99,6 @@ jobs:
 
     - uses: actions/upload-artifact@v4
       with:
-        name: libSBML-combined
+        name: libSBML-experimental-combined
         path: dist
         
