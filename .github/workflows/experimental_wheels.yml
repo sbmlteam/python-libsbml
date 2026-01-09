@@ -30,7 +30,7 @@ jobs:
     - uses: actions/upload-artifact@v4
       with:
         path: dist/*.tar.gz
-        name: libSBML-sdist
+        name: libSBML-experimental-sdist
   
   build_wheels:
     name: Wheel on ${{ matrix.os }} for ${{ matrix.python_version }}
