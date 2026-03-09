@@ -1,0 +1,109 @@
+name: Build python-libsbml Wheels (3.8)
+
+on:
+  workflow_dispatch:
+  
+jobs:
+  make_sdist:
+    name: Make SDist
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Optional, use if you use setuptools_scm
+        
+    - name: checkout needed submodules
+      shell: bash
+      run: |
+        ./.github/workflows/checkout-submodules.sh
+
+    - name: Build SDist
+      run: pipx run build --sdist
+
+    - uses: actions/upload-artifact@v4
+      with:
+        path: dist/*.tar.gz
+        name: libSBML-sdist
+  
+  build_wheels:
+    name: Wheel on ${{ matrix.os }} for ${{ matrix.python_version }}
+    runs-on: ${{ matrix.os }}
+    needs: make_sdist
+    strategy:
+      fail-fast: false
+      matrix:
+        # macos-15-intel is an Intel runner, macos-14 is Apple silicon
+        os: [ubuntu-latest, ubuntu-24.04-arm, windows-latest, windows-11-arm, macos-15-intel, macos-14]
+        python_version: ['cp38-*']
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: libSBML-sdist
+
+      - name: Extract sdist into the current directory
+        shell: bash
+        run: |
+          tar zxf *.tar.gz --strip-components=1
+
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install cibuildwheel
+        run: |
+          python -m pip install cibuildwheel==3.0.0 swig==4.4.1 cmake==3.31.6
+  
+          # print versions
+          python --version
+          cmake --version
+          swig -version
+
+          # echo python major.minor version into a environment variable
+          echo "PYTHON_VERSION=$(python -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')" >> $GITHUB_ENV
+
+      - name: Set artifact name
+        id: artifact-name
+        shell: bash
+        run: |
+          python_tag="${CIBW_BUILD%-*}"
+          echo "name=libSBML-${{ matrix.os }}-${python_tag}-${{ strategy.job-index }}" >> $GITHUB_OUTPUT
+        env:
+          CIBW_BUILD: ${{ matrix.python_version }}    
+      - name: Build Wheels
+        run: |
+          python -m cibuildwheel --output-dir wheelhouse
+        env:
+            CIBW_BUILD: ${{ matrix.python_version }}
+            CIBW_ARCHS_MACOS: x86_64 arm64
+            CIBW_BEFORE_BUILD_LINUX: "pip install swig==4.4.1"
+            CIBW_SKIP: "*-manylinux_i686"
+
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          path: wheelhouse/*.whl
+          name: ${{ steps.artifact-name.outputs.name }}
+
+  merge_wheels:
+    needs: [build_wheels]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/download-artifact@v4
+      with:
+        pattern: libSBML-*
+        path: dist
+    
+    - name: Move wheels from dist subfolder to dist folder
+      run: |
+        find dist -name "*.whl" -exec mv {} dist/ \;
+        find dist -name "*.tar.gz" -exec mv {} dist/ \;
+        find dist -type d -empty -delete
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: libSBML-combined
+        path: dist
+        
+        
