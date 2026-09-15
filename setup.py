@@ -36,16 +36,34 @@ from os.path import abspath, exists, join, split
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 
-def get_python_include():
+def get_python_include(is_emscripten=False):
   temp = os.getenv('PYTHON_INCLUDE_DIR')
   if temp:
-    return temp
+    path = temp
+  else:
+    path = sysconfig.get_paths().get('include')
+    if not path or not exists(path):
+      # for whatever reason 2.7 on centos returns a wrong path here 
+      path = sysconfig.get_config_vars().get('INCLUDEPY')
 
-  path = sysconfig.get_paths()['include']
-  if exists(path): 
-    return path
-  # for whatever reason 2.7 on centos returns a wrong path here 
-  return sysconfig.get_config_vars()['INCLUDEPY']
+  # Automatically patch pyconfig.h if 32-bit wasm sizes are incorrectly set to 8
+  if is_emscripten and path and exists(path):
+    pyconfig_path = os.path.join(path, 'pyconfig.h')
+    if exists(pyconfig_path):
+      try:
+        with open(pyconfig_path, 'r', encoding='utf-8') as f:
+          content = f.read()
+        
+        updated = content.replace('#define SIZEOF_LONG 8', '#define SIZEOF_LONG 4')
+        updated = updated.replace('#define SIZEOF_VOID_P 8', '#define SIZEOF_VOID_P 4')
+        
+        if updated != content:
+          with open(pyconfig_path, 'w', encoding='utf-8') as f:
+            f.write(updated)
+      except Exception:
+        pass
+
+  return path
 
 def get_win_python_lib():
   vars = sysconfig.get_config_vars()
@@ -187,7 +205,8 @@ class CMakeBuild(build_ext):
           suffix = suffix[:suffix.rfind('/')]
         if '\\' in suffix:
           suffix = suffix[:suffix.rfind('\\')]
-          
+
+        is_emscripten = 'emscripten' in suffix
         ext_dir = self.get_ext_fullpath(extension.name)
         makedirs(build_temp)
         target_lib_path = abspath(ext_dir)
@@ -272,7 +291,7 @@ class CMakeBuild(build_ext):
             '-DWITH_ZLIB=ON',
             '-DWITH_PYTHON=ON',
             '-DPYTHON_EXECUTABLE=' + sys.executable,
-            '-DPYTHON_INCLUDE_DIR=' + get_python_include()
+            '-DPYTHON_INCLUDE_DIR=' + get_python_include(is_emscripten)
         ]
 
 
