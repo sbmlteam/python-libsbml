@@ -67,7 +67,11 @@ jobs:
         id: artifact-name
         shell: bash
         run: |
-          python_tag="${CIBW_BUILD%-*}"
+          ver="${{ matrix.python_version }}"
+          ver=${ver#cp}
+          ver=${ver%%-*}
+          python_tag="${ver:0:1}.${ver:1}"
+
           echo "name=libSBML-${{ matrix.os }}-${python_tag}-${{ strategy.job-index }}" >> $GITHUB_OUTPUT
         env:
           CIBW_BUILD: ${{ matrix.python_version }}    
@@ -78,7 +82,7 @@ jobs:
             CIBW_BUILD: ${{ matrix.python_version }}
             CIBW_ARCHS_MACOS: x86_64 arm64
             CIBW_BEFORE_BUILD_LINUX: "pip install -U swig"
-            CIBW_SKIP: "*-musllinux* cp36-* cp37-* cp38-* cp39-*  *-win32  *-manylinux_i686"
+            CIBW_SKIP: "*-musllinux* cp39-*  *-win32  *-manylinux_i686"
 
       - name: Upload wheels
         uses: actions/upload-artifact@v4
